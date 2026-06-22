@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>游戏视频封面多比例批量生成器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;800;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+  <style>
+    :root {
+      --bg: #111322;
+      --panel: rgba(255,255,255,.075);
+      --panel2: rgba(255,255,255,.11);
+      --line: rgba(255,255,255,.14);
+      --text: #eef2ff;
+      --muted: #9aa4c7;
+      --brand: #7c5cff;
+      --brand2: #00d4ff;
+      --danger: #ff5678;
+      --ok: #38d39f;
+      --warn: #ffd166;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(124,92,255,.35), transparent 28%),
+        radial-gradient(circle at 100% 20%, rgba(0,212,255,.18), transparent 30%),
+        linear-gradient(135deg, #0c1022, #171a2f 55%, #111322);
+      color: var(--text);
+      font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: white;
+      background: linear-gradient(135deg, var(--brand), #5e7cff);
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(124,92,255,.18);
+    }
+    button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    button.secondary { background: rgba(255,255,255,.11); box-shadow: none; border: 1px solid var(--line); }
+    button.danger { background: linear-gradient(135deg, var(--danger), #d83361); }
+    button.ok { background: linear-gradient(135deg, var(--ok), #1ca882); }
+    button.small { padding: 7px 9px; border-radius: 10px; font-size: 12px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 11px;
+      color: var(--text);
+      background: rgba(10,12,24,.72);
+      outline: none;
+    }
+    input[type="file"] { padding: 8px; }
+    input[type="color"] { height: 42px; padding: 4px; }
+    input[type="range"] { padding: 0; }
+    label { display: block; color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+    .app { max-width: 1740px; margin: 0 auto; padding: 18px; }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.055);
+      backdrop-filter: blur(12px);
+    }
+    .hero h1 { margin: 0; font-size: clamp(22px, 2.3vw, 34px); letter-spacing: .4px; }
+    .hero p { margin: 6px 0 0; color: var(--muted); }
+    .hero .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .grid {
+      display: grid;
+      grid-template-columns: 340px minmax(520px, 1fr) 350px;
+      gap: 14px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .panel h2, .panel h3 { margin: 0 0 12px; }
+    .panel h2 { font-size: 18px; }
+    .panel h3 { font-size: 14px; color: #dbe4ff; }
+    .section { padding: 12px 0; border-top: 1px solid var(--line); }
+    .section:first-of-type { border-top: 0; padding-top: 0; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .stack { display: grid; gap: 10px; }
+    .hint { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .ratio-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+    .ratio-tab {
+      background: rgba(255,255,255,.09);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 9px 7px;
+      cursor: pointer;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      user-select: none;
+    }
+    .ratio-tab strong { display: block; color: #fff; font-size: 13px; }
+    .ratio-tab.active { border-color: rgba(0,212,255,.7); background: rgba(0,212,255,.12); color: #ccf6ff; }
+    .workspace { min-height: 780px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .stage-shell {
+      height: 640px;
+      border-radius: 18px;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.055) 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      border: 1px solid var(--line);
+      position: relative;
+    }
+    .stage {
+      position: relative;
+      overflow: hidden;
+      background: #222;
+      box-shadow: 0 30px 90px rgba(0,0,0,.5);
+      user-select: none;
+      flex: 0 0 auto;
+    }
+    .stage::after {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255,255,255,.25);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.3);
+      z-index: 9999;
+    }
+    .safe-guide {
+      position: absolute;
+      border: 1px dashed rgba(255,255,255,.33);
+      inset: 8%;
+      pointer-events: none;
+      z-index: 2000;
+      display: none;
+    }
+    .stage.show-guide .safe-guide { display: block; }
+    .bg-layer, .bg-layer img { position: absolute; left: 0; top: 0; }
+    .bg-layer { inset: 0; overflow: hidden; cursor: grab; }
+    .bg-layer.editing { outline: 2px solid rgba(0,212,255,.6); outline-offset: -3px; }
+    .bg-layer:active { cursor: grabbing; }
+    .cover-element {
+      position: absolute;
+      min-width: 25px;
+      min-height: 18px;
+      cursor: move;
+      z-index: 10;
+      touch-action: none;
+    }
+    .cover-element.selected {
+      outline: 2px solid var(--brand2);
+      outline-offset: 2px;
+      z-index: 1000 !important;
+    }
+    .cover-element img { width: 100%; height: 100%; pointer-events: none; display: block; }
+    .cover-element .text-preview {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      white-space: pre-wrap;
+      line-height: 1.04;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    .handle {
+      position: absolute;
+      right: -8px;
+      bottom: -8px;
+      width: 16px;
+      height: 16px;
+      background: var(--brand2);
+      border: 2px solid #06101d;
+      border-radius: 50%;
+      cursor: nwse-resize;
+      display: none;
+    }
+    .selected .handle { display: block; }
+    .rotate-handle {
+      position: absolute;
+      left: 50%;
+      top: -34px;
+      width: 16px;
+      height: 16px;
+      transform: translateX(-50%);
+      background: var(--warn);
+      border: 2px solid #06101d;
+      border-radius: 50%;
+      cursor: grab;
+      display: none;
+    }
+    .selected .rotate-handle { display: block; }
+    .element-list { display: grid; gap: 8px; max-height: 250px; overflow: auto; padding-right: 4px; }
+    .element-item {
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius: 12px;
+      padding: 9px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .element-item.active { border-color: var(--brand2); background: rgba(0,212,255,.1); }
+    .element-item .name { font-size: 13px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .element-item .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 310px; overflow: auto; padding-right: 4px; }
+    .style-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px;
+      min-height: 54px;
+      background: rgba(255,255,255,.06);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+    }
+    .style-card.active { border-color: var(--brand2); background: rgba(0,212,255,.11); }
+    .mini-previews { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0,0,0,.2);
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .mini.active { border-color: var(--brand2); }
+    .mini-box { margin: 0 auto 6px; background: rgba(255,255,255,.12); border-radius: 4px; position: relative; overflow: hidden; }
+    .mini span { font-size: 11px; color: var(--muted); }
+    .status { margin-top: 10px; color: var(--muted); font-size: 12px; min-height: 18px; }
+    .progress { height: 8px; border-radius: 99px; background: rgba(255,255,255,.12); overflow: hidden; margin-top: 8px; display: none; }
+    .progress div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand2)); transition: width .2s; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; padding: 2px 5px; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,.08); color: #dbe4ff; }
+    @media (max-width: 1280px) {
+      .grid { grid-template-columns: 1fr; }
+      .workspace { min-height: auto; }
+      .stage-shell { height: 560px; }
+      .hero { align-items: flex-start; flex-direction: column; }
+      .hero .actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div>
+        <h1>🎮 游戏视频封面多比例批量生成器</h1>
+        <p>一次添加背景、图片、文字；五种比例自动同步；每个比例单独微调；最后一键导出。PS 反复横跳，到此为止。</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="saveProjectBtn">保存项目</button>
+        <button class="secondary" id="loadProjectBtn">读取项目</button>
+        <button class="danger" id="resetBtn">清空重来</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <aside class="panel">
+        <h2>素材与元素</h2>
+        <div class="section stack">
+          <h3>1. 背景图</h3>
+          <div class="row">
+            <button id="setBgUrlBtn" class="secondary">用链接设置</button>
+            <label style="margin:0"><input type="file" id="bgUpload" accept="image/*" style="display:none"><button type="button" class="secondary" style="width:100%" onclick="document.getElementById('bgUpload').click()">本地上传</button></label>
+          </div>
+          <input id="bgUrl" placeholder="粘贴背景图片 URL 后点“用链接设置”" />
+          <div class="row3">
+            <div><label>背景缩放</label><input type="range" id="bgZoom" min="0.5" max="3" step="0.01" value="1"></div>
+            <div><label>X 偏移</label><input type="number" id="bgX" step="10" value="0"></div>
+            <div><label>Y 偏移</label><input type="number" id="bgY" step="10" value="0"></div>
+          </div>
+          <button class="secondary" id="bgEditBtn">开启背景拖动模式</button>
+          <p class="hint">背景默认按 cover 智能铺满。开启背景拖动后，可拖动背景；滚轮可缩放。每个比例的背景位置单独保存。</p>
+        </div>
+
+        <div class="section stack">
+          <h3>2. 图片元素</h3>
+          <input id="imageUrl" placeholder="图片 URL，例如角色立绘、Logo、游戏截图" />
+          <div class="row">
+            <button id="addImageUrlBtn" class="secondary">添加链接图片</button>
+            <label style="margin:0"><input type="file" id="imageUpload" accept="image/*" multiple style="display:none"><button type="button" class="secondary" style="width:100%" onclick="document.getElementById('imageUpload').click()">上传图片</button></label>
+          </div>
+          <p class="hint">图片元素可添加多张。添加一次，五个比例都会出现；每个比例可以分别调整大小和位置。</p>
+        </div>
+
+        <div class="section stack">
+          <h3>3. 文字元素</h3>
+          <textarea id="newText" rows="3" placeholder="输入文字，例如：新手必看\n最强开荒路线">新手必看\n最强开荒路线</textarea>
+          <button id="addTextBtn" class="secondary">添加文字</button>
+          <p class="hint">文字也可以添加多个：主标题、副标题、角标、吐槽、期数都分开做，后期改起来不挠头。</p>
+        </div>
+
+        <div class="section">
+          <h3>元素列表</h3>
+          <div id="elementList" class="element-list"></div>
+        </div>
+      </aside>
+
+      <section class="panel workspace">
+        <div class="ratio-tabs" id="ratioTabs"></div>
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="badge" id="sizeBadge">16:9 / 1920×1080</span>
+            <span class="badge">拖动元素移动，右下角缩放，顶部黄点旋转</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="secondary small" id="toggleGuideBtn">安全区</button>
+            <button class="secondary small" id="copyLayoutBtn">当前比例布局应用到全部</button>
+            <button class="secondary small" id="centerBtn">选中元素居中</button>
+          </div>
+        </div>
+        <div class="stage-shell" id="stageShell">
+          <div class="stage" id="stage">
+            <div class="bg-layer" id="bgLayer"><img id="bgImg" alt="background"></div>
+            <div class="safe-guide"></div>
+          </div>
+        </div>
+        <div class="mini-previews" id="miniPreviews"></div>
+        <p class="hint" style="margin-top:12px">实用原则：先在 16:9 做主构图，再逐个切到竖屏、4:3 等比例微调。别指望所有比例自动完美，封面这活儿还得留一点“人类审美税”。</p>
+      </section>
+
+      <aside class="panel">
+        <h2>属性与导出</h2>
+        <div class="section stack">
+          <h3>选中元素属性</h3>
+          <div id="emptyInspector" class="hint">当前没有选中元素。点击画布里的图片/文字，或点击左侧元素列表。</div>
+          <div id="inspector" class="stack" style="display:none">
+            <div class="row3">
+              <div><label>X</label><input id="propX" type="number" step="1"></div>
+              <div><label>Y</label><input id="propY" type="number" step="1"></div>
+              <div><label>旋转</label><input id="propRot" type="number" step="1"></div>
+            </div>
+            <div class="row">
+              <div><label>宽度</label><input id="propW" type="number" step="1"></div>
+              <div><label>高度</label><input id="propH" type="number" step="1"></div>
+            </div>
+            <div class="row">
+              <div><label>透明度</label><input id="propOpacity" type="range" min="0" max="1" step="0.01"></div>
+              <div><label>图层</label><input id="propZ" type="number" step="1"></div>
+            </div>
+            <div id="imageInspector" class="stack" style="display:none">
+              <label>图片填充方式</label>
+              <select id="propFit">
+                <option value="contain">contain：完整显示，不裁切</option>
+                <option value="cover">cover：铺满，可能裁切</option>
+                <option value="stretch">stretch：拉伸填满</option>
+              </select>
+            </div>
+            <div id="textInspector" class="stack" style="display:none">
+              <label>文字内容</label>
+              <textarea id="propText" rows="3"></textarea>
+              <div class="row">
+                <div><label>字体大小</label><input id="propFontSize" type="number" step="1"></div>
+                <div><label>对齐</label><select id="propAlign"><option value="left">左</option><option value="center">中</option><option value="right">右</option></select></div>
+              </div>
+              <label>字体</label>
+              <select id="propFontFamily"></select>
+              <div class="row">
+                <div><label>主颜色</label><input id="propColor" type="color"></div>
+                <div><label>描边颜色</label><input id="propStrokeColor" type="color"></div>
+              </div>
+              <label>文字风格模板</label>
+              <select id="propTextStyle"></select>
+            </div>
+            <div class="row">
+              <button id="duplicateBtn" class="secondary">复制元素</button>
+              <button id="deleteBtn" class="danger">删除元素</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>20 个游戏解说文字模板</h3>
+          <div id="styleGrid" class="style-grid"></div>
+        </div>
+
+        <div class="section stack">
+          <h3>导出设置</h3>
+          <div class="stack" id="exportChecks"></div>
+          <div class="row">
+            <div><label>格式</label><select id="exportFormat"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></div>
+            <div><label>质量</label><input id="exportQuality" type="number" min="0.5" max="1" step="0.05" value="0.95"></div>
+          </div>
+          <button class="ok" id="exportBtn">一键导出选中比例</button>
+          <div class="progress" id="progress"><div></div></div>
+          <div class="status" id="status"></div>
+          <p class="hint">默认尝试打包 ZIP；如果 CDN 没加载成功，会自动退回为逐张下载。外链图片若不允许跨域，浏览器可能禁止导出，请改用本地上传。</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+<script>
+(() => {
+  const ratios = {
+    r16_9:  { label: '16:9',  name: '横屏标准', w: 1920, h: 1080 },
+    r16_10: { label: '16:10', name: '宽屏封面', w: 1920, h: 1200 },
+    r4_3:   { label: '4:3',   name: '传统横图', w: 1600, h: 1200 },
+    r3_4:   { label: '3:4',   name: '竖版封面', w: 1200, h: 1600 },
+    r9_16:  { label: '9:16',  name: '短视频竖屏', w: 1080, h: 1920 }
+  };
+  const ratioKeys = Object.keys(ratios);
+
+  const fontPresets = [
+    { id:'default', name:'默认：现代粗黑', font:'system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans SC", "Source Han Sans SC", "HarmonyOS Sans SC", "MiSans", "OPPO Sans", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif' },
+    { id:'noto', name:'Noto Sans / 思源黑体', font:'"Noto Sans SC", "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif' },
+    { id:'pingfang', name:'苹方 / 系统黑体', font:'"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif' },
+    { id:'yahei', name:'微软雅黑 / Windows', font:'"Microsoft YaHei UI", "Microsoft YaHei", "SimHei", sans-serif' },
+    { id:'harmony', name:'HarmonyOS / MiSans', font:'"HarmonyOS Sans SC", "MiSans", "OPPO Sans", "Noto Sans SC", sans-serif' },
+    { id:'impact', name:'Impact 英文冲击', font:'Impact, Haettenschweiler, "Arial Black", "Noto Sans SC", sans-serif' }
+  ];
+
+  const modernFont = fontPresets[0].font;
+
+  // v4 的原则：不要再用假 3D、超粗描边、花哨阴影。中文封面字最稳的是：粗黑体 + 高对比 + 极少特效。
+  const textStyles = [
+    { id:'classic', name:'干净爆款白字', font:modernFont, color:'#ffffff', stroke:'#101010', strokeWidth:2.5, shadow:'0 .10em .22em rgba(0,0,0,.62)', weight:900, italic:false, bg:'' },
+    { id:'yellow', name:'黄白爆款标题', font:modernFont, color:'#ffe45c', stroke:'#111111', strokeWidth:2.5, shadow:'0 .10em .20em rgba(0,0,0,.58)', weight:900, italic:false, bg:'' },
+    { id:'blue', name:'蓝色科技攻略', font:modernFont, color:'#ecfbff', stroke:'#0660b8', strokeWidth:2.2, shadow:'0 0 .20em rgba(0,210,255,.32), 0 .08em .18em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
+    { id:'red', name:'红色重点标题', font:modernFont, color:'#ff4747', stroke:'#ffffff', strokeWidth:2.0, shadow:'0 .08em .18em rgba(0,0,0,.46)', weight:900, italic:false, bg:'' },
+    { id:'blackwhite', name:'黑白硬核标题', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:3.0, shadow:'0 .10em .18em rgba(0,0,0,.65)', weight:900, italic:false, bg:'' },
+    { id:'orange', name:'橙色冲击标题', font:modernFont, color:'#ffb13b', stroke:'#151515', strokeWidth:2.4, shadow:'0 .10em .20em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
+    { id:'gold', name:'金色高光标题', font:modernFont, color:'#ffd75a', stroke:'#15110a', strokeWidth:2.2, shadow:'0 0 .20em rgba(255,215,90,.30), 0 .10em .18em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
+    { id:'green', name:'绿色路线攻略', font:modernFont, color:'#7dff68', stroke:'#092909', strokeWidth:2.4, shadow:'0 .10em .20em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
+    { id:'pink', name:'粉色轻松吐槽', font:modernFont, color:'#ff8ad8', stroke:'#21111e', strokeWidth:2.0, shadow:'0 .08em .18em rgba(0,0,0,.48)', weight:900, italic:false, bg:'' },
+    { id:'purple', name:'紫色异能标题', font:modernFont, color:'#d9c2ff', stroke:'#1d102d', strokeWidth:2.2, shadow:'0 0 .18em rgba(166,103,255,.28), 0 .08em .18em rgba(0,0,0,.48)', weight:900, italic:false, bg:'' },
+    { id:'darkboss', name:'BOSS压迫感', font:modernFont, color:'#f2f2f2', stroke:'#111111', strokeWidth:2.8, shadow:'0 .12em .22em rgba(0,0,0,.72)', weight:900, italic:false, bg:'' },
+    { id:'speed', name:'速度斜体标题', font:modernFont, color:'#ffffff', stroke:'#0834bf', strokeWidth:2.0, shadow:'.06em .04em 0 rgba(255,48,92,.75), 0 .10em .20em rgba(0,0,0,.50)', weight:900, italic:true, bg:'' },
+    { id:'minimal', name:'极简白字', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .10em .24em rgba(0,0,0,.78)', weight:900, italic:false, bg:'' },
+    { id:'clean', name:'清爽字幕白字', font:modernFont, color:'#ffffff', stroke:'#111111', strokeWidth:1.6, shadow:'0 .08em .18em rgba(0,0,0,.60)', weight:800, italic:false, bg:'' },
+    { id:'subtitle', name:'副标题小字', font:modernFont, color:'#ecf2ff', stroke:'#111111', strokeWidth:1.4, shadow:'0 .08em .16em rgba(0,0,0,.58)', weight:800, italic:false, bg:'' },
+    { id:'whitecard', name:'黑底白字条', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .04em .10em rgba(0,0,0,.35)', weight:900, italic:false, bg:'rgba(0,0,0,.66)' },
+    { id:'yellowtag', name:'黄底黑字标签', font:modernFont, color:'#111111', stroke:'#111111', strokeWidth:0, shadow:'0 .04em .08em rgba(255,255,255,.18)', weight:900, italic:false, bg:'rgba(255,218,60,.94)' },
+    { id:'redtag', name:'红底白字警告', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .10em rgba(0,0,0,.32)', weight:900, italic:false, bg:'rgba(231,42,64,.92)' },
+    { id:'label', name:'蓝底角标', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .12em rgba(0,0,0,.35)', weight:900, italic:false, bg:'rgba(28,98,255,.88)' },
+    { id:'silver', name:'银灰冷感标题', font:modernFont, color:'#eeeeee', stroke:'#1b1b1b', strokeWidth:2.0, shadow:'0 .10em .20em rgba(0,0,0,.58)', weight:900, italic:false, bg:'' }
+  ];
+
+  function fontFamilyById(id, style) {
+    return (fontPresets.find(f => f.id === id)?.font) || style?.font || modernFont;
+  }
+
+  const $ = id => document.getElementById(id);
+  const state = {
+    currentRatio: 'r16_9',
+    selectedId: null,
+    bgEditing: false,
+    showGuide: false,
+    nextId: 1,
+    bg: { src: '', image: null, name: '' },
+    templates: {},
+    elements: []
+  };
+  let previewScale = 0.35;
+  let drag = null;
+
+  function initTemplates() {
+    ratioKeys.forEach(key => {
+      state.templates[key] = { bg: { x: 0, y: 0, zoom: 1 }, layouts: {} };
+    });
+  }
+
+  function ratio() { return ratios[state.currentRatio]; }
+  function template(key = state.currentRatio) { return state.templates[key]; }
+  function selectedElement() { return state.elements.find(e => e.id === state.selectedId); }
+  function layoutOf(id, key = state.currentRatio) { return state.templates[key].layouts[id]; }
+
+  function setStatus(msg) { $('status').textContent = msg || ''; }
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  function uid() { return 'el_' + state.nextId++; }
+
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      if (!src.startsWith('data:')) img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('图片加载失败'));
+      img.src = src;
+    });
+  }
+
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function defaultLayoutFor(type, key) {
+    const r = ratios[key];
+    if (type === 'text') {
+      return { x: r.w * .06, y: r.h * .07, w: r.w * .74, h: r.h * .24, rot: 0, opacity: 1, z: 100, fontSize: Math.round(Math.min(r.w, r.h) * .112) };
+    }
+    return { x: r.w * .58, y: r.h * .24, w: r.w * .32, h: r.h * .48, rot: 0, opacity: 1, z: 50, fit: 'contain' };
+  }
+
+  function addElement(el) {
+    state.elements.push(el);
+    ratioKeys.forEach(key => {
+      state.templates[key].layouts[el.id] = defaultLayoutFor(el.type, key);
+    });
+    state.selectedId = el.id;
+    renderAll();
+    autosave();
+  }
+
+  async function addImageFromSrc(src, name = '图片元素') {
+    try {
+      const img = await loadImage(src);
+      addElement({ id: uid(), type: 'image', name, src, image: img, fit: 'contain' });
+      setStatus('图片已添加。');
+    } catch (e) {
+      alert('图片加载失败。外链可能禁止跨域，建议先下载后用本地上传。');
+    }
+  }
+
+  async function setBackground(src, name = '背景图') {
+    try {
+      const img = await loadImage(src);
+      state.bg = { src, image: img, name };
+      ratioKeys.forEach(key => { state.templates[key].bg = { x: 0, y: 0, zoom: 1 }; });
+      renderAll();
+      autosave();
+      setStatus('背景已设置，并已为所有比例重置为智能铺满。');
+    } catch (e) {
+      alert('背景图片加载失败。外链可能禁止跨域，建议先下载后用本地上传。');
+    }
+  }
+
+  function createRatioTabs() {
+    $('ratioTabs').innerHTML = ratioKeys.map(key => {
+      const r = ratios[key];
+      return `<div class="ratio-tab" data-ratio="${key}"><strong>${r.label}</strong>${r.name}</div>`;
+    }).join('');
+    $('ratioTabs').addEventListener('click', e => {
+      const tab = e.target.closest('.ratio-tab');
+      if (!tab) return;
+      state.currentRatio = tab.dataset.ratio;
+      renderAll();
+    });
+  }
+
+  function createExportChecks() {
+    $('exportChecks').innerHTML = ratioKeys.map(key => {
+      const r = ratios[key];
+      return `<label style="display:flex;align-items:center;gap:8px;margin:0;color:var(--text);font-size:13px"><input type="checkbox" data-export="${key}" checked style="width:auto"> ${r.label} ${r.w}×${r.h}</label>`;
+    }).join('');
+  }
+
+  function createStyleGrid() {
+    $('propTextStyle').innerHTML = textStyles.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    $('propFontFamily').innerHTML = fontPresets.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+    $('styleGrid').innerHTML = textStyles.map(s => {
+      return `<div class="style-card" data-style="${s.id}" style="${domTextStyle(s, 24, s.color, s.stroke, true)}">${s.name}</div>`;
+    }).join('');
+    $('styleGrid').addEventListener('click', e => {
+      const card = e.target.closest('.style-card');
+      const el = selectedElement();
+      if (!card || !el || el.type !== 'text') return;
+      el.styleId = card.dataset.style;
+      const style = textStyles.find(s => s.id === el.styleId);
+      el.color = style.color;
+      el.strokeColor = style.stroke;
+      renderAll();
+      autosave();
+    });
+  }
+
+  function domTextStyle(style, size, color, strokeColor, compact = false, fontPresetId = 'default') {
+    const textShadow = style.shadow || '0 .10em .22em rgba(0,0,0,.55)';
+    const rawStroke = style.strokeWidth || 0;
+    // 中文预览最怕粗描边。v4 把描边控制在“清楚但不糊”的范围。
+    const stroke = compact ? Math.min(0.9, rawStroke * 0.22) : Math.min(1.35, rawStroke * previewScale * 0.62);
+    const bg = style.bg ? `background:${style.bg};padding:${compact ? '5px 10px' : Math.round(size*.12)+'px '+Math.round(size*.18)+'px'};border-radius:${compact ? '9px' : Math.round(size*.12)+'px'};box-decoration-break:clone;-webkit-box-decoration-break:clone;` : '';
+    const family = fontFamilyById(fontPresetId, style);
+    return `font-family:${family};font-weight:${style.weight || 900};font-style:${style.italic ? 'italic' : 'normal'};letter-spacing:${compact ? '0' : '0.01em'};color:${color || style.color};-webkit-text-stroke:${stroke}px ${strokeColor || style.stroke};text-shadow:${textShadow};${bg}`;
+  }
+
+  function computePreviewScale() {
+    const shell = $('stageShell');
+    const r = ratio();
+    const maxW = Math.max(320, shell.clientWidth - 48);
+    const maxH = Math.max(300, shell.clientHeight - 48);
+    previewScale = Math.min(maxW / r.w, maxH / r.h, 0.6);
+  }
+
+  function coverRect(img, W, H, bg) {
+    if (!img) return { x:0, y:0, w:W, h:H };
+    const s = Math.max(W / img.naturalWidth, H / img.naturalHeight) * bg.zoom;
+    const w = img.naturalWidth * s;
+    const h = img.naturalHeight * s;
+    return { x: (W - w) / 2 + bg.x, y: (H - h) / 2 + bg.y, w, h };
+  }
+
+  function renderStage() {
+    computePreviewScale();
+    const r = ratio();
+    const st = $('stage');
+    st.style.width = Math.round(r.w * previewScale) + 'px';
+    st.style.height = Math.round(r.h * previewScale) + 'px';
+    st.classList.toggle('show-guide', state.showGuide);
+    $('sizeBadge').textContent = `${r.label} / ${r.w}×${r.h}`;
+
+    document.querySelectorAll('.ratio-tab').forEach(t => t.classList.toggle('active', t.dataset.ratio === state.currentRatio));
+    const bgLayer = $('bgLayer');
+    bgLayer.classList.toggle('editing', state.bgEditing);
+    const bg = template().bg;
+    $('bgZoom').value = bg.zoom;
+    $('bgX').value = Math.round(bg.x);
+    $('bgY').value = Math.round(bg.y);
+
+    const bgImg = $('bgImg');
+    if (state.bg.src) {
+      bgImg.src = state.bg.src;
+      const cr = coverRect(state.bg.image, r.w, r.h, bg);
+      bgImg.style.display = 'block';
+      bgImg.style.left = cr.x * previewScale + 'px';
+      bgImg.style.top = cr.y * previewScale + 'px';
+      bgImg.style.width = cr.w * previewScale + 'px';
+      bgImg.style.height = cr.h * previewScale + 'px';
+    } else {
+      bgImg.style.display = 'none';
+      st.style.background = 'linear-gradient(135deg,#25294a,#111322)';
+    }
+
+    st.querySelectorAll('.cover-element').forEach(n => n.remove());
+    [...state.elements].sort((a,b) => (layoutOf(a.id)?.z || 0) - (layoutOf(b.id)?.z || 0)).forEach(el => {
+      const lay = layoutOf(el.id);
+      if (!lay) return;
+      const node = document.createElement('div');
+      node.className = 'cover-element' + (el.id === state.selectedId ? ' selected' : '');
+      node.dataset.id = el.id;
+      node.style.left = lay.x * previewScale + 'px';
+      node.style.top = lay.y * previewScale + 'px';
+      node.style.width = lay.w * previewScale + 'px';
+      node.style.height = lay.h * previewScale + 'px';
+      node.style.transform = `rotate(${lay.rot || 0}deg)`;
+      node.style.opacity = lay.opacity ?? 1;
+      node.style.zIndex = lay.z || 1;
+
+      if (el.type === 'image') {
+        const img = document.createElement('img');
+        img.src = el.src;
+        img.style.objectFit = lay.fit || el.fit || 'contain';
+        node.appendChild(img);
+      } else {
+        const style = textStyles.find(s => s.id === el.styleId) || textStyles[0];
+        const t = document.createElement('div');
+        t.className = 'text-preview';
+        t.textContent = el.text;
+        t.style.cssText = domTextStyle(style, (lay.fontSize || 100) * previewScale, el.color, el.strokeColor, false, el.fontFamily || 'default');
+        t.style.fontSize = (lay.fontSize || 100) * previewScale + 'px';
+        t.style.textAlign = el.align || 'left';
+        node.appendChild(t);
+      }
+      const handle = document.createElement('div');
+      handle.className = 'handle';
+      const rot = document.createElement('div');
+      rot.className = 'rotate-handle';
+      node.appendChild(handle);
+      node.appendChild(rot);
+      st.appendChild(node);
+    });
+  }
+
+  function renderElementList() {
+    if (!state.elements.length) {
+      $('elementList').innerHTML = '<div class="hint">还没有元素。先添加背景、图片或文字。</div>';
+      return;
+    }
+    $('elementList').innerHTML = state.elements.map(el => {
+      const lay = layoutOf(el.id);
+      const label = el.type === 'text' ? '文字' : '图片';
+      const name = el.type === 'text' ? el.text.replace(/\n/g, ' / ').slice(0, 32) : el.name;
+      return `<div class="element-item ${el.id === state.selectedId ? 'active' : ''}" data-id="${el.id}">
+        <div><div class="name">${escapeHtml(name || label)}</div><div class="meta">${label} · ${Math.round(lay?.w || 0)}×${Math.round(lay?.h || 0)} · z${lay?.z || 0}</div></div>
+        <button class="small secondary" data-up="${el.id}">选中</button>
+      </div>`;
+    }).join('');
+  }
+
+  function renderInspector() {
+    const el = selectedElement();
+    $('emptyInspector').style.display = el ? 'none' : 'block';
+    $('inspector').style.display = el ? 'grid' : 'none';
+    if (!el) return;
+    const lay = layoutOf(el.id);
+    $('propX').value = Math.round(lay.x);
+    $('propY').value = Math.round(lay.y);
+    $('propW').value = Math.round(lay.w);
+    $('propH').value = Math.round(lay.h);
+    $('propRot').value = Math.round(lay.rot || 0);
+    $('propOpacity').value = lay.opacity ?? 1;
+    $('propZ').value = lay.z || 1;
+    $('imageInspector').style.display = el.type === 'image' ? 'grid' : 'none';
+    $('textInspector').style.display = el.type === 'text' ? 'grid' : 'none';
+    if (el.type === 'image') $('propFit').value = lay.fit || el.fit || 'contain';
+    if (el.type === 'text') {
+      $('propText').value = el.text;
+      $('propFontSize').value = Math.round(lay.fontSize || 100);
+      $('propAlign').value = el.align || 'left';
+      $('propColor').value = el.color || '#ffffff';
+      $('propStrokeColor').value = el.strokeColor || '#000000';
+      $('propTextStyle').value = el.styleId || 'classic';
+      $('propFontFamily').value = el.fontFamily || 'default';
+      document.querySelectorAll('.style-card').forEach(c => c.classList.toggle('active', c.dataset.style === el.styleId));
+    } else {
+      document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+    }
+  }
+
+  function renderMiniPreviews() {
+    $('miniPreviews').innerHTML = ratioKeys.map(key => {
+      const r = ratios[key];
+      const s = Math.min(80 / r.w, 70 / r.h);
+      return `<div class="mini ${key === state.currentRatio ? 'active' : ''}" data-ratio="${key}">
+        <div class="mini-box" style="width:${r.w*s}px;height:${r.h*s}px"></div><span>${r.label}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAll() {
+    renderStage();
+    renderElementList();
+    renderInspector();
+    renderMiniPreviews();
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  }
+
+  function selectElement(id) {
+    state.selectedId = id;
+    state.bgEditing = false;
+    $('bgEditBtn').textContent = '开启背景拖动模式';
+    renderAll();
+  }
+
+  function updateSelectedLayout(patch) {
+    const el = selectedElement();
+    if (!el) return;
+    Object.assign(layoutOf(el.id), patch);
+    renderAll();
+    autosave();
+  }
+
+  function bindEvents() {
+    $('setBgUrlBtn').onclick = () => {
+      const url = $('bgUrl').value.trim();
+      if (!url) return alert('先粘贴背景图 URL。');
+      setBackground(url, 'URL背景');
+    };
+    $('bgUpload').onchange = async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      setBackground(await readFileAsDataURL(file), file.name);
+      e.target.value = '';
+    };
+    $('addImageUrlBtn').onclick = () => {
+      const url = $('imageUrl').value.trim();
+      if (!url) return alert('先粘贴图片 URL。');
+      addImageFromSrc(url, '链接图片');
+      $('imageUrl').value = '';
+    };
+    $('imageUpload').onchange = async e => {
+      for (const file of e.target.files) await addImageFromSrc(await readFileAsDataURL(file), file.name);
+      e.target.value = '';
+    };
+    $('addTextBtn').onclick = () => {
+      const raw = $('newText').value || '新文字';
+      const style = textStyles[0];
+      addElement({ id: uid(), type: 'text', text: raw.replace(/\\n/g, '\n'), styleId: style.id, color: style.color, strokeColor: style.stroke, align: 'left', name: '文字' });
+    };
+
+    $('elementList').onclick = e => {
+      const item = e.target.closest('.element-item');
+      if (!item) return;
+      selectElement(item.dataset.id);
+    };
+    $('miniPreviews').onclick = e => {
+      const mini = e.target.closest('.mini');
+      if (!mini) return;
+      state.currentRatio = mini.dataset.ratio;
+      renderAll();
+    };
+
+    $('bgEditBtn').onclick = () => {
+      state.bgEditing = !state.bgEditing;
+      if (state.bgEditing) state.selectedId = null;
+      $('bgEditBtn').textContent = state.bgEditing ? '关闭背景拖动模式' : '开启背景拖动模式';
+      renderAll();
+    };
+    ['bgZoom','bgX','bgY'].forEach(id => $(id).addEventListener('input', () => {
+      const bg = template().bg;
+      bg.zoom = Number($('bgZoom').value);
+      bg.x = Number($('bgX').value);
+      bg.y = Number($('bgY').value);
+      renderStage();
+      autosave();
+    }));
+
+    $('toggleGuideBtn').onclick = () => { state.showGuide = !state.showGuide; renderStage(); };
+    $('copyLayoutBtn').onclick = copyCurrentLayoutToAll;
+    $('centerBtn').onclick = centerSelected;
+    $('deleteBtn').onclick = deleteSelected;
+    $('duplicateBtn').onclick = duplicateSelected;
+    $('resetBtn').onclick = resetProject;
+    $('saveProjectBtn').onclick = manualSave;
+    $('loadProjectBtn').onclick = loadProjectFromLocal;
+    $('exportBtn').onclick = exportSelectedRatios;
+
+    const propMap = {
+      propX: 'x', propY: 'y', propW: 'w', propH: 'h', propRot: 'rot', propOpacity: 'opacity', propZ: 'z'
+    };
+    Object.entries(propMap).forEach(([id, key]) => $(id).addEventListener('input', () => {
+      updateSelectedLayout({ [key]: Number($(id).value) });
+    }));
+    $('propFit').addEventListener('change', () => updateSelectedLayout({ fit: $('propFit').value }));
+    $('propText').addEventListener('input', () => { const el = selectedElement(); if (el) { el.text = $('propText').value; renderAll(); autosave(); } });
+    $('propFontSize').addEventListener('input', () => updateSelectedLayout({ fontSize: Number($('propFontSize').value) }));
+    $('propAlign').addEventListener('change', () => { const el = selectedElement(); if (el) { el.align = $('propAlign').value; renderAll(); autosave(); } });
+    $('propColor').addEventListener('input', () => { const el = selectedElement(); if (el) { el.color = $('propColor').value; renderAll(); autosave(); } });
+    $('propStrokeColor').addEventListener('input', () => { const el = selectedElement(); if (el) { el.strokeColor = $('propStrokeColor').value; renderAll(); autosave(); } });
+    $('propTextStyle').addEventListener('change', () => { const el = selectedElement(); if (el) { const s = textStyles.find(x => x.id === $('propTextStyle').value); el.styleId = s.id; el.color = s.color; el.strokeColor = s.stroke; renderAll(); autosave(); } });
+    $('propFontFamily').addEventListener('change', () => { const el = selectedElement(); if (el) { el.fontFamily = $('propFontFamily').value; renderAll(); autosave(); } });
+
+    $('stage').addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    $('stage').addEventListener('wheel', onWheel, { passive:false });
+    window.addEventListener('resize', renderAll);
+    window.addEventListener('keydown', onKeyDown);
+  }
+
+  function stagePoint(e) {
+    const rect = $('stage').getBoundingClientRect();
+    return { x: (e.clientX - rect.left) / previewScale, y: (e.clientY - rect.top) / previewScale };
+  }
+
+  function onPointerDown(e) {
+    const targetEl = e.target.closest('.cover-element');
+    const p = stagePoint(e);
+    if (targetEl) {
+      e.preventDefault();
+      const id = targetEl.dataset.id;
+      state.selectedId = id;
+      state.bgEditing = false;
+      const lay = layoutOf(id);
+      const mode = e.target.classList.contains('handle') ? 'resize' : e.target.classList.contains('rotate-handle') ? 'rotate' : 'move';
+      drag = { mode, id, start: p, original: { ...lay }, center: { x: lay.x + lay.w/2, y: lay.y + lay.h/2 } };
+      renderAll();
+      return;
+    }
+    if (state.bgEditing && state.bg.image) {
+      e.preventDefault();
+      const bg = template().bg;
+      drag = { mode: 'bg', start: p, original: { ...bg } };
+      return;
+    }
+    state.selectedId = null;
+    renderAll();
+  }
+
+  function onPointerMove(e) {
+    if (!drag) return;
+    const p = stagePoint(e);
+    if (drag.mode === 'bg') {
+      const bg = template().bg;
+      bg.x = drag.original.x + (p.x - drag.start.x);
+      bg.y = drag.original.y + (p.y - drag.start.y);
+      renderStage();
+      return;
+    }
+    const lay = layoutOf(drag.id);
+    if (!lay) return;
+    if (drag.mode === 'move') {
+      lay.x = drag.original.x + (p.x - drag.start.x);
+      lay.y = drag.original.y + (p.y - drag.start.y);
+    } else if (drag.mode === 'resize') {
+      lay.w = Math.max(20, drag.original.w + (p.x - drag.start.x));
+      lay.h = Math.max(20, drag.original.h + (p.y - drag.start.y));
+    } else if (drag.mode === 'rotate') {
+      const a = Math.atan2(p.y - drag.center.y, p.x - drag.center.x) * 180 / Math.PI + 90;
+      lay.rot = Math.round(a);
+    }
+    renderStage();
+    renderInspector();
+  }
+
+  function onPointerUp() {
+    if (drag) autosave();
+    drag = null;
+  }
+
+  function onWheel(e) {
+    if (!state.bgEditing || !state.bg.image) return;
+    e.preventDefault();
+    const bg = template().bg;
+    const delta = e.deltaY > 0 ? -0.04 : 0.04;
+    bg.zoom = clamp(bg.zoom + delta, 0.5, 3);
+    renderAll();
+    autosave();
+  }
+
+  function onKeyDown(e) {
+    const el = selectedElement();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); manualSave(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') { e.preventDefault(); exportSelectedRatios(); return; }
+    if (!el || ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+    const lay = layoutOf(el.id);
+    const step = e.shiftKey ? 10 : 1;
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); return; }
+    if (e.key === 'ArrowLeft') { lay.x -= step; e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { lay.x += step; e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { lay.y -= step; e.preventDefault(); }
+    else if (e.key === 'ArrowDown') { lay.y += step; e.preventDefault(); }
+    else return;
+    renderAll(); autosave();
+  }
+
+  function centerSelected() {
+    const el = selectedElement();
+    if (!el) return;
+    const r = ratio();
+    const lay = layoutOf(el.id);
+    lay.x = (r.w - lay.w) / 2;
+    lay.y = (r.h - lay.h) / 2;
+    renderAll(); autosave();
+  }
+
+  function deleteSelected() {
+    const el = selectedElement();
+    if (!el) return;
+    if (!confirm('确定删除当前元素？')) return;
+    state.elements = state.elements.filter(x => x.id !== el.id);
+    ratioKeys.forEach(k => delete state.templates[k].layouts[el.id]);
+    state.selectedId = null;
+    renderAll(); autosave();
+  }
+
+  function duplicateSelected() {
+    const el = selectedElement();
+    if (!el) return;
+    const copy = { ...el, id: uid(), name: (el.name || el.type) + ' copy' };
+    state.elements.push(copy);
+    ratioKeys.forEach(k => {
+      const l = { ...state.templates[k].layouts[el.id] };
+      l.x += ratios[k].w * .03;
+      l.y += ratios[k].h * .03;
+      l.z += 1;
+      state.templates[k].layouts[copy.id] = l;
+    });
+    state.selectedId = copy.id;
+    renderAll(); autosave();
+  }
+
+  function copyCurrentLayoutToAll() {
+    const fromKey = state.currentRatio;
+    const fromR = ratios[fromKey];
+    const fromT = state.templates[fromKey];
+    ratioKeys.forEach(key => {
+      if (key === fromKey) return;
+      const toR = ratios[key];
+      state.templates[key].bg = {
+        x: fromT.bg.x / fromR.w * toR.w,
+        y: fromT.bg.y / fromR.h * toR.h,
+        zoom: fromT.bg.zoom
+      };
+      state.elements.forEach(el => {
+        const l = fromT.layouts[el.id];
+        if (!l) return;
+        state.templates[key].layouts[el.id] = {
+          ...l,
+          x: l.x / fromR.w * toR.w,
+          y: l.y / fromR.h * toR.h,
+          w: l.w / fromR.w * toR.w,
+          h: l.h / fromR.h * toR.h,
+          fontSize: l.fontSize ? l.fontSize / Math.min(fromR.w, fromR.h) * Math.min(toR.w, toR.h) : l.fontSize
+        };
+      });
+    });
+    renderAll(); autosave();
+    setStatus('已把当前比例布局按比例复制到其他四个比例。');
+  }
+
+  function drawImageFit(ctx, img, x, y, w, h, fit) {
+    if (fit === 'stretch') { ctx.drawImage(img, x, y, w, h); return; }
+    const s = fit === 'cover' ? Math.max(w / img.naturalWidth, h / img.naturalHeight) : Math.min(w / img.naturalWidth, h / img.naturalHeight);
+    const dw = img.naturalWidth * s;
+    const dh = img.naturalHeight * s;
+    ctx.drawImage(img, x + (w - dw)/2, y + (h - dh)/2, dw, dh);
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    const lines = [];
+    const rawLines = String(text).split('\n');
+    rawLines.forEach(raw => {
+      let line = '';
+      Array.from(raw).forEach(ch => {
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = ch;
+        } else line = test;
+      });
+      lines.push(line);
+    });
+    return lines;
+  }
+
+  function drawTextElement(ctx, el, lay) {
+    const s = textStyles.find(x => x.id === el.styleId) || textStyles[0];
+    const fontSize = lay.fontSize || 100;
+    ctx.save();
+    ctx.globalAlpha = lay.opacity ?? 1;
+    ctx.translate(lay.x + lay.w/2, lay.y + lay.h/2);
+    ctx.rotate((lay.rot || 0) * Math.PI / 180);
+    ctx.translate(-lay.w/2, -lay.h/2);
+    if (s.bg) {
+      ctx.fillStyle = s.bg.replace(/rgba?\((.*?)\)/, m => m);
+      roundRect(ctx, 0, 0, lay.w, lay.h, Math.max(12, fontSize * .1));
+      ctx.fill();
+    }
+    ctx.font = `${s.italic ? 'italic ' : ''}${s.weight || 900} ${fontSize}px ${fontFamilyById(el.fontFamily || 'default', s)}`;
+    ctx.textBaseline = 'top';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(0,0,0,.48)';
+    ctx.shadowBlur = fontSize * .035;
+    ctx.shadowOffsetX = fontSize * .018;
+    ctx.shadowOffsetY = fontSize * .035;
+    const lines = wrapText(ctx, el.text, lay.w);
+    const lineH = fontSize * 1.05;
+    const totalH = lines.length * lineH;
+    let y = Math.max(0, (lay.h - totalH) / 2);
+    lines.forEach(line => {
+      let x = 0;
+      const mw = ctx.measureText(line).width;
+      if (el.align === 'center') x = (lay.w - mw) / 2;
+      if (el.align === 'right') x = lay.w - mw;
+      if (s.strokeWidth) {
+        ctx.lineWidth = Math.max(0, Math.min(s.strokeWidth || 0, fontSize * 0.055));
+        ctx.strokeStyle = el.strokeColor || s.stroke;
+        ctx.strokeText(line, x, y);
+      }
+      ctx.fillStyle = el.color || s.color;
+      ctx.fillText(line, x, y);
+      y += lineH;
+    });
+    ctx.restore();
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  function renderToCanvas(key) {
+    const r = ratios[key];
+    const canvas = document.createElement('canvas');
+    canvas.width = r.w;
+    canvas.height = r.h;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#111322';
+    ctx.fillRect(0,0,r.w,r.h);
+    if (state.bg.image) {
+      const cr = coverRect(state.bg.image, r.w, r.h, state.templates[key].bg);
+      ctx.drawImage(state.bg.image, cr.x, cr.y, cr.w, cr.h);
+    }
+    [...state.elements].sort((a,b) => (state.templates[key].layouts[a.id]?.z || 0) - (state.templates[key].layouts[b.id]?.z || 0)).forEach(el => {
+      const lay = state.templates[key].layouts[el.id];
+      if (!lay) return;
+      if (el.type === 'image' && el.image) {
+        ctx.save();
+        ctx.globalAlpha = lay.opacity ?? 1;
+        ctx.translate(lay.x + lay.w/2, lay.y + lay.h/2);
+        ctx.rotate((lay.rot || 0) * Math.PI / 180);
+        drawImageFit(ctx, el.image, -lay.w/2, -lay.h/2, lay.w, lay.h, lay.fit || el.fit || 'contain');
+        ctx.restore();
+      } else if (el.type === 'text') {
+        drawTextElement(ctx, el, lay);
+      }
+    });
+    return canvas;
+  }
+
+  async function exportSelectedRatios() {
+    const selected = [...document.querySelectorAll('[data-export]:checked')].map(x => x.dataset.export);
+    if (!selected.length) return alert('至少勾选一个比例。');
+    const fmt = $('exportFormat').value;
+    const quality = Number($('exportQuality').value || 0.95);
+    const progress = $('progress');
+    const bar = progress.querySelector('div');
+    progress.style.display = 'block';
+    bar.style.width = '0%';
+    setStatus('正在导出...');
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+      const blobs = [];
+      for (let i=0; i<selected.length; i++) {
+        const key = selected[i];
+        const canvas = renderToCanvas(key);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${fmt}`, quality));
+        blobs.push({ key, blob });
+        bar.style.width = `${Math.round((i+1)/selected.length*100)}%`;
+      }
+      const base = filenameSafe(state.elements.find(e => e.type === 'text')?.text?.split('\n')[0] || 'game-cover');
+      if (window.JSZip) {
+        const zip = new JSZip();
+        blobs.forEach(({key, blob}) => zip.file(`${base}_${ratios[key].label.replace(':','x')}_${ratios[key].w}x${ratios[key].h}.${fmt === 'jpeg' ? 'jpg' : fmt}`, blob));
+        const content = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(content, `${base}_covers.zip`);
+        setStatus('导出完成：ZIP 文件已生成。');
+      } else {
+        blobs.forEach(({key, blob}, idx) => setTimeout(() => downloadBlob(blob, `${base}_${ratios[key].label.replace(':','x')}_${ratios[key].w}x${ratios[key].h}.${fmt === 'jpeg' ? 'jpg' : fmt}`), idx * 250));
+        setStatus('导出完成：JSZip 未加载，已改为逐张下载。');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('导出失败。最常见原因是外链图片不允许跨域导出。请把图片下载到本地后用“本地上传”。');
+      setStatus('导出失败。');
+    }
+  }
+
+  function filenameSafe(str) { return String(str).replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40) || 'game-cover'; }
+  function downloadBlob(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  function serializableState() {
+    return {
+      currentRatio: state.currentRatio,
+      nextId: state.nextId,
+      bg: { src: state.bg.src, name: state.bg.name },
+      templates: state.templates,
+      elements: state.elements.map(e => ({ ...e, image: undefined }))
+    };
+  }
+
+  async function hydrate(data) {
+    state.currentRatio = data.currentRatio || 'r16_9';
+    state.nextId = data.nextId || 1;
+    initTemplates();
+    state.templates = data.templates || state.templates;
+    state.elements = [];
+    if (data.bg?.src) {
+      try { state.bg = { src: data.bg.src, name: data.bg.name || '背景图', image: await loadImage(data.bg.src) }; } catch { state.bg = { src:'', name:'', image:null }; }
+    }
+    for (const e of (data.elements || [])) {
+      if (e.type === 'image') {
+        try { e.image = await loadImage(e.src); } catch { continue; }
+      }
+      state.elements.push(e);
+    }
+    state.selectedId = null;
+    renderAll();
+  }
+
+  let saveTimer = null;
+  function autosave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState())), 250);
+  }
+  function manualSave() {
+    localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState()));
+    setStatus('项目已保存到浏览器本地。快捷键：Ctrl/⌘ + S');
+  }
+  async function loadProjectFromLocal() {
+    const raw = localStorage.getItem('gameCoverGeneratorProject');
+    if (!raw) return alert('没有找到已保存的项目。');
+    await hydrate(JSON.parse(raw));
+    setStatus('项目已读取。');
+  }
+  function resetProject() {
+    if (!confirm('确定清空当前项目？这个操作不会删除已下载的图片。')) return;
+    state.currentRatio = 'r16_9'; state.selectedId = null; state.nextId = 1; state.bg = {src:'', image:null, name:''}; state.elements = [];
+    initTemplates(); renderAll(); autosave();
+  }
+
+  function bootstrapDemo() {
+    const style = textStyles[0];
+    addElement({ id: uid(), type:'text', text:'游戏解说\n封面标题', styleId:style.id, color:style.color, strokeColor:style.stroke, align:'left', name:'主标题' });
+    const style2 = textStyles[12];
+    addElement({ id: uid(), type:'text', text:'EP.01 / 高能名场面', styleId:style2.id, color:style2.color, strokeColor:style2.stroke, align:'center', name:'副标题' });
+    ratioKeys.forEach(key => {
+      const r = ratios[key];
+      const second = state.elements[1];
+      const l = state.templates[key].layouts[second.id];
+      l.x = r.w * .07; l.y = r.h * .72; l.w = r.w * .56; l.h = r.h * .12; l.fontSize = Math.round(Math.min(r.w,r.h)*.055);
+    });
+  }
+
+  function init() {
+    initTemplates();
+    createRatioTabs();
+    createExportChecks();
+    createStyleGrid();
+    bindEvents();
+    const saved = localStorage.getItem('gameCoverGeneratorProject');
+    if (saved) hydrate(JSON.parse(saved));
+    else { bootstrapDemo(); renderAll(); }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(renderAll).catch(() => {});
+    }
+  }
+  init();
+})();
+</script>
+</body>
+</html>

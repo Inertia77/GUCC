@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GameUp Command Center</title>
+  <link rel="stylesheet" href="styles/app.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <h1>GameUp Command Center</h1>
+        <p class="subtitle">GitHub Pages + Supabase Edge Function + Postgres</p>
+      </div>
+      <div class="auth-panel" id="authPanel">
+        <span id="sessionStatus" class="badge muted">未登录</span>
+        <button id="logoutBtn" class="ghost hidden">退出</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="loginView" class="card login-card">
+        <h2>登录</h2>
+        <p class="hint">先用 Supabase Auth 里的账号登录。账号还要在 app_users 里登记为 active 才能操作。</p>
+        <label>邮箱
+          <input id="emailInput" type="email" placeholder="your@email.com" autocomplete="email" />
+        </label>
+        <label>密码
+          <input id="passwordInput" type="password" placeholder="Supabase Auth password" autocomplete="current-password" />
+        </label>
+        <div class="button-row">
+          <button id="loginBtn">登录</button>
+          <button id="signupBtn" class="secondary">注册 Auth 用户</button>
+        </div>
+        <pre id="loginLog" class="log"></pre>
+      </section>
+
+      <section id="mainView" class="hidden">
+        <nav class="tabs">
+          <button data-tab="dashboard" class="active">总览</button>
+          <button data-tab="characters">角色</button>
+          <button data-tab="parties">配队</button>
+          <button data-tab="versions">版本</button>
+          <button data-tab="resources">资源</button>
+          <button data-tab="settings">设置/测试</button>
+        </nav>
+
+        <section id="dashboard" class="tab-panel active">
+          <div class="grid2">
+            <div class="card">
+              <h2>系统状态</h2>
+              <button id="pingBtn">测试后端连接</button>
+              <pre id="pingResult" class="log"></pre>
+            </div>
+            <div class="card">
+              <h2>操作顺序</h2>
+              <ol class="steps">
+                <li>登录</li>
+                <li>设置/测试 → 测试后端连接</li>
+                <li>角色 → 搜索现有角色</li>
+                <li>新增测试角色</li>
+                <li>确认 Supabase 里数据已写入</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section id="characters" class="tab-panel">
+          <div class="toolbar card compact">
+            <input id="charKeyword" placeholder="搜索角色名 / 游戏 / 状态，例如 千咲" />
+            <input id="charGame" placeholder="游戏简称，例如 绝 / 鸣 / 崩" />
+            <button id="searchCharBtn">搜索角色</button>
+            <button id="newCharBtn" class="secondary">新增角色</button>
+          </div>
+          <div id="characterResults" class="list"></div>
+          <div id="characterEditor" class="card editor hidden"></div>
+        </section>
+
+        <section id="parties" class="tab-panel">
+          <div class="toolbar card compact">
+            <input id="partyKeyword" placeholder="搜索配队描述 / 成员" />
+            <input id="partyGame" placeholder="游戏简称" />
+            <button id="searchPartyBtn">搜索配队</button>
+            <button id="newPartyBtn" class="secondary">新增配队</button>
+          </div>
+          <div id="partyResults" class="list"></div>
+          <div id="partyEditor" class="card editor hidden"></div>
+        </section>
+
+        <section id="versions" class="tab-panel">
+          <div class="toolbar card compact">
+            <input id="versionKeyword" placeholder="搜索版本 / 卡池角色" />
+            <input id="versionGame" placeholder="游戏简称" />
+            <button id="searchVersionBtn">搜索版本</button>
+            <button id="newVersionBtn" class="secondary">新增版本</button>
+          </div>
+          <div id="versionResults" class="list"></div>
+          <div id="versionEditor" class="card editor hidden"></div>
+        </section>
+
+        <section id="resources" class="tab-panel">
+          <div class="toolbar card compact">
+            <input id="resourceKeyword" placeholder="搜索链接标题 / URL / 备注" />
+            <button id="searchResourceBtn">搜索资源</button>
+          </div>
+          <div id="resourceResults" class="list"></div>
+        </section>
+
+        <section id="settings" class="tab-panel">
+          <div class="card">
+            <h2>当前配置</h2>
+            <pre id="configView" class="log"></pre>
+            <button id="runSmokeTestBtn">运行烟雾测试</button>
+            <pre id="smokeResult" class="log"></pre>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+project_id = "gameup-command-center"
+
+[functions.gameup-api]
+verify_jwt = false

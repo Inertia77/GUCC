@@ -141,43 +141,44 @@
       <div class="eyebrow">GameUp Command Center</div>
       <h1>GUCC Portal</h1>
       <p class="subtitle">
-        这里是 GUCC 的总入口。旧静态工具继续保留，新数据库管理系统独立放在
-        <code>apps/gameup-command-center/</code>，避免互相打架。各司其职，天下太平。
+        这里是 GUCC 的总入口。视频项目工作台与数据库管理系统分别放在
+        <code>apps/video-workspace/</code> 和 <code>apps/command-center/</code>，
+        各自保持稳定入口。
       </p>
     </header>
 
     <section class="grid">
-      <a class="card" href="./apps/gameup-command-center/">
+      <a class="card" href="./apps/command-center/">
         <span class="tag">Database App</span>
         <h2>GameUp Command Center</h2>
         <p>新版 Supabase 数据库管理前端。用于查询、管理角色、配队、版本、资源链接等数据。</p>
       </a>
 
-      <a class="card" href="./CUCC_index_v3.8.7.html">
-        <span class="tag">Legacy</span>
-        <h2>CUCC v3.8.7</h2>
-        <p>旧版静态首页。暂时保持原路径，保证现有功能不受影响。</p>
+      <a class="card" href="./apps/video-workspace/">
+        <span class="tag">Creator App</span>
+        <h2>GUCC WorkSpace</h2>
+        <p>视频项目模板工作台。浏览器自动保存，支持 WIP / DONE Markdown 与 JSON 导出、导入和跨版本恢复。</p>
       </a>
 
-      <a class="card" href="./BackupFromOld/Tool_Covers/CoverGenerator.html">
+      <a class="card" href="./apps/cover-generator/">
         <span class="tag">Tool</span>
         <h2>Cover Generator</h2>
-        <p>旧封面生成工具。相关图片素材仍在 BackupFromOld/Static 下，暂不移动。</p>
+        <p>多比例视频封面生成器。共享背景、参考图和 Photoshop 模板统一放在 assets/creative/。</p>
       </a>
 
-      <a class="card" href="./Query_Manual/gameup_query_manual_simple.md">
+      <a class="card" href="./reference/query-guides/query-manual.md">
         <span class="tag">Manual</span>
         <h2>Query Manual</h2>
         <p>查询手册与常用 SQL 思路文档。Markdown 在浏览器中可能显示为纯文本，这是正常的。</p>
       </a>
 
-      <a class="card" href="./Data/DB_Structure.md">
+      <a class="card" href="./data/schema.md">
         <span class="tag">Data</span>
         <h2>DB Structure</h2>
         <p>原始数据库结构说明和 CSV 数据源。当前作为资料保留，不作为前端运行依赖。</p>
       </a>
 
-      <a class="card" href="./docs/setup_guide_v5.html">
+      <a class="card" href="./docs/supabase-setup.html">
         <span class="tag">Guide</span>
         <h2>v5 Setup Guide</h2>
         <p>Supabase Edge Function、GitHub Pages、前端配置、本地测试等部署指南。</p>
@@ -190,7 +191,7 @@
     </div>
 
     <footer>
-      GUCC local portal. Keep old tools stable first, then refactor slowly.
+      GUCC local portal. Stable paths, versioned data, separate apps.
     </footer>
   </main>
 </body>

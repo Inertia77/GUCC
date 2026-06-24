@@ -1,4 +1,6 @@
-Temp/
+tmp/
+.cache/
+downloads/
 *.log
 .env
 .env.local

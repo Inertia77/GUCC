@@ -1,4 +1,4 @@
-project_id = "gameup-command-center"
+project_id = "gucc-command-center"
 
 [functions.gameup-api]
 verify_jwt = false

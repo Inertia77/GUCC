@@ -1,0 +1,3654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INERTIA Project Forge v3.8.9｜Legacy compatibility</title>
+<style>
+
+:root{
+  --bg:#f5f6f8;
+  --bg2:#eef1f5;
+  --panel:#fbfbfc;
+  --panel2:#f7f8fa;
+  --ink:#2f353f;
+  --ink2:#596170;
+  --muted:#7b8594;
+  --line:#dfe4ea;
+  --line2:#e8ecf1;
+  --shadow:0 10px 24px rgba(23,34,48,.06);
+  --shadow-soft:0 4px 12px rgba(23,34,48,.04);
+
+  /* five-game quiet accents */
+  --ww:#607f95;   /* 鸣潮 */
+  --zzz:#7c6f9f;  /* 绝区零 */
+  --hsr:#6c84b9;  /* 崩铁 */
+  --enf:#7d8a67;  /* 终末地 */
+  --nte:#8d726d;  /* 异环 */
+
+  --accent:#68788f;
+  --accent2:#8a98ab;
+  --ok:#4f8b63;
+  --warn:#ce8252;
+  --danger:#c55f6a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;
+  color:var(--ink);
+  line-height:1.6;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,249,251,.94)),
+    linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%);
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;
+  background:
+    linear-gradient(rgba(115,129,148,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(115,129,148,.03) 1px,transparent 1px);
+  background-size: 28px 28px;
+}
+.page{width:min(1400px,calc(100% - 28px));margin:16px auto 44px}
+.hero,.card,.dock,.output,.toast{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  box-shadow:var(--shadow);
+  border-radius:18px;
+}
+.hero{
+  padding:22px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.hero:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--ww),var(--zzz),var(--hsr),var(--enf),var(--nte));
+  opacity:.8;
+}
+.eyebrow{
+  display:inline-flex;gap:8px;align-items:center;
+  border:1px solid var(--line);
+  background:#f3f5f8;
+  color:#58606f;border-radius:999px;padding:6px 11px;
+  font-size:12px;font-weight:800;letter-spacing:.04em;
+}
+h1{font-size:30px;line-height:1.15;margin:10px 0 6px;letter-spacing:.01em}
+h2{font-size:19px;margin:0 0 12px;display:flex;gap:10px;align-items:center}
+h3{font-size:15px;margin:0 0 8px}
+p{margin:6px 0}
+.sub{max-width:980px;color:var(--ink2)}
+.grid2{display:grid;grid-template-columns:1.12fr .88fr;gap:14px;margin-top:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px}
+.card{
+  padding:16px 16px 14px;
+  position:relative;
+  overflow:hidden;
+}
+.card:before{
+  content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;
+  border-radius:99px;background:var(--accent2);opacity:.85;
+}
+.card:nth-of-type(1):before{background:var(--ww)}
+.card:nth-of-type(2):before{background:var(--zzz)}
+.card:nth-of-type(3):before{background:var(--hsr)}
+.card:nth-of-type(4):before{background:var(--enf)}
+.card:nth-of-type(5):before{background:var(--nte)}
+.idx{
+  display:inline-grid;place-items:center;width:28px;height:28px;border-radius:10px;
+  background:#eef2f6;color:#5d6877;border:1px solid var(--line);
+  font-weight:800;font-size:13px;box-shadow:none;
+}
+.field{margin:7px 0}
+.title-full{grid-column:1/-1}
+.project-title-input{
+  min-height:74px;
+  font-size:17px;
+  font-weight:700;
+  line-height:1.45;
+  padding:14px 16px;
+}
+.project-title-input::placeholder{font-weight:600;color:#9aa3af}
+label{
+  display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:5px;
+  letter-spacing:.01em;
+}
+input,select,textarea{
+  width:100%;border:1px solid var(--line);background:#fcfcfd;color:var(--ink);
+  border-radius:14px;padding:10px 12px;font:inherit;outline:none;
+  transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{
+  border-color:#a8b4c5;
+  box-shadow:0 0 0 3px rgba(106,123,147,.12);
+  background:white;
+}
+textarea.big{min-height:240px}
+textarea.mid{min-height:145px}
+.tag{
+  display:inline-block;border:1px solid var(--line);
+  background:#f4f6f8;border-radius:999px;padding:4px 8px;font-size:12px;
+  margin:2px;color:#606a79;font-weight:700;
+}
+.hero-note{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.warn{color:var(--warn);font-weight:800}
+.ok{color:var(--ok);font-weight:800}
+.blue{color:#52719b;font-weight:800}
+button{
+  border:1px solid var(--line);background:#f6f8fb;color:#44505f;
+  border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;box-shadow:var(--shadow-soft);
+}
+button:hover{background:#ffffff;transform:translateY(-1px)}
+button.secondary{background:#eef3f8;color:#48576b}
+button.mint{background:#eff6f1;color:#456757}
+button.ghost{background:white;color:#5f6977;box-shadow:none}
+button.danger{background:#f9eef0;color:#9b4d5d}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.dock{
+  position:sticky;bottom:10px;z-index:30;margin-top:14px;padding:10px 12px;
+  display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  background:rgba(251,251,252,.92);
+  backdrop-filter:blur(8px);
+}
+.status{font-size:13px;color:var(--muted)}
+.output{
+  display:none;white-space:pre-wrap;background:#fbfcfd;padding:12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",monospace;
+  color:#404a57;overflow:auto;margin-top:10px;max-height:420px;
+}
+.checklist{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px;
+}
+.checklist label{
+  display:flex;gap:8px;align-items:center;color:#4d5665;font-size:14px;margin:5px 0;
+  background:#fafbfc;border:1px solid var(--line2);border-radius:12px;padding:8px 10px;
+}
+.checklist input{width:auto}
+.progressbox{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);
+  background:#f8fafb;border-radius:14px;margin-top:12px;
+}
+.bar{height:10px;background:#e9edf2;border-radius:999px;overflow:hidden;flex:1}
+.bar span{
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--ww),var(--zzz),var(--hsr),var(--enf),var(--nte));
+  border-radius:999px;transition:.25s
+}
+.fileline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=file]{padding:8px;background:#fafbfd}
+hr{border:0;border-top:1px solid var(--line);margin:10px 0}
+.tiny{font-size:12px;color:var(--muted)}
+.toast{
+  position:fixed;right:16px;top:16px;z-index:99;padding:10px 12px;display:none;
+  background:rgba(251,252,253,.95);
+  color:#44505f;
+}
+kbd{background:#f1f4f6;border:1px solid var(--line);border-radius:7px;padding:1px 6px;font-size:12px}
+#statusText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
+
+/* v3.3 mobile and structure editor */
+.sections-editor{display:grid;gap:12px}
+.section-row{
+  border:1px solid var(--line2);
+  background:#fbfcfd;
+  border-radius:16px;
+  padding:12px;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.section-title-badge{
+  font-size:12px;
+  font-weight:900;
+  color:#5f6977;
+  background:#eef2f6;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:4px 8px;
+}
+.section-grid{
+  display:grid;
+  grid-template-columns:1.2fr .55fr;
+  gap:10px;
+}
+.section-row textarea{min-height:100px}
+textarea{
+  overflow:hidden;
+}
+.mobile-save-fab{
+  display:none;
+  position:fixed;
+  right:14px;
+  bottom:18px;
+  z-index:60;
+  border-radius:999px;
+  padding:10px 14px;
+  box-shadow:0 10px 26px rgba(23,34,48,.16);
+  opacity:.92;
+}
+.mobile-save-fab:active{transform:scale(.98)}
+
+
+/* v3.4 module clarity + rich editor */
+.card{
+  border:2px solid #d6e0ea;
+  background:linear-gradient(180deg,#ffffff,#f8fafc);
+  box-shadow:0 8px 20px rgba(23,34,48,.055);
+}
+.card:before{left:0;right:0;top:0;height:4px;width:auto;bottom:auto;border-radius:0;background:var(--module,#8a98ab);opacity:.9}
+.card-00{--module:var(--ww);border-color:rgba(96,127,149,.45)}
+.card-ai{--module:var(--zzz);border-color:rgba(124,111,159,.45)}
+.card-01{--module:var(--ww);border-color:rgba(96,127,149,.38)}
+.card-02{--module:var(--hsr);border-color:rgba(108,132,185,.38)}
+.card-03{--module:var(--zzz);border-color:rgba(124,111,159,.40)}
+.card-04{--module:var(--nte);border-color:rgba(141,114,109,.38)}
+.card-05{--module:var(--enf);border-color:rgba(125,138,103,.42)}
+.card-06{--module:var(--hsr);border-color:rgba(108,132,185,.38)}
+.card-07{--module:var(--enf);border-color:rgba(125,138,103,.38)}
+.card-08{--module:var(--nte);border-color:rgba(141,114,109,.36)}
+.richbox{
+  width:100%;min-height:84px;border:1px solid var(--line);background:#fcfcfd;color:var(--ink);
+  border-radius:14px;padding:10px 12px;font:inherit;outline:none;white-space:pre-wrap;overflow-wrap:anywhere;
+  transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.richbox:focus{border-color:#a8b4c5;box-shadow:0 0 0 3px rgba(106,123,147,.12);background:white}
+.richbox:empty:before{content:attr(data-placeholder);color:#9aa3af;pointer-events:none}
+.richbox.big{min-height:240px}.richbox.mid{min-height:145px}.richbox.project-title-input{min-height:88px;font-size:17px;font-weight:700;line-height:1.45;padding:14px 16px}
+.richbox a{color:#315f9a;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;background:rgba(85,139,190,.10);border-radius:5px;padding:0 2px}
+.section-content-box{min-height:104px}
+.inline-result{display:none;margin-top:10px;border:1px solid var(--line);background:#f8fafc;border-radius:14px;padding:10px 12px;color:#4d5665;font-size:14px}
+.inline-result.show{display:block}
+input[type=file]{display:none!important}
+.mobile-float{display:none}
+
+@media(max-width:1160px){
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:980px){
+  .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  .checklist{grid-template-columns:1fr}
+  h1{font-size:25px}
+  .hero{padding:18px}
+  .page{width:min(100% - 16px,1400px)}
+  .dock{position:static}
+  #statusText{max-width:100%}
+  textarea{
+    resize:none;
+    min-height:118px;
+    font-size:16px;
+    line-height:1.7;
+  }
+  textarea.big{min-height:300px}
+  textarea.mid{min-height:170px}
+  .project-title-input{min-height:92px;font-size:18px}
+  .section-grid{grid-template-columns:1fr}
+  .section-row textarea{min-height:130px}
+  .mobile-float{display:flex}
+}
+@media(max-width:980px){
+  .mobile-float{position:fixed;right:14px;bottom:14px;z-index:80;gap:8px;align-items:center}
+  .mobile-float button{padding:9px 11px;border-radius:999px;background:rgba(246,248,251,.94);backdrop-filter:blur(8px);box-shadow:0 8px 18px rgba(23,34,48,.12)}
+}
+@media print{
+  .dock,.no-print{display:none!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card,.hero{break-inside:avoid}
+}
+
+
+/* v3.8.9 fixes: clearer modules, resizable desktop editors, clearer duration result */
+.card{
+  border-width:2px;
+  border-style:solid;
+  border-color:rgba(104,137,160,.52);
+  box-shadow:0 8px 22px rgba(23,34,48,.065);
+}
+.card-00{
+  --module:var(--ww);
+  border-color:rgba(96,127,149,.76);
+  box-shadow:0 8px 22px rgba(96,127,149,.09);
+}
+.card-ai{
+  --module:var(--zzz);
+  border-color:rgba(124,111,159,.76);
+  box-shadow:0 8px 22px rgba(124,111,159,.09);
+}
+.card-01,.card-02,.card-03,.card-04,.card-05,.card-06,.card-07,.card-08{
+  --module:#6f8fa6;
+  border-color:rgba(111,143,166,.62);
+}
+.card-01:before,.card-02:before,.card-03:before,.card-04:before,.card-05:before,.card-06:before,.card-07:before,.card-08:before{
+  background:#6f8fa6;
+}
+.richbox{
+  resize:vertical;
+  overflow:auto;
+}
+.richbox a{
+  cursor:pointer;
+}
+.output{
+  resize:vertical;
+  min-height:160px;
+}
+textarea[readonly]{
+  resize:vertical;
+  overflow:auto;
+}
+.inline-result{
+  display:block;
+  border-color:rgba(111,143,166,.38);
+  background:#f6f9fb;
+  font-weight:800;
+}
+.inline-result:before{
+  content:"⏱ ";
+}
+@media(max-width:980px){
+  .richbox{
+    resize:none;
+    overflow:visible;
+  }
+  .output{
+    resize:none;
+  }
+}
+
+
+/* v3.8.9: navigation, module borders, input-role visual language */
+.section-nav{
+  position:sticky;
+  top:0;
+  z-index:75;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding:10px 10px;
+  margin:12px 0 14px;
+  border:2px solid #d7e0e8;
+  border-radius:18px;
+  background:rgba(250,252,253,.94);
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 20px rgba(23,34,48,.065);
+  scrollbar-width:thin;
+}
+.section-nav a{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  text-decoration:none;
+  color:#465262;
+  border:1px solid #dce4eb;
+  background:#fff;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:13px;
+  font-weight:800;
+}
+.section-nav a:hover{background:#f3f7fa;border-color:#9fb4c2}
+.section-nav a.active{background:#eaf2f6;border-color:#6f91a4;color:#365b70}
+.section-nav b{color:#55748a}
+.nav-hint{
+  color:#75818f;
+  font-size:12px;
+  font-weight:800;
+  padding:0 6px;
+}
+.card{scroll-margin-top:82px}
+/* real full-border colors; more explicit than previous versions */
+.card.card-00{
+  --module:#557c93!important;
+  border:3px solid #557c93!important;
+  box-shadow:0 8px 22px rgba(85,124,147,.13)!important;
+}
+.card.card-ai{
+  --module:#7b6aa2!important;
+  border:3px solid #7b6aa2!important;
+  box-shadow:0 8px 22px rgba(123,106,162,.13)!important;
+}
+.card.card-01,.card.card-02,.card.card-03,.card.card-04,.card.card-05,.card.card-06,.card.card-07,.card.card-08{
+  --module:#6f91a4!important;
+  border:2.5px solid #6f91a4!important;
+  box-shadow:0 8px 22px rgba(111,145,164,.10)!important;
+}
+.card.card-00 h2{color:#314d5e}
+.card.card-ai h2{color:#4d416a}
+.card.card-01 h2,.card.card-02 h2,.card.card-03 h2,.card.card-04 h2,.card.card-05 h2,.card.card-06 h2,.card.card-07 h2,.card.card-08 h2{color:#39596b}
+.card h2{
+  padding-bottom:9px;
+  border-bottom:1px solid rgba(112,132,150,.18);
+}
+.role-badge{
+  display:inline-flex;
+  align-items:center;
+  margin-left:7px;
+  padding:2px 7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.02em;
+  vertical-align:middle;
+  border:1px solid transparent;
+}
+.role-badge.user{background:#edf5f8;color:#416a80;border-color:#cfe0e8}
+.role-badge.ai{background:#f2eff8;color:#675489;border-color:#ddd3ef}
+.role-badge.auto{background:#f1f3f5;color:#6a7380;border-color:#dfe4e8}
+.role-badge.choice{background:#f2f6ef;color:#5f7554;border-color:#dce8d6}
+.role-badge.optional{background:#faf4ed;color:#8a664c;border-color:#ead7c8}
+.field.role-user input,.field.role-user select,.field.role-user textarea,.field.role-user .richbox{
+  border-left:5px solid #6f91a4!important;
+  background:#ffffff;
+}
+.field.role-ai textarea,.field.role-ai input,.field.role-ai .richbox{
+  border-left:5px solid #7b6aa2!important;
+  background:#fbfaff;
+}
+.field.role-auto input,.field.role-auto textarea,.field.role-auto .richbox{
+  border-left:5px solid #9aa4ae!important;
+  background:#f4f6f8!important;
+  color:#5d6875;
+}
+.field.role-choice select,.field.role-choice input{
+  border-left:5px solid #7d8a67!important;
+  background:#fcfdfb;
+}
+.field.role-optional input,.field.role-optional textarea,.field.role-optional .richbox{
+  border-left:5px solid #c9a98e!important;
+}
+.field.role-ai label,.field.role-auto label,.field.role-user label,.field.role-choice label,.field.role-optional label{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:2px;
+}
+.role-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:8px 0 4px;
+}
+.role-legend span{
+  border:1px solid #dce4eb;
+  background:#fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+  color:#5c6674;
+  font-weight:800;
+}
+@media(max-width:980px){
+  .section-nav{
+    top:0;
+    margin:8px 0 12px;
+    padding:8px;
+    border-radius:15px;
+  }
+  .section-nav a{font-size:12px;padding:7px 9px}
+  .nav-hint{display:none}
+  .card{scroll-margin-top:74px}
+}
+
+
+/* v3.6 structure editor rewrite */
+.structure-toolbar{
+  display:grid;
+  grid-template-columns:minmax(220px,320px) 1fr;
+  gap:12px;
+  align-items:end;
+  margin:10px 0 12px;
+}
+.structure-summary{
+  border:1px solid var(--line);
+  background:#f7f9fb;
+  border-radius:14px;
+  padding:10px 12px;
+  color:#596575;
+  font-size:13px;
+  font-weight:800;
+}
+.structure-preview-title{
+  margin-top:12px;
+  color:#657385;
+  font-weight:900;
+  font-size:13px;
+}
+.section-row{
+  border:2px solid rgba(111,143,166,.34);
+  background:linear-gradient(180deg,#ffffff,#fbfcfd);
+  border-radius:18px;
+  padding:13px;
+  box-shadow:0 4px 14px rgba(23,34,48,.035);
+}
+.section-row + .section-row{margin-top:12px}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+}
+.section-title-badge{
+  font-size:12px;
+  font-weight:900;
+  color:#526071;
+  background:#eef3f7;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 9px;
+}
+.section-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.section-actions button{padding:6px 9px;font-size:12px;border-radius:10px;box-shadow:none}
+.section-grid-main{
+  display:grid;
+  grid-template-columns:minmax(160px,.75fr) minmax(240px,1.35fr) minmax(120px,.45fr) minmax(110px,.4fr);
+  gap:10px;
+}
+.section-grid-two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.section-role-input{font-weight:800}
+.section-goal-input{min-height:68px}
+.section-content-input{min-height:115px}
+.section-visual-input{min-height:92px}
+.section-transition-input{min-height:70px}
+.structure-note{
+  color:#6d7888;
+  font-size:12px;
+  margin-top:4px;
+}
+@media(max-width:980px){
+  .structure-toolbar,.section-grid-main,.section-grid-two{grid-template-columns:1fr}
+  .section-actions{justify-content:flex-start}
+}
+
+
+/* v3.8.9: icon-only role badges across all sections */
+.role-badge{
+  justify-content:center;
+  min-width:22px;
+  height:22px;
+  padding:0 5px!important;
+  font-size:12px!important;
+  line-height:1;
+  margin-left:6px!important;
+}
+.field.role-user label,.field.role-ai label,.field.role-auto label,.field.role-choice label,.field.role-optional label{
+  gap:6px!important;
+}
+
+
+/* v3.8.9: status module and structure mini navigation */
+.card.card-status{
+  --module:#6f7f8f!important;
+  border:2.5px solid #6f7f8f!important;
+  box-shadow:0 8px 22px rgba(111,127,143,.10)!important;
+}
+.card.card-status h2{color:#3f5365}
+.status-board{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+}
+.status-board label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border:1px solid #dce4eb;
+  border-radius:14px;
+  background:#fbfcfd;
+  color:#465262;
+  font-weight:800;
+  font-size:14px;
+}
+.status-board input{width:auto}
+.status-note{
+  margin-top:10px;
+  color:#75818f;
+  font-size:12px;
+}
+.structure-mini-nav{
+  position:sticky;
+  top:62px;
+  z-index:60;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding:9px 10px;
+  margin:10px 0 12px;
+  border:2px solid rgba(111,145,164,.38);
+  border-radius:16px;
+  background:rgba(250,252,253,.96);
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 18px rgba(23,34,48,.055);
+  scrollbar-width:thin;
+}
+.structure-mini-nav .mini-title{
+  color:#5b6878;
+  font-size:12px;
+  font-weight:900;
+  padding:0 4px;
+}
+.structure-mini-nav button{
+  box-shadow:none;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#fff;
+  color:#465262;
+  border:1px solid #dce4eb;
+  font-size:12px;
+}
+.structure-mini-nav button:hover{
+  background:#eef5f8;
+  border-color:#8aa9ba;
+}
+.structure-preset-field select{
+  cursor:pointer;
+}
+@media(max-width:980px){
+  .status-board{grid-template-columns:1fr 1fr}
+  .structure-mini-nav{top:0}
+}
+
+
+/* v3.8.9: compact desktop, highlighted frequent actions, floating structure nav */
+@media(min-width:981px){
+  body{font-size:15px}
+  .page{width:min(1500px,calc(100% - 20px));margin:10px auto 104px}
+  .hero{padding:16px 18px}
+  h1{font-size:25px;margin:7px 0 4px}
+  h2{font-size:18px;margin-bottom:9px}
+  .sub{font-size:14px}
+  .card{padding:14px}
+  .grid2{grid-template-columns:minmax(0,1fr) minmax(0,.90fr);gap:12px;margin-top:12px}
+  .grid3{gap:12px;margin-top:12px}
+  .grid4{grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px}
+  input,select,textarea,.richbox{font-size:14px;padding:9px 10px}
+  textarea.big{min-height:210px}
+  textarea.mid{min-height:126px}
+  .section-nav{padding:6px 8px;margin:8px 0 10px}
+  .section-nav a{padding:6px 9px;font-size:12px}
+  .nav-hint{font-size:12px}
+  button{padding:8px 10px;font-size:13px}
+  .dock{padding:8px 10px}
+}
+body{padding-bottom:74px}
+button.hot-action{
+  border:2px solid rgba(111,143,166,.72)!important;
+  background:#f5f9fb!important;
+  color:#365b70!important;
+  box-shadow:0 0 0 3px rgba(111,143,166,.10), 0 6px 14px rgba(23,34,48,.055)!important;
+}
+button.hot-action:hover{
+  background:#ffffff!important;
+  border-color:#547c94!important;
+}
+.status-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:8px 0 12px;
+}
+.structure-floating-nav{
+  position:fixed;
+  right:18px;
+  bottom:82px;
+  z-index:92;
+  display:none;
+  max-width:min(760px,calc(100vw - 36px));
+  overflow-x:auto;
+  white-space:nowrap;
+  gap:8px;
+  align-items:center;
+  padding:8px 10px;
+  border:2px solid rgba(111,145,164,.56);
+  border-radius:16px;
+  background:rgba(250,252,253,.97);
+  backdrop-filter:blur(12px);
+  box-shadow:0 12px 28px rgba(23,34,48,.12);
+  scrollbar-width:thin;
+}
+.structure-floating-nav.show{display:flex}
+.structure-floating-nav .mini-title{
+  color:#466577;
+  font-size:12px;
+  font-weight:900;
+  padding:0 4px;
+}
+.structure-floating-nav button{
+  box-shadow:none;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#fff;
+  color:#465262;
+  border:1px solid #dce4eb;
+  font-size:12px;
+}
+.structure-floating-nav button:hover{
+  background:#eef5f8;
+  border-color:#8aa9ba;
+}
+@media(max-width:980px){
+  body{padding-bottom:78px}
+  .structure-floating-nav{
+    left:10px;
+    right:10px;
+    bottom:72px;
+    max-width:calc(100vw - 20px);
+  }
+  button.hot-action{
+    border-width:2px!important;
+  }
+}
+
+
+/* v3.8.9: Android local-file prompt display and short title deletion fix */
+#aiOutput{
+  min-height:220px;
+  -webkit-user-select:text;
+  user-select:text;
+  touch-action:auto;
+}
+@media(max-width:980px){
+  #aiOutput{
+    min-height:280px;
+    max-height:55vh;
+    font-size:13px;
+  }
+}
+
+
+/* v3.8.9: prompt output selectable, AI structure import box */
+.prompt-output{
+  width:100%;
+  cursor:text;
+  user-select:text;
+  -webkit-user-select:text;
+}
+.prompt-output:focus{
+  border-color:#7c6f9f;
+  box-shadow:0 0 0 3px rgba(124,111,159,.13);
+  background:#fff;
+}
+.ai-structure-import{
+  border:2px dashed rgba(124,111,159,.35);
+  border-radius:16px;
+  background:#fbfcfd;
+  padding:10px 12px;
+  margin:10px 0 12px;
+}
+.ai-structure-import[open]{
+  border-style:solid;
+  box-shadow:0 8px 18px rgba(23,34,48,.045);
+}
+.ai-structure-import summary{
+  cursor:pointer;
+  font-weight:900;
+  color:#43546a;
+  list-style:none;
+}
+.ai-structure-import summary::-webkit-details-marker{display:none}
+.ai-structure-paste{
+  width:100%;
+  min-height:180px;
+  resize:vertical;
+  margin-top:8px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",monospace;
+  font-size:13px;
+}
+@media(max-width:980px){
+  .ai-structure-paste{min-height:220px}
+}
+
+
+/* v3.8.9: temporary local draft panel, stronger action grouping, jump offset fix */
+.reference-panel{
+  display:none;
+  margin:10px 0 12px;
+  padding:12px;
+  border:2px dashed rgba(111,145,164,.55);
+  border-radius:16px;
+  background:#f8fbfc;
+}
+.reference-panel.show{display:block}
+.reference-panel .ref-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.reference-panel .ref-title{
+  font-weight:900;
+  color:#446275;
+}
+.reference-panel .ref-note{
+  color:#75818f;
+  font-size:12px;
+}
+.reference-panel pre{
+  margin:8px 0;
+  max-height:260px;
+  overflow:auto;
+  white-space:pre-wrap;
+  word-break:break-word;
+  border:1px solid #dce4eb;
+  border-radius:14px;
+  background:white;
+  padding:12px;
+  color:#3e4956;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",monospace;
+}
+button.action-save{
+  background:#eef8f0!important;
+  color:#376548!important;
+  border:2px solid rgba(79,139,99,.38)!important;
+}
+button.action-export-md{
+  background:#eef5fb!important;
+  color:#375d76!important;
+  border:2px solid rgba(85,124,147,.40)!important;
+}
+button.action-export-json{
+  background:#f1f0fa!important;
+  color:#5a4f82!important;
+  border:2px solid rgba(123,106,162,.40)!important;
+}
+button.action-import{
+  background:#fff7e8!important;
+  color:#74542a!important;
+  border:2px solid rgba(206,130,82,.55)!important;
+  box-shadow:0 0 0 3px rgba(206,130,82,.10), 0 6px 14px rgba(23,34,48,.055)!important;
+}
+button.action-link{
+  background:#eef8f8!important;
+  color:#3f6c72!important;
+  border:2px solid rgba(83,142,150,.50)!important;
+  box-shadow:0 0 0 3px rgba(83,142,150,.10), 0 6px 14px rgba(23,34,48,.055)!important;
+}
+button.action-copy{
+  background:#f7f8fa!important;
+  color:#4c5664!important;
+  border:2px solid rgba(126,137,151,.30)!important;
+}
+button.action-ai{
+  background:#f1eff8!important;
+  color:#554876!important;
+  border:2px solid rgba(123,106,162,.36)!important;
+}
+button.action-draft{
+  background:#fffaf0!important;
+  color:#725b30!important;
+  border:2px solid rgba(206,130,82,.38)!important;
+}
+button.action-util{
+  background:#f6f7f9!important;
+  color:#53606e!important;
+  border:2px solid rgba(126,137,151,.24)!important;
+}
+button.action-danger{
+  background:#fbf0f2!important;
+  color:#9b4d5d!important;
+  border:2px solid rgba(197,95,106,.34)!important;
+}
+.action-divider{
+  width:1px;
+  align-self:stretch;
+  min-height:28px;
+  background:#dfe6ec;
+  margin:0 2px;
+}
+.file-preview-line{
+  display:block;
+  line-height:1.75;
+}
+.file-preview-line b{
+  color:#44566a;
+}
+
+
+/* v3.8.9: compact bottom operation bar */
+.dock{
+  padding:7px 10px!important;
+  border-radius:16px!important;
+  gap:8px!important;
+  min-height:auto!important;
+}
+.dock .status,
+#statusText{
+  font-size:12px!important;
+  line-height:1.25!important;
+  color:#748193!important;
+}
+.dock .btns{
+  gap:6px!important;
+}
+.dock button{
+  font-size:12px!important;
+  line-height:1.15!important;
+  padding:7px 10px!important;
+  border-radius:11px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+}
+.dock button.hot-action{
+  box-shadow:0 0 0 2px rgba(111,143,166,.08), 0 4px 10px rgba(23,34,48,.045)!important;
+}
+@media(min-width:981px){
+  .dock{
+    left:12px;
+    right:12px;
+    margin-left:auto;
+    margin-right:auto;
+    max-width:calc(100% - 24px);
+  }
+  .dock .status{
+    max-width:360px!important;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+}
+@media(max-width:980px){
+  .dock{
+    padding:6px 8px!important;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+  }
+  .dock .status{
+    display:none!important;
+  }
+  .dock .btns{
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+    width:100%;
+    padding-bottom:2px;
+  }
+  .dock button{
+    font-size:12px!important;
+    padding:7px 9px!important;
+  }
+}
+
+
+/* v3.8.9: extra compact desktop dock + mobile export/import quick actions */
+.dock{
+  padding:5px 8px!important;
+  border-radius:14px!important;
+  gap:6px!important;
+}
+.dock .btns{gap:4px!important}
+.dock button{
+  font-size:11px!important;
+  line-height:1.05!important;
+  padding:5px 8px!important;
+  border-radius:9px!important;
+  min-height:30px!important;
+  letter-spacing:0!important;
+}
+.dock .action-divider{
+  min-height:22px!important;
+  margin:0 1px!important;
+}
+@media(min-width:981px){
+  .dock .status{
+    max-width:300px!important;
+    font-size:11px!important;
+  }
+}
+.mobile-export-sheet{
+  display:none;
+}
+@media(max-width:980px){
+  .mobile-float{
+    left:10px!important;
+    right:10px!important;
+    bottom:10px!important;
+    justify-content:center!important;
+    gap:7px!important;
+    z-index:95!important;
+    pointer-events:auto;
+  }
+  .mobile-float button{
+    font-size:12px!important;
+    padding:8px 10px!important;
+    min-width:52px;
+  }
+  .mobile-export-sheet{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:62px;
+    z-index:96;
+    display:none;
+    padding:12px;
+    border:2px solid rgba(111,143,166,.48);
+    border-radius:18px;
+    background:rgba(251,252,253,.98);
+    backdrop-filter:blur(12px);
+    box-shadow:0 16px 34px rgba(23,34,48,.16);
+  }
+  .mobile-export-sheet.show{display:block}
+  .mobile-export-sheet .sheet-title{
+    font-size:13px;
+    font-weight:900;
+    color:#465262;
+    margin-bottom:9px;
+  }
+  .mobile-export-sheet .sheet-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .mobile-export-sheet button{
+    font-size:13px!important;
+    padding:9px 10px!important;
+    border-radius:12px!important;
+  }
+  .mobile-export-sheet .sheet-cancel{
+    width:100%;
+    margin-top:8px;
+    background:#f6f7f9!important;
+    color:#53606e!important;
+    border:1px solid rgba(126,137,151,.24)!important;
+  }
+}
+
+
+/* v3.8.9: cleaner project control layout + stricter editable link UX */
+.control-card{
+  padding:18px!important;
+}
+.control-layout{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.control-title-block{
+  padding:12px;
+  border:1px solid rgba(96,127,149,.22);
+  border-radius:16px;
+  background:linear-gradient(180deg,#fbfdfe,#f8fbfd);
+}
+.control-title-block .field{margin:0}
+.control-title-block .tiny{margin-top:8px}
+.control-section{
+  padding:12px;
+  border:1px solid rgba(126,137,151,.20);
+  border-radius:16px;
+  background:#fbfcfd;
+}
+.control-section-title{
+  font-size:12px;
+  font-weight:900;
+  color:#607084;
+  margin-bottom:8px;
+  letter-spacing:.03em;
+}
+.control-grid{
+  display:grid;
+  gap:10px 12px;
+  align-items:start;
+}
+.control-grid-3{grid-template-columns:1fr 1.25fr 1fr}
+.control-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.control-grid-naming{grid-template-columns:1fr 1.25fr 1.25fr .9fr}
+.control-grid .field{margin:0}
+.control-grid .tiny{
+  margin-top:6px;
+  font-size:11px;
+  line-height:1.45;
+}
+.control-naming{
+  background:linear-gradient(180deg,#fbfcfd,#f7fafc);
+  border-color:rgba(96,127,149,.28);
+}
+.control-naming-actions{
+  margin-top:10px;
+}
+.control-bottom-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.control-bottom-grid .field{margin:0}
+#sec-00 input,
+#sec-00 select,
+#sec-00 .richbox{
+  min-height:48px;
+}
+#sec-00 .project-title-input{
+  min-height:88px;
+  font-size:17px;
+}
+@media(max-width:1160px){
+  .control-grid-3,.control-grid-4,.control-grid-naming{grid-template-columns:1fr 1fr}
+  .control-bottom-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .control-card{padding:14px!important}
+  .control-section,.control-title-block{padding:10px}
+  .control-grid-3,.control-grid-4,.control-grid-naming{grid-template-columns:1fr}
+}
+
+
+/* v3.8.9: file naming row alignment fix */
+.control-grid-naming{
+  align-items:start!important;
+}
+.control-grid-naming .field label{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-height:24px!important;
+  white-space:nowrap!important;
+  line-height:1.2!important;
+  margin-bottom:6px!important;
+}
+.control-grid-naming .field .role-badge{
+  flex:0 0 auto!important;
+  margin-left:4px!important;
+  transform:none!important;
+}
+.control-grid-naming input{
+  display:block!important;
+  width:100%!important;
+}
+.control-grid-naming .short-title-field .tiny{
+  margin-top:5px!important;
+  min-height:0!important;
+}
+@media(min-width:1161px){
+  .control-grid-naming{grid-template-columns:1fr 1.25fr 1.25fr .9fr!important;}
+}
+@media(max-width:1160px){
+  .control-grid-naming .field label{white-space:normal!important;}
+}
+
+
+/* v3.8.9: 00 project control alignment at 100% zoom */
+#sec-00 .control-section{
+  padding:14px 16px!important;
+}
+#sec-00 .control-grid{
+  gap:12px 14px!important;
+  align-items:start!important;
+}
+
+/* In the half-width desktop panel, 4 columns are too cramped.
+   Use stable 2-column groups for planning and filename blocks. */
+#sec-00 .control-grid-4,
+#sec-00 .control-grid-naming{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+
+/* Keep the basic attributes readable but not bloated */
+#sec-00 .control-grid-3{
+  grid-template-columns:.95fr 1.35fr .95fr!important;
+}
+
+/* Role icons should not push labels / inputs downward */
+#sec-00 .control-grid .field{
+  position:relative!important;
+  min-width:0!important;
+}
+#sec-00 .control-grid .field label{
+  display:block!important;
+  min-height:22px!important;
+  line-height:1.25!important;
+  margin-bottom:7px!important;
+  padding-right:34px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#sec-00 .control-grid .field .role-badge{
+  position:absolute!important;
+  top:-2px!important;
+  right:0!important;
+  margin:0!important;
+  transform:none!important;
+  z-index:2!important;
+}
+
+/* Make inputs visually equal height and aligned */
+#sec-00 .control-grid input,
+#sec-00 .control-grid select{
+  min-height:50px!important;
+  width:100%!important;
+}
+#sec-00 .control-grid .tiny{
+  min-height:0!important;
+  margin-top:6px!important;
+  padding-right:2px!important;
+}
+
+/* Button no longer sits like a brick under an uneven row */
+#sec-00 .control-naming-actions{
+  margin-top:12px!important;
+  display:flex!important;
+  justify-content:flex-start!important;
+}
+#sec-00 .control-naming-actions button{
+  padding:8px 12px!important;
+  min-height:34px!important;
+  font-size:12px!important;
+}
+
+/* Medium / mobile fallback */
+@media(max-width:1160px){
+  #sec-00 .control-grid-3,
+  #sec-00 .control-grid-4,
+  #sec-00 .control-grid-naming{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:700px){
+  #sec-00 .control-grid-3,
+  #sec-00 .control-grid-4,
+  #sec-00 .control-grid-naming{
+    grid-template-columns:1fr!important;
+  }
+}
+
+
+
+/* v3.8.9: newline-safe editors, compact generated boxes, collapsible regions */
+.card h2{position:relative;min-height:34px;}
+.collapse-toggle{margin-left:auto!important;flex:0 0 auto;padding:5px 9px!important;min-height:28px!important;border-radius:999px!important;font-size:12px!important;line-height:1!important;box-shadow:none!important;background:#fff!important;color:#566474!important;border:1px solid rgba(126,137,151,.36)!important;}
+.collapse-toggle:hover{background:#f2f6f8!important;border-color:#8aa9ba!important}
+.card.collapsed > :not(h2){display:none!important}
+.card.collapsed{padding-bottom:12px!important}
+.card.collapsed h2{margin-bottom:0!important;border-bottom:0!important;padding-bottom:0!important}
+.card.collapsed .collapse-toggle{background:#eef5f8!important;color:#365b70!important;border-color:#8aa9ba!important}
+.richbox{min-height:72px;white-space:pre-wrap;overflow-wrap:anywhere;}
+.richbox.mid{min-height:112px}.richbox.big{min-height:176px}
+.field.role-ai .richbox,.field.role-auto .richbox{height:112px;overflow:auto;resize:vertical;}
+.field.role-ai .richbox.mid{height:150px}.field.role-ai .richbox.big{height:230px}.field.role-auto .richbox{height:78px;resize:none}
+#sec-00 .project-title-input{min-height:76px!important;height:auto!important;resize:vertical;overflow:auto}
+#sec-00 .control-bottom-grid .richbox{min-height:72px;height:82px;overflow:auto;resize:vertical}
+#sec-02 [data-key="aiAnalysis"]{height:170px}#sec-04 [data-key="script"]{height:260px}#sec-06 [data-key="publishCN"]{height:170px}#sec-06 [data-key="publishTW"]{height:112px}#sec-06 [data-key="publishMulti"]{height:170px}
+.prompt-output,#aiOutput{display:none;height:240px;min-height:160px!important;max-height:56vh!important;overflow:auto!important;resize:vertical!important;}
+.ai-structure-paste{height:168px;min-height:120px!important;max-height:46vh;overflow:auto;}
+.output{min-height:118px!important;max-height:390px;overflow:auto;}
+textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!important;}
+.section-goal-input{min-height:64px!important;height:78px;overflow:auto;resize:vertical}.section-content-input{min-height:92px!important;height:112px;overflow:auto;resize:vertical}.section-visual-input{min-height:78px!important;height:92px;overflow:auto;resize:vertical}.section-transition-input{min-height:56px!important;height:68px;overflow:auto;resize:vertical}
+@media(max-width:980px){.collapse-toggle{font-size:12px!important;padding:6px 9px!important}.richbox{min-height:82px}.field.role-ai .richbox,.field.role-auto .richbox{resize:none;max-height:42vh}#sec-02 [data-key="aiAnalysis"]{height:180px}#sec-04 [data-key="script"]{height:260px;max-height:55vh}#sec-06 [data-key="publishCN"],#sec-06 [data-key="publishMulti"]{height:180px;max-height:48vh}#aiOutput{height:280px;max-height:58vh!important;resize:none!important}.ai-structure-paste{height:190px;max-height:50vh;resize:none}.section-goal-input,.section-content-input,.section-visual-input,.section-transition-input{resize:none;max-height:42vh}}
+
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div class="page">
+<section class="hero">
+  <span class="eyebrow">INERTIA Project Forge v3.8.9 · Prompt & Structure Import</span>
+  <h1>视频项目工作台</h1>
+  <p class="sub">本地 HTML 管理，阶段性导出文件保存到 Google Drive / 百度网盘 / 本地文件夹。导出文件自带模板版本、阶段属性、游戏代码和手写简易标题；换设备时导入继续工作。</p>
+  <div class="progressbox">
+    <strong>完成度</strong>
+    <div class="bar"><span id="progressBar"></span></div>
+    <strong id="progressText">0%</strong>
+  </div>
+  
+  <div class="hero-note">
+    <span class="tag">Quiet Mode</span>
+    <span class="tag">WW / ZZZ / HSR / ENF / NTE</span>
+    <span class="tag">低饱和 · 轻量 · 本地优先</span>
+  </div>
+
+  <div class="role-legend no-print">
+    <span>✍ 你需要填写</span>
+    <span>🤖 AI生成/粘贴</span>
+    <span>🔒 自动生成</span>
+    <span>▾ 选择/状态</span>
+    <span>◇ 可选补充</span>
+  </div>
+
+  <div class="btns no-print" style="margin-top:14px">
+    <button class="action-save" onclick="saveLocal()">保存到当前浏览器</button>
+    <button class="action-export-md" onclick="exportMarkdown('WIP')">导出 WIP Markdown</button>
+    <button class="action-export-json" onclick="exportProject('WIP')">导出 WIP JSON</button>
+    <button class="action-export-md" onclick="exportMarkdown('DONE')">导出 DONE Markdown</button>
+    <button class="action-export-json" onclick="exportProject('DONE')">导出 DONE JSON</button>
+    <button class="action-import" onclick="document.getElementById('importFile').click()">导入 Markdown / JSON</button>
+    <button class="action-util" onclick="repairLongTextLineBreaks()">整理长文本换行</button>
+    <input id="importFile" type="file" accept=".md,.markdown,.json,.forge.md,.forge.json,text/markdown,application/json" style="display:none" onchange="importFile(event)">
+  </div>
+  <div class="progressbox no-print" style="margin-top:12px">
+    <strong>文件名预览</strong>
+    <div class="tiny" id="fileNamePreview">填写标题后自动生成</div>
+  </div>
+</section>
+
+<nav class="section-nav no-print" id="sectionNav" aria-label="页面导航">
+  <a href="#sec-00"><b>00</b> 总控</a>
+  <a href="#sec-ai"><b>AI</b> 作战</a>
+  <a href="#sec-status"><b>ST</b> 状态</a>
+  <a href="#sec-01"><b>01</b> 定位</a>
+  <a href="#sec-02"><b>02</b> 资料</a>
+  <a href="#sec-03"><b>03</b> 结构</a>
+  <a href="#sec-04"><b>04</b> 文案</a>
+  <a href="#sec-05"><b>05</b> 素材</a>
+  <a href="#sec-06"><b>06</b> 发布</a>
+  <a href="#sec-07"><b>07</b> 复盘</a>
+  <a href="#sec-08"><b>08</b> 规则</a>
+  <span class="nav-hint">✍ 你写 · 🤖 AI · 🔒 自动 · ▾ 选择</span>
+</nav>
+
+<div class="grid2">
+<section id="sec-00" class="card card-00 control-card">
+<h2><span class="idx">00</span> 项目总控</h2>
+
+<div class="control-layout">
+  <div class="control-title-block">
+    <div class="field title-full"><label>项目标题（可写长标题）</label><div data-key="projectTitle" class="project-title-input richbox" contenteditable="true" data-placeholder="例：鸣潮3.4联动为什么制造资源压力？"></div><div class="tiny">写最终会影响封面 / 标题方向的完整题目。简易标题你自己写，系统只自动补游戏代码。</div></div>
+  </div>
+
+  <div class="control-section">
+    <div class="control-section-title">基本属性</div>
+    <div class="control-grid control-grid-3">
+      <div class="field"><label>游戏</label><select data-key="game"><option>鸣潮</option><option>绝区零</option><option>崩铁</option><option>终末地</option><option>异环</option><option>综合</option></select></div>
+      <div class="field"><label>内容类型</label><select data-key="type"><option>What 机制翻译</option><option>Why 争议解释</option><option>Test 实测观察</option><option>Soft How 温和建议</option><option>Meta 二游现象</option><option>活动/版本整理</option><option>其他/杂谈</option></select><div class="tiny">Meta＝行业、版本生态、玩家行为、资源焦虑等现象；普通闲聊选其他。</div></div>
+      <div class="field"><label>状态</label><select data-key="status"><option>0-灵感</option><option>1-立项</option><option>2-资料中</option><option>3-脚本中</option><option>4-待录制</option><option>5-剪辑中</option><option>6-待发布</option><option>7-已发布</option><option>8-已归档</option></select></div>
+    </div>
+  </div>
+
+  <div class="control-section">
+    <div class="control-section-title">计划信息</div>
+    <div class="control-grid control-grid-4">
+      <div class="field"><label>DDL</label><input data-key="ddl" type="date"></div>
+      <div class="field"><label>版本 / 卡池 / 活动</label><input data-key="version" placeholder="例：3.4 未选择的梦"></div>
+      <div class="field"><label>时长估算</label><input data-key="duration" placeholder="例：短视频 / 3-5min / 8-15min / 按内容决定"></div>
+      <div class="field"><label>优先级</label><select data-key="priority"><option>P0 本周主线</option><option>P1 可推进</option><option>P2 灵感保留</option></select></div>
+    </div>
+  </div>
+
+  <div class="control-section control-naming">
+    <div class="control-section-title">文件命名</div>
+    <div class="control-grid control-grid-naming">
+      <div class="field"><label>游戏代码（自动）</label><input data-key="gameCode" readonly placeholder="WW / ZZZ / HSR / ENF / NTE"></div>
+      <div class="field short-title-field"><label>简易标题（手写）</label><input data-key="projectShortTitle" placeholder="例：资源压力"><div class="tiny">建议 8 字内；系统只自动补游戏代码。</div></div>
+      <div class="field"><label>简称预览（自动合成）</label><input data-key="projectShortName" readonly placeholder="例：WW资源压力"></div>
+      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v3.8.9" readonly></div>
+    </div>
+    <div class="btns no-print control-naming-actions"><button class="ghost hot-action" type="button" onclick="refreshShortName()">更新游戏代码 / 文件名</button></div>
+  </div>
+
+  <div class="control-bottom-grid">
+    <div class="field"><label>本地工程路径 / 素材位置</label><input data-key="localPath" placeholder="D:/GameCreate/..."></div>
+    <div class="field"><label>项目备注</label><div data-key="projectMemo" class="richbox" contenteditable="true" data-placeholder="这期为什么现在做？卡在哪里？"></div></div>
+  </div>
+</div>
+</section>
+
+<section id="sec-ai" class="card card-ai">
+<h2><span class="idx">AI</span> AI 作战区</h2>
+<p class="sub">不接 API，按阶段生成 Prompt。新版定位是“共同策划搭子”：要求 AI 主动查官方与社区资料、交叉核验、指出我的输入问题，并按真实项目情况决定结构和时长，而不是死套模板。</p>
+<div class="btns">
+<button onclick="copyPrompt('analysis')">① 立项/资料分析 Prompt</button>
+<button onclick="copyPrompt('outline')">② 章节结构 Prompt</button>
+<button onclick="copyPrompt('script')">③ 脚本生成 Prompt</button>
+<button onclick="copyPrompt('platform')">④ 主平台发布包 Prompt</button>
+<button class="secondary" onclick="copyPrompt('translate')">⑤ 多语言本地化 Prompt</button>
+<button class="mint" onclick="copyPrompt('review')">⑥ 复盘分析 Prompt</button>
+</div>
+<textarea id="aiOutput" class="output prompt-output" readonly placeholder="点击上方 Prompt 按钮后，这里会显示当前 Prompt。点击此框或 Ctrl+A 只会选中本 Prompt。"></textarea>
+<p class="tiny">提示：①只读 00/01/02；②读 AI 分析；③读 03 结构；④读 04 文案；⑤读简中发布包；⑥读复盘数据。这样不会循环引用。</p>
+</section>
+</div>
+
+<section id="sec-status" class="card card-status" style="margin-top:15px">
+<h2><span class="idx">ST</span> Status / 制作进度</h2>
+<p class="sub">这里专门记录项目推进状态。完成度只看这一组状态；必须「复盘完成」和「归档完成」都勾上，项目才会显示 100%。</p>
+<div class="status-actions no-print"><button class="hot-action" onclick="completeAllStatus()">一键勾选全部完成</button><button class="ghost" onclick="clearAllStatus()">清空状态</button></div>
+<div class="status-board checklist">
+<label><input type="checkbox" data-key="ckBrief" data-progress="true"> Brief 完成</label>
+<label><input type="checkbox" data-key="ckResearch" data-progress="true"> 资料整理完成</label>
+<label><input type="checkbox" data-key="ckScript" data-progress="true"> 脚本可录制</label>
+<label><input type="checkbox" data-key="ckRecord" data-progress="true"> 素材已录</label>
+<label><input type="checkbox" data-key="ckEdit" data-progress="true"> 正片已剪</label>
+<label><input type="checkbox" data-key="ckSubtitle" data-progress="true"> 字幕已校对</label>
+<label><input type="checkbox" data-key="ckCover" data-progress="true"> 封面已完成</label>
+<label><input type="checkbox" data-key="ckPublish" data-progress="true"> 发布完成</label>
+<label><input type="checkbox" data-key="ckReview" data-progress="true"> 复盘完成</label>
+<label><input type="checkbox" data-key="ckArchive" data-progress="true"> 归档完成</label>
+</div>
+<div class="status-note">顺序建议：Brief → 资料 → 脚本 → 素材 → 剪辑 → 字幕 → 封面 → 发布 → 复盘 → 归档。</div>
+</section>
+
+
+<div class="grid2">
+<section id="sec-01" class="card card-01">
+<h2><span class="idx">01</span> 内容宏观定位</h2>
+<div class="field"><label>一句话问题：这期到底回答什么？</label><div data-key="coreQuestion" class="richbox" contenteditable="true" data-placeholder="例：鸣潮3.4联动为什么让玩家突然产生资源焦虑？"></div></div>
+<div class="field"><label>核心结论：观众看完要记住什么？</label><div data-key="coreConclusion" class="richbox" contenteditable="true" data-placeholder="先写暂定判断，后面可以改。"></div></div>
+<div class="field"><label>目标观众</label><div data-key="audience" class="richbox" contenteditable="true" data-placeholder="例：回坑玩家、资源紧张玩家、联动党、只看强度的玩家。"></div></div>
+<div class="field"><label>这期不做什么</label><div data-key="notDo" class="richbox" contenteditable="true" data-placeholder="例：不做强命令抽卡，不做完整配队教学，不做纯资讯复述。"></div></div>
+</section>
+
+<section id="sec-02" class="card card-02">
+<h2><span class="idx">02</span> 资料与 AI 分析</h2>
+<div class="field"><label>官方信息 / 链接</label><div data-key="officialInfo" class="richbox" contenteditable="true" data-placeholder="公告、前瞻、版本日历、角色页、兑换码、活动日期等。"></div></div>
+<div class="field"><label>社区争议 / 玩家问题</label><div data-key="communityDebate" class="richbox" contenteditable="true" data-placeholder="评论区、B站、NGA、X、Reddit等观点。"></div></div>
+<div class="field"><label>自己的观察 / 实测条件</label><div data-key="testNotes" class="richbox" contenteditable="true" data-placeholder="账号练度、队伍、测试条件、限制。"></div></div>
+<div class="field"><label>AI 分析结果</label><div data-key="aiAnalysis" class="richbox" contenteditable="true" data-placeholder="把 AI 给你的分析、信息缺口、结构建议贴这里。"></div></div>
+</section>
+</div>
+
+<section id="sec-03" class="card card-03" style="margin-top:15px">
+<h2><span class="idx">03</span> 内容结构 / 分镜节奏</h2>
+<p class="sub">这里不写完整文案，而是决定视频怎么推进：每一节先明确“功能、目标、要点、画面、转场”。脚本区只负责把这个结构扩写成口播稿。</p>
+<input type="hidden" data-key="chapterTable">
+<input type="hidden" data-key="sectionsJson">
+<div class="structure-toolbar no-print">
+  <div class="field role-choice structure-preset-field"><label>结构预设</label><select id="structurePreset" data-key="structurePreset">
+    <option value="smart">智能推荐（按内容类型）</option>
+    <option value="research6">6节研究型</option>
+    <option value="quick4">4节轻量版</option>
+    <option value="deep8">8节详细版</option>
+    <option value="talk5">5节杂谈版</option>
+  </select></div>
+  <div class="structure-summary" id="structureSummary">当前结构：未生成</div>
+</div>
+<details class="ai-structure-import no-print">
+  <summary>🤖 AI 结构文本导入 / 一键填入 03</summary>
+  <p class="tiny">流程：先选择结构预设 → 点 AI 作战区的「② 章节结构 Prompt」→ 把 AI 生成的整段分节方案贴到这里 → 点击应用。应用后这里会自动清空，只保留转换后的结构卡片。</p>
+  <textarea id="aiStructurePaste" class="ai-structure-paste" placeholder="把 AI 生成的分节方案整段贴这里。支持：&#10;### 第1节&#10;- 本节功能：Hook&#10;- 章节标题：开头Hook&#10;- 预计时间：0:00-0:30&#10;- 本节目标：...&#10;- 关键内容：...&#10;- 画面/素材：...&#10;- 转场句：..."></textarea>
+  <div class="btns" style="margin-top:8px">
+    <button class="hot-action" type="button" onclick="applyAIStructureText()">应用到 03 结构</button>
+    <button class="ghost" type="button" onclick="clearAIStructureText()">清空导入区</button>
+  </div>
+</details>
+<div id="structureMiniNav" class="structure-mini-nav no-print"></div>
+<div id="structureFloatingNav" class="structure-floating-nav no-print"></div>
+<div id="sectionsEditor" class="sections-editor"></div>
+<div class="btns no-print" style="margin-top:10px">
+<button class="ghost" onclick="addSection()">加一节</button>
+<button class="ghost" onclick="removeLastSection()">删最后一节</button>
+<button class="ghost" onclick="makeChapterSkeleton()">补全结构骨架</button>
+<button class="ghost" onclick="rebuildChapterSkeleton()">按预设重建</button>
+<button class="ghost" onclick="estimateDuration()">根据文案估算时长</button>
+<button class="ghost action-danger" onclick="clearStructureSections()">清空结构</button>
+</div>
+<div id="durationInlineResult" class="inline-result no-print">时长估算：未计算。点击按钮后会在这里显示，不用回到项目总控查看。</div>
+<div class="structure-preview-title no-print">结构预览 / AI 输入摘要</div>
+<div id="chapterPreview" class="output"></div>
+</section>
+
+<section id="sec-04" class="card card-04" style="margin-top:15px">
+<h2><span class="idx">04</span> 文案</h2>
+<div data-key="script" class="big richbox" contenteditable="true" data-placeholder="这里写正式口播稿。先让 AI 生成也行，但最后一定要改成自己的话。"></div>
+</section>
+
+<div class="grid2">
+<section id="sec-05" class="card card-05">
+<h2><span class="idx">05</span> 素材与制作检查</h2>
+<div class="field"><label>需要录制的游戏画面</label><div data-key="gameFootage" class="richbox" contenteditable="true" data-placeholder="角色技能、卡池界面、活动界面、实战片段、公告网页录屏。"></div></div>
+<div class="field"><label>截图 / 图表 / 封面方向</label><div data-key="visualPlan" class="richbox" contenteditable="true" data-placeholder="公告截图、对比表、机制图、封面大字。"></div></div>
+<div class="status-note">制作进度已移动到上方 Status 模块，这里只记录素材和画面计划。</div>
+</section>
+
+<section id="sec-06" class="card card-06">
+<h2><span class="idx">06</span> 发布包生成</h2>
+<div class="btns">
+<button class="action-draft" onclick="toggleLocalPackageDraft()">本地参考草案</button>
+<button class="action-ai" onclick="copyPrompt('platform', {jumpToAi:true})">AI 完整平台包</button>
+<button class="action-ai" onclick="copyPrompt('translate', {jumpToAi:true})">AI 多语言优化</button>
+</div>
+<div id="localDraftPanel" class="reference-panel no-print">
+  <div class="ref-head">
+    <div>
+      <div class="ref-title">本地参考草案</div>
+      <div class="ref-note">只作为临时方向参考，不会自动写入发布包；最终仍建议复制 AI 生成内容。</div>
+    </div>
+    <div class="btns">
+      <button class="action-copy" type="button" onclick="copyLocalDraft()">复制参考</button>
+      <button class="action-util" type="button" onclick="hideLocalDraft()">隐藏</button>
+    </div>
+  </div>
+  <pre id="localDraftContent"></pre>
+</div>
+<div class="field"><label>简中：标题 / 简介 / 标签 / 章节</label><div data-key="publishCN" class="mid richbox" contenteditable="true" data-placeholder=""></div></div>
+<div class="field"><label>繁中：YouTube / 海外中文</label><div data-key="publishTW" class="richbox" contenteditable="true" data-placeholder=""></div></div>
+<div class="field"><label>外网：EN / JP / KR / FR</label><div data-key="publishMulti" class="mid richbox" contenteditable="true" data-placeholder=""></div></div>
+</section>
+</div>
+
+<section id="sec-07" class="card card-07" style="margin-top:15px">
+<h2><span class="idx">07</span> 进度记录 / 结项反思</h2>
+<div class="grid2">
+<div class="field"><label>进度记录 DATE / 进度</label><div data-key="progressLog" class="richbox" contenteditable="true" data-placeholder="2026-06-13 立项；..."></div></div>
+<div class="field"><label>结项反思 DATE / REPORT</label><div data-key="review" class="richbox" contenteditable="true" data-placeholder="发布后写：播放、收藏、评论问题、下次改进。"></div></div>
+</div>
+</section>
+
+<section id="sec-08" class="card card-08 no-print" style="margin-top:15px">
+<h2><span class="idx">08</span> 版本 / 文件夹 / 命名军规</h2>
+<p class="sub">
+你的结构正式定为：<strong>HTML 模板是唯一锻造炉</strong>；导出的 <strong>.md / .json</strong> 才是每个项目的灵魂。  
+本版导出会写入模板版本号、导出阶段、导出时间、游戏代码和手写简易标题。旧版模板也要留档，避免未来模板大改后老项目无法恢复。
+</p>
+<textarea readonly class="mid">GameCreate/
+├─ 00_Template/
+│  ├─ INERTIA_Project_Forge_v3.8.9.html
+│  └─ old/
+│     ├─ INERTIA_Project_Forge_v3.8.1.html
+│     └─ INERTIA_Project_Forge_v3.x.x.html
+├─ 01_Working/
+│  └─ WIP_YYYYMMDD-HHmm_v3.8.9_游戏代码简易标题.md / .json
+├─ 02_README/
+│  ├─ README_GameCreate_Workflow.md
+│  ├─ NAMING_RULES.md
+│  ├─ TEMPLATE_VERSION_LOG.md
+│  └─ QUICK_START.md
+└─ 99_Archive/
+   └─ YYYYMMDD-HHmm_v3.8.9_游戏代码简易标题.md / .json</textarea>
+<p class="tiny">
+WIP 文件放 01_Working；DONE 文件放 99_Archive。WIP 文件名前缀保留 WIP；完成归档文件不加 DONE 前缀，直接用日期时间开头，方便排序。
+</p>
+<div class="fileline">
+<button class="action-export-md" onclick="exportMarkdown('WIP')">导出 WIP Markdown</button>
+<button class="action-export-json" onclick="exportProject('WIP')">导出 WIP JSON</button>
+<button class="action-export-md" onclick="exportMarkdown('DONE')">导出 DONE Markdown</button>
+<button class="action-export-json" onclick="exportProject('DONE')">导出 DONE JSON</button>
+<button class="action-copy" onclick="copyMarkdown()">复制 Markdown</button>
+</div>
+</section>
+
+<div class="dock">
+<div class="status" id="statusText">准备就绪。建议每阶段导出一次 WIP Markdown。</div>
+<div class="btns">
+<button class="action-save" title="保存到当前浏览器" onclick="saveLocal()">保存</button>
+<span class="action-divider"></span>
+<button class="action-export-md" title="导出进行中 Markdown" onclick="exportMarkdown('WIP')">WIP MD</button>
+<button class="action-export-json" title="导出进行中 JSON" onclick="exportProject('WIP')">WIP JSON</button>
+<button class="action-export-md" title="导出完成版 Markdown" onclick="exportMarkdown('DONE')">完成 MD</button>
+<button class="action-export-json" title="导出完成版 JSON" onclick="exportProject('DONE')">完成 JSON</button>
+<span class="action-divider"></span>
+<button class="action-copy" title="复制当前 WIP Markdown" onclick="copyMarkdown()">复制</button>
+<button class="action-import" title="导入 Markdown / JSON" onclick="document.getElementById('importFile').click()">导入</button>
+<button class="action-util" title="把被压成一坨的长文本重新断行" onclick="repairLongTextLineBreaks()">整理</button>
+<button class="action-link" title="给选中文本加链接" onclick="insertSmartLink()">链接</button>
+<span class="action-divider"></span>
+<button class="action-util" title="打印或另存为 PDF" onclick="window.print()">PDF</button>
+<button class="action-danger" title="清空当前页面" onclick="clearAll()">清空</button>
+</div>
+</div>
+
+</div>
+<div class="mobile-float no-print">
+  <button class="action-save" onclick="saveLocal()" title="保存到当前浏览器">保存</button>
+  <button class="action-export-md" onclick="toggleMobileExportSheet()" title="选择导出格式">导出</button>
+  <button class="action-import" onclick="document.getElementById('importFile').click()" title="导入 Markdown / JSON">导入</button>
+  <button class="action-link" onclick="insertSmartLink()" title="给选中文本加链接">链接</button>
+</div>
+<div id="mobileExportSheet" class="mobile-export-sheet no-print" aria-hidden="true">
+  <div class="sheet-title">选择导出格式</div>
+  <div class="sheet-grid">
+    <button class="action-export-md" onclick="mobileExport('WIP','md')">WIP MD</button>
+    <button class="action-export-json" onclick="mobileExport('WIP','json')">WIP JSON</button>
+    <button class="action-export-md" onclick="mobileExport('DONE','md')">完成 MD</button>
+    <button class="action-export-json" onclick="mobileExport('DONE','json')">完成 JSON</button>
+  </div>
+  <button class="sheet-cancel" onclick="toggleMobileExportSheet(false)">取消</button>
+</div>
+
+<script>
+const TEMPLATE_VERSION = "3.8.9";
+const STORAGE_KEY = "INERTIA_PROJECT_FORGE_V3_1_CURRENT";
+const DATA_MARKER_START = "<!-- INERTIA_FORGE_DATA:";
+const DATA_MARKER_END = ":INERTIA_FORGE_DATA -->";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const fields = () => $$("[data-key]");
+let lastSectionCount = 6;
+const CARD_COLLAPSE_STORAGE_KEY = "INERTIA_PROJECT_FORGE_V3_8_CARD_COLLAPSE";
+
+function normalizeLineBreaks(v){
+  return String(v ?? "").replace(/\r\n?/g,"\n");
+}
+function normalizeDataLineBreaks(d){
+  if(!d || typeof d !== "object") return d;
+  Object.keys(d).forEach(k => {
+    if(typeof d[k] === "string") d[k] = normalizeLineBreaks(d[k]);
+  });
+  return d;
+}
+
+
+const FIELD_ROLE_MAP = {
+  projectTitle:'user', projectShortTitle:'user', projectMemo:'optional', localPath:'optional',
+  version:'user', ddl:'choice', duration:'auto', priority:'choice', game:'choice', type:'choice', status:'choice',
+  gameCode:'auto', projectShortName:'auto',
+  coreQuestion:'user', coreConclusion:'user', audience:'user', notDo:'user',
+  officialInfo:'user', communityDebate:'user', testNotes:'user',
+  aiAnalysis:'ai', script:'ai',
+  gameFootage:'user', visualPlan:'user',
+  publishCN:'ai', publishTW:'ai', publishMulti:'ai',
+  progressLog:'user', review:'user',
+  chapterTable:'auto', sectionsJson:'auto'
+};
+const ROLE_LABELS = {
+  user:['✍','user','你写'],
+  ai:['🤖','ai','AI 生成/粘贴'],
+  auto:['🔒','auto','自动生成'],
+  choice:['▾','choice','选择项'],
+  optional:['◇','optional','可选']
+};
+function roleForElement(el){
+  if(!el) return '';
+  if(el.dataset && el.dataset.key && FIELD_ROLE_MAP[el.dataset.key]) return FIELD_ROLE_MAP[el.dataset.key];
+  if(el.classList && (el.classList.contains('section-title-input') || el.classList.contains('section-time-input') || el.classList.contains('section-content-input') || el.classList.contains('section-goal-input') || el.classList.contains('section-visual-input') || el.classList.contains('section-transition-input') || el.classList.contains('section-role-input') || el.classList.contains('section-status-input'))) return 'user';
+  return '';
+}
+function applyFieldRoles(root=document){
+  root.querySelectorAll('.field').forEach(field => {
+    const el = field.querySelector('[data-key], .section-title-input, .section-time-input, .section-content-input, .section-goal-input, .section-visual-input, .section-transition-input, .section-role-input, .section-status-input');
+    const role = roleForElement(el);
+    if(!role) return;
+    field.classList.remove('role-user','role-ai','role-auto','role-choice','role-optional');
+    field.classList.add('role-' + role);
+    const label = field.querySelector('label');
+    if(label && !label.querySelector('.role-badge')){
+      const [txt, cls, title] = ROLE_LABELS[role] || [role, role, role];
+      const badge = document.createElement('span');
+      badge.className = 'role-badge ' + cls;
+      badge.textContent = txt;
+      badge.title = title || txt;
+      label.appendChild(badge);
+    }
+  });
+}
+function updateActiveNav(){
+  const cards = Array.from(document.querySelectorAll('.card[id]'));
+  const navs = Array.from(document.querySelectorAll('.section-nav a'));
+  let current = '';
+  for(const card of cards){
+    const rect = card.getBoundingClientRect();
+    if(rect.top <= 120) current = card.id;
+  }
+  navs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+}
+window.addEventListener('scroll', updateActiveNav, {passive:true});
+
+function isRich(el){ return !!(el && el.classList && el.classList.contains("richbox")); }
+function escapeHtmlText(s){
+  return String(s || "").replace(/[&<>]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
+}
+function escapeAttr(s){ return String(s || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function markdownToHtml(md){
+  let safe = escapeHtmlText(md || "");
+  safe = safe.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, text, url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${text}</a>`);
+  return safe.replace(/\n/g,"<br>");
+}
+function cleanMarkdownText(s){
+  return normalizeLineBreaks(s || "")
+    .replace(/\u00a0/g," ")
+    .replace(/[ \t]+\n/g,"\n")
+    .replace(/\n[ \t]+/g,"\n")
+    .replace(/[ \t]{2,}/g," ")
+    .replace(/\n{3,}/g,"\n\n")
+    .trimEnd();
+}
+function nodeToMarkdown(node){
+  if(!node) return "";
+  if(node.nodeType === Node.TEXT_NODE) return node.nodeValue || "";
+  if(node.nodeType !== Node.ELEMENT_NODE) return "";
+  const tag = node.tagName;
+  if(tag === "BR") return "\n";
+  if(tag === "A"){
+    const text = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join("")) || node.textContent || "链接";
+    const href = node.getAttribute("href") || "";
+    return href ? `[${text}](${href})` : text;
+  }
+  if(tag === "IMG"){
+    const alt = node.getAttribute("alt") || "图片";
+    const src = node.getAttribute("src") || "";
+    return src ? `![${alt}](${src})` : alt;
+  }
+  if(tag === "LI"){
+    const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
+    const prefix = node.parentElement && node.parentElement.tagName === "OL" ? "1. " : "- ";
+    return prefix + inner.replace(/\n/g,"\n  ") + "\n";
+  }
+  if(tag === "UL" || tag === "OL"){
+    const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
+    return inner ? "\n" + inner + "\n" : "";
+  }
+  if(/^H[1-6]$/.test(tag)){
+    const level = Number(tag.slice(1));
+    const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
+    return inner ? "\n\n" + "#".repeat(Math.min(level + 1, 6)) + " " + inner + "\n\n" : "";
+  }
+  if(tag === "TR"){
+    const cells = Array.from(node.children).filter(c => c.tagName === "TD" || c.tagName === "TH").map(c => cleanMarkdownText(nodeToMarkdown(c)));
+    return cells.length ? cells.join(" | ") + "\n" : "";
+  }
+  if(tag === "TABLE" || tag === "THEAD" || tag === "TBODY"){
+    const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
+    return inner ? "\n" + inner + "\n" : "";
+  }
+  if(tag === "BLOCKQUOTE"){
+    const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
+    return inner ? "\n" + inner.split("\n").map(x => "> " + x).join("\n") + "\n" : "";
+  }
+  if(tag === "PRE" || tag === "CODE"){
+    const inner = node.textContent || "";
+    return tag === "PRE" ? "\n```\n" + normalizeLineBreaks(inner).trimEnd() + "\n```\n" : "`" + inner + "`";
+  }
+  const inner = Array.from(node.childNodes).map(nodeToMarkdown).join("");
+  const blockTags = new Set(["DIV","P","SECTION","ARTICLE","HEADER","FOOTER","ASIDE","MAIN"]);
+  if(blockTags.has(tag)) return cleanMarkdownText(inner) + "\n";
+  return inner;
+}
+function htmlToMarkdown(html){
+  try{
+    const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+    return cleanMarkdownText(nodeToMarkdown(doc.body));
+  }catch(e){
+    return cleanMarkdownText(String(html || ""));
+  }
+}
+function getEditorMarkdown(el){
+  if(!el) return "";
+  if(isRich(el)){
+    return cleanMarkdownText(nodeToMarkdown(el));
+  }
+  return cleanMarkdownText(el.value || "");
+}
+
+function setEditorMarkdown(el, val){
+  if(!el) return;
+  const normalized = normalizeLineBreaks(val || "");
+  if(isRich(el)) el.innerHTML = markdownToHtml(normalized);
+  else el.value = normalized;
+}
+function fieldText(key){ return getVal(document.querySelector(`[data-key='${key}']`)); }
+function setFieldText(key, val){ const el = document.querySelector(`[data-key='${key}']`); if(el) setVal(el, val); }
+
+
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(()=>t.style.display="none", 2200);
+}
+function setStatus(msg){ $("#statusText").textContent = msg; }
+function getVal(el){
+  if(!el) return "";
+  if(el.type === "checkbox") return el.checked;
+  if(isRich(el)) return getEditorMarkdown(el);
+  return normalizeLineBreaks(el.value || "");
+}
+function setVal(el,v){
+  if(!el || v === undefined || v === null) return;
+  if(el.type === "checkbox") el.checked = !!v;
+  else if(isRich(el)) setEditorMarkdown(el, v);
+  else el.value = normalizeLineBreaks(v);
+}
+function collect(stage){
+  syncSectionsToHidden();
+  const d = {};
+  fields().forEach(el => d[el.dataset.key] = getVal(el));
+  normalizeShortFields(d);
+  d.__forgeVersion = TEMPLATE_VERSION;
+  d.__templateVersion = TEMPLATE_VERSION;
+  d.__schemaVersion = "forge-schema-1";
+  d.__lineBreakPolicy = "preserve-lf-v3.8.9";
+  normalizeDataLineBreaks(d);
+  d.__exportStage = normalizeStage(stage || inferStage(d.status));
+  d.__savedAt = new Date().toISOString();
+  d.__fileNamePreview = buildFileName(d.__exportStage, "md", d);
+  return d;
+}
+function fill(d){
+  if(!d) return;
+  normalizeDataLineBreaks(d);
+  const importedVersion = d.__forgeVersion || d.__templateVersion || "unknown";
+  migrateShortFieldsForImport(d);
+  normalizeShortFields(d);
+  fields().forEach(el => setVal(el, d[el.dataset.key]));
+  renderSectionsFromData(d);
+  enhanceTextareas();
+  updateProgress();
+  updateFileNamePreview();
+  if(importedVersion !== "unknown" && importedVersion !== TEMPLATE_VERSION){
+    setStatus("已导入旧版项目：" + importedVersion + " → 当前模板 v" + TEMPLATE_VERSION + "。如显示异常，请用 00_Template/old 里的旧模板打开。");
+    toast("导入旧版项目：" + importedVersion);
+  }else{
+    setStatus("已导入/恢复项目：" + (d.projectTitle || "未命名"));
+  }
+}
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(collect()));
+  setStatus("已保存到当前浏览器 · " + new Date().toLocaleString());
+  toast("已保存浏览器草稿");
+}
+function loadLocal(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return;
+  try { fill(JSON.parse(raw)); setStatus("已读取浏览器草稿"); } catch(e){}
+}
+function blankStarterSections(){
+  return defaultSections().map(s => ({
+    role:s.role || '其他',
+    title:s.title || '',
+    time:s.time || '',
+    status:'草稿',
+    goal:'',
+    content:'',
+    visual:'',
+    transition:''
+  }));
+}
+function clearStructureSections(){
+  if(!confirm("确定清空 03 内容结构？这会清掉当前所有章节内容。")) return;
+  setSections(blankStarterSections());
+  const paste = document.getElementById('aiStructurePaste');
+  if(paste) paste.value = '';
+  setStatus("03 内容结构已清空");
+  toast("03 内容结构已清空");
+}
+function clearAll(){
+  if(!confirm("确定清空当前页面？建议先导出 Markdown。")) return;
+  fields().forEach(el => setVal(el, el.type === "checkbox" ? false : ""));
+  setSections(blankStarterSections());
+  const paste = document.getElementById('aiStructurePaste');
+  if(paste) paste.value = '';
+  const prompt = document.getElementById('aiOutput');
+  if(prompt){ prompt.value = ''; prompt.style.display = 'none'; }
+  localStorage.removeItem(STORAGE_KEY);
+  refreshShortName();
+  updateProgress();
+  updateFileNamePreview();
+  setStatus("已清空");
+  toast("已清空当前页面");
+}
+function completeAllStatus(){
+  document.querySelectorAll('input[data-progress="true"]').forEach(x => x.checked = true);
+  updateProgress();
+  setStatus("Status 已全部勾选完成");
+  toast("已一键勾选全部完成");
+}
+function clearAllStatus(){
+  document.querySelectorAll('input[data-progress="true"]').forEach(x => x.checked = false);
+  updateProgress();
+  setStatus("Status 已清空");
+  toast("已清空 Status");
+}
+function updateProgress(){
+  const checks = Array.from(document.querySelectorAll('input[data-progress="true"]'));
+  const done = checks.filter(x => x.checked).length;
+  let pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+  const reviewDone = document.querySelector('[data-key="ckReview"]')?.checked;
+  const archiveDone = document.querySelector('[data-key="ckArchive"]')?.checked;
+  if(pct >= 100 && (!reviewDone || !archiveDone)) pct = 99;
+  $("#progressBar").style.width = pct + "%";
+  $("#progressText").textContent = pct + "%";
+}
+
+function sanitizeName(s){
+  return (s || "video_project").replace(/[\\/:*?"<>|]/g,"_").replace(/\s+/g,"_").slice(0,80);
+}
+function nowStamp(){
+  const d = new Date();
+  const pad = n => String(n).padStart(2,"0");
+  return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes());
+}
+function normalizeStage(stage){
+  const s = String(stage || "").toUpperCase();
+  if(s.includes("DONE") || s.includes("完成") || s.includes("ARCHIVE")) return "DONE";
+  return "WIP";
+}
+function inferStage(status){
+  const s = String(status || "");
+  if(s.includes("已发布") || s.includes("已归档") || s.includes("完成")) return "DONE";
+  return "WIP";
+}
+function gameAbbrev(g){
+  return {"鸣潮":"WW","绝区零":"ZZZ","崩铁":"HSR","终末地":"ENF","异环":"NTE","综合":"ALL"}[g] || "GAME";
+}
+function stripKnownGameCode(s){
+  return String(s || "").replace(/^(WW|ZZZ|HSR|ENF|NTE|ALL|GAME|MC|END)/i, "");
+}
+function normalizeManualShortTitle(s){
+  return sanitizeName(String(s || "").trim()).slice(0,10);
+}
+function migrateShortFieldsForImport(d){
+  // 只在导入旧文件且“手写简易标题字段不存在”时才迁移。
+  // 字段存在但为空，说明用户就是想清空，不能自动补回。
+  if(d && !Object.prototype.hasOwnProperty.call(d, 'projectShortTitle') && d.projectShortName){
+    d.projectShortTitle = stripKnownGameCode(d.projectShortName);
+  }
+  return d;
+}
+function normalizeShortFields(d){
+  d.gameCode = gameAbbrev(d.game);
+  // 注意：这里绝对不要再从 projectShortName 反推 projectShortTitle。
+  // 否则用户把手写简易标题删到最后一个字时，旧的简称预览会把它“复活”。
+  d.projectShortTitle = normalizeManualShortTitle(d.projectShortTitle || "");
+  const manual = d.projectShortTitle;
+  const fallback = normalizeManualShortTitle(d.projectTitle || "项目") || "项目";
+  const body = manual || fallback;
+  d.projectShortName = sanitizeName((d.gameCode || gameAbbrev(d.game)) + body).slice(0,14);
+  return d;
+}
+function refreshShortName(){
+  const d = {};
+  fields().forEach(el => d[el.dataset.key] = getVal(el));
+  normalizeShortFields(d);
+  const codeEl = $("[data-key='gameCode']");
+  const nameEl = $("[data-key='projectShortName']");
+  if(codeEl) codeEl.value = d.gameCode;
+  // 不再回写 projectShortTitle，避免光标跳动和最后一个字删不掉。
+  if(nameEl) nameEl.value = d.projectShortName;
+  updateFileNamePreview();
+  toast("已刷新：" + d.projectShortName);
+}
+// 旧按钮兼容
+function autoFillShortName(){ refreshShortName(); }
+function buildFileName(stage, ext, supplied){
+  const d = normalizeShortFields(supplied || collect(stage));
+  const st = normalizeStage(stage || d.__exportStage);
+  const shortName = sanitizeName(d.projectShortName).slice(0,14);
+  const ver = "v" + TEMPLATE_VERSION;
+  const ts = nowStamp();
+  if(st === "DONE") return `${ts}_${ver}_${shortName}.${ext}`;
+  return `WIP_${ts}_${ver}_${shortName}.${ext}`;
+}
+function updateFileNamePreview(){
+  const d = {};
+  fields().forEach(el => d[el.dataset.key] = getVal(el));
+  normalizeShortFields(d);
+  const codeEl = $("[data-key='gameCode']");
+  const nameEl = $("[data-key='projectShortName']");
+  if(codeEl) codeEl.value = d.gameCode;
+  if(nameEl) nameEl.value = d.projectShortName;
+  const box = $("#fileNamePreview");
+  if(box){
+    const wipMd = buildFileName("WIP","md",d);
+    const wipJson = buildFileName("WIP","json",d);
+    const doneMd = buildFileName("DONE","md",d);
+    const doneJson = buildFileName("DONE","json",d);
+    box.innerHTML = `<span class="file-preview-line"><b>WIP：</b>${wipMd} / ${wipJson}</span><span class="file-preview-line"><b>完成：</b>${doneMd} / ${doneJson}</span>`;
+  }
+}
+function download(filename, text, type="text/plain;charset=utf-8"){
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], {type}));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function encodeData(d){
+  const json = JSON.stringify(normalizeDataLineBreaks(d));
+  if(window.TextEncoder){
+    const bytes = new TextEncoder().encode(json);
+    let bin = "";
+    const chunk = 0x8000;
+    for(let i=0;i<bytes.length;i+=chunk){
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+    }
+    return btoa(bin);
+  }
+  return btoa(unescape(encodeURIComponent(json)));
+}
+function decodeData(s){
+  try{
+    const bin = atob(s);
+    if(window.TextDecoder){
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      return normalizeDataLineBreaks(JSON.parse(new TextDecoder().decode(bytes)));
+    }
+    return normalizeDataLineBreaks(JSON.parse(decodeURIComponent(escape(bin))));
+  }catch(e){
+    return normalizeDataLineBreaks(JSON.parse(decodeURIComponent(escape(atob(s)))));
+  }
+}
+function exportReadableText(v, mode="normal"){
+  let t = cleanMarkdownText(v || "");
+  if(!t) return "";
+  const lineCount = (t.match(/\n/g) || []).length;
+  if(t.length > 260 && lineCount < 4){
+    const labels = [
+      "发布定位","核心卖点","目标观众","不适合使用的标题方向","B站标题候选","稳妥版","有点击欲版","轻松吐槽版","SEO/搜索友好版","推荐主标题","B站简介","B站标签","游戏词","版本词","机制词","情绪词","平台泛词","小红书标题","正文 1 版","话题标签","抖音 / 视频号 / TikTok 中文切片","短标题","切片脚本","置顶评论","发布前检查","可能误导的表达","需要补充的截图/封面字","评论区可能问什么",
+      "脚本前检查","资料缺口","事实风险","节奏风险","开头 Hook","结尾",
+      "English","YouTube title options","Description","Tags","Search keywords","日本語","タイトル案","概要欄","タグ","検索キーワード","한국어","제목 후보","설명","태그","검색 키워드","Français","Titres","Mots-clés","本地化风险"
+    ];
+    labels.forEach(label => {
+      const esc = label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      t = t.replace(new RegExp("(^|[\\n。！？；;：:])\\s*(" + esc + "[：:]?)", "g"), "$1\n\n$2");
+    });
+    t = t.replace(/(发布定位)(核心卖点)/g,"$1\n\n$2")
+         .replace(/(B站标题候选)(稳妥版|有点击欲版|轻松吐槽版|SEO\/搜索友好版)/g,"$1\n\n$2")
+         .replace(/(有点击欲版 5 个[\s\S]*?)(SEO\/搜索友好版)/g,"$1\n\n$2")
+         .replace(/(SEO\/搜索友好版 5 个[\s\S]*?)(推荐主标题)/g,"$1\n\n$2")
+         .replace(/(推荐主标题)(最推荐标题|给 1 个)/g,"$1\n\n$2")
+         .replace(/(B站简介)(\S)/g,"$1\n\n$2")
+         .replace(/(B站标签)(游戏词)/g,"$1\n\n$2")
+         .replace(/(游戏词[\s\S]*?)(版本词)/g,"$1\n\n$2")
+         .replace(/(版本词[\s\S]*?)(机制词)/g,"$1\n\n$2")
+         .replace(/(机制词[\s\S]*?)(情绪词)/g,"$1\n\n$2")
+         .replace(/(情绪词[\s\S]*?)(平台泛词)/g,"$1\n\n$2")
+         .replace(/\s+(小红书标题\s*5\s*个)/g,"\n\n$1\n")
+         .replace(/\s+(正文 1 版)/g,"\n\n$1\n")
+         .replace(/\s+(话题标签)/g,"\n\n$1\n")
+         .replace(/\s+(第\d+节[｜|])/g,"\n\n$1")
+         .replace(/\s+(【口播】|【画面】|【剪辑提示】|【可选轻梗】)/g,"\n\n$1")
+         .replace(/\s+(-\s)/g,"\n$1")
+         .replace(/\s+(\d+\.\s)/g,"\n$1");
+  }
+  return cleanMarkdownText(t);
+}
+function shouldRepairReadableText(v){
+  const t = cleanMarkdownText(v || "");
+  return t.length > 260 && (t.match(/\n/g) || []).length < 4;
+}
+function repairLongTextLineBreaks(){
+  const keys = new Set(['aiAnalysis','script','publishCN','publishTW','publishMulti','progressLog','review']);
+  let count = 0;
+  fields().forEach(el => {
+    const key = el.dataset && el.dataset.key;
+    if(!key || !keys.has(key)) return;
+    const before = getVal(el);
+    if(!shouldRepairReadableText(before)) return;
+    const fixed = exportReadableText(before);
+    if(fixed && fixed !== before){
+      setVal(el, fixed);
+      count++;
+    }
+  });
+  if(count){
+    saveLocal();
+    toast('已整理 ' + count + ' 个长文本框的换行');
+    setStatus('已整理长文本换行：' + count + ' 个字段');
+  }else{
+    toast('没有发现需要整理的长文本');
+  }
+}
+function mdBlock(title, body, level=3){
+  const hashes = "#".repeat(level);
+  const text = exportReadableText(body);
+  return `\n\n${hashes} ${title}\n\n${text || "（未填写）"}\n`;
+}
+function mdBody(d){
+  return `# ${d.projectTitle || "未命名视频项目"}
+
+> INERTIA Project Forge v${d.__templateVersion || d.__forgeVersion || TEMPLATE_VERSION} · ${d.__exportStage || "WIP"}  
+> 导出时间：${d.__savedAt || ""}  
+> 文件简称：${d.projectShortName || ""}
+
+---
+
+## 00 项目总控
+
+| 项目 | 内容 |
+|---|---|
+| 模板版本 | v${d.__templateVersion || d.__forgeVersion || TEMPLATE_VERSION} |
+| 导出阶段 | ${d.__exportStage || ""} |
+| 游戏代码 | ${d.gameCode || gameAbbrev(d.game) || ""} |
+| 项目简易标题 | ${d.projectShortTitle || ""} |
+| 文件简称 | ${d.projectShortName || ""} |
+| 游戏 | ${d.game || ""} |
+| 内容类型 | ${d.type || ""} |
+| 状态 | ${d.status || ""} |
+| DDL | ${d.ddl || ""} |
+| 版本 / 卡池 / 活动 | ${d.version || ""} |
+| 时长估算 | ${d.duration || ""} |
+| 优先级 | ${d.priority || ""} |
+| 本地工程路径 | ${d.localPath || ""} |
+${mdBlock("项目备注", d.projectMemo)}
+
+---
+
+## 01 内容宏观定位
+${mdBlock("一句话问题", d.coreQuestion)}
+${mdBlock("核心结论", d.coreConclusion)}
+${mdBlock("目标观众", d.audience)}
+${mdBlock("这期不做什么", d.notDo)}
+
+---
+
+## 02 资料与 AI 分析
+${mdBlock("官方信息 / 链接", d.officialInfo)}
+${mdBlock("社区争议 / 玩家问题", d.communityDebate)}
+${mdBlock("自己的观察 / 实测条件", d.testNotes)}
+${mdBlock("AI 分析结果", d.aiAnalysis)}
+
+---
+
+## 03 内容结构 / 分镜节奏
+
+${exportReadableText(d.chapterTable) || "（未填写）"}
+
+---
+
+## 04 文案
+
+${exportReadableText(d.script) || "（未填写）"}
+
+---
+
+## 05 素材与制作
+${mdBlock("需要录制的游戏画面", d.gameFootage)}
+${mdBlock("截图 / 图表 / 封面方向", d.visualPlan)}
+
+---
+
+## 06 发布包
+${mdBlock("简中：标题 / 简介 / 标签 / 章节", d.publishCN)}
+${mdBlock("繁中：YouTube / 海外中文", d.publishTW)}
+${mdBlock("外网：EN / JP / KR / FR", d.publishMulti)}
+
+---
+
+## 07 进度记录
+
+${exportReadableText(d.progressLog) || "（未填写）"}
+
+---
+
+## 08 结项反思
+
+${exportReadableText(d.review) || "（未填写）"}
+`;
+}
+function makeMarkdown(stage, supplied){
+  const d = supplied || collect(stage);
+  const hidden = `\n\n${DATA_MARKER_START}${encodeData(d)}${DATA_MARKER_END}\n`;
+  return mdBody(d) + hidden;
+}
+function exportMarkdown(stage){
+  const st = normalizeStage(stage || "WIP");
+  const d = collect(st);
+  const name = buildFileName(st, "md", d);
+  download(name, makeMarkdown(st, d), "text/markdown;charset=utf-8");
+  saveLocal();
+  toast("已导出 " + st + " Markdown");
+}
+function exportProject(stage){
+  const st = normalizeStage(stage || "WIP");
+  const d = collect(st);
+  const name = buildFileName(st, "json", d);
+  download(name, JSON.stringify(normalizeDataLineBreaks(d),null,2), "application/json;charset=utf-8");
+  saveLocal();
+  toast("已导出 " + st + " JSON 项目包");
+}
+async function copyMarkdown(){
+  await navigator.clipboard.writeText(makeMarkdown("WIP"));
+  setStatus("Markdown 已复制 · " + new Date().toLocaleString());
+  toast("已复制 Markdown");
+}
+
+function toggleMobileExportSheet(force){
+  const sheet = document.getElementById('mobileExportSheet');
+  if(!sheet) return;
+  const show = typeof force === 'boolean' ? force : !sheet.classList.contains('show');
+  sheet.classList.toggle('show', show);
+  sheet.setAttribute('aria-hidden', show ? 'false' : 'true');
+}
+function mobileExport(stage, type){
+  toggleMobileExportSheet(false);
+  if(type === 'json') exportProject(stage);
+  else exportMarkdown(stage);
+}
+
+function importFile(evt){
+  const file = evt.target.files && evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const text = String(reader.result || "");
+    try{
+      let d = null;
+      if(file.name.endsWith(".json") || text.trim().startsWith("{")){
+        d = JSON.parse(text);
+      }else{
+        d = parseMarkdown(text);
+      }
+      fill(d);
+      saveLocal();
+      updateFileNamePreview();
+      toast("导入成功");
+    }catch(e){
+      alert("导入失败：" + e.message);
+    }
+    evt.target.value = "";
+  };
+  reader.readAsText(file, "utf-8");
+}
+function parseMarkdown(text){
+  text = normalizeLineBreaks(text || "");
+  const start = text.indexOf(DATA_MARKER_START);
+  const end = text.indexOf(DATA_MARKER_END);
+  if(start >= 0 && end > start){
+    const b64 = text.slice(start + DATA_MARKER_START.length, end).trim();
+    return decodeData(b64);
+  }
+  // Best-effort fallback for Markdown whose hidden project marker was removed by another editor.
+  // This parser intentionally preserves internal line breaks inside each section.
+  const d = {};
+  const esc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  d.projectTitle = (text.match(/^#\s+(.+)$/m) || [,""])[1].trim();
+  function bullet(label){
+    const re = new RegExp("^- " + esc(label) + "：([^\\n]*)", "m");
+    return normalizeLineBreaks((text.match(re) || [,""])[1]).trim();
+  }
+  function block(heading, level="###"){
+    const re = new RegExp("(?:^|\\n)" + esc(level) + " " + esc(heading) + "\\n([\\s\\S]*?)(?=\\n### |\\n## |\\n" + esc(DATA_MARKER_START) + "|$)");
+    return normalizeLineBreaks((text.match(re) || [,""])[1]).trim();
+  }
+  function topBlock(heading){
+    const re = new RegExp("(?:^|\\n)## " + esc(heading) + "\\n([\\s\\S]*?)(?=\\n## |\\n" + esc(DATA_MARKER_START) + "|$)");
+    return normalizeLineBreaks((text.match(re) || [,""])[1]).trim();
+  }
+  d.gameCode = bullet("游戏代码");
+  d.projectShortTitle = bullet("项目简易标题");
+  d.projectShortName = bullet("文件简称");
+  d.game = bullet("游戏");
+  d.type = bullet("内容类型");
+  d.status = bullet("状态");
+  d.ddl = bullet("DDL");
+  d.version = bullet("版本 / 卡池 / 活动");
+  d.duration = bullet("时长估算") || bullet("参考时长/形式");
+  d.priority = bullet("优先级");
+  d.localPath = bullet("本地工程路径");
+  d.projectMemo = block("项目备注");
+  d.coreQuestion = block("一句话问题");
+  d.coreConclusion = block("核心结论");
+  d.audience = block("目标观众");
+  d.notDo = block("这期不做什么");
+  d.officialInfo = block("官方信息 / 链接");
+  d.communityDebate = block("社区争议 / 玩家问题");
+  d.testNotes = block("自己的观察 / 实测条件");
+  d.aiAnalysis = block("AI 分析结果");
+  d.chapterTable = topBlock("03 内容结构 / 分镜节奏");
+  d.script = topBlock("04 文案");
+  d.gameFootage = block("需要录制的游戏画面");
+  d.visualPlan = block("截图 / 图表 / 封面方向");
+  d.publishCN = block("简中：标题 / 简介 / 标签 / 章节");
+  d.publishTW = block("繁中：YouTube / 海外中文");
+  d.publishMulti = block("外网：EN / JP / KR / FR");
+  d.progressLog = topBlock("07 进度记录");
+  d.review = topBlock("08 结项反思");
+  return normalizeDataLineBreaks(d);
+}
+
+function gamePrefix(g){
+  const map = {"鸣潮":"【鸣潮】","绝区零":"【绝区零】","崩铁":"【崩坏星穹铁道】","终末地":"【明日方舟终末地】","异环":"【异环】","综合":"【二游】"};
+  return map[g] || "【二游】";
+}
+function gameTags(g){
+  const map = {
+    "鸣潮": ["鸣潮","Wuthering Waves","WuWa","鸣潮攻略"],
+    "绝区零": ["绝区零","Zenless Zone Zero","ZZZ","绝区零攻略"],
+    "崩铁": ["崩坏星穹铁道","Honkai Star Rail","HSR","星穹铁道攻略"],
+    "终末地": ["明日方舟终末地","Arknights Endfield","终末地攻略"],
+    "异环": ["异环","Neverness to Everness","NTE","异环攻略"]
+  };
+  return map[g] || ["二游","游戏攻略"];
+}
+function tagsFor(d, hash=true){
+  let arr = [...gameTags(d.game), "二游","游戏攻略"];
+  if((d.type||"").includes("Why")) arr.push("争议分析","版本分析");
+  if((d.type||"").includes("Test")) arr.push("实测观察");
+  if((d.type||"").includes("What")) arr.push("机制解析");
+  if((d.type||"").includes("Soft")) arr.push("抽卡冷静剂");
+  arr = [...new Set(arr.filter(Boolean))];
+  return hash ? arr.map(x => "#" + x.replace(/\s+/g,"")).join(" ") : arr.join("、");
+}
+function chaptersFromTable(t){
+  if(!t) return "00:00 开头\n01:00 现象\n03:00 原因/机制\n06:00 我的判断\n08:00 总结";
+  const lines = t.split("\n").filter(x=>x.trim());
+  const rows = lines.filter(x => x.includes("|")).slice(1);
+  if(!rows.length) return t;
+  return rows.map((x,i)=>{
+    const p=x.split("|").map(s=>s.trim());
+    return `${p[2] || "??:??"} ${p[1] || ("章节"+(i+1))}`;
+  }).join("\n");
+}
+function makeLocalPackageDraft(){
+  const d = collect();
+  const prefix = gamePrefix(d.game);
+  const q = d.coreQuestion || d.projectTitle || "这个版本到底该怎么看";
+  const c = d.coreConclusion || "先把问题讲清楚，再给有前提的判断。";
+  const titleSeeds = [
+    `${prefix}${q}`,
+    `${prefix}先别急着下结论，关键前提在这里`,
+    `${prefix}${d.version || "新版本"}：普通玩家最容易看错的一点`,
+    `${prefix}我把这次问题拆开看，结论没那么简单`
+  ];
+  return `【临时参考草案｜不要直接当最终发布包】
+
+标题方向：
+${titleSeeds.map((x,i)=>`${i+1}. ${x}`).join("\\n")}
+
+简介骨架：
+这期想回答：${q}
+暂定结论：${c}
+适合观众：${d.audience || "对本期版本/机制/争议有疑问的玩家"}
+
+标签参考：
+${tagsFor(d,true)}
+
+下一步：
+点击「AI 完整平台包」，让 AI 基于正式文案生成最终标题、简介、标签和短视频切片。`;
+}
+function toggleLocalPackageDraft(){
+  const panel = $('#localDraftPanel');
+  const box = $('#localDraftContent');
+  if(!panel || !box) return;
+  if(panel.classList.contains('show')){
+    panel.classList.remove('show');
+    toast('已隐藏本地参考草案');
+    return;
+  }
+  box.textContent = makeLocalPackageDraft();
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  toast('已生成临时参考草案');
+}
+function hideLocalDraft(){
+  const panel = $('#localDraftPanel');
+  if(panel) panel.classList.remove('show');
+  toast('已隐藏本地参考草案');
+}
+async function copyLocalDraft(){
+  const text = $('#localDraftContent')?.textContent || makeLocalPackageDraft();
+  try{
+    await navigator.clipboard.writeText(text);
+    toast('已复制本地参考草案');
+  }catch(e){
+    toast('复制受限，请手动选中草案文本');
+  }
+}
+// 旧按钮兼容
+function generateLocalPackage(){ toggleLocalPackageDraft(); }
+
+function simpleTrad(s){
+  const map = {'这':'這','个':'個','为':'為','发':'發','现':'現','观':'觀','众':'眾','说':'說','强':'強','会':'會','应':'應','对':'對','时':'時','间':'間','题':'題','简':'簡','结':'結','论':'論','资':'資','压':'壓','虑':'慮','开':'開','关':'關','节':'節','标':'標','签':'籤','视':'視','频':'頻','画':'畫','进':'進','击':'擊','双':'雙','实':'實','测':'測','区':'區','国':'國','环':'環','铁':'鐵','鸣':'鳴','号':'號','写':'寫','复':'複','这':'這','后':'後','吗':'嗎','网':'網','队':'隊','优':'優','质':'質','类':'類','点':'點','页':'頁','长':'長','气':'氣','体':'體','话':'話','数':'數','据':'據','总':'總','录':'錄','图':'圖','项':'項','产':'產','业':'業','动':'動','门':'門','过':'過','华':'華','观':'觀','义':'義','声':'聲','转':'轉','换':'換','导':'導','入':'入','导':'導','出':'出'};
+  return (s||"").split("").map(ch => map[ch] || ch).join("");
+}
+
+function filled(v){ return String(v || '').trim(); }
+function safeText(v, empty='（未填写）'){ const s = filled(v); return s || empty; }
+function currentStructurePresetLabel(){
+  const sel = document.querySelector('#structurePreset');
+  if(!sel) return '';
+  return sel.options[sel.selectedIndex]?.textContent || sel.value || '';
+}
+function projectHeaderContext(d){
+  return `# 项目基础资料
+
+## 00 项目总控
+- 项目标题：${safeText(d.projectTitle)}
+- 游戏：${safeText(d.game)}
+- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
+- 内容类型：${safeText(d.type)}
+- 状态：${safeText(d.status)}
+- DDL：${safeText(d.ddl)}
+- 版本 / 卡池 / 活动：${safeText(d.version)}
+- 参考时长/形式：${safeText(d.duration)}
+- 优先级：${safeText(d.priority)}
+- 项目简易标题：${safeText(d.projectShortTitle)}
+- 简称预览：${safeText(d.shortName)}`;
+}
+function macroContext(d){
+  return `## 01 内容宏观定位
+### 一句话问题
+${safeText(d.coreQuestion)}
+
+### 暂定核心结论
+${safeText(d.coreConclusion)}
+
+### 目标观众
+${safeText(d.audience)}
+
+### 这期不做什么
+${safeText(d.notDo)}`;
+}
+function rawResearchContext(d){
+  return `## 02 原始资料
+### 官方信息 / 链接
+${safeText(d.officialInfo)}
+
+### 社区争议 / 玩家问题
+${safeText(d.communityDebate)}
+
+### 自己的观察 / 实测条件
+${safeText(d.testNotes)}`;
+}
+function briefContext(d){
+  return `${projectHeaderContext(d)}
+
+${macroContext(d)}
+
+${rawResearchContext(d)}`;
+}
+function analysisContext(d){
+  return `# 立项/资料分析输入
+以下内容只包含我已经填写的 00/01/02，不包含 AI 分析、结构、文案、发布包、复盘。
+
+${briefContext(d)}`;
+}
+function outlineContext(d){
+  return `# 章节结构输入
+
+${briefContext(d)}
+
+## 已有 AI 分析结果
+${safeText(d.aiAnalysis)}
+
+## 当前 03 结构状态
+- 当前结构预设：${safeText(currentStructurePresetLabel())}
+- 当前结构内容：${safeText(d.chapterTable, '（尚未填写；请从零生成结构）')}`;
+}
+function scriptContext(d){
+  return `# 脚本生成输入
+
+${briefContext(d)}
+
+## AI 分析结果
+${safeText(d.aiAnalysis)}
+
+## 03 内容结构 / 分镜节奏
+${safeText(d.chapterTable, '（尚未填写；请先指出需要补结构，不要直接硬写完整脚本）')}
+
+## 05 素材与画面计划
+### 需要录制的游戏画面
+${safeText(d.gameFootage)}
+
+### 截图 / 图表 / 封面方向
+${safeText(d.visualPlan)}`;
+}
+function platformContext(d){
+  return `# 主平台发布包输入
+
+${projectHeaderContext(d)}
+
+## 核心结论
+${safeText(d.coreConclusion)}
+
+## 03 内容结构 / 分镜节奏
+${safeText(d.chapterTable)}
+
+## 04 正式文案
+${safeText(d.script, '（未填写正式文案；如果信息不足，请先列缺失项，不要硬编完整发布包）')}
+
+## 05 视觉/封面方向
+${safeText(d.visualPlan)}`;
+}
+function translateContext(d){
+  const hasCN = filled(d.publishCN);
+  return `# 多语言本地化输入
+
+## 游戏与关键词
+- 游戏：${safeText(d.game)}
+- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
+- 版本/活动：${safeText(d.version)}
+- 内容类型：${safeText(d.type)}
+
+## 简中发布包
+${hasCN ? d.publishCN : '（暂无简中发布包。请先根据下方项目资料生成一版简中基准发布包，再进行多语言本地化。）'}
+
+## 繁中发布包（如已有）
+${safeText(d.publishTW, '（暂无）')}
+
+## 可参考项目资料
+${hasCN ? '（简中发布包已提供，优先以发布包为准。）' : platformContext(d)}`;
+}
+function reviewContext(d){
+  return `# 复盘分析输入
+
+## 项目
+- 标题：${safeText(d.projectTitle)}
+- 游戏：${safeText(d.game)}
+- 类型：${safeText(d.type)}
+- 版本/活动：${safeText(d.version)}
+
+## 发布包
+${safeText(d.publishCN)}
+
+## 进度记录
+${safeText(d.progressLog)}
+
+## 结项反思 / 数据
+${safeText(d.review, '（请先在 07 复盘区补：播放量、完播/平均观看、点赞收藏评论、涨粉、发布时间、标题封面、评论区问题。）')}`;
+}
+function stageGuard(kind){
+  const guards = {
+    analysis:'允许并鼓励主动查资料，但不要使用或假装已有：AI 分析结果、03结构、04文案、06发布包、07复盘。',
+    outline:'允许补查结构所需资料；不要写完整口播稿，不要写发布标题，不要做多语言。',
+    script:'允许为事实核验补查资料；不要生成发布标题/简介/标签，不要做复盘。',
+    platform:'允许查平台关键词、同类标题和社区搜索词；不要重写整篇脚本。',
+    translate:'允许查各语言通用译名、海外社区说法和 SEO 关键词；不要改选题核心。',
+    review:'允许对照平台数据/评论/同类内容经验做诊断；不要补写脚本或发布包。'
+  };
+  return guards[kind] || '';
+}
+function promptBase(kind){
+  return `你是我的二游视频项目共同策划人，不是表格填写机器。你的任务是和我一起把这个项目做成：选题站得住、资料查得准、结构讲得清、发布包有点击理由、复盘能反推下一期。
+
+工作原则：
+- 需要联网/检索时，请主动查：官方公告、前瞻/直播、角色/活动页面、游戏内规则说明、B站/小红书/抖音评论、NGA/贴吧、X/Reddit/YouTube、主流攻略站或 wiki。
+- 查资料时要交叉核验：官方优先，其次社区共识；信息冲突时列出冲突点，不要替我拍脑袋。
+- 你可以给我建议，也要指出我的问题：选题是否太散、结论是否太早、观众是否不明确、资料是否不足、表达是否容易被喷。
+- 不要把视频时长写死。请根据题材复杂度、观众耐心、素材密度、平台用途，给出合理时长区间；必要时同时给“短版 / 标准版 / 深度版”。
+- 区分【事实】【推测】【个人判断】【待核实】。不要编造官方数据、日期、倍率、活动规则；不确定就写“待核实 + 建议检索词/资料来源”。
+- 表达风格：严谨但别板着脸。你是游戏 UP 主的共同策划，不是写审计报告；允许适当加入轻松吐槽、游戏梗、生活类比和“人话翻译”，但不要低俗、阴阳怪气、人身攻击，也不要为了搞笑牺牲准确性。
+- 幽默使用原则：每个关键段落最多 1 个轻梗；优先服务理解和记忆点，不要把视频写成脱口秀，也不要把严肃核验写成段子。
+- 不要用“必抽/血亏/垃圾角色”等强命令表达；可以用“哪些账号更该关注 / 哪些可以观望 / 哪些说法先别急着信”。
+- 输出要能直接粘贴回我的 HTML 模板对应区域；同时给我下一步动作，不要只给漂亮废话。
+
+本阶段限制：
+${stageGuard(kind)}`;
+}
+function buildPrompt(kind){
+  const d = normalizeShortFields(collect());
+  if(kind === "analysis"){
+    return `${promptBase('analysis')}
+
+这是【① 立项 / 资料分析阶段】。
+你要先帮我判断这个项目值不值得做、应该怎么做、还缺什么；不要急着写脚本。
+
+请执行：
+1. 先阅读我填写的 00/01/02。
+2. 主动补查资料：官方信息、当前版本/活动/角色相关资料、社区争议与玩家真实问题。能查就查；不能查就列“必须检索清单”。
+3. 对我的输入做诊断：哪些地方太空、太主观、太死板、容易被反驳。
+4. 给出项目定位：这期到底回答什么、适合谁看、不适合做成什么。
+5. 给出可执行下一步：补哪些资料、截哪些图、测哪些内容、是否进入结构阶段。
+
+请按以下格式输出：
+
+# 可粘贴到【02 资料与 AI 分析：AI 分析结果】的内容
+
+## 1. 选题结论
+- 建议：值得做 / 暂缓 / 需要先补资料
+- 一句话理由：
+- 最适合的平台形态：长视频 / 短视频 / 图文 / 混合
+- 建议时长区间：按内容判断，不要写死
+
+## 2. 我当前输入的问题
+- 选题是否太散：
+- 结论是否太早：
+- 资料是否不足：
+- 观众是否明确：
+- 最容易被喷/被误解的点：
+
+## 3. 外部资料核验摘要
+- 官方已确认信息：
+- 社区高频问题：
+- 信息冲突 / 待核实：
+- 建议继续检索的关键词：
+
+## 4. 推荐切口
+给 3 个切口：稳妥版、尖锐版、轻量版。每个说明优缺点，并标出最推荐。
+
+## 5. 项目改进建议
+- 标题方向：
+- 资料补强：
+- 实测/截图：
+- 结构风险：
+- 可以加入的轻松表达/吐槽点：
+- 下一步动作：
+
+${analysisContext(d)}`;
+  }
+  if(kind === "outline"){
+    return `${promptBase('outline')}
+
+这是【② 章节结构阶段】。
+你要像真正的策划编辑一样，基于 Brief、原始资料、AI 分析和必要的外部资料，设计一个适合本项目的结构。不要死套 8-12 分钟，也不要机械套 6 节。
+
+请执行：
+1. 先判断内容应该做成短版、标准版还是深度版，并说明理由。
+2. 根据题材复杂度决定节数和时长；如果我的 03 结构不合理，可以直接指出并改。
+3. 每一节都要有功能：Hook、背景、问题、证据、机制、争议、实测、判断、建议、总结等，不要每节都写成“继续分析”。
+4. 每节都要说明画面/素材，不能只写“配游戏画面”。
+5. 给出“删减方案”：如果时间不够，哪些节可以合并或删掉。
+
+输出格式必须严格使用下面字段名，方便我直接复制到 HTML 的【AI 结构文本导入】里自动识别：
+
+# 可粘贴到【AI 结构文本导入】的内容
+
+## 结构判断
+- 推荐版本：短版 / 标准版 / 深度版
+- 建议节数：
+- 建议总时长区间：
+- 为什么不是固定 8-12 分钟：
+- 如果要压缩，优先删：
+
+## 分节方案
+
+### 第1节
+- 本节功能：Hook / 背景 / 现象 / 资料 / 机制 / 争议 / 实测 / 判断 / 建议 / 总结 / 转场 / 其他
+- 章节标题：
+- 预计时间：
+- 状态：草稿
+- 本节目标：
+- 关键内容：
+- 画面/素材：
+- 转场句：
+
+### 第2节
+同格式继续，节数由你根据项目决定。
+
+注意：
+- 不要输出完整口播稿。
+- 不要输出发布标题、简介、标签。
+- 如果当前资料不足以定结构，先写“结构前置缺口”，再给临时结构。
+
+${outlineContext(d)}`;
+  }
+  if(kind === "script"){
+    return `${promptBase('script')}
+
+这是【③ 脚本生成阶段】。
+你要基于 03 结构写中文口播稿，但不是把要点机械扩写。你需要先检查结构是否能讲通，再写成真实可录制的稿子。
+
+请执行：
+1. 先做 5 行以内的脚本前检查：资料缺口、事实风险、节奏风险。
+2. 必要时补查最新资料，核对官方/社区说法；不确定的地方标【待核实】。
+3. 口播要像人在讲，不要论文腔，不要短视频营销腔；允许偶尔吐槽、类比、小幽默，让观众觉得“这人懂游戏也懂人话”。
+4. 每节保留“口播 + 画面 + 剪辑提示 + 可选轻梗”。轻梗可以不用进最终稿，但要给我挑选空间。
+5. 遇到争议，不要站桩输出结论；先拆前提，再给有条件判断。
+6. 如果你认为当前结构有问题，先指出问题，再按你修正后的结构写。
+
+请按以下格式输出：
+
+# 可粘贴到【04 文案】的内容
+
+## 脚本前检查
+- 资料缺口：
+- 事实风险：
+- 节奏风险：
+- 本稿采用的时长区间：
+
+## 开头 Hook
+【口播】
+直接给可录制口播。
+
+【画面】
+具体画面和字幕提示。
+
+## 第1节｜章节标题
+【口播】
+……
+
+【画面】
+……
+
+【剪辑提示】
+……
+
+【可选轻梗】
+给 1 个不油腻、不影响严谨性的吐槽/类比/梗。
+
+后续章节同格式。
+
+## 结尾
+一句话总结 + 行动建议 / 评论引导 / 下期方向。
+
+额外要求：
+- 不要生成发布标题、简介、标签。
+- 不要把“画面建议”写成空话。
+- 对事实不确定处标注【待核实】。
+
+${scriptContext(d)}`;
+  }
+  if(kind === "platform"){
+    return `${promptBase('platform')}
+
+这是【④ 主平台发布包阶段】。
+你要基于正式文案生成中文发布材料，同时可以补查同类内容标题、平台关键词、社区搜索词，帮我提高点击理由，但不能骗人、不能极端标题党。
+
+请执行：
+1. 先判断这期最适合的卖点：信息差、争议解释、实测结论、资源焦虑、版本整理、情绪共鸣，还是别的。
+2. 查/参考同类平台常见关键词和玩家搜索词；不确定就列待确认关键词。
+3. 输出不同强度的标题：稳妥、偏锐、SEO、短视频切片。
+4. 反向检查：哪些标题会误导？哪些标题容易引战？哪些不够有点击理由？
+
+请按以下格式输出：
+
+# 可粘贴到【06 发布包：简中】的内容
+
+## 发布定位
+- 核心卖点：
+- 目标观众：
+- 不适合使用的标题方向：
+
+## B站标题候选
+- 稳妥版 5 个
+- 有点击欲版 5 个
+- 轻松吐槽版 5 个：可以有梗，但不能像营销号，也不能误导
+- SEO/搜索友好版 5 个
+每个标题后用一句话说明优缺点。
+
+## 推荐主标题
+给 1 个最推荐标题 + 2 个备选。
+
+## B站简介
+包含：本期核心问题、观看对象、章节时间轴、事实前提/免责声明。
+
+## B站标签
+给 15-25 个，并按“游戏词 / 版本词 / 机制词 / 情绪词 / 平台泛词”分类。
+
+## 小红书
+- 标题 5 个
+- 正文 1 版
+- 话题标签
+
+## 抖音 / 视频号 / TikTok 中文切片
+- 10 个短标题
+- 3 条切片脚本，每条 30-60 秒，注明从正片哪一节切。
+
+## 置顶评论
+给 1 版。
+
+## 发布前检查
+- 可能误导的表达：
+- 需要补充的截图/封面字：
+- 评论区可能问什么：
+
+${platformContext(d)}`;
+  }
+  if(kind === "translate"){
+    return `${promptBase('translate')}
+
+这是【⑤ 多语言本地化阶段】。
+你要把简中发布包本地化成繁中和外网语言，不要逐字翻译。需要主动查常用游戏译名、海外社区说法、英文/日文/韩文/法文常见关键词；不确定就标注待确认。
+
+请执行：
+1. 先确认游戏、角色、版本、机制等固有名词在各语言社区的常见说法。
+2. 不要把中文网络梗硬翻成外语；要换成目标语言自然表达。
+3. 标题要保留原选题的点击理由，但不要跨文化误伤。
+4. 如果某语言不适合直发，指出原因和替代方向。
+
+请输出：
+# 可粘贴到【06 发布包：繁中 / 外网】的内容
+
+## 术语核验
+- 确认译名：
+- 待确认译名：
+- 不建议直译的中文表达：
+
+## 繁体中文
+- YouTube 标题 10 个
+- 简介
+- 标签
+
+## English
+- YouTube title options x10
+- Description
+- Tags
+- Search keywords
+
+## 日本語
+- タイトル案 10個
+- 概要欄
+- タグ
+- 検索キーワード
+
+## 한국어
+- 제목 후보 10개
+- 설명
+- 태그
+- 검색 키워드
+
+## Français
+- Titres x10
+- Description
+- Tags
+- Mots-clés
+
+## 本地化风险
+哪些标题或表达在海外容易显得奇怪、夸张、误导。
+
+${translateContext(d)}`;
+  }
+  if(kind === "review"){
+    return `${promptBase('review')}
+
+这是【⑥ 复盘分析阶段】。
+你要像项目合伙人一样帮我复盘：这期哪里做对了，哪里做错了，哪些问题来自选题，哪些来自标题/封面，哪些来自脚本节奏，下一期应该怎么改。
+
+请执行：
+1. 如果数据不足，先列缺失数据，不要装作能分析。
+2. 根据已有数据和评论，把问题分成：选题、标题封面、开头、主体节奏、结尾、发布时间、平台匹配。
+3. 对照我一开始的项目目标，判断有没有跑偏。
+4. 给下一期可执行改进，不要只写“提高质量”。
+
+请按以下格式输出：
+
+# 可粘贴到【07 复盘】的内容
+
+## 1. 数据完整度
+- 已有数据：
+- 缺失数据：
+- 缺失数据会影响哪些判断：
+
+## 2. 项目目标回看
+- 原目标：
+- 实际表现：
+- 是否跑偏：
+
+## 3. 表现诊断
+- 选题：
+- 标题/封面：
+- 前 30 秒：
+- 主体节奏：
+- 结尾与互动：
+- 发布时间/平台：
+
+## 4. 评论区需求
+把观众问题归类，并判断哪些值得做成下一期。
+
+## 5. 下一步动作
+- 是否需要补短视频：
+- 是否需要补图文：
+- 是否值得做后续长视频：
+- 下一期最推荐选题：
+- 具体改法 3 条：
+
+${reviewContext(d)}`;
+  }
+  return briefContext(d);
+}
+function scrollToElementWithOffset(target, offset=92){
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if(!el) return;
+  const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({top:Math.max(0,y), behavior:'smooth'});
+}
+async function copyPrompt(kind, options={}){
+  const prompt = buildPrompt(kind);
+  const box = $("#aiOutput");
+  if(box){
+    box.style.display = "block";
+    if('value' in box) box.value = prompt;
+    else box.textContent = prompt;
+    // 先显示，再尝试复制。点击/聚焦这个 textarea 时，Ctrl+A 只会选中当前 Prompt。
+    if(options && options.jumpToAi) scrollToElementWithOffset('#sec-ai', 96);
+    else box.scrollIntoView({behavior:"smooth", block:"nearest"});
+    setTimeout(() => {
+      try{
+        if(!(options && options.jumpToAi)){
+          box.focus();
+          if(typeof box.select === 'function') box.select();
+        }
+      }catch(e){}
+    }, 80);
+  }
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(prompt);
+      setStatus("AI Prompt 已显示并复制：" + kind);
+      toast("Prompt 已显示并复制");
+    }else{
+      setStatus("AI Prompt 已显示。当前环境可能不允许自动复制，请在 Prompt 框内全选复制。");
+      toast("Prompt 已显示，请手动复制");
+    }
+  }catch(e){
+    setStatus("AI Prompt 已显示。剪贴板被浏览器限制，请在 Prompt 框内全选复制。");
+    toast("Prompt 已显示，请手动复制");
+  }
+}
+function setupPromptOutputSelect(){
+  const box = $("#aiOutput");
+  if(!box) return;
+  const selectBox = () => {
+    if(box.style.display === "none") return;
+    try{
+      box.focus();
+      if(typeof box.select === "function") box.select();
+    }catch(e){}
+  };
+  box.addEventListener("focus", selectBox);
+  box.addEventListener("click", selectBox);
+}
+function estimateDuration(){
+  const text = (fieldText('script') || "").replace(/\s+/g,"");
+  const chineseChars = Array.from(text).length;
+  const minLow = Math.max(1, Math.round(chineseChars / 360));
+  const minHigh = Math.max(1, Math.round(chineseChars / 280));
+  const result = `${minLow}-${minHigh} min（按文案字数估算｜约 ${chineseChars} 字）`;
+  setFieldText('duration', result);
+  const box = $('#durationInlineResult');
+  if(box){
+    box.textContent = `时长估算：${result}。结果已同步到项目总控。`;
+    box.classList.add('show');
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+  toast('已估算时长');
+}
+/* v3.6: makeChapterSkeleton moved to structure editor block. */
+
+let activeEditTarget = null;
+let savedRange = null;
+
+function rememberEditTarget(el){
+  if(!el) return;
+  const tag = el.tagName;
+  if(isRich(el) || ((tag === "TEXTAREA" || tag === "INPUT") && !el.readOnly && el.type !== "checkbox" && el.type !== "file")){
+    activeEditTarget = el;
+  }
+}
+function rangeInside(el, range){
+  if(!el || !range) return false;
+  return el === range.commonAncestorContainer || el.contains(range.commonAncestorContainer);
+}
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection && window.getSelection();
+  if(!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const rich = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer.closest?.('.richbox') : range.commonAncestorContainer.parentElement?.closest?.('.richbox');
+  if(rich){ activeEditTarget = rich; savedRange = range.cloneRange(); }
+});
+
+function insertAtCursor(el, text){
+  if(!el) return;
+  if(isRich(el)){
+    el.focus();
+    const range = savedRange && rangeInside(el, savedRange) ? savedRange : document.createRange();
+    if(!savedRange || !rangeInside(el, savedRange)) range.selectNodeContents(el), range.collapse(false);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    return;
+  }
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  const before = el.value.slice(0,start);
+  const after = el.value.slice(end);
+  el.value = before + text + after;
+  const pos = start + text.length;
+  try{ el.setSelectionRange(pos,pos); }catch(e){}
+  el.dispatchEvent(new Event("input", {bubbles:true}));
+  el.focus();
+}
+function editableFromNode(node){
+  if(!node) return null;
+  const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+  if(!el) return null;
+  const rich = el.closest && el.closest('.richbox[contenteditable="true"]');
+  if(rich) return rich;
+  const input = el.closest && el.closest('textarea,input');
+  if(input && !input.readOnly && !input.disabled) return input;
+  return null;
+}
+function currentEditableSelection(){
+  const active = document.activeElement;
+  if(active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT') && !active.readOnly && !active.disabled){
+    if(active.selectionStart !== undefined && active.selectionEnd !== undefined && active.selectionStart !== active.selectionEnd){
+      return {type:'input', el:active, text:active.value.slice(active.selectionStart, active.selectionEnd)};
+    }
+  }
+  const sel = window.getSelection();
+  if(!sel || !sel.rangeCount || !sel.toString().trim()) return null;
+  const range = sel.getRangeAt(0).cloneRange();
+  const editor = editableFromNode(range.commonAncestorContainer);
+  if(editor && isRich(editor) && rangeInside(editor, range)){
+    return {type:'rich', el:editor, range, text:sel.toString()};
+  }
+  return {type:'invalid', text:sel.toString()};
+}
+function insertSmartLink(){
+  const picked = currentEditableSelection();
+  if(!picked || !picked.text || !picked.text.trim()){
+    toast("请先在可编辑文本框里选中文字");
+    alert("请先在可编辑文本框里选中文字。");
+    return;
+  }
+  if(picked.type === 'invalid'){
+    toast("只能给可编辑文本框里的文字加链接");
+    alert("只能给可编辑文本框里的文字加链接。请先选中输入框/编辑区里的文字。");
+    return;
+  }
+
+  const label = picked.text.trim();
+  const url = prompt("URL", "https://");
+  if(url === null) return;
+  const href = url || "https://";
+
+  if(picked.type === 'rich'){
+    const sel = window.getSelection();
+    const range = picked.range;
+    const a = document.createElement('a');
+    a.href = href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = label;
+    picked.el.focus();
+    range.deleteContents();
+    range.insertNode(a);
+    range.setStartAfter(a); 
+    range.collapse(true);
+    sel.removeAllRanges(); 
+    sel.addRange(range);
+    savedRange = range.cloneRange();
+    picked.el.dispatchEvent(new Event('input', {bubbles:true}));
+    toast('已添加可点击链接');
+    return;
+  }
+
+  if(picked.type === 'input'){
+    insertAtCursor(picked.el, `[${label}](${href})`);
+    toast('已插入 Markdown 链接');
+    return;
+  }
+}
+function insertMarkdownLink(){ insertSmartLink(); }
+
+function openEditorLink(a){
+  const href = a && a.getAttribute && a.getAttribute('href');
+  if(!href) return;
+  window.open(href, "_blank", "noopener,noreferrer");
+  toast("已打开链接");
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest && e.target.closest(".richbox a");
+  if(!a) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openEditorLink(a);
+}, true);
+document.addEventListener("keydown", (e) => {
+  if(e.key !== "Enter") return;
+  const a = document.activeElement && document.activeElement.closest && document.activeElement.closest(".richbox a");
+  if(a){ e.preventDefault(); openEditorLink(a); }
+});
+
+function autoGrow(el){
+  if(!el || el.tagName !== "TEXTAREA") return;
+  if(el.readOnly || el.classList.contains("output") || el.classList.contains("prompt-output") || el.classList.contains("ai-structure-paste")) return;
+  if(el.dataset.autogrow !== "true") return;
+  el.style.height = "auto";
+  const max = window.innerWidth < 980 ? 520 : 420;
+  el.style.height = Math.min(el.scrollHeight + 2, max) + "px";
+}
+
+function enhanceTextareas(root=document){
+  Array.from(root.querySelectorAll("textarea")).forEach(t => {
+    autoGrow(t);
+    if(!t.dataset.autogrowBound){
+      t.dataset.autogrowBound = "1";
+      t.addEventListener("input", () => autoGrow(t));
+      t.addEventListener("focus", () => autoGrow(t));
+    }
+  });
+  Array.from(root.querySelectorAll('.richbox')).forEach(r => {
+    if(!r.dataset.richBound){
+      r.dataset.richBound = "1";
+      r.addEventListener('focus', () => rememberEditTarget(r));
+      r.addEventListener('input', () => setStatus("有未保存修改"));
+      r.addEventListener('paste', (e) => {
+        const cd = e.clipboardData || window.clipboardData;
+        if(!cd) return;
+        const html = cd.getData('text/html');
+        const plain = cd.getData('text/plain');
+        const md = html ? htmlToMarkdown(html) : cleanMarkdownText(plain || '');
+        if(md){
+          e.preventDefault();
+          insertAtCursor(r, md);
+          setStatus("已按 Markdown 纯文本粘贴，换行会保留");
+        }
+      });
+    }
+  });
+}
+
+function presetSections(kind, d){
+  const type = String((d && d.type) || fieldText('type') || '');
+  let preset = kind || 'smart';
+  if(preset === 'smart'){
+    if(type.includes('Meta') || type.includes('杂谈')) preset = 'talk5';
+    else if(type.includes('活动') || type.includes('What')) preset = 'research6';
+    else if(type.includes('Test')) preset = 'deep8';
+    else preset = 'research6';
+  }
+  const topic = (d && (d.coreQuestion || d.projectTitle)) || fieldText('coreQuestion') || fieldText('projectTitle') || '本期主题';
+  const sets = {
+    research6: [
+      ['Hook','开头Hook','0:00-0:30','让观众立刻知道这期为什么值得看', topic, '标题/问题大字 + 游戏画面', '先把问题放到台面上。'],
+      ['现象','现象：玩家为什么困惑','0:30-2:00','把观众现在看到的矛盾说清楚','版本变化、社区争议、玩家体感、资源压力', '公告/评论截图/版本日历', '问题不是单点，而是几个前提撞在一起。'],
+      ['机制','机制/原因：翻译成人话','2:00-5:00','解释造成现象的核心机制或原因','拆机制、拆数值前提、拆版本环境，不堆术语', '机制截图/角色演示/简单图表', '理解机制后，再看争议会清楚很多。'],
+      ['争议','争议：双方前提不同','5:00-7:00','说明不同观点为什么都会出现','观点A、观点B、各自前提、各自适用人群', '评论区观点对照/表格', '所以问题不只是对错，而是谁在什么前提下说话。'],
+      ['判断','我的判断：适用场景','7:00-9:00','给出有前提的个人判断','事实/推测/个人判断分开说；说明适合谁、不适合谁', '总结表/角色或活动画面', '最后把这期压成一句话。'],
+      ['总结','结尾：一句话总结','9:00-10:00','给观众一个能记住的结论','一句话结论 + 下期/评论引导', '封面式总结画面', '如果你只记一句，就是……']
+    ],
+    quick4: [
+      ['Hook','开头问题','0:00-0:20','快速抛出问题','一句话说出冲突点', '关键画面', '先说结论。'],
+      ['原因','为什么会这样','0:20-1:30','解释最关键原因','只讲一个主因，不展开太多', '截图/简表', '所以判断要看前提。'],
+      ['判断','我的判断','1:30-2:40','给出适用场景','适合谁/不适合谁/还缺什么信息', '总结卡', '最后总结。'],
+      ['总结','结尾','2:40-3:00','收束并引导互动','一句话总结 + 评论问题', '结尾画面', '你怎么看？']
+    ],
+    deep8: [
+      ['Hook','开头Hook','0:00-0:30','建立观看理由', topic, '问题大字/角色画面', '先抛出最大矛盾。'],
+      ['背景','版本背景','0:30-1:40','说明事件发生背景','版本、卡池、活动、玩家资源状态', '版本日历/公告', '背景清楚后，看机制。'],
+      ['机制','核心机制','1:40-3:20','讲清机制本身','机制定义、触发条件、关键限制', '机制演示/图表', '机制本身不难，难的是影响。'],
+      ['影响','实际影响','3:20-4:50','说明机制如何影响体验/资源/强度','对不同玩家的影响', '实战/表格', '影响不同，争议就来了。'],
+      ['争议A','争议观点A','4:50-6:00','公平呈现一方观点','观点A的合理部分与盲区', '评论截图', '另一边的前提不一样。'],
+      ['争议B','争议观点B','6:00-7:10','公平呈现另一方观点','观点B的合理部分与盲区', '评论/对照表', '拆完观点，再给判断。'],
+      ['判断','我的综合判断','7:10-9:00','给出有条件判断','事实、推测、个人判断分开', '总结表', '最后给结论。'],
+      ['总结','结尾与行动建议','9:00-10:00','收束视频','一句话总结、观众怎么做、下期方向', '结尾卡', '这就是本期结论。']
+    ],
+    talk5: [
+      ['Hook','开头观点','0:00-0:40','用一个观点抓住观众','今天想聊的核心观察', '氛围画面/标题卡', '先说我的观察。'],
+      ['现象','现象描述','0:40-2:30','把现象说具体','发生了什么、玩家怎么反应', '社区/游戏画面', '这背后有几个原因。'],
+      ['原因','背后原因','2:30-5:00','拆原因而非下结论','行业、版本、玩家心理、资源结构', '图表/案例', '但这不是简单的好坏。'],
+      ['观点','我的看法','5:00-7:30','给出个人观点','我赞同什么、保留什么、担心什么', '观点卡/案例', '最后说说它意味着什么。'],
+      ['总结','结尾','7:30-8:30','留下讨论空间','一句话总结 + 评论引导', '结尾画面', '你们怎么看？']
+    ]
+  };
+  return (sets[preset] || sets.research6).map(x => ({role:x[0], title:x[1], time:x[2], goal:x[3], content:x[4], visual:x[5], transition:x[6], status:'草稿'}));
+}
+function defaultSections(){ return presetSections('research6', collect()); }
+function normalizeSection(s, idx){
+  s = s || {};
+  const roleRaw = s.role || s.function || s.type || '';
+  return {
+    role: (typeof normalizeRoleValue === 'function') ? normalizeRoleValue(roleRaw) : roleRaw,
+    title: s.title || `章节${idx+1}`,
+    time: s.time || s.duration || '',
+    goal: s.goal || s.purpose || '',
+    content: s.content || s.detail || s.points || '',
+    visual: s.visual || s.visuals || s.material || '',
+    transition: s.transition || '',
+    status: s.status || '草稿'
+  };
+}
+function parseSectionsFromText(text){
+  const lines = String(text || '').split('\n').map(x=>x.trim()).filter(Boolean);
+  const rows = lines.filter(x => x.includes('|'));
+  const body = rows.length && /^(ch|序号)\s*\|/i.test(rows[0]) ? rows.slice(1) : rows;
+  const parsed = body.map((line, idx) => {
+    const p = line.split('|').map(s=>s.trim());
+    if(p.length >= 8){
+      return normalizeSection({role:p[1], title:p[2], time:p[3], goal:p[4], content:p[5], visual:p[6], transition:p[7]}, idx);
+    }
+    if(p.length >= 4){
+      return normalizeSection({title:p[1], time:p[2], content:p.slice(3).join(' | ')}, idx);
+    }
+    if(p.length >= 3){
+      return normalizeSection({title:p[0], time:p[1], content:p.slice(2).join(' | ')}, idx);
+    }
+    return null;
+  }).filter(Boolean);
+  return parsed.length ? parsed : [];
+}
+function getSectionsFromUI(){
+  return Array.from(document.querySelectorAll('.section-row')).map((row, idx) => normalizeSection({
+    role: row.querySelector('.section-role-input')?.value || '',
+    title: row.querySelector('.section-title-input')?.value || `章节${idx+1}`,
+    time: row.querySelector('.section-time-input')?.value || '',
+    goal: getEditorMarkdown(row.querySelector('.section-goal-input')) || '',
+    content: getEditorMarkdown(row.querySelector('.section-content-input')) || '',
+    visual: getEditorMarkdown(row.querySelector('.section-visual-input')) || '',
+    transition: getEditorMarkdown(row.querySelector('.section-transition-input')) || '',
+    status: row.querySelector('.section-status-input')?.value || '草稿'
+  }, idx));
+}
+function sectionsToTable(sections){
+  const arr = (sections || []).map(normalizeSection);
+  return 'Ch | Function | Title | T/min | Goal | Key Contents | Visuals | Transition\n' + arr.map((s,i)=>`${i+1} | ${s.role || ''} | ${s.title || ''} | ${s.time || ''} | ${(s.goal||'').replace(/\n/g,' / ')} | ${(s.content||'').replace(/\n/g,' / ')} | ${(s.visual||'').replace(/\n/g,' / ')} | ${(s.transition||'').replace(/\n/g,' / ')}`).join('\n');
+}
+function sectionsToMarkdown(sections){
+  const arr = (sections || []).map(normalizeSection);
+  return arr.map((s,i)=>`### 第${i+1}节｜${s.role || '未定'}｜${s.title || ''}｜${s.time || ''}\n- 状态：${s.status || '草稿'}\n- 本节目标：${s.goal || ''}\n- 关键内容：${s.content || ''}\n- 画面/素材：${s.visual || ''}\n- 转场句：${s.transition || ''}`).join('\n\n');
+}
+
+function bindStructureNavButtons(root){
+  if(!root) return;
+  root.querySelectorAll('button[data-target-section]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.getAttribute('data-target-section');
+      const row = document.getElementById(`structure-section-${idx}`);
+      if(row) row.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+}
+function updateStructureMiniNav(sections){
+  const nav = $('#structureMiniNav');
+  const fnav = $('#structureFloatingNav');
+  const arr = (sections || getSectionsFromUI()).map(normalizeSection);
+  let content = '';
+  if(!arr.length){
+    content = '<span class="mini-title">章节导航</span><span class="tiny">暂无章节</span>';
+  }else{
+    content = '<span class="mini-title">章节导航</span>' + arr.map((s,i)=>{
+      const role = s.role || '节';
+      const title = (s.title || `第${i+1}节`).replace(/<[^>]*>/g,'').slice(0,12);
+      return `<button type="button" data-target-section="${i+1}">${i+1}. ${role}｜${title}</button>`;
+    }).join('');
+  }
+  if(nav){ nav.innerHTML = content; bindStructureNavButtons(nav); }
+  if(fnav){ fnav.innerHTML = content; bindStructureNavButtons(fnav); }
+}
+
+function renderChapterPreview(sections){
+  const box = $('#chapterPreview');
+  if(!box) return;
+  const arr = sections || getSectionsFromUI();
+  box.style.display = arr.length ? 'block' : 'none';
+  box.textContent = sectionsToMarkdown(arr);
+  const summary = $('#structureSummary');
+  if(summary){
+    const mins = arr.map(s => String(s.time||'')).filter(Boolean).join(' / ');
+    summary.textContent = `当前结构：${arr.length} 节` + (mins ? `｜时间：${mins}` : '');
+  }
+  updateStructureMiniNav(arr);
+}
+function syncSectionsToHidden(){
+  const editor = $('#sectionsEditor');
+  if(!editor) return;
+  const sections = getSectionsFromUI();
+  const sj = $('[data-key="sectionsJson"]');
+  const ct = $('[data-key="chapterTable"]');
+  if(sj) sj.value = JSON.stringify(sections);
+  if(ct) ct.value = sectionsToMarkdown(sections) + '\n\n---\n\n' + sectionsToTable(sections);
+  renderChapterPreview(sections);
+}
+function bindSectionRow(row){
+  row.querySelectorAll('input,select,textarea,.richbox').forEach(el => {
+    el.addEventListener('input', () => { syncSectionsToHidden(); autoGrow(el); setStatus('有未保存修改'); });
+    el.addEventListener('change', () => { syncSectionsToHidden(); setStatus('有未保存修改'); });
+    el.addEventListener('focus', () => rememberEditTarget(el));
+  });
+}
+function setSections(sections){
+  const editor = $('#sectionsEditor');
+  if(!editor) return;
+  editor.innerHTML = '';
+  const arr = (sections && sections.length ? sections : defaultSections()).map(normalizeSection);
+  lastSectionCount = arr.length;
+  arr.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'section-row';
+    row.id = `structure-section-${idx+1}`;
+    row.dataset.sectionIndex = String(idx+1);
+    row.innerHTML = `
+      <div class="section-head">
+        <span class="section-title-badge">第 ${idx+1} 节</span>
+        <div class="section-actions no-print">
+          <button class="ghost section-up" type="button">上移</button>
+          <button class="ghost section-down" type="button">下移</button>
+          <button class="ghost section-copy" type="button">复制</button>
+          <button class="ghost section-delete" type="button">删除</button>
+        </div>
+      </div>
+      <div class="section-grid-main">
+        <div class="field"><label>本节功能</label><select class="section-role-input">
+          <option>Hook</option><option>背景</option><option>现象</option><option>资料</option><option>机制</option><option>争议</option><option>实测</option><option>判断</option><option>建议</option><option>总结</option><option>转场</option><option>其他</option>
+        </select></div>
+        <div class="field"><label>章节标题</label><input class="section-title-input" value="" placeholder="例：为什么玩家会困惑"></div>
+        <div class="field"><label>预计时间</label><input class="section-time-input" value="" placeholder="例：0:30-2:00"></div>
+        <div class="field"><label>状态</label><select class="section-status-input"><option>草稿</option><option>需资料</option><option>待确认</option><option>可录制</option><option>已完成</option></select></div>
+      </div>
+      <div class="field"><label>本节目标：这一节要让观众明白什么</label><div class="section-goal-input richbox section-goal-box" contenteditable="true" data-placeholder="例：先让观众明白争议不是单点问题，而是版本、资源、机制一起叠加。"></div></div>
+      <div class="section-grid-two">
+        <div class="field"><label>关键内容：具体讲什么</label><div class="section-content-input richbox section-content-box" contenteditable="true" data-placeholder="要点、例子、论证顺序。这里不是完整口播稿，只写结构要点。"></div></div>
+        <div class="field"><label>画面/素材：这一节需要什么画面</label><div class="section-visual-input richbox section-visual-box" contenteditable="true" data-placeholder="公告截图、角色演示、实战片段、表格、封面式总结图。"></div></div>
+      </div>
+      <div class="field"><label>转场句：怎么进入下一节</label><div class="section-transition-input richbox section-transition-box" contenteditable="true" data-placeholder="例：理解了这个机制后，再看争议就清楚了。"></div></div>
+    `;
+    row.querySelector('.section-role-input').value = s.role || '其他';
+    row.querySelector('.section-title-input').value = s.title || '';
+    row.querySelector('.section-time-input').value = s.time || '';
+    row.querySelector('.section-status-input').value = s.status || '草稿';
+    setEditorMarkdown(row.querySelector('.section-goal-input'), s.goal || '');
+    setEditorMarkdown(row.querySelector('.section-content-input'), s.content || '');
+    setEditorMarkdown(row.querySelector('.section-visual-input'), s.visual || '');
+    setEditorMarkdown(row.querySelector('.section-transition-input'), s.transition || '');
+    row.querySelector('.section-delete').addEventListener('click', () => { row.remove(); renumberSections(); syncSectionsToHidden(); updateProgress(); });
+    row.querySelector('.section-copy').addEventListener('click', () => { const sections = getSectionsFromUI(); sections.splice(idx+1,0,JSON.parse(JSON.stringify(sections[idx]))); setSections(sections); toast('已复制一节'); });
+    row.querySelector('.section-up').addEventListener('click', () => { moveSection(idx, -1); });
+    row.querySelector('.section-down').addEventListener('click', () => { moveSection(idx, 1); });
+    editor.appendChild(row);
+    bindSectionRow(row);
+    applyFieldRoles(row);
+  });
+  renumberSections();
+  syncSectionsToHidden();
+  enhanceTextareas(editor);
+}
+function renumberSections(){
+  Array.from(document.querySelectorAll('.section-row')).forEach((row, idx) => {
+    row.id = `structure-section-${idx+1}`;
+    row.dataset.sectionIndex = String(idx+1);
+    const badge = row.querySelector('.section-title-badge');
+    if(badge) badge.textContent = `第 ${idx+1} 节`;
+  });
+}
+function moveSection(idx, delta){
+  const sections = getSectionsFromUI();
+  const to = idx + delta;
+  if(to < 0 || to >= sections.length) return;
+  const [item] = sections.splice(idx,1);
+  sections.splice(to,0,item);
+  setSections(sections);
+  toast(delta < 0 ? '已上移' : '已下移');
+}
+function addSection(){
+  const sections = getSectionsFromUI();
+  sections.push({role:'其他', title:`新章节${sections.length+1}`, time:'', goal:'', content:'', visual:'', transition:'', status:'草稿'});
+  lastSectionCount = sections.length;
+  setSections(sections);
+  toast('已加一节');
+}
+function removeLastSection(){
+  const sections = getSectionsFromUI();
+  if(!sections.length) return;
+  sections.pop();
+  lastSectionCount = Math.max(sections.length, 1);
+  setSections(sections);
+  toast('已删除最后一节');
+}
+function mergePresetWithExisting(existing, preset){
+  if(!existing || !existing.length) return preset;
+  const count = existing.length;
+  return Array.from({length: count}, (_, i) => {
+    const e = normalizeSection(existing[i] || {}, i);
+    const p = normalizeSection(preset[i] || {role:'其他', title:`补充章节${i+1}`, time:'', goal:'', content:'', visual:'', transition:''}, i);
+    return {
+      role: e.role && e.role !== '其他' ? e.role : p.role,
+      title: e.title && !/^新章节\d+$/.test(e.title) && !/^章节\d+$/.test(e.title) ? e.title : p.title,
+      time: e.time || p.time,
+      goal: e.goal || p.goal,
+      content: e.content || p.content,
+      visual: e.visual || p.visual,
+      transition: e.transition || p.transition,
+      status: e.status || p.status || '草稿'
+    };
+  });
+}
+
+function sectionHasMeaningfulContent(s){
+  return [s.title,s.goal,s.content,s.visual,s.transition].some(x => String(x||'').trim());
+}
+function setupStructureFloatingNav(){
+  const sec = $('#sec-03');
+  const fnav = $('#structureFloatingNav');
+  if(!sec || !fnav) return;
+  const io = new IntersectionObserver(entries => {
+    const visible = entries.some(e => e.isIntersecting);
+    fnav.classList.toggle('show', visible);
+  }, {threshold:0.02, rootMargin:"-72px 0px -35% 0px"});
+  io.observe(sec);
+}
+function applyStructurePresetFromSelect(){
+  const d = collect();
+  const current = getSectionsFromUI();
+  const preset = presetSections($('#structurePreset')?.value || 'smart', d);
+  const hasContent = current.some(sectionHasMeaningfulContent);
+  if(hasContent){
+    if(!confirm('切换结构预设会按新预设重建 03 结构，并覆盖当前章节内容。确定？')){
+      toast('已取消切换结构预设');
+      return;
+    }
+  }
+  setSections(preset);
+  toast(`已应用结构预设：${preset.length} 节`);
+}
+
+function makeChapterSkeleton(){
+  const d = collect();
+  const preset = presetSections($('#structurePreset')?.value || 'smart', d);
+  const current = getSectionsFromUI();
+  const next = mergePresetWithExisting(current, preset);
+  setSections(next);
+  toast(`已补全结构骨架：${next.length} 节`);
+}
+function rebuildChapterSkeleton(){
+  const current = getSectionsFromUI();
+  const hasContent = current.some(s => [s.title,s.goal,s.content,s.visual,s.transition].some(x => String(x||'').trim()));
+  if(hasContent && !confirm('这会按预设重建 03 结构，并覆盖当前章节内容。确定？')) return;
+  const d = collect();
+  const next = presetSections($('#structurePreset')?.value || 'smart', d);
+  setSections(next);
+  toast(`已按预设重建：${next.length} 节`);
+}
+
+function structurePresetFromCount(count){
+  if(count === 4) return 'quick4';
+  if(count === 5) return 'talk5';
+  if(count === 6) return 'research6';
+  if(count === 8) return 'deep8';
+  return 'smart';
+}
+function setStructurePresetDisplay(valueOrSections, d){
+  const sel = $('#structurePreset');
+  if(!sel) return;
+  let val = '';
+  if(typeof valueOrSections === 'string') val = valueOrSections;
+  else if(Array.isArray(valueOrSections)) val = structurePresetFromCount(valueOrSections.length);
+  if(d && d.structurePreset) val = d.structurePreset;
+  if(!['smart','research6','quick4','deep8','talk5'].includes(val)) val = 'smart';
+  sel.value = val;
+}
+function escapeRegExp(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function normalizeRoleValue(role){
+  const r = String(role||'').trim();
+  if(!r) return '';
+  if(/hook|钩子|开头/i.test(r)) return 'Hook';
+  if(/背景|前提/.test(r)) return '背景';
+  if(/现象/.test(r)) return '现象';
+  if(/资料|证据|信息/.test(r)) return '资料';
+  if(/机制|原因|原理/.test(r)) return '机制';
+  if(/争议|观点|分歧/.test(r)) return '争议';
+  if(/实测|测试|验证/.test(r)) return '实测';
+  if(/判断|结论/.test(r)) return '判断';
+  if(/建议|行动|怎么做/.test(r)) return '建议';
+  if(/总结|收束|结尾/.test(r)) return '总结';
+  if(/转场/.test(r)) return '转场';
+  const allowed = ['Hook','背景','现象','资料','机制','争议','实测','判断','建议','总结','转场','其他'];
+  return allowed.includes(r) ? r : '其他';
+}
+function extractAIField(chunk, labels){
+  const all = '本节功能|功能|章节标题|标题|预计时间|时间|T/min|状态|本节目标|目标|关键内容|关键要点|具体讲什么|内容|画面/素材|画面素材|画面|素材|Visuals|转场句|转场';
+  const lab = labels.map(escapeRegExp).join('|');
+  const re = new RegExp(`(?:^|\\n)\\s*(?:[-*]\\s*)?(?:${lab})\\s*[:：]\\s*([\\s\\S]*?)(?=\\n\\s*(?:[-*]\\s*)?(?:${all})\\s*[:：]|\\n\\s*#{0,4}\\s*第\\s*[0-9一二三四五六七八九十]+\\s*[节節]|$)`, 'i');
+  const m = chunk.match(re);
+  return m ? m[1].trim().replace(/\n{3,}/g,'\n\n') : '';
+}
+function parseHeadingFields(heading){
+  const h = String(heading || '').replace(/^#+\s*/,'').trim();
+  const parts = h.split(/[｜|]/).map(x => x.trim()).filter(Boolean);
+  const out = {};
+  if(parts.length >= 4 && /第/.test(parts[0])){
+    out.role = parts[1];
+    out.title = parts[2];
+    out.time = parts[3];
+  }else if(parts.length >= 3){
+    out.role = parts[0].replace(/^第.*?节\s*/,'');
+    out.title = parts[1];
+    out.time = parts[2];
+  }
+  return out;
+}
+function parseAISectionsText(text){
+  const raw = String(text || '').trim();
+  if(!raw) return [];
+  const tableParsed = parseSectionsFromText(raw);
+  if(tableParsed && tableParsed.length >= 2) return tableParsed.map(normalizeSection);
+
+  const headingRe = /(^|\n)\s*(#{1,4}\s*)?第\s*([0-9一二三四五六七八九十]+)\s*[节節][^\n]*/g;
+  const matches = Array.from(raw.matchAll(headingRe));
+  let chunks = [];
+  if(matches.length){
+    for(let i=0;i<matches.length;i++){
+      const start = matches[i].index + (matches[i][1] ? matches[i][1].length : 0);
+      const end = i+1 < matches.length ? matches[i+1].index : raw.length;
+      chunks.push(raw.slice(start, end).trim());
+    }
+  }else{
+    chunks = raw.split(/\n(?=#{1,4}\s+)/).map(x=>x.trim()).filter(Boolean);
+  }
+
+  const parsed = chunks.map((chunk, idx) => {
+    const firstLine = (chunk.split('\n')[0] || '').trim();
+    const fromHead = parseHeadingFields(firstLine);
+    const s = {
+      role: extractAIField(chunk, ['本节功能','功能']) || fromHead.role || '',
+      title: extractAIField(chunk, ['章节标题','标题']) || fromHead.title || `章节${idx+1}`,
+      time: extractAIField(chunk, ['预计时间','时间','T/min']) || fromHead.time || '',
+      status: extractAIField(chunk, ['状态']) || '草稿',
+      goal: extractAIField(chunk, ['本节目标','目标']),
+      content: extractAIField(chunk, ['关键内容','关键要点','具体讲什么','内容']),
+      visual: extractAIField(chunk, ['画面/素材','画面素材','画面','素材','Visuals']),
+      transition: extractAIField(chunk, ['转场句','转场'])
+    };
+    s.role = normalizeRoleValue(s.role);
+    return normalizeSection(s, idx);
+  }).filter(s => [s.role,s.title,s.time,s.goal,s.content,s.visual,s.transition].some(x => String(x||'').trim()));
+
+  return parsed;
+}
+function mergeAIStructureWithCurrent(current, parsed, keepCurrentCount){
+  const base = keepCurrentCount && current && current.length ? current : parsed;
+  const count = base.length;
+  return Array.from({length: count}, (_, i) => {
+    const c = normalizeSection((current || [])[i] || {}, i);
+    const p = normalizeSection((parsed || [])[i] || {}, i);
+    return normalizeSection({
+      role: p.role || c.role,
+      title: p.title && !/^章节\d+$/.test(p.title) ? p.title : c.title,
+      time: p.time || c.time,
+      status: p.status || c.status || '草稿',
+      goal: p.goal || c.goal,
+      content: p.content || c.content,
+      visual: p.visual || c.visual,
+      transition: p.transition || c.transition
+    }, i);
+  });
+}
+function applyAIStructureText(){
+  const area = $('#aiStructurePaste');
+  const raw = area ? area.value.trim() : '';
+  if(!raw){
+    toast('请先粘贴 AI 生成的章节结构文本');
+    alert('请先粘贴 AI 生成的章节结构文本。');
+    return;
+  }
+  const parsed = parseAISectionsText(raw);
+  if(!parsed.length){
+    alert('没有识别到章节结构。建议让 AI 使用“### 第1节 + 本节功能/章节标题/预计时间/本节目标/关键内容/画面/素材/转场句”的格式输出。');
+    return;
+  }
+  const current = getSectionsFromUI();
+  let keepCurrent = current.length > 0;
+  if(current.length && parsed.length !== current.length){
+    keepCurrent = !confirm(`AI 识别到 ${parsed.length} 节，但当前结构是 ${current.length} 节。\\n\\n确定 = 按 AI 的 ${parsed.length} 节重建。\\n取消 = 保留当前 ${current.length} 节，只按顺序填入内容。`);
+  }
+  const next = mergeAIStructureWithCurrent(current, parsed, keepCurrent);
+  setSections(next);
+  setStructurePresetDisplay(next);
+  if(area) area.value = '';
+  toast(`已应用 AI 结构：${next.length} 节，导入区已清空`);
+  setStatus(`已应用 AI 结构：${next.length} 节`);
+}
+function clearAIStructureText(){
+  const area = $('#aiStructurePaste');
+  if(area) area.value = '';
+  toast('已清空 AI 结构导入区');
+}
+function renderSectionsFromData(d){
+  let sections = [];
+  if(d && d.sectionsJson){
+    try{ sections = JSON.parse(d.sectionsJson); }catch(e){ sections = []; }
+  }
+  if(!sections.length && d && d.chapterTable){ sections = parseAISectionsText(d.chapterTable); }
+  const finalSections = sections.length ? sections.map(normalizeSection) : defaultSections();
+  setStructurePresetDisplay(finalSections, d);
+  setSections(finalSections);
+}
+
+
+function collapseState(){
+  try{ return JSON.parse(localStorage.getItem(CARD_COLLAPSE_STORAGE_KEY) || "{}"); }catch(e){ return {}; }
+}
+function saveCollapseState(id, collapsed){
+  const s = collapseState();
+  if(collapsed) s[id] = true;
+  else delete s[id];
+  localStorage.setItem(CARD_COLLAPSE_STORAGE_KEY, JSON.stringify(s));
+}
+function setCardCollapsed(card, collapsed){
+  if(!card) return;
+  card.classList.toggle('collapsed', !!collapsed);
+  const btn = card.querySelector('.collapse-toggle');
+  if(btn){
+    btn.textContent = collapsed ? '展开' : '收起';
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    btn.title = collapsed ? '展开这个区域' : '收纳这个区域';
+  }
+}
+function setupCollapsibleCards(){
+  const saved = collapseState();
+  document.querySelectorAll('.card[id]').forEach(card => {
+    const h2 = card.querySelector('h2');
+    if(!h2) return;
+    let btn = h2.querySelector('.collapse-toggle');
+    if(!btn){
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'collapse-toggle no-print';
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const next = !card.classList.contains('collapsed');
+        setCardCollapsed(card, next);
+        saveCollapseState(card.id, next);
+      });
+      h2.appendChild(btn);
+    }
+    setCardCollapsed(card, saved[card.id] === true);
+  });
+}
+
+fields().forEach(el => {
+  el.addEventListener("focus", () => rememberEditTarget(el));
+  el.addEventListener("input", () => { 
+    updateProgress(); 
+    updateFileNamePreview(); 
+    autoGrow(el);
+    setStatus("有未保存修改"); 
+  });
+  el.addEventListener("change", () => { 
+    updateProgress(); 
+    updateFileNamePreview(); 
+    setStatus("有未保存修改"); 
+  });
+});
+loadLocal();
+if(!document.querySelector(".section-row")) setSections(defaultSections());
+const presetSelect = $('#structurePreset');
+if(presetSelect) presetSelect.addEventListener('change', applyStructurePresetFromSelect);
+applyFieldRoles(document);
+enhanceTextareas();
+setupPromptOutputSelect();
+refreshShortName();
+updateProgress();
+updateFileNamePreview();
+setupStructureFloatingNav();
+setupCollapsibleCards();
+</script>
+</body>
+</html>

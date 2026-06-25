@@ -4,17 +4,77 @@ GUCC 是一个个人游戏内容创作与资料管理仓库，包含视频项目
 
 ## 快速入口
 
-本地启动：
+本地启动有两种方式。推荐优先使用 **方式一：命令行启动**，最稳、最直观；如果只是日常打开项目，可以使用 **方式二：脚本启动**。
+
+### 方式一：命令行启动
+
+先进入仓库根目录：
 
 ```powershell
-python -m http.server 8000
+cd C:\Users\Inertia\GitHub\GUCC
+```
+
+启动本地静态服务器：
+
+```powershell
+py -m http.server 8000 --bind 127.0.0.1
+```
+
+看到类似下面的提示后，表示服务器已经启动成功：
+
+```text
+Serving HTTP on 127.0.0.1 port 8000 ...
 ```
 
 然后打开：
 
 ```text
-http://localhost:8000/
+http://127.0.0.1:8000/
 ```
+
+注意：这个 PowerShell 窗口需要保持打开。关闭窗口或按 `Ctrl + C` 后，本地服务器会停止，浏览器就无法继续访问。
+
+如果 8000 端口被占用，可以换成其他端口，例如：
+
+```powershell
+py -m http.server 5173 --bind 127.0.0.1
+```
+
+对应打开：
+
+```text
+http://127.0.0.1:5173/
+```
+
+### 方式二：脚本启动
+
+Windows：
+
+```text
+scripts/serve-windows.bat
+```
+
+可以直接双击运行，或在 PowerShell 中执行：
+
+```powershell
+.\scripts\serve-windows.bat
+```
+
+macOS：
+
+```text
+scripts/serve-macos.command
+```
+
+可以直接双击运行，或在终端中执行：
+
+```bash
+./scripts/serve-macos.command
+```
+
+脚本启动后同样需要保持终端窗口打开。只要窗口关闭，本地服务器就会停止。
+
+### 线上入口
 
 GitHub Pages：
 
@@ -66,7 +126,7 @@ GUCC/
 ### Video WorkSpace
 
 ```text
-http://localhost:8000/apps/video-workspace/
+http://127.0.0.1:8000/apps/video-workspace/
 ```
 
 - 视频选题、资料、结构、脚本、发布和复盘工作台
@@ -77,7 +137,7 @@ http://localhost:8000/apps/video-workspace/
 ### Command Center
 
 ```text
-http://localhost:8000/apps/command-center/
+http://127.0.0.1:8000/apps/command-center/
 ```
 
 - Supabase Auth 登录
@@ -89,7 +149,7 @@ http://localhost:8000/apps/command-center/
 ### Cover Generator
 
 ```text
-http://localhost:8000/apps/cover-generator/
+http://127.0.0.1:8000/apps/cover-generator/
 ```
 
 用于生成多种比例的视频封面。共享图片和 Photoshop 模板统一放在 `assets/creative/`。

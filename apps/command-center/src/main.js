@@ -5,7 +5,7 @@ import { initCharacters } from './features/characters.js';
 import { initParties } from './features/parties.js';
 import { initResources } from './features/resources.js';
 import { initVersions } from './features/versions.js';
-import { $, $$, log, setHidden, withBusy } from './ui.js';
+import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
 
 function syncView() {
   const config = getConfigState();
@@ -30,6 +30,7 @@ function initTabs() {
     button.addEventListener('click', () => {
       const panel = $(`#${button.dataset.tab}`);
       if (!panel) return;
+      closeActiveDrawer();
       $$('.tabs button').forEach((item) => item.classList.remove('active'));
       $$('.tab-panel').forEach((item) => item.classList.remove('active'));
       button.classList.add('active');
@@ -96,6 +97,10 @@ function initDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  $('#drawerBackdrop')?.addEventListener('click', closeActiveDrawer);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeActiveDrawer();
+  });
   initTabs();
   initAuth();
   initDashboard();

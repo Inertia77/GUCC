@@ -3,10 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070a10" />
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>GameUp Command Center</title>
-  <link rel="stylesheet" href="styles/app.css" />
+  <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg" />
+  <link rel="stylesheet" href="styles/app.css?v=5.2.2" />
 </head>
 <body>
+  <button id="drawerBackdrop" class="editor-backdrop hidden" type="button" aria-label="关闭编辑面板"></button>
   <div id="app">
     <header class="topbar">
       <div>
@@ -81,7 +87,7 @@
 
         <section id="parties" class="tab-panel">
           <div class="toolbar card compact">
-            <input id="partyKeyword" placeholder="搜索配队描述 / 成员" />
+            <input id="partyKeyword" placeholder="搜索配队描述 / 成员 / 类型 / 状态 / 持有状态" />
             <input id="partyGame" placeholder="游戏简称" />
             <button id="searchPartyBtn" type="button">搜索配队</button>
             <button id="newPartyBtn" type="button" class="secondary">新增配队</button>
@@ -121,6 +127,6 @@
     </main>
   </div>
 
-  <script type="module" src="src/main.js?v=5.1.0"></script>
+  <script type="module" src="src/main.js?v=5.2.4"></script>
 </body>
 </html>

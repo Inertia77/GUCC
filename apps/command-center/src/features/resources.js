@@ -1,6 +1,7 @@
 import { API } from '../api.js';
 import {
   $,
+  bindEnterSearch,
   escapeHtml,
   normalizeRows,
   renderLinks,
@@ -37,5 +38,7 @@ export async function searchResources() {
 }
 
 export function initResources() {
-  $('#searchResourceBtn').addEventListener('click', () => withBusy($('#searchResourceBtn'), '搜索中...', searchResources));
+  const searchButton = $('#searchResourceBtn');
+  searchButton.addEventListener('click', () => withBusy(searchButton, '搜索中...', searchResources));
+  bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchResources);
 }

@@ -1,26 +1,122 @@
 import { API } from '../api.js';
 import {
   $,
+  bindEnterSearch,
   escapeHtml,
   log,
   normalizeRows,
+  closeDrawer,
+  openDrawer,
   parseJsonArray,
   readForm,
   renderListState,
   renderMeta,
-  setHidden,
   withBusy
 } from '../ui.js';
 
 let versionRows = new Map();
 
+function normalizeToken(value) {
+  return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+}
+
+function phaseKey(value) {
+  const token = normalizeToken(value);
+  if (!token) return 'other';
+  if (token.includes('first') || token.includes('phase_1') || token.includes('上半')) return 'first_half';
+  if (token.includes('second') || token.includes('phase_2') || token.includes('下半')) return 'second_half';
+  if (token.includes('standard') || token.includes('permanent') || token.includes('常驻') || token.includes('非限定')) return 'standard';
+  return 'other';
+}
+
+function phaseLabel(key, raw) {
+  return {
+    first_half: '上半',
+    second_half: '下半',
+    standard: '常驻 / 其他池',
+    other: raw || '未分组'
+  }[key] || raw || '未分组';
+}
+
+function bannerTypeLabel(value) {
+  const token = normalizeToken(value);
+  if (token.includes('rerun') || token.includes('复刻')) return '复刻';
+  if (token.includes('standard_addition') || token.includes('常驻追加')) return '常驻追加';
+  if (token.includes('standard') || token.includes('permanent') || token.includes('常驻')) return '常驻';
+  if (token.includes('new_limited')) return '新限定';
+  if (token.includes('pickup') || token.includes('up')) return '新出 / UP';
+  if (token.includes('collab') || token.includes('联动')) return '联动';
+  return value || '未标注';
+}
+
+function bannerTypeClass(value) {
+  const token = normalizeToken(value);
+  if (token.includes('rerun') || token.includes('复刻')) return 'rerun';
+  if (token.includes('standard') || token.includes('permanent') || token.includes('常驻')) return 'standard';
+  if (token.includes('new') || token.includes('pickup') || token.includes('up') || token.includes('限定')) return 'new';
+  return 'other';
+}
+
+function renderVersionNote(note) {
+  if (!note) return '';
+  return `
+    <div class="version-note">
+      <span>备注</span>
+      <p>${escapeHtml(note)}</p>
+    </div>`;
+}
+
+function renderBannerChip(banner) {
+  const character = banner.character_name || banner.character_name_raw || banner.name || '未命名角色';
+  const note = banner.note ? `<small>${escapeHtml(banner.note)}</small>` : '';
+  return `
+    <div class="banner-chip ${bannerTypeClass(banner.banner_type)}">
+      <span class="banner-character">${escapeHtml(character)}</span>
+      <span class="banner-type">${escapeHtml(bannerTypeLabel(banner.banner_type))}</span>
+      ${note}
+    </div>`;
+}
+
+function renderBannerGroups(banners = []) {
+  if (!Array.isArray(banners) || !banners.length) {
+    return '<div class="banner-empty">暂无卡池记录</div>';
+  }
+
+  const grouped = banners.reduce((acc, banner) => {
+    const key = phaseKey(banner.phase);
+    acc[key] = acc[key] || [];
+    acc[key].push(banner);
+    return acc;
+  }, {});
+
+  const order = ['first_half', 'second_half', 'standard', 'other'];
+  return `
+    <div class="version-banners">
+      ${order.filter((key) => grouped[key]?.length).map((key) => `
+        <section class="banner-phase ${key}">
+          <div class="phase-head">
+            <span>${escapeHtml(phaseLabel(key, grouped[key][0]?.phase))}</span>
+            <small>${grouped[key].length} entries</small>
+          </div>
+          <div class="banner-list">${grouped[key].map(renderBannerChip).join('')}</div>
+        </section>
+      `).join('')}
+    </div>`;
+}
+
 function openEditor(data = {}) {
   const editor = $('#versionEditor');
   editor.innerHTML = `
-    <h2>${data.id ? '编辑版本' : '新增版本'}</h2>
-    <form id="versionForm" class="form-grid">
+    <div class="editor-header">
+      <div>
+        <p class="kicker">VERSION RECORD</p>
+        <h2 id="versionEditorTitle">${data.id ? '编辑版本' : '新增版本'}</h2>
+      </div>
+      <button type="button" id="closeVersionEditor" class="icon-button" aria-label="关闭版本编辑器">×</button>
+    </div>
+    <form id="versionForm" class="editor-body form-grid">
       <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-      <label>游戏 code <input name="game_code" required value="${escapeHtml(data.game_code || '')}" /></label>
+      <label>游戏 code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" /></label>
       <label>版本号 <input name="version_no" required value="${escapeHtml(data.version_no || '')}" /></label>
       <label>版本名 <input name="version_name" value="${escapeHtml(data.version_name || '')}" /></label>
       <label>开始日期 <input name="start_date" type="date" value="${escapeHtml(data.start_date || '')}" /></label>
@@ -32,11 +128,16 @@ function openEditor(data = {}) {
         <button type="submit">保存版本</button>
         <button type="button" id="cancelVersionEdit" class="ghost">取消</button>
       </div>
+      <pre id="versionSaveLog" class="log wide" aria-live="polite"></pre>
     </form>
-    <pre id="versionSaveLog" class="log" aria-live="polite"></pre>`;
+  `;
 
-  setHidden(editor, false);
-  $('#cancelVersionEdit').addEventListener('click', () => setHidden(editor, true));
+  editor.setAttribute('role', 'dialog');
+  editor.setAttribute('aria-modal', 'true');
+  editor.setAttribute('aria-labelledby', 'versionEditorTitle');
+  $('#closeVersionEditor').addEventListener('click', () => closeDrawer(editor));
+  $('#cancelVersionEdit').addEventListener('click', () => closeDrawer(editor));
+  openDrawer(editor);
   $('#versionForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
@@ -80,10 +181,13 @@ export async function searchVersions() {
     }
 
     container.innerHTML = list.map((row) => `
-      <article class="item">
-        <div class="item-head">
+      <article class="item version-card">
+        <div class="item-head version-head">
           <div>
-            <div class="item-title">${escapeHtml(row.version_no || '')} ${escapeHtml(row.version_name || '')}</div>
+            <div class="item-title version-title">
+              <span class="version-no">${escapeHtml(row.version_no || '')}</span>
+              <span>${escapeHtml(row.version_name || '未命名版本')}</span>
+            </div>
             ${renderMeta([row.game_code, row.start_date])}
           </div>
           <div class="actions">
@@ -91,8 +195,8 @@ export async function searchVersions() {
             <button type="button" data-delete-version="${escapeHtml(row.id)}" class="danger">删除</button>
           </div>
         </div>
-        <div class="hint">${escapeHtml(row.note || '')}</div>
-        <div>${escapeHtml((row.banners || []).map((banner) => `${banner.phase}:${banner.banner_type}:${banner.character_name || banner.character_name_raw}`).join(' / '))}</div>
+        ${renderVersionNote(row.note)}
+        ${renderBannerGroups(row.banners || [])}
       </article>`).join('');
   } catch (error) {
     renderListState(container, error.message, 'error');
@@ -100,7 +204,9 @@ export async function searchVersions() {
 }
 
 export function initVersions() {
-  $('#searchVersionBtn').addEventListener('click', () => withBusy($('#searchVersionBtn'), '搜索中...', searchVersions));
+  const searchButton = $('#searchVersionBtn');
+  searchButton.addEventListener('click', () => withBusy(searchButton, '搜索中...', searchVersions));
+  bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchVersions);
   $('#newVersionBtn').addEventListener('click', () => openEditor({ banners: [] }));
   $('#versionResults').addEventListener('click', async (event) => {
     const editButton = event.target.closest('[data-edit-version]');

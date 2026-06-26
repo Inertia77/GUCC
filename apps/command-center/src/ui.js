@@ -20,6 +20,35 @@ export function setHidden(el, hidden) {
   el.classList.toggle('hidden', Boolean(hidden));
 }
 
+let activeDrawer = null;
+
+export function openDrawer(editor) {
+  if (!editor) return;
+  if (activeDrawer && activeDrawer !== editor) {
+    setHidden(activeDrawer, true);
+  }
+  activeDrawer = editor;
+  setHidden(editor, false);
+  setHidden($('#drawerBackdrop'), false);
+  document.body.classList.add('editor-open');
+  editor.scrollTop = 0;
+  requestAnimationFrame(() => {
+    editor.querySelector('[data-autofocus], input:not([type="hidden"]), textarea, select')?.focus({ preventScroll: true });
+  });
+}
+
+export function closeDrawer(editor = activeDrawer) {
+  if (!editor) return;
+  setHidden(editor, true);
+  if (activeDrawer === editor) activeDrawer = null;
+  setHidden($('#drawerBackdrop'), true);
+  document.body.classList.remove('editor-open');
+}
+
+export function closeActiveDrawer() {
+  closeDrawer(activeDrawer);
+}
+
 export function readForm(formEl) {
   const data = {};
   formEl.querySelectorAll('[name]').forEach((input) => {
@@ -48,7 +77,7 @@ export function renderLinks(links) {
     const url = safeExternalUrl(link.url || link.resource_url);
     if (!url) return '';
     const title = link.title || link.resource_title || url;
-    return `<a class="link-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(title)}</a>`;
+    return `<a class="link-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">↗ ${escapeHtml(title)}</a>`;
   }).join('')}</div>`;
 }
 
@@ -75,6 +104,17 @@ export function normalizeRows(value) {
 
 export function renderListState(container, message, type = '') {
   container.innerHTML = `<div class="card state ${escapeHtml(type)}">${escapeHtml(message)}</div>`;
+}
+
+export function bindEnterSearch(container, button, busyText, task) {
+  if (!container || !button) return;
+  container.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || event.isComposing) return;
+    if (!event.target?.matches?.('input, select')) return;
+    event.preventDefault();
+    if (button.disabled) return;
+    withBusy(button, busyText, task);
+  });
 }
 
 export async function withBusy(button, busyText, task) {

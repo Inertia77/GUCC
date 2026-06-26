@@ -342,6 +342,9 @@ begin
         v_keyword is null
         or p.summary ilike '%'||v_keyword||'%'
         or p.description ilike '%'||v_keyword||'%'
+        or coalesce(p.party_type, '') ilike '%'||v_keyword||'%'
+        or coalesce(p.status, '') ilike '%'||v_keyword||'%'
+        or coalesce(p.hold_status, '') ilike '%'||v_keyword||'%'
         or exists (
           select 1
           from public.party_members pm

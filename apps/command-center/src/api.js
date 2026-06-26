@@ -7,15 +7,24 @@ export async function callApi(action, payload = {}) {
   const accessToken = await getAccessToken();
   const baseUrl = CONFIG.SUPABASE_URL.replace(/\/+$/, '');
   const url = `${baseUrl}/functions/v1/${CONFIG.EDGE_FUNCTION_NAME}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'apikey': CONFIG.SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${accessToken}`
-    },
-    body: JSON.stringify({ action, payload })
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'apikey': CONFIG.SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ action, payload })
+    });
+  } catch (error) {
+    const origin = window.location.origin;
+    const localHint = origin === 'http://127.0.0.1:8000'
+      ? '\n当前地址是 http://127.0.0.1:8000，请改用 http://localhost:8000/apps/command-center/，或把 http://127.0.0.1:8000 加入 Supabase Edge Function 的 ALLOWED_ORIGINS。'
+      : '';
+    throw new Error(`无法连接后端。通常是网络、CORS 白名单或 Edge Function 配置问题。当前页面 Origin: ${origin}${localHint}\n原始错误：${error.message}`);
+  }
 
   const text = await res.text();
   let json;

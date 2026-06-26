@@ -1,15 +1,17 @@
 import { API } from '../api.js';
 import {
   $,
+  bindEnterSearch,
   escapeHtml,
   log,
   normalizeRows,
+  closeDrawer,
+  openDrawer,
   parseJsonArray,
   readForm,
   renderLinks,
   renderListState,
   renderMeta,
-  setHidden,
   withBusy
 } from '../ui.js';
 
@@ -19,10 +21,16 @@ function openEditor(data = {}) {
   const editor = $('#characterEditor');
 
   editor.innerHTML = `
-    <h2>${data.id ? '编辑角色' : '新增角色'}</h2>
-    <form id="charForm" class="form-grid">
+    <div class="editor-header">
+      <div>
+        <p class="kicker">CHARACTER RECORD</p>
+        <h2 id="characterEditorTitle">${data.id ? '编辑角色' : '新增角色'}</h2>
+      </div>
+      <button type="button" id="closeCharEditor" class="icon-button" aria-label="关闭角色编辑器">×</button>
+    </div>
+    <form id="charForm" class="editor-body form-grid">
       <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-      <label>游戏 code / short_code <input name="game_code" required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩" /></label>
+      <label>游戏 code / short_code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩" /></label>
       <label>角色名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" /></label>
       <label>属性 <input name="element" value="${escapeHtml(data.element || '')}" /></label>
       <label>职业 <input name="profession" value="${escapeHtml(data.profession || '')}" /></label>
@@ -46,11 +54,16 @@ function openEditor(data = {}) {
         <button type="submit">保存角色</button>
         <button type="button" id="cancelCharEdit" class="ghost">取消</button>
       </div>
+      <pre id="charSaveLog" class="log wide" aria-live="polite"></pre>
     </form>
-    <pre id="charSaveLog" class="log" aria-live="polite"></pre>`;
+  `;
 
-  setHidden(editor, false);
-  $('#cancelCharEdit').addEventListener('click', () => setHidden(editor, true));
+  editor.setAttribute('role', 'dialog');
+  editor.setAttribute('aria-modal', 'true');
+  editor.setAttribute('aria-labelledby', 'characterEditorTitle');
+  $('#closeCharEditor').addEventListener('click', () => closeDrawer(editor));
+  $('#cancelCharEdit').addEventListener('click', () => closeDrawer(editor));
+  openDrawer(editor);
   $('#charForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
@@ -123,7 +136,9 @@ export async function searchCharacters() {
 }
 
 export function initCharacters() {
-  $('#searchCharBtn').addEventListener('click', () => withBusy($('#searchCharBtn'), '搜索中...', searchCharacters));
+  const searchButton = $('#searchCharBtn');
+  searchButton.addEventListener('click', () => withBusy(searchButton, '搜索中...', searchCharacters));
+  bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchCharacters);
   $('#newCharBtn').addEventListener('click', () => openEditor({ links: [] }));
   $('#characterResults').addEventListener('click', async (event) => {
     const detailButton = event.target.closest('[data-detail-char]');
@@ -135,8 +150,20 @@ export function initCharacters() {
           openEditor(await API.getCharacterDetail({ id: detailButton.dataset.detailChar }));
         } catch (error) {
           const editor = $('#characterEditor');
-          setHidden(editor, false);
-          renderListState(editor, error.message, 'error');
+          editor.innerHTML = `
+            <div class="editor-header">
+              <div>
+                <p class="kicker">LOAD ERROR</p>
+                <h2 id="characterEditorTitle">角色详情加载失败</h2>
+              </div>
+              <button type="button" id="closeCharEditor" class="icon-button" aria-label="关闭角色编辑器">×</button>
+            </div>
+            <div class="editor-body"><div class="card state error">${escapeHtml(error.message)}</div></div>`;
+          editor.setAttribute('role', 'dialog');
+          editor.setAttribute('aria-modal', 'true');
+          editor.setAttribute('aria-labelledby', 'characterEditorTitle');
+          $('#closeCharEditor').addEventListener('click', () => closeDrawer(editor));
+          openDrawer(editor);
         }
       });
     }

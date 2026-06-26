@@ -427,6 +427,18 @@
       padding: 0 14px 14px;
     }
 
+    .reference-feature {
+      grid-column: 1 / -1;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border-color: rgba(118, 247, 255, .24) !important;
+      background:
+        linear-gradient(135deg, rgba(118, 247, 255, .09), rgba(119, 255, 184, .045)),
+        rgba(255, 255, 255, .025) !important;
+    }
+
     .reference-link {
       display: block;
       color: var(--muted);
@@ -448,6 +460,12 @@
       display: block;
       font-size: 12px;
       line-height: 1.5;
+    }
+
+    .reference-arrow {
+      color: var(--cyan);
+      font-size: 18px !important;
+      font-weight: 900;
     }
 
     .notice {
@@ -599,6 +617,13 @@
     <details class="reference-panel">
       <summary>备用资料库</summary>
       <div class="reference-grid">
+        <a class="reference-link reference-feature" href="./reference/resource-library.html">
+          <span>
+            <strong>GUCC 资料库</strong>
+            <span>游戏 Wiki、官方资料、攻略合集与高优先级研究入口。</span>
+          </span>
+          <span class="reference-arrow">›</span>
+        </a>
         <a class="reference-link" href="./reference/query-guides/query-manual.md">
           <strong>Query Manual</strong>
           <span>查询手册与常用 SQL 思路。</span>

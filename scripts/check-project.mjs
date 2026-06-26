@@ -16,8 +16,9 @@ function walk(dir, extensions) {
 }
 
 function checkSyntax(file, extraArgs = []) {
-  const result = spawnSync(process.execPath, [...extraArgs, '--check', file], {
-    encoding: 'utf8'
+  const result = spawnSync(process.execPath, [...extraArgs, '--check', '--input-type=module'], {
+    encoding: 'utf8',
+    input: readFileSync(file, 'utf8')
   });
   checkedFiles += 1;
   if (result.status !== 0) {

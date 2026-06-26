@@ -1,46 +1,35 @@
-# 异环 / NTE / Neverness to Everness 剧情资料库
+# 异环 / Neverness to Everness 剧情资料库
 
-> 英文/国际名：Neverness to Everness  
-> 状态：已上线初期，都市怪奇主线持续更新  
-> 最后更新：2026-06-26  
-> 资料库定位：剧情总览、版本剧情、人物关系、阵营关系、伏笔谜团、视频选题母稿。
+> 英文名：Neverness to Everness  
+> 用途：海特洛市、异象事件、角色关系、城市传闻和视频选题参考  
+> 整理日期：2026-06-27
 
-## 当前整理重点
+这个分册用于整理《异环 / Neverness to Everness》的公开剧情资料。重点关注海特洛市、异象事件、角色与组织关系，以及适合上线前后持续追踪的城市异常线索。
 
-海特洛市、异象、异象猎人、伊波恩古董店、异能者与都市日常奇遇
+## 快速入口
 
-## 文件结构
+| 文件 | 内容 |
+|---|---|
+| `00-overview.md` | 世界观总览、核心概念和资料边界 |
+| `01-timeline.md` | 宣发节点、版本节点和剧情推进 |
+| `02-factions.md` | 城市组织、管理体系和潜在势力 |
+| `03-characters.md` | 角色关系、身份信息和可用观察点 |
+| `04-mysteries.md` | 异象、城市秘密和未解问题 |
+| `05-video-hooks.md` | 选题钩子、标题方向和脚本结构 |
 
-```text
-neverness-to-everness/
-│  README.md
-│  00-overview.md
-│  01-timeline.md
-│  02-factions.md
-│  03-characters.md
-│  04-mysteries.md
-│  05-video-hooks.md
-│
-└─versions/
-```
+## 版本文档
 
-## 版本/篇章文件
+| 文件 | 主题 |
+|---|---|
+| `versions/0-world-primer-hethereau.md` | 海特洛市世界观入门 |
+| `versions/1.0-hethereau-opening.md` | 1.0 开篇资料占位 |
+| `versions/1.1-urban-anomaly-cases.md` | 1.1 城市异象案件线索 |
+| `versions/1.2-watchlist.md` | 1.2 后续观察清单 |
 
-| 文件 | 内容 | 状态 |
-|---|---|---|
-| `0-world-primer-hethereau.md` | 世界观预习：海特洛市、异象与异象猎人 | v1：已建档 |
-| `1.0-hethereau-opening.md` | 1.0 海特洛市启篇：无证上岗的异象猎人 | v1：已建档 |
-| `1.1-urban-anomaly-cases.md` | 1.1 都市异象案件：角色、委托与城市关系 | v1：已建档 |
-| `1.2-watchlist.md` | 1.2 观察清单：新角色与 BAC/CSU 相关线 | v1：已建档 |
+## 使用建议
 
-## 使用方法
+做世界观或都市怪谈向内容时，先看 `00-overview.md` 和 `04-mysteries.md`。做角色向内容时从 `03-characters.md` 入手，再回到 `versions/` 补具体事件。
 
-- 想快速回忆剧情：看 `00-overview.md`。
-- 想找时间线：看 `01-timeline.md`。
-- 想做角色关系视频：看 `03-characters.md`。
-- 想找伏笔：看 `04-mysteries.md`。
-- 想做选题：看 `05-video-hooks.md`。
+## 维护规则
 
-## 维护提醒
-
-如果后续版本剧情与本文档判断冲突，以游戏内最新剧情为准。旧推测不要直接删除，建议移动到“已证伪推测”小节，保留考据轨迹。
+城市传闻、玩法猜测和剧情事实要分开保存。跨版本反复出现的线索沉淀到 `04-mysteries.md`，单个版本的信息留在对应 `versions/` 文件。

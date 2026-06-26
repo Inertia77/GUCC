@@ -1,45 +1,34 @@
 # 无限大 / ANANTA 剧情资料库
 
-> 英文/国际名：ANANTA  
-> 状态：预研/公开资料阶段  
-> 最后更新：2026-06-26  
-> 资料库定位：剧情总览、版本剧情、人物关系、阵营关系、伏笔谜团、视频选题母稿。
+> 英文名：ANANTA  
+> 用途：公开 PV、实机演示、城市设定、角色线索和上线前选题储备  
+> 整理日期：2026-06-27
 
-## 当前整理重点
+这个分册用于整理《无限大 / ANANTA》的公开资料。当前以官方 PV、实机展示、城市氛围、角色设定和可验证线索为主，适合做上线前资料归档、设定盘点和预热视频。
 
-Nova City、新任队长、特殊行动小队、都市自由行动与超常事件
+## 快速入口
 
-## 文件结构
+| 文件 | 内容 |
+|---|---|
+| `00-overview.md` | 世界观总览、公开信息和资料边界 |
+| `01-timeline.md` | 宣发节点、PV 与实机信息时间线 |
+| `02-factions.md` | 城市组织、势力和可能的角色归属 |
+| `03-characters.md` | 已公开角色、人物标签和待验证信息 |
+| `04-mysteries.md` | 仍未说明的设定、系统和剧情问题 |
+| `05-video-hooks.md` | 上线前视频选题、标题和脚本切入点 |
 
-```text
-ananta/
-│  README.md
-│  00-overview.md
-│  01-timeline.md
-│  02-factions.md
-│  03-characters.md
-│  04-mysteries.md
-│  05-video-hooks.md
-│
-└─versions/
-```
+## 版本文档
 
-## 版本/篇章文件
+| 文件 | 主题 |
+|---|---|
+| `versions/0-world-primer-nova-city.md` | Nova City 世界观入门 |
+| `versions/0-trailer-and-demo-notes.md` | PV 与实机演示信息摘记 |
+| `versions/future-version-template.md` | 正式版本文档模板 |
 
-| 文件 | 内容 | 状态 |
-|---|---|---|
-| `0-world-primer-nova-city.md` | 世界观预习：Nova City 与都市开放世界 | v1：已建档 |
-| `0-trailer-and-demo-notes.md` | PV/实机演示资料：队长、特殊小队与行动风格 | v1：已建档 |
-| `future-version-template.md` | 未来正式版本剧情模板 | v1：已建档 |
+## 使用建议
 
-## 使用方法
+这个分册尤其需要区分“已公开事实”和“推测”。做视频前先从 `00-overview.md` 确认资料边界，再用 `04-mysteries.md` 提炼问题，用 `05-video-hooks.md` 组合标题和脚本结构。
 
-- 想快速回忆剧情：看 `00-overview.md`。
-- 想找时间线：看 `01-timeline.md`。
-- 想做角色关系视频：看 `03-characters.md`。
-- 想找伏笔：看 `04-mysteries.md`。
-- 想做选题：看 `05-video-hooks.md`。
+## 维护规则
 
-## 维护提醒
-
-如果后续版本剧情与本文档判断冲突，以游戏内最新剧情为准。旧推测不要直接删除，建议移动到“已证伪推测”小节，保留考据轨迹。
+新增信息要注明来源类型，例如 PV、官网、实机演示、访谈或社区整理。还没有确认的内容不要写成结论，统一标注为“待验证”。

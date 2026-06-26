@@ -1,0 +1,246 @@
+id,character_id,context,role_type,power_rank,note,created_at,like_level
+017e9831-54dc-511d-a009-ca31b1c259ef,18b934f5-6976-5fbf-a236-ebc1793192ba,current,主C,,,2026-06-19 14:29:13.611862+00,良
+036b7e91-6a23-4d62-9a2d-3b04d9009613,4c5d3316-02a1-5546-b78f-54a03ae4fee1,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+04b1f9a6-ce17-5a29-819b-2631093f5a25,a08b70b4-cae2-52ad-a2c0-2b91bb6708f3,current,辅助,T2,,2026-06-19 14:29:13.611862+00,良
+0656a051-99b8-5ab6-8bf3-4414f9c7ea1e,ab758e38-1795-536a-abca-fef0d4840e45,current,主C,,,2026-06-19 14:29:13.611862+00,中
+086b96ac-1f4b-41b2-956a-a6bdfac39fe5,17fe8cab-753a-5452-b598-07d0c6b528dc,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+09872840-8e55-56e4-97bd-c758eff28802,d3e86acf-3603-55da-8b63-56336a125ff3,current,生存,,,2026-06-19 14:29:13.611862+00,良
+0a995b49-2d3f-5ea2-bf6d-eee0ee57f943,7617d8b4-8d3c-5f99-8a79-ad4f0f63f565,current,"辅助, 辅C",T1,,2026-06-19 14:29:13.611862+00,良
+0a9c4468-86f7-4fae-87f7-479f3f32bb21,f670ea96-df0d-5544-babc-2b3cfede16c5,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+0b536ee4-2294-5e7e-9cca-0941037166e4,5b394057-66c5-509c-9cfe-fd46b5dd447f,current,生存,,,2026-06-19 14:29:13.611862+00,良
+0b8e3376-f95d-5c9b-bc64-7abb7bbb206d,cabf993c-dcff-5a7b-9ce4-fe9063e3ee13,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+0d77b66f-1c0c-58b1-8dea-79d8561bbc1b,d71f3b3d-aed6-509a-bf99-e6d127f4b326,current,主C,T0,,2026-06-19 14:29:13.611862+00,良
+0d82cf1a-1e3d-45be-9bac-44bcd7a143ba,9466ac7c-46f8-521e-9027-7a70ab65b0e7,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,差
+104346e8-691b-537d-9ee0-f1281991e3d7,48f5b0ea-4c68-5d29-8e43-8834cc3600af,current,"分C, 辅C",T0,,2026-06-19 14:29:13.611862+00,优
+112bba54-a785-517c-aebf-e81417763a09,2010c130-638c-5fc3-9c39-0afc203757cb,current,主C,T1,,2026-06-19 14:29:13.611862+00,中
+12ea8423-ccf5-5f8e-ba9d-5e7a8635524b,acca0932-e8dd-51a6-af31-ba1286f947ca,current,辅助,,,2026-06-19 14:29:13.611862+00,优
+1374610d-fb09-54d8-ac98-5d80744c4034,736a8d04-7c41-59f5-ac98-a4bb8f3fa522,current,"副C, 辅助",,,2026-06-19 14:29:13.611862+00,极
+140879a6-737a-5964-b1e9-3c7b8cea0b8b,f63c3e05-dae0-5047-922f-c34f95ff7806,current,"分C, 副C, 辅助",T0,,2026-06-19 14:29:13.611862+00,优
+1491cf53-3d66-4bd5-b061-5744ebe00d6c,b9a66099-5542-5dec-82c0-1e4b587d2b06,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+151d256d-62cb-5d89-8ec4-bcdc51e7e9c0,328e9346-54db-5943-aa78-709c152bf3a8,current,主C,,,2026-06-19 14:29:13.611862+00,良
+1a31cf03-1297-5366-8506-225edba5e108,b5b47d41-8aba-553c-aa59-81eb84d24805,current,主C,,,2026-06-19 14:29:13.611862+00,良
+1a8fde99-f1d7-5636-9470-ff6655f4e694,78b3e5e0-1c26-5c43-950a-ba1a7a7c88d2,current,生存,,,2026-06-19 14:29:13.611862+00,优
+1ba30dd2-0f1b-50a5-b3ab-2792315200cd,f469591e-85d8-527f-9ea7-f8c1c0bbe067,current,"辅助, 副C",T0,,2026-06-19 14:29:13.611862+00,极
+1e20d98b-28c8-463b-9ed7-29df2f7597dd,21692d47-734e-5634-966a-518141d3f013,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+1f469743-e596-5152-a3dd-bd3d1c3d0d4d,f80f8bcc-4a86-5a54-bcc9-bf321b25ad4d,current,主C,,,2026-06-19 14:29:13.611862+00,良
+2094b5c5-fc29-417a-b2b2-a6702d64eb9b,d3dcdc2c-2831-5770-ad7e-f6d58fa78712,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+20f39d95-a370-504e-a912-64914c3dc549,fe90b54a-0f0c-54d4-be9e-791e1d9e3d6d,current,主C,,,2026-06-19 14:29:13.611862+00,良
+22ed2f49-0a72-570b-9d66-937970889d02,68a4c61b-67da-5f7a-95de-7d5d1fa3c58e,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+23eb6209-8173-45ec-8a4c-50ee1435e54b,e82dd12e-c64c-5284-a6c0-ae1eb27133f0,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+2456cb5d-ae83-5479-bcde-5075947302a4,fe3bb351-0c1d-5497-b89e-fc2a9169eb90,current,"副C, 辅C",,,2026-06-19 14:29:13.611862+00,优
+267edd55-8614-5ae5-aab5-5556cda30c37,9f9e05fe-fc39-5de7-9314-fc02d99655b8,current,主C,,,2026-06-19 14:29:13.611862+00,良
+26ba9419-8e88-5490-a6f8-24b2f7006865,5ee4d55d-07d9-54c2-8acf-2128c903a0e1,current,"辅助, 生存",T1,,2026-06-19 14:29:13.611862+00,优
+26de0dd7-e1c0-5831-b8ad-31c160fce6c1,81b985b7-6a49-5e2b-becb-5fb00d8574a2,current,"辅助, 生存",T2,,2026-06-19 14:29:13.611862+00,良
+26fa2868-c05d-4f31-9565-1bc58498787f,edf777a2-044c-594b-9336-b1b3cbac2b89,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+276d8016-ee77-4626-b914-5583d4d95f90,6a5ca501-cdad-53f0-b18b-3850a2f09cfe,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+298a2cfc-7ce4-5fa8-8d7b-2d3e6dea873f,f39746c8-cdf4-5d83-ba34-592a92ee9bfd,current,"副C, 辅C, 辅助",,,2026-06-19 14:29:13.611862+00,优
+2e72d91d-6d9e-5744-ab01-b496e71275f0,c7abcbd3-38a6-5f4a-9f2e-69a368bbc18f,current,主C,T0,,2026-06-19 14:29:13.611862+00,极
+2f36e071-08b4-5825-a882-3e49e0e46197,19a92ead-3e56-5aa8-b072-e493c69c2f11,current,辅助,T3,,2026-06-19 14:29:13.611862+00,良
+2f76028c-27e5-41d7-8dd9-6fa141668667,75b8f146-aa92-5f4c-9af3-b28d5cbe6301,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+2fe1041f-c3b7-4385-92e6-a892be491f16,fa334f9f-47e5-5d06-82b7-c3c80d7fee1e,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+30772460-73c4-5c97-85e5-16807fc6d75b,01cdb555-4023-522c-b14b-ee10551ad3f7,current,主C,T1,,2026-06-19 14:29:13.611862+00,优
+316e4511-1cb5-421c-8edd-ff1f3175bb6f,a924c690-e5eb-50cb-998c-9f185e335eaa,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+31b9d781-7642-4de5-88d9-e8b60dfbe65b,2382b4a0-ca2c-586a-a93d-2c65c616453c,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+322da236-9a95-5ffa-98fb-f1e4f60e7599,59312c02-5880-5274-b877-5f13f7011997,current,"主C, 副C, 分C",,,2026-06-19 14:29:13.611862+00,中
+33452b5e-5bd2-439e-8460-aa82e4b7c620,a9479f22-983c-5dd9-863c-59d7d5c3eab6,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+3773aeac-704e-5611-8d49-65c580337674,319ca6ab-5f3e-57ef-80cc-f1d4663cffaf,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+3905fcd7-bdc3-517a-b83f-e266f1aa45a9,e691a70e-4b01-5fd8-960f-4c4734cdeb4b,current,主C,,,2026-06-19 14:29:13.611862+00,良
+39c2d957-37a1-4c16-aeea-263c5021240a,8836a706-cc5a-5824-8853-aac3e799c529,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+3a6d18ae-09a0-42f4-a253-8738542b75a2,b3434a98-1643-55ff-ba4e-7a5dc9c85d65,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+3c671c00-d7f5-599b-99c2-c0bdefbbcf67,02455589-782c-528f-af1c-fa1714747520,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+3cd6288c-46d6-579a-b54b-d7cfd0da816f,5ae53186-b0d9-5610-b13f-f0fdfabcf40b,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+3e57de8f-1291-4c40-b4b7-0898c6ae1cd9,e529aee6-541e-5705-afc0-cbddbbfa6e1d,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+3f051b0c-f6d8-51a2-bec6-e9be97546e85,8c5ebde3-aad8-523c-a8e5-e268fdfad5f5,current,主C,,,2026-06-19 14:29:13.611862+00,良
+3f0c9ad4-a7f2-4dec-a5b3-8050004657c6,26dd0477-a8ac-51a2-9fb5-582831a946c0,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+3f477f24-a6a2-5043-83b6-e5d7e2263696,06ab1012-0dde-559f-90c1-ced66f9d6cff,current,主C,T0,,2026-06-19 14:29:13.611862+00,良
+3fad2fca-8a83-57ac-a93a-be54cdcec07a,0ff30224-209f-5845-83e4-39b552fa4ad8,current,主C,,,2026-06-19 14:29:13.611862+00,良
+40a6b211-915f-5035-a963-eabef4444b7d,0e9beceb-4832-5ea1-98d1-743636672eeb,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+4172ab5c-c147-536d-9e1a-ca8cff852e25,f6ddc212-ef25-5c03-96b3-ca45b5e66c32,current,主C,,,2026-06-19 14:29:13.611862+00,良
+41850dee-dcbe-527e-ac28-bb87a4ffdbf2,403f3dc9-176d-5a07-ade9-4fac8de0b2dc,current,主C,,,2026-06-19 14:29:13.611862+00,良
+421875e0-47ac-5f46-bc2c-2dc9cdd6f3ce,1765fc90-fd0b-5ad0-8be2-b9a3935cd3af,current,"辅助, 生存",,,2026-06-19 14:29:13.611862+00,良
+427d13f9-90ba-5ab7-a23c-6398da1d7021,26fcb56c-62a3-5abb-a590-f7511281ba38,current,主C,,,2026-06-19 14:29:13.611862+00,良
+45591c03-e0b1-4041-91c8-f3364173e086,cb49918f-b383-5414-afb0-4de5855367a4,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+47bff991-b776-5011-87d3-f06bf7b2835c,d67a7be3-bf13-5e6c-98b4-7e0063c9e9a1,current,生存,,,2026-06-19 14:29:13.611862+00,良
+480bc503-7f02-46f6-aaee-6a7d429edac5,eee3a6c0-8ae0-5f47-8af5-a4fdcab7c19f,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+48f7ef43-7eee-54ac-a03b-3401bf36d19e,351e3969-fa59-5e7f-9704-d6c9fb646ac4,current,辅助,,,2026-06-19 14:29:13.611862+00,中
+496799c7-78b3-548f-a651-694b822b1af2,d16cdec9-424f-5915-a61f-28c5d35ff322,current,主C,,,2026-06-19 14:29:13.611862+00,极
+4ac766db-d146-5dec-b4a7-2f25b3d3c2ad,923d78c3-6110-5b0f-9230-bf98e24054b9,current,辅助,,,2026-06-19 14:29:13.611862+00,优
+4d5f0a39-140d-54bc-8406-433e3b050165,6ce6e2d9-0f63-5ce6-bcf2-75c944cd5a2f,current,辅助,T1,,2026-06-19 14:29:13.611862+00,优
+4dae1fbd-c79a-4ed6-b56f-b4b51105dc97,24031ef9-fe8c-53ca-b0ed-c13f3595e922,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+4dcb25f3-e9d9-551b-ad4e-fc680a794a23,b5e20058-18a0-565b-942c-c655232ef432,current,辅助,,,2026-06-19 14:29:13.611862+00,优
+4e5eafe8-ba3f-46ed-bbf3-4f248563cad6,fa344a2c-87b6-5040-aaac-4a10a29a3e61,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+4f809fcf-5d72-4fd6-9d5e-bbb363afbb5e,b54cb532-b428-530f-b752-bba5e54f2ae9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+5120af4c-28a8-5833-af16-399de84f6b66,7d3b194f-11cb-57c2-930d-1dd19f33234b,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+513ea552-ca64-4703-8915-57986e81ad42,29b85018-415e-5ac2-a7f7-b8ee54982fdb,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+524e4b12-d482-4c6e-92e8-cf190fe16b43,9f039381-b214-59cc-9533-8da4b16927e4,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+5314d104-ea3b-56b9-bc74-9a366064ed85,957f4f37-344a-5182-8678-0f085cdafe89,current,主C,T4,,2026-06-19 14:29:13.611862+00,差
+53be201b-715c-5198-8902-6d8a9c337457,70a3fef7-15d4-5443-883b-a2dcfa702b2c,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+544c001e-7ef4-5804-9a8f-2a5d13e7da92,f8037fef-ce03-57b4-8419-d7f0faa99118,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+56169bd1-951e-4938-94c5-5499c7b887e1,d1b8bec8-107c-5c0d-be80-18b177d32c8a,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+58b38b79-8736-4992-a982-a512112e12be,ccd04ccb-e837-5c8a-8b0a-67b6c85fc836,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+58f8b172-8e25-52e6-bbfb-19b6174bc3d2,928469d1-0f17-5db3-a19b-d28f31a00380,current,"副C, 辅C",T2,,2026-06-19 14:29:13.611862+00,优
+5916e18e-1c5c-597d-94c6-97b85ad17eb2,e8d2a268-4e31-5662-9696-1ff510300ee5,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+5a48f37e-2c33-5836-8b8a-468036ce5dd8,dde2340c-13f8-59cf-8c2a-70e916a962bd,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+5d920970-f0dc-55dc-9fa2-014d5fe315c2,ad5726ea-f4a0-52ee-b2df-d293a43a87ad,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+5e3fd3f4-dbb9-4a0c-9fb6-c5fd7b52abb5,4eef5619-de07-58ad-a982-70618f750d78,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+5ef66947-306c-4e0c-84e3-ccadb030c150,c2d5888d-7e96-512b-840e-57c5083d12d1,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+6077bb1e-8416-5ce7-a380-80c0f16aa328,232b12f3-2510-5cdf-b40c-e3c92d72c660,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,良
+607e97e0-6a01-44d2-a411-8e4c472d6cb8,476380ff-35e3-57a1-8ef1-930ce87f6e0c,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+61fd16f0-e5eb-5416-93e4-f6698593b553,e8dcf83e-3809-51ca-8d22-6e7c98614d5c,current,"辅助, 生存",,,2026-06-19 14:29:13.611862+00,良
+628daa61-fa18-4fc2-839a-25ecdc8bdcf4,0d6dfd80-1582-5698-bf10-4f18987af89e,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+649285cb-9fbc-408d-ac4f-10f31ee0a42c,d8fd72c9-b70e-5e79-b2c9-239426ead474,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+64ce4fe6-251f-43d3-8592-dae024346841,7e90490e-7dd1-558e-aa56-ff015a45d813,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+65894f0e-443f-4335-ad98-07f661187f67,6a36d61d-6426-58c3-9e00-118cf3d1fe38,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+65f67cd8-51e3-5e2b-9cc9-ea58250d6b97,6458d673-5b47-56a3-8a2c-830ab3243afb,current,"辅助, 主C",,,2026-06-19 14:29:13.611862+00,中
+661d680a-b658-4d1e-ac70-e5bcffa71867,198bf9fc-10f9-5172-ba4e-436c4d26c574,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+6634bae0-c28a-5819-9ef6-fac3bb856363,d2607528-f55a-5209-b9df-df989938e80c,current,主C,,,2026-06-19 14:29:13.611862+00,优
+68aaf871-0023-5010-b326-122a4e849536,73cbfd1a-012b-5e13-8bfe-209a91d56995,current,分C,,,2026-06-19 14:29:13.611862+00,良
+68c7c529-cc14-5032-b85a-858bee100eb5,50350522-85b9-52aa-b41f-e0db5d340154,current,主C,,,2026-06-19 14:29:13.611862+00,优
+68dc5cb7-2203-5f24-bb25-3758f8efe378,042bfe28-e547-5fe1-84a6-69ec68193cb6,current,主C,T1,,2026-06-19 14:29:13.611862+00,优
+68ef7c6f-312c-4330-bfe3-b5e70bc56803,d6b9d8f2-6ae4-5062-a887-60509911ce37,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+69e68de7-4e5c-4d46-89da-d7effbdd28d5,826c10d4-f5c0-5465-80d0-7273edad5cd3,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+6fb83235-fe14-5fb8-a39b-baa5e134c866,48a768e1-8c8b-5a8e-b04d-28a3312f4f03,current,辅助,,,2026-06-19 14:29:13.611862+00,中
+705ea6ca-e204-45c1-9aff-b3e3e4cf29c8,1edc210d-b417-5af5-bc57-418fc1b438d9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+71153b07-8510-5b2d-b861-6ab40ae02319,c6b4a923-a7b4-5c0c-b22b-78d02217fe96,current,"副C, 辅助",T1,,2026-06-19 14:29:13.611862+00,极
+719e48ae-79d0-49df-a02e-97919d0c0887,38ec45ad-b0f5-561c-995a-a1402d7684f6,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+73ec2f6b-aaf8-4bf0-9d4e-09ad50667ac2,67518710-4499-5d0a-90fb-72dce401ced9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,差
+73ee01a0-cf50-443d-a0f0-0d8d143f7d64,d53729fe-0d81-5a51-a13b-f90f2c8bb734,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+74d2007b-254f-50bd-b0f0-0d198a9eb040,b663ec24-a79b-5d5e-8ec6-126ac6919d53,current,"副C, 辅C",,,2026-06-19 14:29:13.611862+00,优
+766db63e-a370-4013-9807-fd94431f0eba,aa0da005-a0d5-5e9e-82bc-9e5da478c405,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+76b1d3d6-5b59-5f90-8016-3b621f1d9b94,4293a0f5-a8fe-5e16-ae9e-ace7b6c51fb2,current,主C,,,2026-06-19 14:29:13.611862+00,良
+7880fbb5-9211-53b5-b64e-707b50a125a0,fb27f954-d8b9-5e3a-83d5-1c1016a35272,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+7968bd77-9521-51c5-9e84-641b39292058,10180c73-dc0d-5ade-8bfc-64fd47cce76e,current,"副C, 辅C",T1,,2026-06-19 14:29:13.611862+00,极
+79b19f1f-669d-5810-9790-ba2c9e2b2a6c,9caaed78-ace6-5aa2-bcc0-1b15f391acb8,current,主C,,,2026-06-19 14:29:13.611862+00,中
+7a1a4c02-376d-58e1-a6d9-4f5123d20836,a2e885de-e3b0-5970-89c5-073561d2f870,current,主C,,,2026-06-19 14:29:13.611862+00,良
+7b7f5f37-2374-52da-ade8-4ba6de7ffbd5,913312d7-07e3-53a5-b607-f070b1cd7d7b,current,"分C, 辅C, 副C",,,2026-06-19 14:29:13.611862+00,优
+7c57b95d-d83d-5f40-a7fb-4abda1cefbe0,1b7c1597-3da4-5694-b728-aa6804ebbc00,current,"副C, 主C, 分C",,,2026-06-19 14:29:13.611862+00,优
+7ef4b41c-6fe0-4f77-b3e6-52e4afe0e461,295d361c-6d71-5994-9dbc-6e8f1042c531,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+8040ec3c-6515-576e-a984-f8c6dadf0fa0,e025cb11-fed3-56cd-bec4-afeafed88947,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+81443ef8-30f1-57cf-8605-fec2d54f6f9d,8ce6c61c-d791-5c63-9cfd-acebdabcb03b,current,"辅助, 副C",,,2026-06-19 14:29:13.611862+00,优
+8161c0d4-ddfc-5573-a9b4-cfddea4b869c,9438321c-2eb4-51ec-87b8-3b36b7ebd070,current,主C,,,2026-06-19 14:29:13.611862+00,优
+834df2a7-9a3f-5623-ac94-13d7e266e91d,2bd978a0-f43b-5fbd-b96e-7939e6b1c862,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+84b47a71-a5bb-4a40-9176-6efb9a2798a7,2ed3a5e1-b8f9-576f-aaf7-aff5f129d9f5,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+8716e898-a365-4c76-8bc8-389383cacf47,3b284e21-a926-5842-9ab2-eebb774673e9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+887b30b8-02f7-595f-b831-e6f106c2fdc9,74c05933-69be-5782-b2db-af4df8970d7f,current,"生存, 辅助",T0,,2026-06-19 14:29:13.611862+00,优
+8900958d-1d52-5093-9a5c-511e744068dc,7f663da3-4b8f-5fb8-9786-2ecada264897,current,辅助,,,2026-06-19 14:29:13.611862+00,优
+8ae9ac46-34fd-5360-ac3d-2710c5b3dc17,ed355791-66f1-5d91-b28e-9c721a45b562,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,优
+8ba60472-24e3-4a6c-a296-ba40bcccacb6,1a5351f2-63a1-53ad-a95f-d160dca2e5fa,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+8cf62514-4bb6-417b-bfa5-f48ffe2102c6,859d6a30-e045-5624-8257-f3b2139c2fe3,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+9166c9eb-3225-5972-9c69-a71dc1328c65,7d80c986-c9a1-5f76-8b3c-3e82cfc19d51,current,主C,,,2026-06-19 14:29:13.611862+00,极
+92512821-7276-483a-b004-91230cde7bde,8c8ceb72-2476-512f-8ac3-f398cd00c9e5,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+9314b692-966e-57b7-9068-25ac89b97d24,aa7df507-317b-532e-a7fb-0f7149dfa79b,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+93c55015-155d-4b57-99a2-34d4a7b41b5d,ad0b0ca3-bfe0-51ac-95be-8ef355a9bee1,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+942cbcdf-f718-4308-9451-5b74802787e8,f033ff10-3c9c-5c81-8645-0bf1ad2e1a0f,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+95db2b32-350a-45c6-b1b1-86dd472f704c,f4b7b6d7-fdf2-56ee-b34f-49eb5004554b,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+95f046b3-1e8e-4e54-bbce-35fab6164553,f4fb37ab-0303-5b4a-b153-7783610ecd75,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+964b132f-bdde-4d7b-86e5-26f01be6b8d1,f8f4caea-4504-5bee-ba2c-3f73d614d825,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+97461c4c-1748-5ff7-9a6d-0ecd1317f3c1,984ef995-20d6-5a1c-b69f-98303f7595ce,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+97914096-4847-5540-a257-07b95d128668,bc1b1d03-93fe-51cf-a361-8da77a56dfaf,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+97b85b11-f004-5db1-852b-c8affd8450bd,5b28eb8d-9693-57da-8dc0-ee51b4abc91f,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+985f600a-ee87-5fd2-b585-10b68642a9b7,fc51c66f-a1b3-5935-bbb7-2bbe19e62233,current,主C,T2,,2026-06-19 14:29:13.611862+00,良
+98640f70-ed8c-4b16-bd3e-6530fea5bfa8,99093fb7-e5d8-5221-b01e-41d510b0e500,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+98d40098-5cc8-530c-80ec-cf8d9b19098c,79e417bd-c3cb-5636-b6a6-86452fa40968,current,"辅助, 生存",T0,,2026-06-19 14:29:13.611862+00,优
+98ee3b5c-1a02-46d6-a795-2ba92273ecff,e4609aed-ecd0-5162-aab9-60d3fc3245ec,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+9ac3d3af-24d9-4306-819d-e4c772496cba,634a4cf7-0328-5d47-b6bf-30f493c5345b,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+9b971686-89aa-4bfc-9f90-ab9ffe37749f,4d28693e-d175-50de-8b8f-7732b0064c0f,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+9d8d2fbd-f822-4de2-9fb6-adf8dde9d047,f5049b18-ae24-513c-8982-06bc82dc4584,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+9f2a0905-24f1-52e2-8e53-19a709bd3358,a427f026-be94-5e09-b256-a66bf390e7ce,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+9fa39fc9-4084-42ad-bf5c-4c9e9144c4d5,2174ca2e-8495-50e3-8272-156e3e6523e4,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+a220f463-ce65-5923-b851-33300ee23bb4,b2dcd0bb-c9f9-5cb7-91bd-b912796d4b37,current,"辅助, 生存",T1,,2026-06-19 14:29:13.611862+00,良
+a27529b2-852d-5a48-ad35-eaf3cd8309c7,df2e533a-12ad-5686-beeb-350d9657a590,current,"主C, 辅C",T0,,2026-06-19 14:29:13.611862+00,优
+a40b2a30-86ef-5627-a0b8-cbf640d1ca3b,dbbc556b-520c-5c22-8736-8647588aaf69,current,"辅C, 辅助",T1,,2026-06-19 14:29:13.611862+00,优
+a4675e63-a3f8-5fb2-b517-1eaa8bef0657,ef2566c5-7470-5b7e-bb6f-bd6066f7f852,current,"主C, 副C, 辅C",T0,,2026-06-19 14:29:13.611862+00,良
+a4a05de1-0dcc-5009-b13b-d59ced23ab4a,a0379cd9-dbf9-5dc4-863e-ae4e7655fba8,current,主C,,,2026-06-19 14:29:13.611862+00,中
+a7214f23-0893-48b3-8b36-481a73214a87,5753daef-de97-52f8-9a57-e8b66eb77c63,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+a7add575-96f4-5435-a5c6-637c0b0cef87,7a7ceed0-e416-55ff-a482-2cbc91099184,current,主C,T0,,2026-06-19 14:29:13.611862+00,良
+a7bcf07b-f517-5d71-b442-48ab97895af0,85b5a5e2-5ae6-5835-b420-52be62956eaf,current,主C,,,2026-06-19 14:29:13.611862+00,良
+a7e4ca89-d89c-445e-a310-9701db3c4c47,67bea321-503d-53a5-b8f0-96052d39753b,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+a85ddc27-e05f-5013-8271-580bfb0c6e56,24025e8d-05d2-570f-93fd-0b8b005fa3c6,current,"副C, 辅C, 辅助",,,2026-06-19 14:29:13.611862+00,优
+a8ed75b0-3d87-468f-ab9d-37f154033e1a,6a9285e8-a8c5-5f53-8e47-6a00e0021007,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+abcc4585-f540-5704-b3de-6c398c0b26d0,d87965da-4567-58fe-86f6-aa4258f69987,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+ac8f38eb-3600-4d59-8991-2b5eeab22019,bc5564ca-ae88-5c64-aeab-27b9859afd42,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+ad5e75a2-15ca-4ef8-8f15-5a0da9d7059c,a7826abb-6bc2-5921-98f1-1ce5d6777fe5,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+add5c7db-c4db-4bb2-8a59-d23bba0eabda,59a94d83-c4ac-58bd-a493-31c90d44d1f5,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+adf98069-2430-5f8b-a192-c13e513745f9,3e28e816-4315-58f8-95c7-3c2397ea184b,current,主C,,,2026-06-19 14:29:13.611862+00,极
+ae7b06f7-95eb-5816-9242-3411e10de392,ff2b015a-6ab2-53de-8da9-ade051bc5fff,current,主C,,,2026-06-19 14:29:13.611862+00,优
+b034569b-d067-434f-8c30-0de85d9de25d,ef64cecf-2598-5c02-a834-ba65e2a9e55c,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+b0bce82d-b554-5d01-98a2-a281f4b6603a,9b7b16b5-3859-5b3c-b389-656fece3ab32,current,"副C, 分C, 辅助",T0,,2026-06-19 14:29:13.611862+00,优
+b1039915-42a4-5dbb-ab24-cb212e42d935,39a099f6-6054-536e-a9ae-5372a665893c,current,"副C, 辅C",,,2026-06-19 14:29:13.611862+00,良
+b1054808-8e5b-5d9a-a098-8fd4dddfe6aa,b3145bf6-d9a8-5098-a287-5a04222262af,current,"辅助, 生存",,,2026-06-19 14:29:13.611862+00,优
+b12abbba-6a3a-5db2-9dfa-10f762ac4334,42f1c024-ecad-5576-9517-38520de9e84a,current,辅助,T1,,2026-06-19 14:29:13.611862+00,良
+b1771d4c-4d8e-5bbc-97fd-951c9c2ef4fc,d659e052-f741-5181-b770-0cc4b42c94b0,current,"辅助, 生存",T0,,2026-06-19 14:29:13.611862+00,优
+b28d32d1-444a-4fdf-9561-e825e688e78f,7ee6d558-c8a0-55e6-a446-305684ab6ab9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,差
+b316b0b6-1a9d-5188-a776-429708335378,96644b58-8f1d-5705-81ec-5b9d3ee8b825,current,主C,T0,,2026-06-19 14:29:13.611862+00,极
+b3628347-316d-5c2e-8211-fb5bd4d17c3b,9d7252af-aaf4-5234-a015-d1a2d9591497,current,"辅助, 生存",T2,,2026-06-19 14:29:13.611862+00,良
+b3680664-6868-4bdd-8995-80232bbe89cb,57bd6a33-d155-5706-b233-5f3dabbcf2b3,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,优
+b4f3cb2e-a11c-5fec-8d65-937893a8816b,ce41c8ca-0c14-5b09-bf38-0e7cdc1e2f19,current,"辅C, 辅助, 生存",T0,,2026-06-19 14:29:13.611862+00,极
+b7691019-a654-5a0d-a756-e8c6017c1e5b,09401f00-f115-54bd-bcd7-13a5ee49944d,current,主C,,,2026-06-19 14:29:13.611862+00,极
+b7f06554-37a5-429a-9ab4-235d4b15c132,1d0fc590-86d4-5b62-b668-22b12b10fa31,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+b93e06a4-b37c-4986-999d-8681233a9369,9132e198-9b32-5077-bcfc-62730fb378ae,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+b97b89ed-3156-4472-811d-03086135960a,d1e4fabb-97c3-54b1-b933-9cf6577b900f,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+b9f2d867-3fb3-54bf-8948-d89965f44003,85327317-9c95-525e-999e-47bb1ec52fe6,current,主C,,,2026-06-19 14:29:13.611862+00,优
+bb16f9d5-9fe0-56dd-b92d-c00feda16839,abad5aba-e99f-52c8-8dc8-b06dd8366651,current,主C,T2,,2026-06-19 14:29:13.611862+00,优
+bb49b0f2-e79c-533c-8546-69a122dd55db,258c9169-d986-573f-90ec-545444234024,current,主C,,,2026-06-19 14:29:13.611862+00,良
+bd5a0a09-bc9a-58f1-920e-d90e4b7303c2,8dbfbb01-e010-5c64-8dac-325f9820c44b,current,辅助,T2,,2026-06-19 14:29:13.611862+00,中
+bdde023b-285c-57f6-87d1-cdabc7e44937,a29da9e8-6314-585a-ae5b-3d1af3b4ee8d,current,主C,,,2026-06-19 14:29:13.611862+00,中
+bf2705af-9bed-5d43-b175-865a3d29db28,cef2d479-5d9c-5434-86ab-2a31c33f95aa,current,主C,,,2026-06-19 14:29:13.611862+00,良
+bf5e5a9c-ffee-4f4f-a240-c7904aa30d2b,b3a3fbd3-ca81-593a-854d-5e92308b6522,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+c18cf21b-c1b4-5244-ba5b-376d9feb09db,6b4f3d0d-7b79-5d61-85fe-bbbe3ec4b81b,current,"副C, 辅C",,,2026-06-19 14:29:13.611862+00,优
+c215e1a0-1dd1-55ab-b8b7-ab55a21c3969,55d7babb-b256-5b99-aa51-0dea2ba40103,current,辅助,,,2026-06-19 14:29:13.611862+00,极
+c263e236-79d9-4e1b-ad44-f940f1a1fc50,c45172b7-bf98-5e0b-99ae-f7babca9645f,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+c39dec97-adc3-4ce7-b996-42d01ef24a3a,c7c356f9-9312-5e66-8833-a52ff008063e,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,差
+c54fdb7b-1ab9-4985-b9ca-9f1ecbc44b69,e4639064-8746-5a39-a2e3-fb809d4e73bb,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+c59d6483-c36c-58ca-bbc2-0dec466fb0bb,7068b1b7-aaf5-502a-9245-b7c8f993b5ea,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+c6f036b4-e8a3-5f0e-b39e-7eb8b7d3ec06,1438a303-164b-57c3-bd27-f44262e7359f,current,主C,T2,,2026-06-19 14:29:13.611862+00,良
+c8430040-1c13-5287-95f5-b1cfa1e3c45b,2e7a4eaf-e28d-5541-b110-ba0f3a59d934,current,主C,,,2026-06-19 14:29:13.611862+00,良
+c9c58108-aeb0-55c1-9773-efb22361ccb6,9bd73d74-b7f9-5422-a55a-95b0e39ec7b0,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+cb41c37c-acc0-5d56-965f-45a7755f5172,d507e539-cada-580e-8915-3ca5cf695a13,current,主C,T0,,2026-06-19 14:29:13.611862+00,极
+cc032cf9-5413-52db-bb9c-18d1946331c0,47305e8e-ea33-5749-a009-0a036efde169,current,主C,T0,,2026-06-19 14:29:13.611862+00,优
+cc347a98-e8ff-480a-a133-d944129b18ef,6bd20ca9-c8eb-5f52-acd4-5d8451e26260,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+ceb5c6da-c2b1-493b-a31a-1feb96608174,69202ab1-64a4-5289-ba63-dab4a8b507f9,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,极
+cf9d1761-520c-4def-b777-7da88f4a4cbc,ba71e985-1ef4-5cc4-b97f-c37c2f4eff5b,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,中
+d04316df-84e9-5aa9-8faf-4221d5f3d5fb,94871ba8-f12e-51e3-9890-2935b4b3de73,current,主C,,,2026-06-19 14:29:13.611862+00,极
+d1ad2b8e-576f-5573-9ac5-e24841f9c156,d727d3ab-e9b1-500d-b2a0-18601236a709,current,主C,,,2026-06-19 14:29:13.611862+00,优
+d366d2b3-0155-5802-9040-5ceec46dd83b,ba2ef48e-5143-59cb-8c22-435b67c39cb6,current,"副C, 辅助",,,2026-06-19 14:29:13.611862+00,良
+d375a79a-2762-5ad0-9986-524df9091202,3c9b7e76-9d1e-5078-a7bf-c0dc07d72693,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,优
+d3cbfbf2-61f7-59da-a3ec-957230031099,1cb8defd-b395-5679-a5a4-e47308ff7fad,current,辅助,T0,,2026-06-19 14:29:13.611862+00,极
+d4cbef11-f42e-5234-9c0e-aa3f03240139,585dc66a-1892-54c1-ba49-23b4b17ce7fb,current,"副C, 辅助",,,2026-06-19 14:29:13.611862+00,优
+d59bccdf-e826-4d55-a148-aa377b74058f,b27b840e-a941-56f1-ac8d-27f2917accf0,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+d5bc1636-8903-4706-84e3-c9d685661fb2,a4b22962-0a38-5219-8f73-d204b90c8045,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+d5ec2f39-0322-51b9-837a-e500edd11cc8,e17135e5-f805-5f2e-aede-914abab980d7,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,良
+d73b39ea-6f44-57a6-821d-59d24f943165,c4bd2f8d-3a72-5d60-a4a2-ba2faeb16086,current,主C,,,2026-06-19 14:29:13.611862+00,优
+d86ca64a-d2cd-583b-9f6f-f5b04c704bc2,b2ff5a83-16d7-5788-86a0-bf79a9161692,current,"辅助, 副C",,,2026-06-19 14:29:13.611862+00,良
+d8c0836f-b9b2-54c3-bb0c-6fac0ee71c75,74a64c57-bb44-5d2e-a841-3823342bd6c3,current,主C,T1,,2026-06-19 14:29:13.611862+00,优
+da142c8e-2703-59cf-bb31-0693493f3fd6,60e58ca5-465c-5704-a498-b4872f6822f1,current,主C,,,2026-06-19 14:29:13.611862+00,良
+dc148a03-f9fb-57ee-ac78-98660e4e1e05,d08d43de-1119-5e77-9a82-51e75288751d,current,主C,,,2026-06-19 14:29:13.611862+00,良
+dc560e9e-ce12-5429-bab5-91ddc0171878,9f168476-6edf-562e-8180-43e60827d8c7,current,"主C, 分C",,,2026-06-19 14:29:13.611862+00,良
+dcde647f-6847-5d55-8a7b-0af87c272957,c4e77de8-2abb-57ea-9b92-2f00cf9565a2,current,主C,,,2026-06-19 14:29:13.611862+00,良
+dd2ccef5-bddf-5ae0-9b7a-d623715d1d4e,6f67650b-266c-5064-9013-8e27ccd602e0,current,主C,,,2026-06-19 14:29:13.611862+00,良
+dd552765-b39a-4d5b-9522-af5a0ecd1505,27d19f85-e526-5d19-9032-fa4bf05c63be,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+dd774dbb-995b-569b-9044-75e6af0745f4,7766d2b9-6efe-5031-a232-3b3e260237ad,current,"副C, 辅助",,,2026-06-19 14:29:13.611862+00,良
+de563060-06ef-5c80-87c7-6851a2e74a85,5784ce92-7095-59f5-bf88-13bf5273bd45,current,"副C, 辅C",,,2026-06-19 14:29:13.611862+00,优
+deab6a2d-cb8d-5049-a703-a1b13f189993,f7a68b9a-224f-5e6b-bbf3-32998fcdfe46,current,主C,T2,,2026-06-19 14:29:13.611862+00,优
+df1fc336-a952-57e8-a4fd-6eda7187edcf,2bcbd0bd-2983-53eb-84b1-bb9a6f57e0a1,current,主C,,,2026-06-19 14:29:13.611862+00,良
+e02e9267-a9e2-56aa-8ce8-1b10d81e6350,e9c4afa0-6c98-5932-9954-9169ed1e948f,current,主C,,,2026-06-19 14:29:13.611862+00,优
+e2361806-78a3-4d92-a1cf-62b65fbeea34,25474691-0f98-5bfc-a061-a7f1c615a452,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+e327068e-6fac-484c-b02d-8b47abed00cd,d3b22993-a68d-5444-85a3-182d533d7b4e,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+e577d796-160c-536f-b30f-ae419c6e4121,13663f60-289b-50ad-89a6-e7d121dff17c,current,主C,,,2026-06-19 14:29:13.611862+00,中
+ea3103fc-53e5-5a2d-bc73-3fcfdebc965a,2d45f6d3-1e3d-5197-9c4b-2656ecb44da4,current,主C,,,2026-06-19 14:29:13.611862+00,良
+eb54d696-0837-5245-bdf8-da75e0f14d72,503275d8-3665-531b-b27a-5c36fff908e0,current,主C,T0,,2026-06-19 14:29:13.611862+00,良
+eb76e2e2-3a5f-5e30-aa51-fa884adb99f4,0b016369-80f3-52e7-9a82-6f839be8c6ea,current,分C,,,2026-06-19 14:29:13.611862+00,良
+eba74ffb-bad9-4c57-a35c-351fd6b94fd4,b60a4136-661d-5e82-bab9-831de4f1abb7,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+ec18a0c0-cfd4-51f4-a963-85de4cc7180b,9c049892-e371-5bce-a1bb-cdb44edd7c56,current,主C,,,2026-06-19 14:29:13.611862+00,优
+ed2bf162-ad84-5a54-ab58-709d17641364,55fa55f6-27e9-5bc2-a321-98e43762cb2d,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,中
+edfd21da-fac5-5565-b080-4991cabf3e31,8d0929fe-639b-5acc-bec8-59cbb456147a,current,主C,,,2026-06-19 14:29:13.611862+00,优
+ee0de885-f78f-54ef-b58a-a978fc338276,bedbb346-3368-5684-8f16-d9a63536a3e7,current,主C,,,2026-06-19 14:29:13.611862+00,优
+eed65da2-f31c-583e-b98e-ad798f2da725,df6fb67c-7207-5cc5-9020-e73ab88b1f5b,current,主C,T3,,2026-06-19 14:29:13.611862+00,中
+eee9e6b8-e3fd-413d-8716-9f496405ef4f,471a2508-d897-53a0-8b5e-4f150abb369b,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良
+eef4bd59-b35d-576c-ae6d-b2ddcc2c97c7,59abfed4-5822-5681-b433-5b95e5be898b,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+f1f2b5f8-f209-5439-8802-839f863d2ab7,55232140-70cf-50ed-881c-47635c369db7,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+f1fb3979-5bbc-5cb5-8288-4fb981a47157,1c106691-5a1c-547a-bfe9-eca000ec5b37,current,"生存, 辅助",T0,,2026-06-19 14:29:13.611862+00,良
+f26979d9-685d-5414-a986-cd251e847c59,a82e5abc-06e6-59dc-8399-16b7007c2e7f,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,良
+f616c7ec-92e9-5108-bcec-65748328ebbf,c742d01b-7055-5db8-b16f-3a6a939d63b2,current,辅助,,,2026-06-19 14:29:13.611862+00,优
+f6209e88-b61d-5212-999e-327bba7ff86e,3f5f13d7-6f47-55a1-8ea6-e7738e01e103,current,辅助,,,2026-06-19 14:29:13.611862+00,良
+f915a9ac-0a85-5fbb-811a-75e38ced2fd6,62a74bc6-9fa3-5039-a723-c23e708ed641,current,"生存, 辅助",,,2026-06-19 14:29:13.611862+00,良
+fac98d35-fcdf-57ea-890c-79ed437b8396,9bdb4871-f682-564f-a578-c9205a5827b3,current,辅助,T1,,2026-06-19 14:29:13.611862+00,优
+fcec9fe3-243b-4fea-9f17-95445d7646df,802bc471-2731-5c65-87c3-1f25d4a80ab3,current,,,auto created when moving like_level from character_progress,2026-06-20 08:37:05.908404+00,良

@@ -5,7 +5,7 @@
 -- 3) Run this SQL in Supabase SQL Editor.
 -- ============================================================
 
-select public.register_app_owner('YOUR_EMAIL@example.com');
+select public.register_app_owner('miketsusama@gmail.com');
 
 -- Check:
 select * from public.app_users order by created_at desc;

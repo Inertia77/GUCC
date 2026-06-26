@@ -1,0 +1,27 @@
+{
+  "name": "gucc",
+  "version": "1.0.0",
+  "description": "GUCC 是一个个人游戏内容创作与资料管理仓库，包含视频项目工作台、Supabase 数据管理前端、封面生成器、创作自动化脚本、源数据和参考资料。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inertia77/GUCC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Inertia77/GUCC/issues"
+  },
+  "homepage": "https://github.com/Inertia77/GUCC#readme",
+  "devDependencies": {
+    "supabase": "^2.108.0"
+  }
+}

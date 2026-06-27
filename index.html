@@ -8,7 +8,8 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>GUCC Portal</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/icons/gucc-icon.svg" />
+  <link rel="icon" type="image/svg+xml" href="./assets/icons/gucc-icon.svg?v=2" />
+  <script src="./assets/access-guard.js" data-root="./"></script>
   <style>
     :root {
       --bg: #070a10;
@@ -522,7 +523,7 @@
   <section class="gate" id="accessGate" aria-label="访问门禁">
     <div class="gate-panel">
       <div class="gate-mark">
-        <img src="./assets/icons/gucc-icon.svg" alt="" />
+        <img src="./assets/icons/gucc-icon.svg?v=2" alt="" />
         <div>
           <p class="eyebrow">GameUp Command Center</p>
           <h1>GUCC Access</h1>
@@ -543,7 +544,7 @@
   <main class="portal" id="portalContent" aria-hidden="true">
     <div class="topline">
       <a class="brand" href="./" aria-label="GUCC Portal">
-        <img src="./assets/icons/gucc-icon.svg" alt="" />
+        <img src="./assets/icons/gucc-icon.svg?v=2" alt="" />
         <span>
           <strong>GUCC Portal</strong>
           <span>GameUp creator command deck</span>
@@ -617,6 +618,20 @@
     <details class="reference-panel">
       <summary>备用资料库</summary>
       <div class="reference-grid">
+        <a class="reference-link reference-feature" href="./reference/ai-prompts.html">
+          <span>
+            <strong>AI Prompt Library</strong>
+            <span>版本公告、兑换码、前瞻、SQL、剧情资料维护的可复制 Prompt。</span>
+          </span>
+          <span class="reference-arrow">›</span>
+        </a>
+        <a class="reference-link reference-feature" href="./reference/story-library.html">
+          <span>
+            <strong>Story Library</strong>
+            <span>游戏剧情资料库网页阅读器，直接读取 Markdown 内容。</span>
+          </span>
+          <span class="reference-arrow">›</span>
+        </a>
         <a class="reference-link reference-feature" href="./reference/resource-library.html">
           <span>
             <strong>GUCC 资料库</strong>
@@ -648,11 +663,6 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = 'gucc_portal_access_v1';
-      // Portal front-end gate. Current passcode: GUCC-2026.
-      // To change it, replace ACCESS_HASH with SHA-256(passcode).
-      // PowerShell: [BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('NEW_PASS'))).Replace('-','').ToLower()
-      const ACCESS_HASH = 'fa730fc17620bb57e6f247329e9aff57d22eab704420c047eddebde8a00cf5a3';
       const gate = document.querySelector('#accessGate');
       const portal = document.querySelector('#portalContent');
       const form = document.querySelector('#gateForm');
@@ -660,44 +670,20 @@
       const error = document.querySelector('#gateError');
       const lockButton = document.querySelector('#lockBtn');
 
-      const readAccess = () => {
-        try {
-          return localStorage.getItem(STORAGE_KEY);
-        } catch {
-          return sessionStorage.getItem(STORAGE_KEY);
-        }
-      };
-
-      const writeAccess = (value) => {
-        try {
-          localStorage.setItem(STORAGE_KEY, value);
-        } catch {
-          sessionStorage.setItem(STORAGE_KEY, value);
-        }
-      };
-
-      const clearAccess = () => {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch {
-          sessionStorage.removeItem(STORAGE_KEY);
-        }
-      };
-
       const unlock = () => {
         document.body.classList.remove('is-locked');
         gate.hidden = true;
         portal.setAttribute('aria-hidden', 'false');
       };
 
-      const sha256 = async (value) => {
-        const bytes = new TextEncoder().encode(value);
-        const digest = await crypto.subtle.digest('SHA-256', bytes);
-        return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+      const finishUnlock = () => {
+        unlock();
+        const target = window.GuccAccess.redirectTarget();
+        if (target) window.location.replace(target);
       };
 
-      if (readAccess() === ACCESS_HASH) {
-        unlock();
+      if (window.GuccAccess.hasAccess()) {
+        finishUnlock();
       } else {
         input.focus();
       }
@@ -711,22 +697,21 @@
           return;
         }
         try {
-          const digest = await sha256(passcode);
-          if (digest !== ACCESS_HASH) {
+          const ok = await window.GuccAccess.verifyAndStore(passcode);
+          if (!ok) {
             input.value = '';
             error.textContent = '口令不正确。';
             input.focus();
             return;
           }
-          writeAccess(digest);
-          unlock();
+          finishUnlock();
         } catch {
           error.textContent = '当前浏览器无法完成口令校验，请用 HTTPS 或 localhost 打开。';
         }
       });
 
       lockButton.addEventListener('click', () => {
-        clearAccess();
+        window.GuccAccess.clearAccess();
         window.location.reload();
       });
     })();

@@ -1,19 +1,29 @@
 # Reference
 
-长期参考资料区，不直接参与应用运行。
+长期资料区，放 Prompt、资料入口、查询手册、剧情资料和知识库。
 
-## 入口
+## 网页入口
 
 | 路径 | 内容 |
 |---|---|
-| `resource-library.html` | 游戏 Wiki、官方资料、攻略合集和高优先级研究入口 |
-| `query-guides/` | SQL 查询手册、未来查询库 |
+| `ai-prompts.html` | 可复制 Prompt 阅读页，读取 `ai-prompts.md` |
+| `story-library.html` | 剧情资料库网页阅读器，读取 `story-library/story-library/` 下的 Markdown |
+| `resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
+
+这些 HTML 页面都接入了 GUCC Access Key。
+
+## Markdown / 资料目录
+
+| 路径 | 内容 |
+|---|---|
+| `ai-prompts.md` | Prompt 源文件，之后主要维护这里 |
+| `query-guides/` | SQL 查询手册和未来查询库 |
 | `knowledge-base/` | 封面、音乐、Photoshop、故事根资料 |
-| `story-library/` | 剧情研究资料库 |
+| `story-library/` | 剧情资料库 Markdown 源文件 |
 
-## 使用建议
+## 维护建议
 
-- 找官方资料或 Wiki：先打开 `resource-library.html`。
-- 查数据库查询思路：看 `query-guides/query-manual.md`。
-- 做剧情视频前：先从 `story-library/` 找对应游戏的总览、时间线和视频钩子。
-- 不确定是否该放这里：如果它不是应用运行依赖，也不是源数据，就优先放 `reference/`。
+- Prompt 改 `ai-prompts.md`，网页自动读取。
+- 剧情内容改 `story-library/story-library/` 下的 Markdown，网页阅读器自动读取。
+- 新增剧情文件后，需要同步更新 `reference/story-library.html` 里的 manifest。
+- 不确定是否应该放进应用入口的资料，先放 `reference/`。

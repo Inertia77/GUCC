@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#070a10" />
+  <title>GUCC AI Prompt Library</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=2" />
+  <script src="../assets/access-guard.js" data-root="../" data-guard="true"></script>
+  <style>
+    :root {
+      --bg: #070a10;
+      --panel: rgba(14, 18, 27, .92);
+      --panel2: rgba(18, 24, 35, .96);
+      --line: #293446;
+      --text: #eef5ff;
+      --muted: #9aaabd;
+      --dim: #66758a;
+      --mint: #77ffb8;
+      --cyan: #76f7ff;
+      --pink: #ff5da8;
+      --amber: #ffd166;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+      background:
+        repeating-linear-gradient(90deg, rgba(118, 247, 255, .045) 0, rgba(118, 247, 255, .045) 1px, transparent 1px, transparent 88px),
+        repeating-linear-gradient(0deg, rgba(255, 93, 168, .032) 0, rgba(255, 93, 168, .032) 1px, transparent 1px, transparent 88px),
+        linear-gradient(135deg, #070a10, #091016 48%, #0c121d);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(108deg, transparent 0 14%, rgba(118, 247, 255, .08) 14.05% 14.2%, transparent 14.3%),
+        linear-gradient(132deg, transparent 0 78%, rgba(119, 255, 184, .07) 78.05% 78.2%, transparent 78.3%);
+    }
+    a { color: inherit; }
+    .wrap {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+      position: relative;
+      z-index: 1;
+    }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 42px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand img { width: 38px; height: 38px; }
+    .brand strong { display: block; font-size: 15px; line-height: 1; }
+    .brand span span { display: block; margin-top: 4px; color: var(--dim); font-size: 12px; }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr);
+      gap: 22px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 760px;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(10, 14, 22, .74);
+      padding: 16px;
+    }
+    .panel-row {
+      display: grid;
+      grid-template-columns: 82px minmax(0,1fr);
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .panel-row:first-child { border-top: 0; padding-top: 0; }
+    .panel-row:last-child { padding-bottom: 0; }
+    .label {
+      color: var(--dim);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .value { color: var(--text); line-height: 1.55; }
+    .content {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 16px;
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(10, 14, 22, .74);
+      padding: 12px;
+    }
+    .toc a {
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .toc a:hover { color: var(--text); background: rgba(255,255,255,.045); }
+    .doc {
+      display: grid;
+      gap: 14px;
+    }
+    section.prompt-section {
+      border: 1px solid var(--line);
+      border-left: 3px solid rgba(118,247,255,.42);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), rgba(9,13,20,.95));
+      padding: 18px;
+    }
+    h2 { margin: 0 0 12px; font-size: 24px; }
+    h3 { margin: 18px 0 8px; color: var(--cyan); }
+    p, li { color: var(--muted); line-height: 1.75; }
+    ul { padding-left: 20px; }
+    pre {
+      position: relative;
+      margin: 14px 0 0;
+      padding: 44px 14px 14px;
+      border: 1px solid rgba(118,247,255,.2);
+      border-radius: var(--radius);
+      background: #070a10;
+      overflow: auto;
+      color: #dbe5ff;
+      white-space: pre-wrap;
+    }
+    code { font-family: "Cascadia Code", "Consolas", monospace; font-size: 13px; line-height: 1.65; }
+    .copy {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: #06110f;
+      background: linear-gradient(135deg, var(--mint), var(--cyan));
+      font-weight: 900;
+      cursor: pointer;
+    }
+    @media (max-width: 900px) {
+      .hero, .content { grid-template-columns: 1fr; }
+      .toc { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topline">
+      <a class="brand" href="../">
+        <img src="../assets/icons/gucc-icon.svg?v=2" alt="" />
+        <span><strong>GUCC Prompt Library</strong><span>AI work instructions</span></span>
+      </a>
+      <a class="back" href="../">返回 Portal</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">GameUp Command Center</p>
+        <h1>AI Prompt Library</h1>
+        <p class="subtitle">把版本公告整理、兑换码检索、前瞻情报、Command Center SQL、剧情资料库维护这些高频 AI 指令收在一起。网页从 Markdown 源文件读取，后面改 prompt 不需要改页面结构。</p>
+      </div>
+      <aside class="panel">
+        <div class="panel-row"><div class="label">Source</div><div class="value"><code>reference/ai-prompts.md</code></div></div>
+        <div class="panel-row"><div class="label">Mode</div><div class="value">复制 prompt 后按当次游戏、版本和公告内容替换占位。</div></div>
+        <div class="panel-row"><div class="label">Safety</div><div class="value">SQL prompt 默认使用 RPC，并提醒不要粘贴密钥。</div></div>
+      </aside>
+    </section>
+
+    <div class="content">
+      <nav class="toc" id="toc" aria-label="Prompt sections"></nav>
+      <article class="doc" id="doc">Loading prompt library...</article>
+    </div>
+  </main>
+
+  <script>
+    const sourceFile = './ai-prompts.md';
+    const doc = document.querySelector('#doc');
+    const toc = document.querySelector('#toc');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function slugify(value) {
+      return String(value).trim().toLowerCase()
+        .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+        .replace(/^-+|-+$/g, '') || 'section';
+    }
+
+    function inlineMarkdown(value) {
+      return escapeHtml(value)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+
+    function renderBlocks(markdown) {
+      const lines = markdown.split(/\r?\n/);
+      const html = [];
+      const sections = [];
+      let inCode = false;
+      let code = [];
+      let inList = false;
+      let currentSectionOpen = false;
+
+      const closeList = () => {
+        if (inList) {
+          html.push('</ul>');
+          inList = false;
+        }
+      };
+      const closeSection = () => {
+        closeList();
+        if (currentSectionOpen) html.push('</section>');
+        currentSectionOpen = false;
+      };
+
+      for (const line of lines) {
+        if (line.startsWith('```')) {
+          if (inCode) {
+            html.push(`<pre><button class="copy" type="button">COPY</button><code>${escapeHtml(code.join('\n'))}</code></pre>`);
+            code = [];
+            inCode = false;
+          } else {
+            closeList();
+            inCode = true;
+          }
+          continue;
+        }
+        if (inCode) {
+          code.push(line);
+          continue;
+        }
+        if (line.startsWith('# ')) {
+          closeSection();
+          continue;
+        }
+        if (line.startsWith('## ')) {
+          closeSection();
+          const title = line.slice(3).trim();
+          const id = slugify(title);
+          sections.push({ id, title });
+          html.push(`<section class="prompt-section" id="${id}"><h2>${inlineMarkdown(title)}</h2>`);
+          currentSectionOpen = true;
+          continue;
+        }
+        if (line.startsWith('### ')) {
+          closeList();
+          html.push(`<h3>${inlineMarkdown(line.slice(4).trim())}</h3>`);
+          continue;
+        }
+        if (/^- /.test(line)) {
+          if (!inList) {
+            html.push('<ul>');
+            inList = true;
+          }
+          html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
+          continue;
+        }
+        if (!line.trim()) {
+          closeList();
+          continue;
+        }
+        closeList();
+        html.push(`<p>${inlineMarkdown(line)}</p>`);
+      }
+      closeSection();
+      return { html: html.join('\n'), sections };
+    }
+
+    async function init() {
+      try {
+        const response = await fetch(sourceFile, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const markdown = await response.text();
+        const rendered = renderBlocks(markdown);
+        doc.innerHTML = rendered.html;
+        toc.innerHTML = rendered.sections.map((section) => `<a href="#${section.id}">${escapeHtml(section.title)}</a>`).join('');
+        doc.addEventListener('click', async (event) => {
+          const button = event.target.closest('.copy');
+          if (!button) return;
+          const text = button.parentElement.querySelector('code')?.textContent || '';
+          await navigator.clipboard.writeText(text);
+          button.textContent = 'COPIED';
+          setTimeout(() => { button.textContent = 'COPY'; }, 1200);
+        });
+      } catch (error) {
+        doc.innerHTML = `<section class="prompt-section"><h2>加载失败</h2><p>${escapeHtml(error.message)}</p></section>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

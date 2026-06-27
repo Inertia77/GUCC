@@ -1,28 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GUCC icon">
   <defs>
-    <linearGradient id="panel" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#111827"/>
-      <stop offset="0.48" stop-color="#090d14"/>
-      <stop offset="1" stop-color="#0e1f1c"/>
+    <linearGradient id="bg" x1="7" y1="6" x2="58" y2="59" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#151b2a"/>
+      <stop offset=".46" stop-color="#070a10"/>
+      <stop offset="1" stop-color="#111827"/>
     </linearGradient>
-    <linearGradient id="edge" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+    <linearGradient id="rim" x1="8" y1="7" x2="57" y2="58" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#76f7ff"/>
-      <stop offset="0.52" stop-color="#77ffb8"/>
-      <stop offset="1" stop-color="#ff5da8"/>
+      <stop offset=".42" stop-color="#77ffb8"/>
+      <stop offset=".72" stop-color="#ff5da8"/>
+      <stop offset="1" stop-color="#ffd166"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="19" y1="9" x2="46" y2="39" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff2c8"/>
+      <stop offset=".58" stop-color="#f4cf83"/>
+      <stop offset="1" stop-color="#c8844d"/>
+    </linearGradient>
+    <linearGradient id="fire" x1="40" y1="15" x2="57" y2="49" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5da8"/>
+      <stop offset=".54" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#ffd166"/>
     </linearGradient>
     <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="1.9" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.3 0 0 0 0 1 0 0 0 0 0.78 0 0 0 0.78 0"/>
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.32 0 0 0 0 1 0 0 0 0 0.86 0 0 0 .72 0"/>
       <feMerge>
         <feMergeNode/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <rect x="5" y="5" width="54" height="54" rx="12" fill="url(#panel)"/>
-  <path d="M17 12h30l5 5v30l-5 5H17l-5-5V17l5-5Z" fill="none" stroke="#253448" stroke-width="2"/>
-  <path d="M19 15h25l5 5v24l-5 5H20l-5-5V20l4-5Z" fill="none" stroke="url(#edge)" stroke-width="2.5" filter="url(#glow)"/>
-  <path d="M23 23h14c6 0 10 3.7 10 9.1 0 5.9-4.4 9.9-10.9 9.9H29v-7h8.3c1.9 0 3.1-1 3.1-2.6 0-1.7-1.2-2.6-3.1-2.6H23v-6.8Z" fill="#eff7ff"/>
-  <path d="M25 31.5 37 25v13l-12-6.5Z" fill="#77ffb8"/>
-  <path d="M15 47h18v4H15v-4Zm27-34h7v4h-7v-4Z" fill="#ff5da8"/>
+
+  <rect x="5" y="5" width="54" height="54" rx="14" fill="url(#bg)"/>
+  <path d="M17 10h30l7 7v30l-7 7H17l-7-7V17l7-7Z" fill="none" stroke="#243247" stroke-width="2"/>
+  <path d="M18 12h28l6 6v28l-6 6H18l-6-6V18l6-6Z" fill="none" stroke="url(#rim)" stroke-width="2.4" filter="url(#glow)"/>
+
+  <path d="M17 28c-5-4-7-11-4-16 5 1 9 4 12 9Z" fill="#f1bd9d" stroke="#5f3441" stroke-width="1.4"/>
+  <path d="M47 28c5-4 7-11 4-16-5 1-9 4-12 9Z" fill="#f1bd9d" stroke="#5f3441" stroke-width="1.4"/>
+  <path d="M18 22c-2-2-3-4-3-6 3 1 5 3 7 6Z" fill="#ff8bb7" opacity=".82"/>
+  <path d="M46 22c2-2 3-4 3-6-3 1-5 3-7 6Z" fill="#ff8bb7" opacity=".82"/>
+
+  <circle cx="32" cy="32" r="18" fill="#f4d8bd"/>
+  <path d="M14 34c1-15 9-23 20-23 10 0 16 7 17 19-4-6-8-9-14-10l-3 7-4-8c-7 1-12 5-16 15Z" fill="url(#hair)"/>
+  <path d="M20 22c3-8 12-12 18-10-7 2-12 6-14 14Z" fill="#fff0c7" opacity=".9"/>
+  <path d="M29 13c8 2 12 8 14 16-4-4-9-7-16-8Z" fill="#f1c36d" opacity=".9"/>
+  <path d="M21 36c3 5 7 8 12 8s9-3 12-8c-2 12-7 17-13 17-6 0-11-5-11-17Z" fill="#eec8aa"/>
+
+  <path d="M20 33c3-3 7-3 10 0" fill="none" stroke="#1b2433" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M35 33c3-3 7-3 10 0" fill="none" stroke="#1b2433" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="25" cy="35" r="3.1" fill="#ff6c48"/>
+  <circle cx="40" cy="35" r="3.1" fill="#ffd166"/>
+  <circle cx="26.2" cy="33.8" r=".9" fill="#fff6e2"/>
+  <circle cx="41.2" cy="33.8" r=".9" fill="#fff6e2"/>
+  <path d="M31 40h3" stroke="#8b5b58" stroke-width="1.6" stroke-linecap="round"/>
+
+  <path d="M10 40c4 0 7 3 7 7v3h-4c-3 0-6-3-6-6 0-2 1-3 3-4Z" fill="#dfe8f7" stroke="#26364a" stroke-width="1.3"/>
+  <path d="M54 40c-4 0-7 3-7 7v3h4c3 0 6-3 6-6 0-2-1-3-3-4Z" fill="#dfe8f7" stroke="#26364a" stroke-width="1.3"/>
+  <path d="M14 45h7" stroke="#76f7ff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M43 45h7" stroke="#ff5da8" stroke-width="2" stroke-linecap="round"/>
+
+  <path d="M45 16c6 4 9 9 9 16 0 7-3 12-8 16 2-5 2-9 0-13l-5 3 4-8-6-4 7-2Z" fill="url(#fire)" opacity=".92"/>
+  <path d="M16 48 25 33h-6l7-16-2 12h7l-15 19Z" fill="#77ffb8" filter="url(#glow)"/>
+  <path d="M31 50v-7l8 3.5Z" fill="#76f7ff" stroke="#06110f" stroke-width="1"/>
 </svg>

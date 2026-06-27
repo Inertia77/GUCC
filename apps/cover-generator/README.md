@@ -1,6 +1,6 @@
 # Cover Generator
 
-多比例视频封面生成器。
+多比例视频封面生成器，用来快速做不同平台比例的封面草图和导出图。
 
 ## 入口
 
@@ -8,11 +8,9 @@
 http://localhost:8000/apps/cover-generator/
 ```
 
-也可以从 GUCC Portal 的 `Cover Generator` 卡片进入。
+页面已接入 GUCC Access Key，并使用共用 GUCC favicon。
 
 ## 素材位置
-
-共享素材位于：
 
 ```text
 assets/creative/
@@ -21,10 +19,9 @@ assets/creative/
 └─ photoshop-templates/
 ```
 
-当前工具主要通过页面上传素材，不依赖固定本地图片路径。适合快速生成不同平台比例的封面草稿或最终图。
-
-## 维护提醒
+## 维护规则
 
 - 新模板素材放 `assets/creative/photoshop-templates/`。
 - 新封面背景放 `assets/creative/cover-backgrounds/`。
-- 临时导出图不提交到仓库。
+- 临时导出图不要提交到仓库。
+- 新增外部依赖时优先使用稳定 CDN，并检查页面离线失败时的表现。

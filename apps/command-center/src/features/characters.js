@@ -7,13 +7,80 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
-  parseJsonArray,
   readForm,
   renderLinks,
   renderListState,
   renderMeta,
   withBusy
 } from '../ui.js';
+
+function normalizeLinks(links) {
+  return Array.isArray(links) && links.length ? links : [{ title: '', url: '', relation_type: '', source: '', note: '' }];
+}
+
+function renderLinkRow(link = {}) {
+  return `
+    <div class="structured-row" data-link-row>
+      <label>链接标题 <input data-link-field="title" value="${escapeHtml(link.title || link.resource_title || '')}" placeholder="官方资料 / 先行研究" /></label>
+      <label>URL <input data-link-field="url" value="${escapeHtml(link.url || link.resource_url || '')}" placeholder="https://..." /></label>
+      <label>关系类型 <input data-link-field="relation_type" value="${escapeHtml(link.relation_type || '')}" placeholder="official / research / guide" /></label>
+      <label>来源 <input data-link-field="source" value="${escapeHtml(link.source || '')}" placeholder="wiki / bbs / docs" /></label>
+      <label class="row-wide">备注 <input data-link-field="note" value="${escapeHtml(link.note || '')}" placeholder="可留空" /></label>
+      <button type="button" class="ghost remove-row" data-remove-link>删除</button>
+    </div>`;
+}
+
+function renderLinkEditor(links) {
+  return `
+    <section class="structured-editor wide" aria-label="角色链接">
+      <div class="structured-head">
+        <div>
+          <strong>角色链接</strong>
+          <span>按字段填写，保存时自动转换成 links JSON 数组。</span>
+        </div>
+        <button type="button" id="addCharLink" class="secondary add-row">添加链接</button>
+      </div>
+      <div id="charLinkRows" class="structured-list">
+        ${normalizeLinks(links).map(renderLinkRow).join('')}
+      </div>
+    </section>`;
+}
+
+function emptyLinkRow(row) {
+  row.querySelectorAll('[data-link-field]').forEach((input) => {
+    input.value = '';
+  });
+}
+
+function bindLinkEditor(form) {
+  const list = form.querySelector('#charLinkRows');
+  form.querySelector('#addCharLink').addEventListener('click', () => {
+    list.insertAdjacentHTML('beforeend', renderLinkRow());
+  });
+  list.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-link]');
+    if (!button) return;
+    const row = button.closest('[data-link-row]');
+    if (list.querySelectorAll('[data-link-row]').length <= 1) emptyLinkRow(row);
+    else row.remove();
+  });
+}
+
+function collectLinks(form) {
+  return [...form.querySelectorAll('[data-link-row]')].map((row, index) => {
+    const value = (field) => row.querySelector(`[data-link-field="${field}"]`)?.value.trim() || '';
+    const link = {
+      title: value('title'),
+      url: value('url'),
+      relation_type: value('relation_type'),
+      source: value('source'),
+      note: value('note')
+    };
+    const hasAnyValue = Object.values(link).some(Boolean);
+    if (hasAnyValue && !link.url) throw new Error(`第 ${index + 1} 条链接需要填写 URL。`);
+    return hasAnyValue ? link : null;
+  }).filter(Boolean);
+}
 
 function openEditor(data = {}) {
   const names = data.names || data.localized_names || {};
@@ -58,11 +125,18 @@ function openEditor(data = {}) {
     </form>
   `;
 
+  const legacyLinksLabel = editor.querySelector('textarea[name="links"]')?.closest('label');
+  if (legacyLinksLabel) {
+    legacyLinksLabel.insertAdjacentHTML('afterend', renderLinkEditor(links));
+    legacyLinksLabel.remove();
+  }
+
   editor.setAttribute('role', 'dialog');
   editor.setAttribute('aria-modal', 'true');
   editor.setAttribute('aria-labelledby', 'characterEditorTitle');
   $('#closeCharEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelCharEdit').addEventListener('click', () => closeDrawer(editor));
+  bindLinkEditor($('#charForm'));
   openDrawer(editor);
   $('#charForm').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -88,7 +162,7 @@ function openEditor(data = {}) {
           power_rank: form.power_rank,
           evaluation_note: form.evaluation_note,
           names: { jp: form.jp_name, en: form.en_name, kr: form.kr_name },
-          links: parseJsonArray(form.links)
+          links: collectLinks(event.currentTarget)
         });
         log($('#charSaveLog'), result);
         await searchCharacters();

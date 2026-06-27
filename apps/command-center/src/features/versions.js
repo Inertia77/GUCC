@@ -7,7 +7,6 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
-  parseJsonArray,
   readForm,
   renderListState,
   renderMeta,
@@ -104,6 +103,99 @@ function renderBannerGroups(banners = []) {
     </div>`;
 }
 
+const PHASE_OPTIONS = [
+  ['first_half', '上半'],
+  ['second_half', '下半'],
+  ['standard', '常驻 / 其他池'],
+  ['other', '其他']
+];
+
+const BANNER_TYPE_OPTIONS = [
+  ['new_limited', '新限定'],
+  ['pickup', '新出 / UP'],
+  ['rerun', '复刻'],
+  ['standard_addition', '常驻追加'],
+  ['standard', '常驻'],
+  ['collab', '联动'],
+  ['other', '其他']
+];
+
+function optionList(options, value) {
+  const current = String(value || '');
+  const hasCurrent = options.some(([optionValue]) => optionValue === current);
+  const normalizedOptions = current && !hasCurrent ? [[current, current], ...options] : options;
+  return normalizedOptions.map(([optionValue, label]) => (
+    `<option value="${escapeHtml(optionValue)}"${optionValue === current ? ' selected' : ''}>${escapeHtml(label)}</option>`
+  )).join('');
+}
+
+function normalizeBanners(banners) {
+  return Array.isArray(banners) && banners.length
+    ? banners
+    : [{ phase: 'first_half', banner_type: 'new_limited', character_name: '', note: '' }];
+}
+
+function renderBannerRow(banner = {}) {
+  const character = banner.character_name || banner.character_name_raw || banner.name || '';
+  return `
+    <div class="structured-row banner-edit-row" data-banner-row>
+      <label>阶段 <select data-banner-field="phase">${optionList(PHASE_OPTIONS, banner.phase || 'first_half')}</select></label>
+      <label>类型 <select data-banner-field="banner_type">${optionList(BANNER_TYPE_OPTIONS, banner.banner_type || 'new_limited')}</select></label>
+      <label>角色/对象 <input data-banner-field="character_name" value="${escapeHtml(character)}" placeholder="角色名 / 武器 / 卡池对象" /></label>
+      <label class="row-wide">备注 <input data-banner-field="note" value="${escapeHtml(banner.note || '')}" placeholder="免费送 / 伴生皮肤 / 结束日期等" /></label>
+      <button type="button" class="ghost remove-row" data-remove-banner>删除</button>
+    </div>`;
+}
+
+function renderBannerEditor(banners) {
+  return `
+    <section class="structured-editor wide" aria-label="版本卡池">
+      <div class="structured-head">
+        <div>
+          <strong>卡池信息</strong>
+          <span>按上半/下半、类型和角色填写，保存时自动转换成 banners JSON 数组。</span>
+        </div>
+        <button type="button" id="addVersionBanner" class="secondary add-row">添加卡池</button>
+      </div>
+      <div id="versionBannerRows" class="structured-list">
+        ${normalizeBanners(banners).map(renderBannerRow).join('')}
+      </div>
+    </section>`;
+}
+
+function emptyBannerRow(row) {
+  row.querySelectorAll('[data-banner-field]').forEach((input) => {
+    input.value = input.dataset.bannerField === 'phase' ? 'first_half' : input.dataset.bannerField === 'banner_type' ? 'new_limited' : '';
+  });
+}
+
+function bindBannerEditor(form) {
+  const list = form.querySelector('#versionBannerRows');
+  form.querySelector('#addVersionBanner').addEventListener('click', () => {
+    list.insertAdjacentHTML('beforeend', renderBannerRow());
+  });
+  list.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-banner]');
+    if (!button) return;
+    const row = button.closest('[data-banner-row]');
+    if (list.querySelectorAll('[data-banner-row]').length <= 1) emptyBannerRow(row);
+    else row.remove();
+  });
+}
+
+function collectBanners(form) {
+  return [...form.querySelectorAll('[data-banner-row]')].map((row) => {
+    const value = (field) => row.querySelector(`[data-banner-field="${field}"]`)?.value.trim() || '';
+    const banner = {
+      phase: value('phase'),
+      banner_type: value('banner_type'),
+      character_name: value('character_name'),
+      note: value('note')
+    };
+    return banner.character_name || banner.note ? banner : null;
+  }).filter(Boolean);
+}
+
 function openEditor(data = {}) {
   const editor = $('#versionEditor');
   editor.innerHTML = `
@@ -132,11 +224,18 @@ function openEditor(data = {}) {
     </form>
   `;
 
+  const legacyBannersLabel = editor.querySelector('textarea[name="banners"]')?.closest('label');
+  if (legacyBannersLabel) {
+    legacyBannersLabel.insertAdjacentHTML('afterend', renderBannerEditor(data.banners || []));
+    legacyBannersLabel.remove();
+  }
+
   editor.setAttribute('role', 'dialog');
   editor.setAttribute('aria-modal', 'true');
   editor.setAttribute('aria-labelledby', 'versionEditorTitle');
   $('#closeVersionEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelVersionEdit').addEventListener('click', () => closeDrawer(editor));
+  bindBannerEditor($('#versionForm'));
   openDrawer(editor);
   $('#versionForm').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -152,7 +251,7 @@ function openEditor(data = {}) {
           version_name: form.version_name,
           start_date: form.start_date,
           note: form.note,
-          banners: parseJsonArray(form.banners)
+          banners: collectBanners(event.currentTarget)
         });
         log($('#versionSaveLog'), result);
         await searchVersions();

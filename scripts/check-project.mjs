@@ -58,7 +58,7 @@ function checkHtmlLinks(file) {
   const source = readFileSync(file, 'utf8');
   for (const match of source.matchAll(/\b(?:href|src)=["']([^"']+)["']/g)) {
     const value = match[1];
-    if (/^(?:[a-z]+:|#|\/\/)/i.test(value) || value.includes('${')) continue;
+    if (/^(?:[a-z]+:|#|\/\/|\$)/i.test(value) || value.includes('${')) continue;
     const clean = decodeURIComponent(value.split(/[?#]/, 1)[0]);
     const target = resolve(dirname(file), clean);
     if (!existsSync(target)) errors.push(`${file}: 断开的相对链接 ${value}`);
@@ -89,6 +89,7 @@ for (const file of appScripts) {
   checkSyntax(file);
   checkImports(file);
 }
+checkSyntax(resolve(root, 'assets', 'access-guard.js'));
 
 checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'gameup-api', 'index.ts'));
 
@@ -96,12 +97,22 @@ const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');
 const workspaceHtml = resolve(root, 'apps', 'video-workspace', 'index.html');
 const coverGeneratorHtml = resolve(root, 'apps', 'cover-generator', 'index.html');
-checkHtmlLinks(portalHtml);
-checkHtmlLinks(appHtml);
-checkHtmlLinks(workspaceHtml);
-checkHtmlLinks(coverGeneratorHtml);
+const htmlEntrypoints = [
+  portalHtml,
+  appHtml,
+  workspaceHtml,
+  coverGeneratorHtml,
+  resolve(root, 'apps', 'gameup-command-center', 'index.html'),
+  resolve(root, 'docs', 'supabase-setup.html'),
+  resolve(root, 'reference', 'ai-prompts.html'),
+  resolve(root, 'reference', 'resource-library.html'),
+  resolve(root, 'reference', 'story-library.html')
+];
+htmlEntrypoints.forEach(checkHtmlLinks);
 checkInlineScripts(workspaceHtml);
 checkInlineScripts(coverGeneratorHtml);
+checkInlineScripts(resolve(root, 'reference', 'ai-prompts.html'));
+checkInlineScripts(resolve(root, 'reference', 'story-library.html'));
 
 const portalSource = readFileSync(portalHtml, 'utf8');
 if (!portalSource.includes('href="./apps/video-workspace/"')) {

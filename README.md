@@ -1,10 +1,10 @@
 # GUCC
 
-GUCC 是个人游戏内容创作与资料管理仓库。它把视频项目工作台、数据库管理、封面生成、资料入口、自动化脚本和 Supabase 后端放在一个稳定结构里。
+GUCC 是我的 GameUp Creator Command Center：一个放在 GitHub Pages 上的个人游戏内容工作台，包含数据管理、视频项目工作台、封面生成器、资料库、Prompt 库和剧情资料库。
 
-## 快速开始
+## 快速启动
 
-本地调试推荐统一使用 `localhost:8000`。Command Center 的 Supabase CORS 已允许 `http://localhost:8000`；不要用 `127.0.0.1:8000` 测数据库功能，否则可能出现 `Failed to fetch`。
+本地统一使用 `localhost:8000`。Command Center 的 Supabase CORS 默认允许 `http://localhost:8000`，不要用 `127.0.0.1:8000` 测后端。
 
 ```powershell
 cd C:\Users\miket\Git管理下\GUCC
@@ -17,7 +17,7 @@ python -m http.server 8000
 http://localhost:8000/
 ```
 
-也可以直接运行：
+也可以直接用：
 
 ```powershell
 .\scripts\serve-windows.bat
@@ -29,54 +29,56 @@ http://localhost:8000/
 https://inertia77.github.io/GUCC/
 ```
 
-## Portal
+## Access Key
 
-`index.html` 是 GUCC Portal。第一屏只放高频入口：
+Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 
-- `apps/command-center/`：GameUp Command Center，管理 Supabase 数据。
-- `apps/video-workspace/`：GUCC WorkSpace，视频项目工作台。
-- `apps/cover-generator/`：Cover Generator，封面生成器。
+- 当前口令：`GUCC-2026`
+- 保存位置：浏览器 `localStorage`，key 为 `gucc_access_hash_v2`
+- 行为：同一个浏览器输入一次后会长期记住，点击 Portal 右上角锁定入口会清除
+- 修改口令：改 `assets/access-guard.js` 里的 `ACCESS_HASH`
 
-Portal 里还有一个可收起的“备用资料库”，里面放：
+生成新 hash 的 PowerShell 示例：
 
-- `reference/resource-library.html`：游戏 Wiki、官方资料、攻略入口。
-- `reference/query-guides/query-manual.md`：查询手册。
-- `data/schema.md`：数据库结构说明。
-- `docs/supabase-setup.html`：Command Center 部署指南。
+```powershell
+[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('NEW_PASS'))).Replace('-','').ToLower()
+```
 
-Portal 有前端门禁。它只用于防止路人随手打开页面，不是严肃安全边界；真正的数据安全仍靠 Supabase Auth 和 Edge Function。门禁 hash 写在 `index.html` 的 `ACCESS_HASH`。
+注意：这是 GitHub Pages 静态站点的前端门禁，能挡住日常误入和直接打开 HTML app，但不是服务器级私有权限。真正的数据安全仍然依赖 Supabase Auth、Edge Function 和数据库权限。
 
-## 目录结构
+## Portal 入口
+
+| 页面 | 路径 | 用途 |
+|---|---|---|
+| GameUp Command Center | `apps/command-center/` | 查询和维护角色、配队、版本、资源链接 |
+| GUCC WorkSpace | `apps/video-workspace/` | 视频项目模板、WIP/DONE Markdown 与 JSON |
+| Cover Generator | `apps/cover-generator/` | 多比例视频封面生成 |
+| AI Prompt Library | `reference/ai-prompts.html` | 公告整理、兑换码、前瞻、SQL、剧情资料维护 Prompt |
+| Story Library | `reference/story-library.html` | 网页阅读剧情资料库 Markdown |
+| Resource Library | `reference/resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
+| Setup Guide | `docs/supabase-setup.html` | Command Center 部署说明 |
+
+## 项目结构
 
 ```text
 GUCC/
-├─ apps/                         # 可直接在浏览器运行的应用
-│  ├─ command-center/            # Supabase 数据管理前端
-│  ├─ video-workspace/           # 视频项目模板工作台
-│  └─ cover-generator/           # 多比例封面生成器
-├─ assets/                       # 图标、封面素材、参考图、PSD 模板
-├─ automation/                   # Windows 批处理：平台巡检与资料打开
-├─ data/                         # 数据库结构、导入 CSV、Supabase 导出备份
-├─ docs/                         # 部署与操作文档
-├─ reference/                    # 资料库、查询指南、剧情研究资料
-├─ scripts/                      # 启动、检查、Edge Function 测试脚本
-├─ supabase/                     # Supabase CLI、SQL、Edge Function
-├─ index.html                    # GUCC Portal
-└─ README.md
+├─ apps/                         # 可直接打开的应用
+│  ├─ command-center/             # Supabase 数据管理前端
+│  ├─ video-workspace/            # 视频项目工作台
+│  └─ cover-generator/            # 封面生成器
+├─ assets/                        # 图标、素材、封面背景、PSD 模板、门禁脚本
+├─ automation/                    # 本地辅助批处理和资料工作流
+├─ data/                          # 数据库结构、导入 CSV、备份说明
+├─ docs/                          # 部署和操作文档
+├─ reference/                     # Prompt、资料库、剧情库、查询手册
+├─ scripts/                       # 本地启动、项目检查、Edge Function 测试
+├─ supabase/                      # Supabase SQL 和 Edge Function
+└─ index.html                     # GUCC Portal
 ```
 
-## 应用入口
+## Command Center
 
-| 应用 | 本地路径 | 用途 |
-|---|---|---|
-| GameUp Command Center | `http://localhost:8000/apps/command-center/` | 查询和维护角色、配队、版本、资源 |
-| GUCC WorkSpace | `http://localhost:8000/apps/video-workspace/` | 视频项目草稿、脚本、发布与复盘 |
-| Cover Generator | `http://localhost:8000/apps/cover-generator/` | 多比例封面生成 |
-| GUCC 资料库 | `http://localhost:8000/reference/resource-library.html` | 游戏资料入口导航 |
-
-## Command Center 后端
-
-Command Center 的调用链：
+Command Center 的数据路径：
 
 ```text
 GitHub Pages / local static page
@@ -85,13 +87,7 @@ GitHub Pages / local static page
   -> PostgreSQL JSONB RPC
 ```
 
-前端公开配置位于：
-
-```text
-apps/command-center/src/config.js
-```
-
-这里只能放：
+前端公开配置只放：
 
 ```text
 SUPABASE_URL
@@ -103,29 +99,17 @@ EDGE_FUNCTION_NAME
 
 ## 常用命令
 
-本地服务：
-
 ```powershell
 python -m http.server 8000
-```
-
-项目检查：
-
-```powershell
 node scripts/check-project.mjs
-```
-
-Edge Function 测试示例：
-
-```powershell
 .\scripts\test-edge-function.ps1
 ```
 
 ## 维护规则
 
-1. 根目录只放仓库级入口和一级功能区。
-2. 可运行页面放 `apps/`，共享素材放 `assets/`，长期资料放 `reference/`。
-3. Supabase SQL 统一放 `supabase/sql/`，不要散落到根目录。
-4. 应用入口路径保持稳定，版本号写在页面内部或 query string，不改目录名。
-5. 新文件和目录优先使用小写 kebab-case；中文内容写在文件正文里。
-6. WIP / DONE 导出文件不要提交到仓库，放同步盘或本地项目目录。
+1. 入口路径保持稳定，页面刷新用 query string 管缓存，不改目录名。
+2. 新的 HTML 入口要加 `assets/access-guard.js`。
+3. Prompt 和资料型内容优先放 `reference/`。
+4. Supabase SQL 统一放 `supabase/sql/`，不要散落在根目录。
+5. 新增图标或素材放 `assets/`，大文件只放真正复用的版本。
+6. 改完前端入口后运行 `node scripts/check-project.mjs`。

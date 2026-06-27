@@ -1287,13 +1287,13 @@ button.action-danger{
 .field.role-ai .richbox.mid{height:150px}.field.role-ai .richbox.big{height:230px}.field.role-auto .richbox{height:78px;resize:none}
 #sec-00 .project-title-input{min-height:76px!important;height:auto!important;resize:vertical;overflow:auto}
 #sec-00 .control-bottom-grid .richbox{min-height:72px;height:82px;overflow:auto;resize:vertical}
-#sec-02 [data-key="aiAnalysis"]{height:170px}#sec-04 [data-key="script"]{height:260px}#sec-06 [data-key="publishCN"]{height:170px}#sec-06 [data-key="publishMulti"]{height:240px}
+#sec-02 [data-key="evidenceLocker"]{height:180px}#sec-02 [data-key="aiAnalysis"]{height:170px}#sec-04 [data-key="script"]{height:260px}#sec-06 [data-key="publishCN"]{height:170px}#sec-06 [data-key="publishMulti"]{height:240px}
 .prompt-output,#aiOutput{display:none;height:240px;min-height:160px!important;max-height:56vh!important;overflow:auto!important;resize:vertical!important;}
 .ai-structure-paste{height:168px;min-height:120px!important;max-height:46vh;overflow:auto;}
 .output{min-height:118px!important;max-height:390px;overflow:auto;}
 textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!important;}
 .section-goal-input{min-height:64px!important;height:78px;overflow:auto;resize:vertical}.section-content-input{min-height:92px!important;height:112px;overflow:auto;resize:vertical}.section-visual-input{min-height:78px!important;height:92px;overflow:auto;resize:vertical}.section-transition-input{min-height:56px!important;height:68px;overflow:auto;resize:vertical}
-@media(max-width:980px){.collapse-toggle{font-size:12px!important;padding:6px 9px!important}.richbox{min-height:82px}.field.role-ai .richbox,.field.role-auto .richbox{resize:none;max-height:42vh}#sec-02 [data-key="aiAnalysis"]{height:180px}#sec-04 [data-key="script"]{height:260px;max-height:55vh}#sec-06 [data-key="publishCN"]{height:180px;max-height:48vh}#sec-06 [data-key="publishMulti"]{height:230px;max-height:52vh}#aiOutput{height:280px;max-height:58vh!important;resize:none!important}.ai-structure-paste{height:190px;max-height:50vh;resize:none}.section-goal-input,.section-content-input,.section-visual-input,.section-transition-input{resize:none;max-height:42vh}}
+@media(max-width:980px){.collapse-toggle{font-size:12px!important;padding:6px 9px!important}.richbox{min-height:82px}.field.role-ai .richbox,.field.role-auto .richbox{resize:none;max-height:42vh}#sec-02 [data-key="evidenceLocker"]{height:190px}#sec-02 [data-key="aiAnalysis"]{height:180px}#sec-04 [data-key="script"]{height:260px;max-height:55vh}#sec-06 [data-key="publishCN"]{height:180px;max-height:48vh}#sec-06 [data-key="publishMulti"]{height:230px;max-height:52vh}#aiOutput{height:280px;max-height:58vh!important;resize:none!important}.ai-structure-paste{height:190px;max-height:50vh;resize:none}.section-goal-input,.section-content-input,.section-visual-input,.section-transition-input{resize:none;max-height:42vh}}
 
 
 /* v4.0.3: exported Markdown readability helpers */
@@ -1460,6 +1460,7 @@ textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!imp
 <div class="field"><label>官方信息 / 链接</label><div data-key="officialInfo" class="richbox" contenteditable="true" data-placeholder="公告、前瞻、版本日历、角色页、兑换码、活动日期等。"></div></div>
 <div class="field"><label>社区争议 / 玩家问题</label><div data-key="communityDebate" class="richbox" contenteditable="true" data-placeholder="评论区、B站、NGA、X、Reddit等观点。"></div></div>
 <div class="field"><label>自己的观察 / 实测条件</label><div data-key="testNotes" class="richbox" contenteditable="true" data-placeholder="账号练度、队伍、测试条件、限制。"></div></div>
+<div class="field"><label>证据池 / Evidence Locker</label><div data-key="evidenceLocker" class="richbox" contenteditable="true" data-placeholder="建议一行一条：E1｜来源链接/平台｜已确认事实｜支撑观点｜可用画面｜可信度。没有链接也先写来源线索，不确定就标待核实。"></div><div class="tiny">后续 AI 会优先按 E1/E2 这类证据编号写结构和脚本；没有证据支撑的判断会被要求标待核实。</div></div>
 <div class="field"><label>AI 分析结果</label><div data-key="aiAnalysis" class="richbox" contenteditable="true" data-placeholder="把 AI 给你的分析、信息缺口、结构建议贴这里。"></div></div>
 </section>
 </div>
@@ -1507,7 +1508,7 @@ textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!imp
 <div class="btns no-print" style="margin:4px 0 10px">
 <button class="ghost" onclick="estimateDuration()">根据文案估算时长</button>
 </div>
-<div id="durationInlineResult" class="inline-result no-print">时长估算：未计算。仅统计实际口播，自动排除画面、剪辑提示、脚本前检查等制作说明。</div>
+<div id="durationInlineResult" class="inline-result no-print">时长估算：未计算。仅统计实际口播，自动排除依据、画面、剪辑提示、脚本前检查等制作说明。</div>
 <div data-key="script" class="big richbox" contenteditable="true" data-placeholder="这里写正式口播稿。先让 AI 生成也行，但最后一定要改成自己的话。"></div>
 </section>
 
@@ -1623,6 +1624,7 @@ Google Drive / 本地项目目录：
   <button class="sheet-cancel" onclick="toggleMobileExportSheet(false)">取消</button>
 </div>
 
+<script src="./ai-prompts.js"></script>
 <script>
 const TEMPLATE_VERSION = "4.0.3";
 const APP_NAME = "GUCC WorkSpace";
@@ -1675,7 +1677,7 @@ const FIELD_ROLE_MAP = {
   version:'user', ddl:'choice', duration:'auto', priority:'choice', game:'choice', type:'choice', status:'choice',
   gameCode:'auto', projectShortName:'auto',
   coreQuestion:'user', coreConclusion:'user', audience:'user', notDo:'user',
-  officialInfo:'user', communityDebate:'user', testNotes:'user',
+  officialInfo:'user', communityDebate:'user', testNotes:'user', evidenceLocker:'user',
   aiAnalysis:'ai', script:'ai',
   gameFootage:'user', visualPlan:'user',
   publishCN:'ai', publishMulti:'ai',
@@ -2184,7 +2186,7 @@ function beautifyTitleCandidateLists(t){
       out.push(`- **${titleLabelM[1]}：** ${titleLabelM[2]}`);
       continue;
     }
-    const evalM = trimmed.match(/^[-*]\s*(优点|缺点|理由|评价|风险|备注)[：:]\s*(.+)$/);
+    const evalM = trimmed.match(/^[-*]\s*(优点|缺点|理由|评价|风险|备注|点击理由|证据\/脚本依据|误导风险|封面大字建议|封面大字|不该承诺什么)[：:]\s*(.+)$/);
     if(evalM && inTitleBlock){
       out.push(`   - **${evalM[1]}：** ${evalM[2]}`);
       continue;
@@ -2195,8 +2197,8 @@ function beautifyTitleCandidateLists(t){
 }
 function promotePublishSubheadings(t){
   let out = String(t || '');
-  const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险'];
-  const mid = ['核心卖点','目标观众','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','正文 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险'];
+  const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险'];
+  const mid = ['核心卖点','目标观众','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','正文 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险'];
   const minor = ['封面主视觉','封面字建议','最推荐封面字组合','必补截图'];
   out = promoteBulletLabelsToHeadings(out, major, 3);
   out = promotePlainLabelsToHeadings(out, major, 3);
@@ -2235,7 +2237,7 @@ function formatAIAnalysisMarkdown(v){
   if(!t) return '';
   t = t.replace(/(^|\n)(\d+)\.\s*([^\n：:]{2,42})[：:]\s*/g, '$1\n\n### $2. $3\n\n');
   const labels = [
-    '一句话理由','最适合的平台形态','B站标准长视频','短视频/图文','建议时长区间','短版','标准版','深度版','建议主轴改成','结论是否太早','资料是否不足','官方资料不足','社区资料不足','实测资料不足','观众是否明确','最容易被喷/被误解的点','官方已确认信息','社区高频问题','信息冲突 / 待核实','建议继续检索的关键词','官方向','B站/NGA/贴吧向','小红书/抖音向','英文社区向','核心内容','优点','缺点','推荐度','标题方向','资料补强','实测/截图','结构风险','下一步动作','当前阶段结论'
+    '证据池整理','选题结论','核心矛盾','信息边界与待核实','推荐切口','下一步动作清单','空洞检查','一句话理由','最适合的平台形态','B站标准长视频','短视频/图文','建议时长区间','短版','标准版','深度版','建议主轴改成','结论是否太早','资料是否不足','官方资料不足','社区资料不足','实测资料不足','观众是否明确','最容易被喷/被误解的点','官方已确认信息','社区高频问题','信息冲突 / 待核实','建议继续检索的关键词','官方向','B站/NGA/贴吧向','小红书/抖音向','英文社区向','核心内容','优点','缺点','推荐度','标题方向','资料补强','实测/截图','结构风险','下一步动作','当前阶段结论'
   ];
   labels.forEach(label => {
     const esc = mdEscapeRegExp(label);
@@ -2254,16 +2256,16 @@ function formatDefaultMarkdown(v){
   const lineCount = (t.match(/\n/g) || []).length;
   if(t.length > 260 && lineCount < 4){
     const labels = [
-      '发布定位','核心卖点','目标观众','不适合使用的标题方向','B站标题候选','稳妥版','有点击欲版','轻松吐槽版','SEO/搜索友好版','推荐主标题','B站简介','B站标签','游戏词','版本词','机制词','情绪词','平台泛词','小红书标题','正文 1 版','话题标签','抖音 / 视频号 / TikTok 中文切片','短标题','切片脚本','置顶评论','发布前检查','可能误导的表达','需要补充的截图/封面字','评论区可能问什么',
-      '脚本前检查','资料缺口','事实风险','节奏风险','开头 Hook','结尾',
-      'English','YouTube title options','Description','Tags','Search keywords','日本語','タイトル案','概要欄','タグ','検索キーワード','한국어','제목 후보','설명','태그','검색 키워드','Français','Titres','Mots-clés','本地化风险'
+      '发布定位','核心卖点','目标观众','证据边界','不适合使用的标题方向','B站标题候选','稳妥版','有点击欲版','轻松吐槽版','SEO/搜索友好版','推荐主标题','B站简介','B站标签','游戏词','版本词','机制词','情绪词','平台泛词','小红书标题','正文 1 版','话题标签','抖音 / 视频号 / TikTok 中文切片','短标题','切片脚本','置顶评论','发布前检查','标题是否兑现','空洞检查','可能误导的表达','需要补充的截图/封面字','评论区可能问什么',
+      '脚本前检查','资料缺口','事实风险','节奏风险','需要补录/补截图','开头 Hook','结尾','脚本落地检查',
+      'English','YouTube title options','Description','Tags','Search keywords','日本語','タイトル案','概要欄','タグ','検索キーワード','한국어','제목 후보','설명','태그','검색 키워드','Français','Titres','Mots-clés','本地化风险','各语言本地化取舍'
     ];
     labels.forEach(label => {
       const esc = mdEscapeRegExp(label);
       t = t.replace(new RegExp('(^|[\\n。！？；;：:])\\s*(' + esc + '[：:]?)', 'g'), '$1\n\n$2');
     });
     t = t.replace(/\s+(第\d+节[｜|])/g,'\n\n$1')
-         .replace(/\s+(【口播】|【画面】|【剪辑提示】|【可选轻梗】)/g,'\n\n$1')
+         .replace(/\s+(【口播】|【依据】|【画面】|【剪辑提示】|【可选轻梗】)/g,'\n\n$1')
          .replace(/\s+(-\s)/g,'\n$1')
          .replace(/\s+(\d+\.\s)/g,'\n$1');
   }
@@ -2304,7 +2306,7 @@ function shouldRepairReadableText(v){
   return t.length > 260 && (t.match(/\n/g) || []).length < 4;
 }
 function repairLongTextLineBreaks(){
-  const keys = new Set(['aiAnalysis','script','publishCN','publishMulti','progressLog','review']);
+  const keys = new Set(['evidenceLocker','aiAnalysis','script','publishCN','publishMulti','progressLog','review']);
   let count = 0;
   fields().forEach(el => {
     const key = el.dataset && el.dataset.key;
@@ -2414,6 +2416,7 @@ ${mdBlock("这期不做什么", d.notDo)}
 ${mdBlock("官方信息 / 链接", d.officialInfo)}
 ${mdBlock("社区争议 / 玩家问题", d.communityDebate)}
 ${mdBlock("自己的观察 / 实测条件", d.testNotes)}
+${mdBlock("证据池 / Evidence Locker", d.evidenceLocker)}
 ${mdBlock("AI 分析结果", d.aiAnalysis, 3, "analysis")}
 
 ---
@@ -2565,6 +2568,7 @@ function parseMarkdown(text){
   d.officialInfo = block("官方信息 / 链接");
   d.communityDebate = block("社区争议 / 玩家问题");
   d.testNotes = block("自己的观察 / 实测条件");
+  d.evidenceLocker = block("证据池 / Evidence Locker") || block("证据池");
   d.aiAnalysis = block("AI 分析结果");
   d.chapterTable = topBlock("03 内容结构 / 分镜节奏");
   d.script = topBlock("04 文案");
@@ -2683,523 +2687,7 @@ function currentStructurePresetLabel(){
   if(!sel) return '';
   return sel.options[sel.selectedIndex]?.textContent || sel.value || '';
 }
-function projectHeaderContext(d){
-  return `# 项目基础资料
-
-## 00 项目总控
-- 项目标题：${safeText(d.projectTitle)}
-- 游戏：${safeText(d.game)}
-- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
-- 内容类型：${safeText(d.type)}
-- 状态：${safeText(d.status)}
-- DDL：${safeText(d.ddl)}
-- 版本 / 卡池 / 活动：${safeText(d.version)}
-- 参考时长/形式：${safeText(d.duration)}
-- 优先级：${safeText(d.priority)}
-- 项目简易标题：${safeText(d.projectShortTitle)}
-- 简称预览：${safeText(d.shortName)}`;
-}
-function macroContext(d){
-  return `## 01 内容宏观定位
-### 一句话问题
-${safeText(d.coreQuestion)}
-
-### 暂定核心结论
-${safeText(d.coreConclusion)}
-
-### 目标观众
-${safeText(d.audience)}
-
-### 这期不做什么
-${safeText(d.notDo)}`;
-}
-function rawResearchContext(d){
-  return `## 02 原始资料
-### 官方信息 / 链接
-${safeText(d.officialInfo)}
-
-### 社区争议 / 玩家问题
-${safeText(d.communityDebate)}
-
-### 自己的观察 / 实测条件
-${safeText(d.testNotes)}`;
-}
-function briefContext(d){
-  return `${projectHeaderContext(d)}
-
-${macroContext(d)}
-
-${rawResearchContext(d)}`;
-}
-function analysisContext(d){
-  return `# 立项/资料分析输入
-以下内容只包含我已经填写的 00/01/02，不包含 AI 分析、结构、文案、发布包、复盘。
-
-${briefContext(d)}`;
-}
-function outlineContext(d){
-  return `# 章节结构输入
-
-${briefContext(d)}
-
-## 已有 AI 分析结果
-${safeText(d.aiAnalysis)}
-
-## 当前 03 结构状态
-- 当前结构预设：${safeText(currentStructurePresetLabel())}
-- 当前结构内容：${safeText(d.chapterTable, '（尚未填写；请从零生成结构）')}`;
-}
-function scriptContext(d){
-  return `# 脚本生成输入
-
-${briefContext(d)}
-
-## AI 分析结果
-${safeText(d.aiAnalysis)}
-
-## 03 内容结构 / 分镜节奏
-${safeText(d.chapterTable, '（尚未填写；请先指出需要补结构，不要直接硬写完整脚本）')}
-
-## 05 素材与画面计划
-### 需要录制的游戏画面
-${safeText(d.gameFootage)}
-
-### 截图 / 图表 / 封面方向
-${safeText(d.visualPlan)}`;
-}
-function platformContext(d){
-  return `# 主平台发布包输入
-
-${projectHeaderContext(d)}
-
-## 核心结论
-${safeText(d.coreConclusion)}
-
-## 03 内容结构 / 分镜节奏
-${safeText(d.chapterTable)}
-
-## 04 正式文案
-${safeText(d.script, '（未填写正式文案；如果信息不足，请先列缺失项，不要硬编完整发布包）')}
-
-## 05 视觉/封面方向
-${safeText(d.visualPlan)}`;
-}
-function translateContext(d){
-  migrateMultiLanguageFields(d);
-  const hasCN = filled(d.publishCN);
-  const hasMulti = filled(d.publishMulti);
-  return `# 多语言本地化输入
-
-## 游戏与关键词
-- 游戏：${safeText(d.game)}
-- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
-- 版本/活动：${safeText(d.version)}
-- 内容类型：${safeText(d.type)}
-
-## 简中发布包
-${hasCN ? d.publishCN : '（暂无简中发布包。请先根据下方项目资料生成一版简中基准发布包，再进行多语言本地化。）'}
-
-## 现有多语言发布包（如已有，繁中和外语都在同一框）
-${hasMulti ? d.publishMulti : '（暂无。请同时生成繁体中文 / English / 日本語 / 한국어 / Français。）'}
-
-## 可参考项目资料
-${hasCN ? '（简中发布包已提供，优先以发布包为准。）' : platformContext(d)}`;
-}
-function reviewContext(d){
-  return `# 复盘分析输入
-
-## 项目
-- 标题：${safeText(d.projectTitle)}
-- 游戏：${safeText(d.game)}
-- 类型：${safeText(d.type)}
-- 版本/活动：${safeText(d.version)}
-
-## 发布包
-${safeText(d.publishCN)}
-
-## 进度记录
-${safeText(d.progressLog)}
-
-## 结项反思 / 数据
-${safeText(d.review, '（请先在 07 复盘区补：播放量、完播/平均观看、点赞收藏评论、涨粉、发布时间、标题封面、评论区问题。）')}`;
-}
-function stageGuard(kind){
-  const guards = {
-    analysis:'允许并鼓励主动查资料，但不要使用或假装已有：AI 分析结果、03结构、04文案、06发布包、07复盘。',
-    outline:'允许补查结构所需资料；不要写完整口播稿，不要写发布标题，不要做多语言。',
-    script:'允许为事实核验补查资料；不要生成发布标题/简介/标签，不要做复盘。',
-    platform:'允许查平台关键词、同类标题和社区搜索词；不要重写整篇脚本。',
-    translate:'允许查各语言通用译名、海外社区说法和 SEO 关键词；不要改选题核心。',
-    review:'允许对照平台数据/评论/同类内容经验做诊断；不要补写脚本或发布包。'
-  };
-  return guards[kind] || '';
-}
-function promptBase(kind){
-  return `你是我的二游视频项目共同策划人，不是表格填写机器。你的任务是和我一起把这个项目做成：选题站得住、资料查得准、结构讲得清、发布包有点击理由、复盘能反推下一期。
-
-工作原则：
-- 需要联网/检索时，请主动查：官方公告、前瞻/直播、角色/活动页面、游戏内规则说明、B站/小红书/抖音评论、NGA/贴吧、X/Reddit/YouTube、主流攻略站或 wiki。
-- 查资料时要交叉核验：官方优先，其次社区共识；信息冲突时列出冲突点，不要替我拍脑袋。
-- 你可以给我建议，也要指出我的问题：选题是否太散、结论是否太早、观众是否不明确、资料是否不足、表达是否容易被喷。
-- 不要把视频时长写死。请根据题材复杂度、观众耐心、素材密度、平台用途，给出合理时长区间；必要时同时给“短版 / 标准版 / 深度版”。
-- 区分【事实】【推测】【个人判断】【待核实】。不要编造官方数据、日期、倍率、活动规则；不确定就写“待核实 + 建议检索词/资料来源”。
-- 表达风格：严谨但别板着脸。你是游戏 UP 主的共同策划，不是写审计报告；允许适当加入轻松吐槽、游戏梗、生活类比和“人话翻译”，但不要低俗、阴阳怪气、人身攻击，也不要为了搞笑牺牲准确性。
-- 幽默使用原则：每个关键段落最多 1 个轻梗；优先服务理解和记忆点，不要把视频写成脱口秀，也不要把严肃核验写成段子。
-- 不要用“必抽/血亏/垃圾角色”等强命令表达；可以用“哪些账号更该关注 / 哪些可以观望 / 哪些说法先别急着信”。
-- 输出要能直接粘贴回我的 HTML 模板对应区域；同时给我下一步动作，不要只给漂亮废话。
-
-本阶段限制：
-${stageGuard(kind)}`;
-}
-function buildPrompt(kind){
-  const d = normalizeShortFields(collect());
-  if(kind === "analysis"){
-    return `${promptBase('analysis')}
-
-这是【① 立项 / 资料分析阶段】。
-你要先帮我判断这个项目值不值得做、应该怎么做、还缺什么；不要急着写脚本。
-
-请执行：
-1. 先阅读我填写的 00/01/02。
-2. 主动补查资料：官方信息、当前版本/活动/角色相关资料、社区争议与玩家真实问题。能查就查；不能查就列“必须检索清单”。
-3. 对我的输入做诊断：哪些地方太空、太主观、太死板、容易被反驳。
-4. 给出项目定位：这期到底回答什么、适合谁看、不适合做成什么。
-5. 给出可执行下一步：补哪些资料、截哪些图、测哪些内容、是否进入结构阶段。
-
-请按以下格式输出：
-
-# 可粘贴到【02 资料与 AI 分析：AI 分析结果】的内容
-
-## 1. 选题结论
-- 建议：值得做 / 暂缓 / 需要先补资料
-- 一句话理由：
-- 最适合的平台形态：长视频 / 短视频 / 图文 / 混合
-- 建议时长区间：按内容判断，不要写死
-
-## 2. 我当前输入的问题
-- 选题是否太散：
-- 结论是否太早：
-- 资料是否不足：
-- 观众是否明确：
-- 最容易被喷/被误解的点：
-
-## 3. 外部资料核验摘要
-- 官方已确认信息：
-- 社区高频问题：
-- 信息冲突 / 待核实：
-- 建议继续检索的关键词：
-
-## 4. 推荐切口
-给 3 个切口：稳妥版、尖锐版、轻量版。每个说明优缺点，并标出最推荐。
-
-## 5. 项目改进建议
-- 标题方向：
-- 资料补强：
-- 实测/截图：
-- 结构风险：
-- 可以加入的轻松表达/吐槽点：
-- 下一步动作：
-
-${analysisContext(d)}`;
-  }
-  if(kind === "outline"){
-    return `${promptBase('outline')}
-
-这是【② 章节结构阶段】。
-你要像真正的策划编辑一样，基于 Brief、原始资料、AI 分析和必要的外部资料，设计一个适合本项目的结构。不要死套 8-12 分钟，也不要机械套 6 节。
-
-请执行：
-1. 先判断内容应该做成短版、标准版还是深度版，并说明理由。
-2. 根据题材复杂度决定节数和时长；如果我的 03 结构不合理，可以直接指出并改。
-3. 每一节都要有功能：Hook、背景、问题、证据、机制、争议、实测、判断、建议、总结等，不要每节都写成“继续分析”。
-4. 每节都要说明画面/素材，不能只写“配游戏画面”。
-5. 给出“删减方案”：如果时间不够，哪些节可以合并或删掉。
-
-输出格式必须严格使用下面字段名，方便我直接复制到 HTML 的【AI 结构文本导入】里自动识别：
-
-# 可粘贴到【AI 结构文本导入】的内容
-
-## 结构判断
-- 推荐版本：短版 / 标准版 / 深度版
-- 建议节数：
-- 建议总时长区间：
-- 为什么不是固定 8-12 分钟：
-- 如果要压缩，优先删：
-
-## 分节方案
-
-### 第1节
-- 本节功能：Hook / 背景 / 现象 / 资料 / 机制 / 争议 / 实测 / 判断 / 建议 / 总结 / 转场 / 其他
-- 章节标题：
-- 预计时间：
-- 状态：草稿
-- 本节目标：
-- 关键内容：
-- 画面/素材：
-- 转场句：
-
-### 第2节
-同格式继续，节数由你根据项目决定。
-
-注意：
-- 不要输出完整口播稿。
-- 不要输出发布标题、简介、标签。
-- 如果当前资料不足以定结构，先写“结构前置缺口”，再给临时结构。
-
-${outlineContext(d)}`;
-  }
-  if(kind === "script"){
-    return `${promptBase('script')}
-
-这是【③ 脚本生成阶段】。
-你要基于 03 结构写中文口播稿，但不是把要点机械扩写。你需要先检查结构是否能讲通，再写成真实可录制的稿子。
-
-请执行：
-1. 先做 5 行以内的脚本前检查：资料缺口、事实风险、节奏风险。
-2. 必要时补查最新资料，核对官方/社区说法；不确定的地方标【待核实】。
-3. 口播要像人在讲，不要论文腔，不要短视频营销腔；允许偶尔吐槽、类比、小幽默，让观众觉得“这人懂游戏也懂人话”。
-4. 每节保留“口播 + 画面 + 剪辑提示 + 可选轻梗”。轻梗可以不用进最终稿，但要给我挑选空间。
-5. 遇到争议，不要站桩输出结论；先拆前提，再给有条件判断。
-6. 如果你认为当前结构有问题，先指出问题，再按你修正后的结构写。
-
-请按以下格式输出：
-
-# 可粘贴到【04 文案】的内容
-
-## 脚本前检查
-- 资料缺口：
-- 事实风险：
-- 节奏风险：
-- 本稿采用的时长区间：
-
-## 开头 Hook
-【口播】
-直接给可录制口播。
-
-【画面】
-具体画面和字幕提示。
-
-## 第1节｜章节标题
-【口播】
-……
-
-【画面】
-……
-
-【剪辑提示】
-……
-
-【可选轻梗】
-给 1 个不油腻、不影响严谨性的吐槽/类比/梗。
-
-后续章节同格式。
-
-## 结尾
-一句话总结 + 行动建议 / 评论引导 / 下期方向。
-
-额外要求：
-- 不要生成发布标题、简介、标签。
-- 不要把“画面建议”写成空话。
-- 对事实不确定处标注【待核实】。
-
-${scriptContext(d)}`;
-  }
-  if(kind === "platform"){
-    return `${promptBase('platform')}
-
-这是【④ 主平台发布包阶段】。
-你要基于正式文案生成中文发布材料，同时可以补查同类内容标题、平台关键词、社区搜索词，帮我提高点击理由，但不能骗人、不能极端标题党。
-
-请执行：
-1. 先判断这期最适合的卖点：信息差、争议解释、实测结论、资源焦虑、版本整理、情绪共鸣，还是别的。
-2. 查/参考同类平台常见关键词和玩家搜索词；不确定就列待确认关键词。
-3. 输出不同强度的标题：稳妥、偏锐、SEO、短视频切片。
-4. 反向检查：哪些标题会误导？哪些标题容易引战？哪些不够有点击理由？
-
-请按以下格式输出：
-
-# 可粘贴到【06 发布包：简中】的内容
-
-## 发布定位
-- 核心卖点：
-- 目标观众：
-- 不适合使用的标题方向：
-
-## B站标题候选
-请按下面的层级输出，禁止把“标题”和“优缺点/理由”写成同一级项目符号；否则导出 Markdown 会像一锅弹幕糊成粥。
-
-### 稳妥版 5 个
-1. 《标题》
-   - 评价：优点……；缺点/注意……。
-
-### 有点击欲版 5 个
-1. 《标题》
-   - 评价：优点……；缺点/注意……。
-
-### 轻松吐槽版 5 个
-1. 《标题》
-   - 评价：可以有梗，但不能像营销号，也不能误导。
-
-### SEO/搜索友好版 5 个
-1. 《标题》
-   - 评价：关键词覆盖……；缺点/注意……。
-
-## 推荐主标题
-- 最推荐标题：《标题》
-  - 理由：
-- 备选1：《标题》
-  - 理由：
-- 备选2：《标题》
-  - 理由：
-
-## B站简介
-包含：本期核心问题、观看对象、章节时间轴、事实前提/免责声明。
-
-## B站标签
-给 15-25 个，并按“游戏词 / 版本词 / 机制词 / 情绪词 / 平台泛词”分类。
-
-## 小红书
-### 标题 5 个
-1. 标题
-2. 标题
-
-### 正文 1 版
-正文请分段，不要整段挤在一起。
-
-### 话题标签
-用一行 hashtag，或按主题分组。
-
-## 抖音 / 视频号 / TikTok 中文切片
-### 10 个短标题
-1. 标题
-2. 标题
-
-### 3 条切片脚本
-每条 30-60 秒，注明从正片哪一节切，并按【口播】【画面】分段。
-
-## 置顶评论
-给 1 版。
-
-## 发布前检查
-- 可能误导的表达：
-- 需要补充的截图/封面字：
-- 评论区可能问什么：
-
-${platformContext(d)}`;
-  }
-  if(kind === "translate"){
-    return `${promptBase('translate')}
-
-这是【⑤ 多语言本地化阶段】。
-你要把简中发布包一次性本地化成【繁中 + English + 日本語 + 한국어 + Français】，不要逐字翻译。繁中不要单独输出到另一个框，必须和其他语言放在同一个多语言发布包里。需要主动查常用游戏译名、海外社区说法和各语言 SEO 关键词；不确定就标注待确认。
-
-请执行：
-1. 先确认游戏、角色、版本、机制等固有名词在各语言社区的常见说法。
-2. 不要把中文网络梗硬翻成外语；要换成目标语言自然表达。
-3. 标题要保留原选题的点击理由，但不要跨文化误伤。
-4. 输出时按语言分块，但全部保留在同一个回答里；不要写“繁中见上/见另一个框”。
-5. 如果某语言不适合直发，指出原因和替代方向。
-
-请输出：
-# 可粘贴到【06 发布包：多语言】的内容
-
-## 术语核验
-- 确认译名：
-- 待确认译名：
-- 不建议直译的中文表达：
-
-## 繁体中文
-### YouTube 標題 10 個
-1. 標題
-2. 標題
-### 簡介
-### 標籤
-
-## English
-### YouTube title options x10
-1. Title
-2. Title
-### Description
-### Tags
-### Search keywords
-
-## 日本語
-### タイトル案 10個
-1. タイトル
-2. タイトル
-### 概要欄
-### タグ
-### 検索キーワード
-
-## 한국어
-### 제목 후보 10개
-1. 제목
-2. 제목
-### 설명
-### 태그
-### 검색 키워드
-
-## Français
-### Titres x10
-1. Titre
-2. Titre
-### Description
-### Tags
-### Mots-clés
-
-## 本地化风险
-哪些标题或表达在海外容易显得奇怪、夸张、误导。
-
-${translateContext(d)}`;
-  }
-  if(kind === "review"){
-    return `${promptBase('review')}
-
-这是【⑥ 复盘分析阶段】。
-你要像项目合伙人一样帮我复盘：这期哪里做对了，哪里做错了，哪些问题来自选题，哪些来自标题/封面，哪些来自脚本节奏，下一期应该怎么改。
-
-请执行：
-1. 如果数据不足，先列缺失数据，不要装作能分析。
-2. 根据已有数据和评论，把问题分成：选题、标题封面、开头、主体节奏、结尾、发布时间、平台匹配。
-3. 对照我一开始的项目目标，判断有没有跑偏。
-4. 给下一期可执行改进，不要只写“提高质量”。
-
-请按以下格式输出：
-
-# 可粘贴到【07 复盘】的内容
-
-## 1. 数据完整度
-- 已有数据：
-- 缺失数据：
-- 缺失数据会影响哪些判断：
-
-## 2. 项目目标回看
-- 原目标：
-- 实际表现：
-- 是否跑偏：
-
-## 3. 表现诊断
-- 选题：
-- 标题/封面：
-- 前 30 秒：
-- 主体节奏：
-- 结尾与互动：
-- 发布时间/平台：
-
-## 4. 评论区需求
-把观众问题归类，并判断哪些值得做成下一期。
-
-## 5. 下一步动作
-- 是否需要补短视频：
-- 是否需要补图文：
-- 是否值得做后续长视频：
-- 下一期最推荐选题：
-- 具体改法 3 条：
-
-${reviewContext(d)}`;
-  }
-  return briefContext(d);
-}
+// AI Prompt templates live in ./ai-prompts.js so prompt iterations do not require editing this page.
 function scrollToElementWithOffset(target, offset=92){
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if(!el) return;
@@ -3256,7 +2744,7 @@ function extractSpokenScript(raw){
   const src = normalizeLineBreaks(raw || "").replace(/\r/g, "");
   const lines = src.split("\n");
   const spokenLabels = /^(口播|旁白|台词|正文口播|VO|Voice|Narration)$/i;
-  const nonSpokenLabels = /^(画面|画面\/素材|素材|剪辑提示|可选轻梗|轻梗|脚本前检查|检查|备注|发布前检查|字幕|封面|BGM|音效|转场|制作提示|注意|参考)$/i;
+  const nonSpokenLabels = /^(依据|证据|画面|画面\/素材|素材|剪辑提示|可选轻梗|轻梗|脚本前检查|检查|备注|发布前检查|字幕|封面|BGM|音效|转场|制作提示|注意|参考)$/i;
   const blocks = [];
   let mode = "unknown";
   let hasSpokenLabel = false;
@@ -3299,7 +2787,7 @@ function extractSpokenScript(raw){
     // 兜底：如果没有【口播】标签，就尽量按“正文文案”清洗，排除常见制作说明区块。
     spoken = src
       .replace(/(^|\n)#{1,6}\s*脚本前检查[\s\S]*?(?=\n#{1,6}\s*(开头|第\d+节|结尾|Hook|总结)|$)/g, "\n")
-      .replace(/(^|\n)【(?:画面|画面\/素材|素材|剪辑提示|可选轻梗|轻梗|备注|字幕|封面|BGM|音效|转场|制作提示|注意|参考)】[\s\S]*?(?=\n【[^】]+】|\n#{1,6}\s*(开头|第\d+节|结尾|Hook|总结)|$)/g, "\n");
+      .replace(/(^|\n)【(?:依据|证据|画面|画面\/素材|素材|剪辑提示|可选轻梗|轻梗|备注|字幕|封面|BGM|音效|转场|制作提示|注意|参考)】[\s\S]*?(?=\n【[^】]+】|\n#{1,6}\s*(开头|第\d+节|结尾|Hook|总结)|$)/g, "\n");
   }
   return {
     text: cleanupSpokenForDuration(spoken),

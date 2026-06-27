@@ -9,6 +9,8 @@
 - 改进 Markdown 换行、发布包层级、AI 结构导入和移动端操作。
 - 仓库正式入口改为稳定路径 `apps/video-workspace/index.html`。
 - 增加编辑后浏览器自动保存；导出文件仍是跨设备和长期归档依据。
+- AI Prompt 模板拆到 `ai-prompts.js`，后续迭代 Prompt 不需要修改 `index.html`。
+- 增加证据池字段，并把 AI Prompt 升级为证据驱动输出，减少空洞结论、泛素材建议和标题夸大。
 
 ## Legacy 3.8.x
 

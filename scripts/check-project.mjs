@@ -96,7 +96,9 @@ checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'gameup-api', 'inde
 const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');
 const workspaceHtml = resolve(root, 'apps', 'video-workspace', 'index.html');
+const workspacePrompts = resolve(root, 'apps', 'video-workspace', 'ai-prompts.js');
 const coverGeneratorHtml = resolve(root, 'apps', 'cover-generator', 'index.html');
+checkSyntax(workspacePrompts);
 const htmlEntrypoints = [
   portalHtml,
   appHtml,

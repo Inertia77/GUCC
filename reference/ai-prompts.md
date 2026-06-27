@@ -78,84 +78,188 @@ Game	Version	Type	Task	MyDDL	Priority	Status	Note	Source
 ## 新角色 / 新版本信息 -> Command Center SQL
 
 ```text
-你是我的 Supabase SQL 整理助手。请根据我粘贴的官方公告、前瞻整理、角色爆料或你联网检索到的可信资料，生成可以直接放进 Supabase SQL Editor 执行的 SQL。
+你是我的 Supabase SQL 整理助手。请根据我粘贴的官方公告、前瞻整理、角色爆料，或你联网检索到的可信资料，生成可以直接放进 Supabase SQL Editor 执行的 SQL。
 
 项目背景：
-我在 GUCC Command Center 里用 RPC 写入数据，尽量使用这些函数，不要直接 insert 多张表：
+我在 GUCC Command Center 里用 Supabase PostgreSQL RPC 函数写入数据。请优先使用数据库函数，不要直接 insert/update 多张底层表。
 
-1. 保存角色：
+当前可用 RPC 函数与字段规则如下。
+
+一、保存角色：public.app_save_character(p_payload jsonb)
+
+SQL 格式：
+
 select public.app_save_character($$
 {
-  "game_code": "绝",
-  "name": "角色名",
-  "element": "属性",
-  "profession": "职业/命途/定位",
-  "sex": "",
-  "rarity": "",
-  "note": "角色备注",
-  "research_status": "待研究/研究中/已整理",
-  "build_status": "未养成/养成中/已养成/暂无",
-  "like_level": "",
-  "research_note": "研究/养成备注",
-  "role_type": "主C/副C/辅助/生存/其他",
-  "power_rank": "",
-  "evaluation_note": "当前评价",
-  "names": {
-    "jp": "",
-    "en": "",
-    "kr": ""
-  },
-  "links": [
-    {
-      "title": "官方资料",
-      "url": "https://...",
-      "relation_type": "official",
-      "source": "official",
-      "note": ""
-    }
-  ]
+"game_code": "绝",
+"name": "角色名",
+"element": "属性",
+"profession": "职业/命途/定位",
+"sex": "",
+"rarity": "",
+"note": "角色备注",
+"research_status": "待研究",
+"build_status": "未养成",
+"like_level": "",
+"research_note": "研究/养成备注",
+"role_type": "主C/副C/辅助/生存/其他",
+"power_rank": "",
+"evaluation_note": "当前评价",
+"names": {
+"jp": "",
+"en": "",
+"kr": ""
+},
+"links": [
+{
+"title": "官方资料",
+"url": "https://...",
+"relation_type": "official",
+"source": "official",
+"note": ""
+}
+]
 }
 $$::jsonb);
 
-2. 保存版本与卡池：
+角色字段说明：
+
+* game_code 必填，使用项目短码，例如：鸣 / 绝 / 崩 / 终 / 异。
+* name 必填，使用中文常用名。
+* element、profession、sex、rarity、note 不确定就写空字符串。
+* research_status 建议使用：待研究 / 研究中 / 已整理。
+* build_status 建议使用：未养成 / 养成中 / 已养成 / 暂无。
+* role_type 建议使用：主C / 副C / 辅助 / 生存 / 其他。
+* names 是别名对象，只写确定的 jp/en/kr，不确定写空字符串或省略对应语言。
+* links 只在有可信链接时写入。
+* 如果没有新链接，不要写 links 字段，避免清空旧链接。
+* 只有在明确要清空旧链接时，才写 "links": []。
+* links 中 url 不能为空；没有 url 的资料不要放进 links。
+* source 优先写 official、wiki、community、news、leak、frontend 等。
+
+二、保存版本与卡池：public.app_save_version(p_payload jsonb)
+
+SQL 格式：
+
 select public.app_save_version($$
 {
-  "game_code": "绝",
-  "version_no": "2.0",
-  "version_name": "版本名",
-  "start_date": "YYYY-MM-DD",
-  "note": "版本备注，写新机制、活动重点、联动等",
-  "banners": [
-    {
-      "phase": "first_half",
-      "banner_type": "new_limited",
-      "character_name": "角色名",
-      "note": "上半新出"
-    },
-    {
-      "phase": "second_half",
-      "banner_type": "rerun",
-      "character_name": "角色名",
-      "note": "下半复刻"
-    }
-  ]
+"game_code": "绝",
+"version_no": "2.0",
+"version_name": "版本名",
+"start_date": "YYYY-MM-DD",
+"note": "版本备注，写新机制、活动重点、联动等。版本来源链接请写在 SQL 注释或 note 中，因为 app_save_version 不支持 links 字段。",
+"banners": [
+{
+"phase": "first_half",
+"banner_type": "new_limited",
+"character_name": "角色名",
+"note": "上半新出"
+},
+{
+"phase": "second_half",
+"banner_type": "rerun",
+"character_name": "角色名",
+"note": "下半复刻"
+}
+]
 }
 $$::jsonb);
 
-字段约定：
-- game_code 使用我项目里的短码，例如：鸣 / 绝 / 崩 / 终 / 异。
-- phase 建议使用：first_half, second_half, standard, other。
-- banner_type 建议使用：new_limited, pickup, rerun, standard_addition, standard, collab, other。
-- 日期使用 YYYY-MM-DD。
-- links 必须是数组；没有链接就写 []。
+版本字段说明：
+
+* game_code 必填，使用项目短码，例如：鸣 / 绝 / 崩 / 终 / 异。
+* version_no 必填，例如 "2.0"。
+* version_name 不确定就写空字符串。
+* start_date 使用 YYYY-MM-DD；不确定就写空字符串。
+* note 写版本机制、活动重点、联动、系统变化、资料可信度等。
+* app_save_version 不支持 links 字段，不要在版本 JSON 里写 links。
+* 如果使用了外部资料来源，请在 SQL 前面用注释写：
+  -- Source: 资料标题 URL
+* banners 是卡池数组。
+* phase 建议使用：first_half / second_half / standard / other。
+* banner_type 建议使用：new_limited / pickup / rerun / standard_addition / standard / collab / other。
+* character_name 使用角色中文常用名。
+* 如果角色已经存在，函数会自动关联 character_id；如果角色还不存在，也会保存 character_name_raw。
+* 为了让卡池正确关联角色，请优先先输出角色保存 SQL，再输出版本保存 SQL。
+* 如果没有卡池信息，不要写 banners 字段；除非明确要清空旧卡池，才写 "banners": []。
+
+三、保存配队：public.app_save_party(p_payload jsonb)
+
+只有资料明确包含阵容/配队时才生成。
+
+SQL 格式：
+
+select public.app_save_party($$
+{
+"game_code": "绝",
+"summary": "队伍概要",
+"party_type": "常规配队/高难/开荒/整活/其他",
+"status": "待测试/可用/推荐/过时",
+"hold_status": "",
+"description": "配队说明",
+"members": [
+{
+"slot_no": 1,
+"name": "角色名",
+"member_role": "主C"
+},
+{
+"slot_no": 2,
+"name": "角色名",
+"member_role": "辅助"
+}
+]
+}
+$$::jsonb);
+
+配队字段说明：
+
+* members 中 name 使用中文常用名。
+* slot_no 从 1 开始。
+* member_role 写主C、副C、辅助、生存、破盾、充能、后台等。
+* 如果角色存在，函数会自动关联 character_id；不存在也会保留 member_name_raw。
+* 如果没有明确配队资料，不要生成配队 SQL。
 
 工作要求：
-1. 先从资料中抽取角色、版本、卡池、备注、官方链接。
-2. 如果需要联网检索，请只使用可信来源，并把来源放进 links 或 SQL 注释。
-3. 只输出 SQL 代码块，不要输出解释。
-4. SQL 里不要写 delete、drop、truncate、alter。
-5. 不确定的字段写空字符串或在 note 里写“待确认”，不要编造。
-6. 生成后自己检查 JSON 是否有效、引号是否转义、逗号是否正确。
+
+1. 先从资料中抽取角色、版本、卡池、配队、备注、官方链接。
+2. 如果需要联网检索，只使用可信来源：
+
+   * 官方公告、官网角色页、官方前瞻、官方社媒优先。
+   * 其次使用主流 wiki、攻略站、新闻站。
+   * 爆料、内鬼、社区传闻必须标记“待确认”，不要当成官方事实。
+3. 如果用了来源，请把来源写进：
+
+   * 角色资料：links 数组。
+   * 版本资料：SQL 注释或 note。
+   * 不要在 app_save_version JSON 中写 links。
+4. 只输出 SQL 代码块，不要输出解释。
+5. SQL 里不要写 delete、drop、truncate、alter。
+6. 不要调用 app_delete_character、app_delete_party、app_delete_version。
+7. 不要直接 insert/update 底层表，除非我明确要求。
+8. 不确定的字段写空字符串，或在 note / evaluation_note 中写“待确认”。
+9. 生成 SQL 时请优先顺序：
+
+   * 先保存角色 app_save_character。
+   * 再保存版本与卡池 app_save_version。
+   * 最后保存配队 app_save_party。
+10. 生成后自己检查：
+
+* JSON 是否有效。
+* 引号是否正确转义。
+* 逗号是否正确。
+* SQL 是否可以直接在 Supabase SQL Editor 执行。
+* 是否误写了 app_save_version 不支持的 links。
+* 是否在没有新链接时误写了空 links 数组。
+
+字段约定：
+
+* game_code 使用：鸣 / 绝 / 崩 / 终 / 异。
+* 日期统一使用 YYYY-MM-DD。
+* phase 使用：first_half / second_half / standard / other。
+* banner_type 使用：new_limited / pickup / rerun / standard_addition / standard / collab / other。
+* 角色研究状态使用：待研究 / 研究中 / 已整理。
+* 养成状态使用：未养成 / 养成中 / 已养成 / 暂无。
 
 下面是资料：
 【粘贴公告 / 前瞻整理 / 角色资料】
@@ -269,3 +373,211 @@ SQL：
 项目变更记录：
 【粘贴变更】
 ```
+
+## 角色资料链接补全 -> Command Center SQL
+
+```text
+你是我的 GUCC Command Center 角色资料链接补全助手。
+
+目标：
+请你联网检索角色的可信资料链接，并生成可以直接放进 Supabase SQL Editor 执行的 SQL，用于给数据库中已有角色补充 resource / links 资料。
+
+重要说明：
+这次任务只补“资料链接”，不是补角色基础信息。
+不要修改角色的属性、职业、稀有度、性别、养成状态、喜爱状态、研究状态、角色备注、强度评价等字段。
+
+使用场景：
+- 角色已经在数据库中。
+- 我想给角色追加官方资料页、官方社区档案、角色 PV、技能介绍、Wiki、攻略站、社区攻略等链接。
+- 这些资料用于后期查角色资料、做视频、补数据库、写剧情或强度分析。
+
+数据库写入规则：
+1. 优先使用现有 RPC：
+   - public.app_save_character(p_payload jsonb)
+2. 只通过 app_save_character 的 links 字段补充资料链接。
+3. 不要直接 insert / update 底层表。
+4. 不要使用 delete / drop / truncate / alter。
+5. 不要调用任何 app_delete_* 函数。
+6. 只输出 SQL 代码块，不要输出解释。
+
+必须遵守：
+1. payload 中只允许写：
+   - game_code
+   - name
+   - links
+2. 不要写以下字段：
+   - element
+   - profession
+   - sex
+   - rarity
+   - note
+   - research_status
+   - build_status
+   - like_level
+   - research_note
+   - role_type
+   - power_rank
+   - evaluation_note
+   - names
+3. 不要用空字符串补字段。
+4. 不要写 "links": []，除非我明确要求清空旧链接。
+5. 如果没有找到可信新链接，不要生成该角色 SQL。
+6. 如果链接可能已经存在，但无法确认是否重复，可以保留，但 note 要写清楚链接用途，避免含义不明。
+7. 如果我提供了当前 resource / links 导出 CSV，需要先对照已有链接，避免重复插入相同 URL。
+8. 如果我没有提供导出 CSV，不要假设数据库里没有旧链接；只生成可信且有价值的链接。
+
+资料来源优先级：
+1. 官方官网角色页
+2. 官方公告 / 官方社区 / 官方社媒
+3. 游戏内角色档案 / 技能说明页面
+4. 官方 PV / 角色演示 / 角色预告视频
+5. 主流 Wiki
+6. 主流攻略站
+7. 社区整理 / 玩家攻略
+8. 爆料 / 内鬼只允许作为“待确认资料”，不要当成正式资料
+
+链接分类规则：
+
+官方角色页 / 官方档案：
+{
+  "relation_type": "official",
+  "source": "official"
+}
+
+官方 PV / 角色演示 / 前瞻直播：
+{
+  "relation_type": "official_video",
+  "source": "official"
+}
+
+官方公告 / 官方社区帖子：
+{
+  "relation_type": "official_notice",
+  "source": "official"
+}
+
+Wiki 资料：
+{
+  "relation_type": "reference",
+  "source": "wiki"
+}
+
+攻略站 / 社区攻略：
+{
+  "relation_type": "guide",
+  "source": "community"
+}
+
+新闻站：
+{
+  "relation_type": "news",
+  "source": "news"
+}
+
+爆料 / 未确认资料：
+{
+  "relation_type": "leak",
+  "source": "leak"
+}
+并且 note 必须写“待确认”。
+
+links 字段格式：
+
+select public.app_save_character($$
+{
+  "game_code": "绝",
+  "name": "角色名",
+  "links": [
+    {
+      "title": "官方角色资料",
+      "url": "https://...",
+      "relation_type": "official",
+      "source": "official",
+      "note": "官方角色页"
+    },
+    {
+      "title": "角色演示 PV",
+      "url": "https://...",
+      "relation_type": "official_video",
+      "source": "official",
+      "note": "官方角色演示视频"
+    }
+  ]
+}
+$$::jsonb);
+
+game_code 规则：
+- 鸣潮：鸣
+- 绝区零：绝
+- 崩坏：星穹铁道：崩
+- 明日方舟：终末地：终
+- 异环：异
+
+检索要求：
+1. 先查官方来源。
+2. 官方来源不足时，再补 Wiki / 攻略站。
+3. 每个角色优先收集：
+   - 官方角色页
+   - 官方角色档案
+   - 官方技能介绍
+   - 官方 PV / 角色演示
+   - 官方公告 / 官方社区帖
+   - Wiki 资料页
+   - 高质量攻略页
+4. 不要收录：
+   - 空链接
+   - 跳转首页
+   - 无关页面
+   - 纯 SEO 垃圾站
+   - 内容明显机器生成的页面
+   - 没有角色资料价值的短视频搬运页
+5. 如果链接需要登录或权限，note 写“需要人工确认权限”。
+6. 如果是不同区服资料，note 中写清楚区服，例如“国服官方社区”“日服官网”“国际服官网”。
+
+输出要求：
+1. 只输出 SQL 代码块。
+2. 不要输出解释。
+3. 不要输出 Markdown 表格。
+4. 不要输出资料总结。
+5. 每个角色一段 app_save_character SQL。
+6. 每段 SQL 前可以写来源注释，但不要写长解释：
+   -- Source: 资料标题 URL
+7. SQL 必须可以直接复制到 Supabase SQL Editor 执行。
+8. 生成后自己检查：
+   - JSON 是否有效。
+   - 引号是否正确转义。
+   - 逗号是否正确。
+   - url 是否非空。
+   - links 是否不是空数组。
+   - 是否只写了 game_code / name / links。
+   - 是否误写了角色基础字段。
+   - 是否包含 delete / drop / truncate / alter。
+   - 是否直接 insert / update 底层表。
+   - 是否调用了 app_delete_* 函数。
+
+去重要求：
+如果我提供已有 resource / links CSV：
+1. 先按 url 去重。
+2. 同一个 URL 已存在时，不再生成。
+3. 同一个页面如果只是参数不同，例如带 tracking 参数，优先保留干净 URL。
+4. 如果标题不同但 URL 相同，视为重复。
+5. 如果同一资料有多个区服页面，可以保留多个，但 note 必须标明区服。
+
+我会提供：
+
+角色列表：
+【填写角色名，或填写“请你自己查某游戏已有角色”】
+
+游戏：
+【鸣潮 / 绝区零 / 崩坏：星穹铁道 / 明日方舟：终末地 / 异环】
+
+已有 resource / links 导出，可选：
+【粘贴 resource_relations / links / character_resources CSV。如果没有，就留空】
+
+补全范围：
+【例如：只补官方链接 / 官方 + Wiki / 官方 + Wiki + 攻略 / 只补 PV / 只补角色档案】
+
+额外要求：
+【例如：只使用官方来源 / 不要攻略站 / 不要爆料 / 国服优先 / 日英韩官网也要 / 跳过已存在 URL】
+```
+

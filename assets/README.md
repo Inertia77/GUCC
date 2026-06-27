@@ -12,9 +12,9 @@
 
 ## 图标
 
-当前主图标是 `icons/gucc-icon.svg`。它是原创的猫耳频道头像 + 霓虹电火风格，用于 Portal、Command Center、WorkSpace、Cover Generator 和资料页 favicon。
+当前主图标是 `icons/gucc-icon.svg`。它是原创的无人物抽象创作者徽记：深色底、冰蓝刀锋、播放三角、雷光和少量粉橙点缀，用于 Portal、Command Center、WorkSpace、Cover Generator 和资料页 favicon。
 
-HTML 里用 `?v=2` 防浏览器图标缓存。
+HTML 里用 `?v=3` 防浏览器图标缓存。
 
 ## Access Guard
 

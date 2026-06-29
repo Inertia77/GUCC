@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GameUp Command Center v5.1 部署指南</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=4" />
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=5" />
   <script src="../assets/access-guard.js" data-root="../" data-guard="true"></script>
   <style>
     :root {
@@ -50,8 +50,10 @@
     .callout.dangerbox{border-left-color:var(--danger);background:rgba(255,107,107,.08)}
     @media(max-width:820px){.grid{grid-template-columns:1fr}h1{font-size:32px}}
   </style>
+  <link rel="stylesheet" href="../assets/gucc-theme.css?v=5" />
+  <script src="../assets/gucc-shell.js?v=5" data-root="../" defer></script>
 </head>
-<body>
+<body class="gucc-enhanced">
 <div class="wrap">
   <h1>GameUp Command Center v5.1 部署指南</h1>
   <p class="muted">从数据库已导入开始，到 GitHub Pages 前端、Supabase Auth、Supabase Edge Function、Postgres RPC 全链路上线为止的客观流程指南。</p>

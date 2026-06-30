@@ -1,0 +1,595 @@
+/* GUCC shared visual layer v5.0
+   Used by every tool page to keep the portal, apps and reference docs in one visual system. */
+:root {
+  color-scheme: dark;
+  --gucc-bg: #070a10;
+  --gucc-bg-2: #0b1020;
+  --gucc-panel: rgba(14, 19, 31, .78);
+  --gucc-panel-strong: rgba(17, 24, 39, .94);
+  --gucc-glass: rgba(255, 255, 255, .07);
+  --gucc-glass-strong: rgba(255, 255, 255, .11);
+  --gucc-line: rgba(255, 255, 255, .115);
+  --gucc-line-strong: rgba(116, 243, 255, .42);
+  --gucc-text: #f3f7ff;
+  --gucc-muted: #a8b6c8;
+  --gucc-dim: #708197;
+  --gucc-mint: #78ffba;
+  --gucc-cyan: #74f3ff;
+  --gucc-violet: #9da9ff;
+  --gucc-pink: #ff5da8;
+  --gucc-amber: #ffd166;
+  --gucc-danger: #ff6070;
+  --gucc-radius-xl: 30px;
+  --gucc-radius-lg: 22px;
+  --gucc-radius-md: 16px;
+  --gucc-shadow: 0 26px 90px rgba(0, 0, 0, .36);
+  --gucc-shadow-soft: 0 16px 48px rgba(0, 0, 0, .24);
+
+  /* Compatibility variables used by the existing pages. */
+  --bg: var(--gucc-bg) !important;
+  --bg2: var(--gucc-bg-2) !important;
+  --panel: var(--gucc-panel) !important;
+  --panel2: rgba(19, 25, 39, .88) !important;
+  --panel3: rgba(8, 12, 20, .86) !important;
+  --text: var(--gucc-text) !important;
+  --ink: var(--gucc-text) !important;
+  --ink2: var(--gucc-muted) !important;
+  --muted: var(--gucc-muted) !important;
+  --dim: var(--gucc-dim) !important;
+  --line: rgba(255, 255, 255, .13) !important;
+  --line2: rgba(255, 255, 255, .08) !important;
+  --line-soft: rgba(255, 255, 255, .08) !important;
+  --accent: var(--gucc-mint) !important;
+  --accent2: var(--gucc-cyan) !important;
+  --brand: #8f7dff !important;
+  --brand2: var(--gucc-cyan) !important;
+  --violet: var(--gucc-violet) !important;
+  --hot: var(--gucc-pink) !important;
+  --danger: var(--gucc-danger) !important;
+  --warning: var(--gucc-amber) !important;
+  --ok: var(--gucc-mint) !important;
+  --radius: var(--gucc-radius-lg) !important;
+  --r: var(--gucc-radius-lg) !important;
+  --shadow: var(--gucc-shadow-soft) !important;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, .22) !important;
+}
+
+html {
+  min-height: 100%;
+  background: var(--gucc-bg);
+}
+
+body.gucc-enhanced {
+  min-height: 100vh;
+  color: var(--gucc-text) !important;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(116, 243, 255, .22), transparent 27vw),
+    radial-gradient(circle at 88% 18%, rgba(255, 93, 168, .17), transparent 25vw),
+    radial-gradient(circle at 62% 92%, rgba(120, 255, 186, .15), transparent 31vw),
+    linear-gradient(135deg, #060912 0%, #0b1020 46%, #071113 100%) !important;
+  overflow-x: hidden;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+}
+
+body.gucc-enhanced::before,
+body.gucc-enhanced::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.gucc-enhanced::before {
+  opacity: .42 !important;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, .04) 1px, transparent 1px) !important;
+  background-size: 88px 88px !important;
+  -webkit-mask-image: radial-gradient(circle at 50% 18%, #000 0 30%, transparent 74%);
+  mask-image: radial-gradient(circle at 50% 18%, #000 0 30%, transparent 74%);
+}
+
+body.gucc-enhanced::after {
+  background:
+    linear-gradient(115deg, transparent 0 18%, rgba(116, 243, 255, .12) 18.1% 18.35%, transparent 18.45% 100%),
+    linear-gradient(135deg, transparent 0 72%, rgba(120, 255, 186, .10) 72.1% 72.36%, transparent 72.46% 100%),
+    radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, .34)) !important;
+  opacity: .72;
+}
+
+body.gucc-enhanced #app,
+body.gucc-enhanced .app,
+body.gucc-enhanced .page,
+body.gucc-enhanced .wrap,
+body.gucc-enhanced main {
+  position: relative;
+  z-index: 1;
+}
+
+body.gucc-enhanced a,
+body.gucc-enhanced button,
+body.gucc-enhanced input,
+body.gucc-enhanced textarea,
+body.gucc-enhanced select,
+body.gucc-enhanced .card,
+body.gucc-enhanced .panel,
+body.gucc-enhanced .hero,
+body.gucc-enhanced .dock,
+body.gucc-enhanced .item,
+body.gucc-enhanced .tabs button,
+body.gucc-enhanced .toc a,
+body.gucc-enhanced .gucc-shell-link {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.gucc-enhanced .app,
+body.gucc-enhanced .page,
+body.gucc-enhanced .wrap {
+  width: min(1420px, calc(100% - 40px));
+}
+
+body.gucc-enhanced .topbar,
+body.gucc-enhanced .hero,
+body.gucc-enhanced .card,
+body.gucc-enhanced .panel,
+body.gucc-enhanced .dock,
+body.gucc-enhanced .toolbar,
+body.gucc-enhanced .item,
+body.gucc-enhanced .section-row,
+body.gucc-enhanced .toc,
+body.gucc-enhanced section.prompt-section,
+body.gucc-enhanced .ratio-tab,
+body.gucc-enhanced .output,
+body.gucc-enhanced .toast,
+body.gucc-enhanced table,
+body.gucc-enhanced pre,
+body.gucc-enhanced .callout,
+body.gucc-enhanced .library-card {
+  border-color: var(--gucc-line) !important;
+  border-radius: var(--gucc-radius-lg) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .085), transparent 42%),
+    rgba(10, 15, 26, .76) !important;
+  box-shadow: var(--gucc-shadow-soft) !important;
+  backdrop-filter: blur(18px);
+}
+
+body.gucc-enhanced .topbar,
+body.gucc-enhanced .hero {
+  overflow: hidden;
+  border-color: rgba(116, 243, 255, .22) !important;
+}
+
+body.gucc-enhanced .topbar::before,
+body.gucc-enhanced .hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gucc-mint), var(--gucc-cyan), var(--gucc-violet), var(--gucc-pink));
+  opacity: .86;
+}
+
+body.gucc-enhanced .topbar > *,
+body.gucc-enhanced .hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.gucc-enhanced h1,
+body.gucc-enhanced h2,
+body.gucc-enhanced h3 {
+  color: var(--gucc-text) !important;
+  letter-spacing: -.025em;
+}
+
+body.gucc-enhanced h1 {
+  text-shadow: 0 0 28px rgba(116, 243, 255, .18);
+}
+
+body.gucc-enhanced p,
+body.gucc-enhanced li,
+body.gucc-enhanced .subtitle,
+body.gucc-enhanced .sub,
+body.gucc-enhanced .hint,
+body.gucc-enhanced .status,
+body.gucc-enhanced label,
+body.gucc-enhanced .tiny,
+body.gucc-enhanced .small,
+body.gucc-enhanced .muted {
+  color: var(--gucc-muted) !important;
+}
+
+body.gucc-enhanced .eyebrow,
+body.gucc-enhanced .kicker,
+body.gucc-enhanced .portal-link,
+body.gucc-enhanced .back-link,
+body.gucc-enhanced h3,
+body.gucc-enhanced code,
+body.gucc-enhanced a:hover {
+  color: var(--gucc-cyan) !important;
+}
+
+body.gucc-enhanced button,
+body.gucc-enhanced .copy {
+  min-height: 42px;
+  border: 1px solid transparent !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
+  color: #06110f !important;
+  font-weight: 900 !important;
+  box-shadow: 0 12px 32px rgba(116, 243, 255, .12) !important;
+  transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
+}
+
+body.gucc-enhanced button:hover,
+body.gucc-enhanced .copy:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+body.gucc-enhanced button:active,
+body.gucc-enhanced .copy:active {
+  transform: translateY(0);
+}
+
+body.gucc-enhanced button.secondary,
+body.gucc-enhanced button.ghost,
+body.gucc-enhanced .back,
+body.gucc-enhanced .portal-link,
+body.gucc-enhanced .back-link,
+body.gucc-enhanced .link-btn {
+  border-color: var(--gucc-line) !important;
+  background: rgba(255, 255, 255, .06) !important;
+  color: var(--gucc-text) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced button.danger {
+  background: linear-gradient(135deg, var(--gucc-danger), #ff8b7a) !important;
+  color: #26070b !important;
+}
+
+body.gucc-enhanced button.ok,
+body.gucc-enhanced button.mint {
+  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
+  color: #06110f !important;
+}
+
+body.gucc-enhanced input,
+body.gucc-enhanced textarea,
+body.gucc-enhanced select {
+  border: 1px solid rgba(255, 255, 255, .13) !important;
+  border-radius: 15px !important;
+  background: rgba(5, 9, 16, .72) !important;
+  color: var(--gucc-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+
+body.gucc-enhanced input::placeholder,
+body.gucc-enhanced textarea::placeholder {
+  color: rgba(168, 182, 200, .62) !important;
+}
+
+body.gucc-enhanced input:focus,
+body.gucc-enhanced textarea:focus,
+body.gucc-enhanced select:focus {
+  border-color: rgba(116, 243, 255, .66) !important;
+  box-shadow: 0 0 0 3px rgba(116, 243, 255, .11), inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.gucc-enhanced input[type="file"] {
+  background: rgba(255, 255, 255, .055) !important;
+}
+
+body.gucc-enhanced input[type="range"],
+body.gucc-enhanced input[type="checkbox"],
+body.gucc-enhanced input[type="radio"] {
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced pre,
+body.gucc-enhanced code,
+body.gucc-enhanced kbd,
+body.gucc-enhanced .log,
+body.gucc-enhanced .output {
+  background: rgba(3, 7, 13, .72) !important;
+  border-color: rgba(116, 243, 255, .14) !important;
+  color: #dbe5ff !important;
+}
+
+body.gucc-enhanced table {
+  overflow: hidden;
+}
+
+body.gucc-enhanced th {
+  background: rgba(116, 243, 255, .10) !important;
+  color: var(--gucc-text) !important;
+}
+
+body.gucc-enhanced td {
+  color: var(--gucc-muted) !important;
+}
+
+body.gucc-enhanced .badge,
+body.gucc-enhanced .pill,
+body.gucc-enhanced .tag,
+body.gucc-enhanced .idx,
+body.gucc-enhanced .ratio-tab,
+body.gucc-enhanced .panel-row,
+body.gucc-enhanced .checklist label,
+body.gucc-enhanced .section-title-badge,
+body.gucc-enhanced .banner-chip,
+body.gucc-enhanced .phase-head,
+body.gucc-enhanced .version-note,
+body.gucc-enhanced .progressbox,
+body.gucc-enhanced .bar,
+body.gucc-enhanced .path {
+  border-color: rgba(255, 255, 255, .10) !important;
+  background: rgba(255, 255, 255, .055) !important;
+  color: var(--gucc-muted) !important;
+  border-radius: 999px;
+}
+
+body.gucc-enhanced .tabs {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid var(--gucc-line);
+  border-radius: 999px;
+  background: rgba(8, 12, 20, .72);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .18);
+}
+
+body.gucc-enhanced .tabs button,
+body.gucc-enhanced .ratio-tab {
+  min-height: 42px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, .055) !important;
+  color: var(--gucc-muted) !important;
+}
+
+body.gucc-enhanced .tabs button.active,
+body.gucc-enhanced .ratio-tab.active {
+  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
+  color: #06110f !important;
+}
+
+body.gucc-enhanced .toolbar {
+  top: 72px;
+}
+
+body.gucc-enhanced .editor {
+  border-radius: var(--gucc-radius-xl) 0 0 var(--gucc-radius-xl) !important;
+  border-color: rgba(116, 243, 255, .28) !important;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(255, 93, 168, .13), transparent 34%),
+    linear-gradient(180deg, rgba(18, 24, 38, .98), rgba(8, 12, 19, .99)) !important;
+}
+
+body.gucc-enhanced .editor-header {
+  background: rgba(8, 12, 20, .86) !important;
+  border-color: var(--gucc-line) !important;
+  backdrop-filter: blur(16px);
+}
+
+body.gucc-enhanced .canvas-wrap {
+  border-color: rgba(116, 243, 255, .20) !important;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.055) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.055) 75%),
+    rgba(3, 7, 13, .56) !important;
+  background-size: 24px 24px !important;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0, 0 0 !important;
+}
+
+body.gucc-enhanced .stage {
+  box-shadow: 0 34px 100px rgba(0, 0, 0, .56), 0 0 0 1px rgba(116, 243, 255, .16) !important;
+}
+
+body.gucc-enhanced .gucc-shell-dock {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 24px));
+  z-index: 90;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 24px;
+  background: rgba(8, 12, 20, .78);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
+  backdrop-filter: blur(18px);
+}
+
+body.gucc-enhanced .gucc-shell-link {
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 18px;
+  color: var(--gucc-muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.1;
+  transition: transform .15s ease, background .15s ease, color .15s ease;
+}
+
+body.gucc-enhanced .gucc-shell-link b {
+  font-size: 16px;
+  line-height: 1;
+}
+
+body.gucc-enhanced .gucc-shell-link:hover,
+body.gucc-enhanced .gucc-shell-link.is-active {
+  color: #06110f;
+  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan));
+  transform: translateY(-1px);
+}
+
+body.gucc-enhanced .gucc-shell-link:hover b,
+body.gucc-enhanced .gucc-shell-link.is-active b {
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.22));
+}
+
+body.gucc-enhanced .gucc-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--gucc-line);
+  border-radius: 999px;
+  color: var(--gucc-text);
+  background: rgba(255, 255, 255, .055);
+  text-decoration: none;
+  font-weight: 900;
+}
+
+@media (min-width: 1024px) {
+  body.gucc-enhanced .gucc-shell-dock {
+    width: auto;
+    min-width: 520px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.gucc-enhanced {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
+  body.gucc-enhanced .app,
+  body.gucc-enhanced .page,
+  body.gucc-enhanced .wrap,
+  body.gucc-enhanced main,
+  body.gucc-enhanced .topbar {
+    width: min(100% - 24px, 1420px) !important;
+  }
+
+  body.gucc-enhanced .topbar,
+  body.gucc-enhanced .hero,
+  body.gucc-enhanced .card,
+  body.gucc-enhanced .panel,
+  body.gucc-enhanced .toolbar,
+  body.gucc-enhanced .item,
+  body.gucc-enhanced section.prompt-section {
+    border-radius: 24px !important;
+  }
+
+  body.gucc-enhanced .topline,
+  body.gucc-enhanced .hero,
+  body.gucc-enhanced .grid,
+  body.gucc-enhanced .grid2,
+  body.gucc-enhanced .grid3,
+  body.gucc-enhanced .grid4,
+  body.gucc-enhanced .content,
+  body.gucc-enhanced .row,
+  body.gucc-enhanced .row3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.gucc-enhanced .topline,
+  body.gucc-enhanced .hero {
+    gap: 14px !important;
+  }
+
+  body.gucc-enhanced h1 {
+    font-size: clamp(30px, 10vw, 48px) !important;
+    line-height: 1.02 !important;
+  }
+
+  body.gucc-enhanced .tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    border-radius: 22px !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.gucc-enhanced .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.gucc-enhanced .tabs button {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  body.gucc-enhanced .toolbar {
+    position: static !important;
+  }
+
+  body.gucc-enhanced .actions,
+  body.gucc-enhanced .hero .actions,
+  body.gucc-enhanced .btns {
+    justify-content: stretch !important;
+  }
+
+  body.gucc-enhanced .actions button,
+  body.gucc-enhanced .hero .actions a,
+  body.gucc-enhanced .hero .actions button,
+  body.gucc-enhanced .btns button {
+    flex: 1 1 140px;
+  }
+
+  body.gucc-enhanced .gucc-shell-dock {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    width: min(100vw - 18px, 760px);
+    padding: 7px;
+    border-radius: 22px;
+  }
+
+  body.gucc-enhanced .gucc-shell-link {
+    min-height: 50px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  body.gucc-enhanced .app,
+  body.gucc-enhanced .page,
+  body.gucc-enhanced .wrap,
+  body.gucc-enhanced main,
+  body.gucc-enhanced .topbar {
+    width: min(100% - 18px, 1420px) !important;
+  }
+
+  body.gucc-enhanced .topbar,
+  body.gucc-enhanced .hero,
+  body.gucc-enhanced .card,
+  body.gucc-enhanced .panel,
+  body.gucc-enhanced .toolbar,
+  body.gucc-enhanced .item,
+  body.gucc-enhanced section.prompt-section {
+    padding: 14px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-dock {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100vw - 16px, 420px);
+  }
+
+  body.gucc-enhanced .gucc-shell-link {
+    min-height: 46px;
+    flex-direction: row;
+    font-size: 11px;
+  }
+}
+
+body.gucc-enhanced > .gucc-back-home:first-child {
+  margin: 16px 0 0 18px;
+  z-index: 5;
+}

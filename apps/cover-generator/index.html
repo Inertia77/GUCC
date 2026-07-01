@@ -293,6 +293,249 @@
     }
   </style>
   <link rel="stylesheet" href="../../assets/gucc-theme.css?v=5" />
+  <style>
+    @media (max-width: 720px) {
+      html,
+      body {
+        overflow-x: hidden;
+      }
+
+      body.gucc-enhanced {
+        padding-bottom: calc(62px + env(safe-area-inset-bottom)) !important;
+      }
+
+      body.gucc-enhanced > .gucc-back-home:first-child {
+        margin: 10px auto 0 !important;
+        width: min(calc(100% - 16px), 420px);
+        max-width: calc(100vw - 16px);
+        justify-content: center;
+      }
+
+      body.gucc-enhanced .app {
+        width: min(calc(100% - 12px), 430px) !important;
+        max-width: calc(100vw - 12px) !important;
+        min-width: 0;
+        padding: 8px 0 70px !important;
+      }
+
+      body.gucc-enhanced .hero,
+      body.gucc-enhanced .panel {
+        min-width: 0;
+        padding: 12px !important;
+        border-radius: 18px !important;
+      }
+
+      body.gucc-enhanced .hero {
+        display: grid !important;
+        gap: 12px !important;
+        margin-bottom: 10px;
+      }
+
+      body.gucc-enhanced .hero h1 {
+        max-width: 100%;
+        font-size: clamp(26px, 7.6vw, 34px) !important;
+        line-height: 1.08 !important;
+        letter-spacing: 0 !important;
+        overflow-wrap: anywhere;
+      }
+
+      body.gucc-enhanced .hero p {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      body.gucc-enhanced .hero .actions {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px !important;
+      }
+
+      body.gucc-enhanced .hero .actions button {
+        min-width: 0;
+        min-height: 36px;
+        padding: 8px 10px;
+        font-size: 13px;
+        line-height: 1.15;
+      }
+
+      body.gucc-enhanced #resetBtn {
+        grid-column: 1 / -1;
+      }
+
+      body.gucc-enhanced .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 10px;
+      }
+
+      body.gucc-enhanced .panel {
+        overflow: hidden;
+      }
+
+      body.gucc-enhanced .panel h2 {
+        font-size: 17px;
+      }
+
+      body.gucc-enhanced .section {
+        padding: 11px 0;
+      }
+
+      body.gucc-enhanced .row,
+      body.gucc-enhanced .row3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px;
+      }
+
+      body.gucc-enhanced .row3 > :first-child {
+        grid-column: 1 / -1;
+      }
+
+      body.gucc-enhanced button,
+      body.gucc-enhanced input,
+      body.gucc-enhanced select,
+      body.gucc-enhanced textarea {
+        max-width: 100%;
+        min-width: 0;
+        font-size: 14px;
+      }
+
+      body.gucc-enhanced button {
+        min-height: 36px;
+        padding: 8px 10px;
+        line-height: 1.15;
+      }
+
+      body.gucc-enhanced input,
+      body.gucc-enhanced select,
+      body.gucc-enhanced textarea {
+        padding: 9px 10px;
+        border-radius: 12px !important;
+      }
+
+      body.gucc-enhanced textarea {
+        min-height: 84px;
+      }
+
+      body.gucc-enhanced .ratio-tabs {
+        display: flex !important;
+        grid-template-columns: none !important;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 0 1px 4px;
+        margin-bottom: 10px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body.gucc-enhanced .ratio-tabs::-webkit-scrollbar,
+      body.gucc-enhanced .mini-previews::-webkit-scrollbar {
+        display: none;
+      }
+
+      body.gucc-enhanced .ratio-tab {
+        flex: 0 0 112px;
+        min-height: 48px;
+        padding: 8px;
+        border-radius: 14px !important;
+        scroll-snap-align: start;
+      }
+
+      body.gucc-enhanced .workspace {
+        min-height: 0;
+      }
+
+      body.gucc-enhanced .toolbar {
+        display: grid !important;
+        gap: 8px;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none;
+      }
+
+      body.gucc-enhanced .toolbar-left,
+      body.gucc-enhanced .toolbar-right {
+        min-width: 0;
+        width: 100%;
+      }
+
+      body.gucc-enhanced .toolbar-left {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      body.gucc-enhanced .toolbar-right {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      body.gucc-enhanced .badge {
+        max-width: 100%;
+        padding: 7px 9px;
+        white-space: normal;
+        line-height: 1.25;
+      }
+
+      body.gucc-enhanced button.small {
+        min-height: 34px;
+        padding: 7px 6px;
+        font-size: 12px;
+      }
+
+      body.gucc-enhanced .stage-shell {
+        height: min(56vh, 430px);
+        min-height: 260px;
+        border-radius: 16px !important;
+      }
+
+      body.gucc-enhanced .stage {
+        max-width: 100%;
+      }
+
+      body.gucc-enhanced .mini-previews {
+        display: flex !important;
+        grid-template-columns: none !important;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 3px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body.gucc-enhanced .mini {
+        flex: 0 0 88px;
+        padding: 7px;
+        border-radius: 12px !important;
+      }
+
+      body.gucc-enhanced .element-list {
+        max-height: 190px;
+      }
+
+      body.gucc-enhanced .style-grid {
+        grid-template-columns: 1fr !important;
+        max-height: 260px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      body.gucc-enhanced .hero h1 {
+        font-size: 25px !important;
+      }
+
+      body.gucc-enhanced .row,
+      body.gucc-enhanced .row3,
+      body.gucc-enhanced .hero .actions,
+      body.gucc-enhanced .toolbar-right {
+        grid-template-columns: 1fr !important;
+      }
+
+      body.gucc-enhanced .row3 > :first-child {
+        grid-column: auto;
+      }
+    }
+  </style>
   <script src="../../assets/gucc-shell.js?v=5" data-root="../../" defer></script>
 </head>
 <body class="gucc-enhanced">

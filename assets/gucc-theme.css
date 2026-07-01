@@ -558,7 +558,11 @@ body.gucc-enhanced .gucc-back-home {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
+  body.gucc-enhanced {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom));
+  }
+
   body.gucc-enhanced .app,
   body.gucc-enhanced .page,
   body.gucc-enhanced .wrap,
@@ -578,14 +582,41 @@ body.gucc-enhanced .gucc-back-home {
   }
 
   body.gucc-enhanced .gucc-shell-dock {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: min(100vw - 16px, 420px);
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+    width: min(420px, calc(100vw - 18px)) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 18px) !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    padding: 4px !important;
+    border-radius: 14px !important;
   }
 
   body.gucc-enhanced .gucc-shell-link {
-    min-height: 46px;
-    flex-direction: row;
-    font-size: 11px;
+    position: relative !important;
+    min-height: 30px !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    border-radius: 10px !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-link b {
+    font-size: 14px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-link span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
   }
 }
 

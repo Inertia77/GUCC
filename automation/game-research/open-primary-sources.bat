@@ -6,8 +6,8 @@ REM ============================================
 REM GameUp Command Center - 游戏信息一键打开
 REM ============================================
 
-echo 正在打开：通用资料...
-call :open "https://supabase.com/dashboard/project/rubjeqnuxuvupjwyksmo/sql"
+@REM echo 正在打开：通用资料...
+@REM call :open "https://supabase.com/dashboard/project/rubjeqnuxuvupjwyksmo/sql"
 
 REM ============================================
 REM 创作级游戏

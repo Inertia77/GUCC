@@ -1,16 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#070a10" />
-  <meta http-equiv="Cache-Control" content="no-store" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <title>GUCC 资料库</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=5" />
-  <script src="../assets/access-guard.js" data-root="../" data-guard="true"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#070a10" name="theme-color"/>
+<meta content="no-store" http-equiv="Cache-Control"/>
+<meta content="no-cache" http-equiv="Pragma"/>
+<meta content="0" http-equiv="Expires"/>
+<title>GUCC 资料库</title>
+<link href="../assets/icons/gucc-icon.svg?v=5" rel="icon" type="image/svg+xml"/>
+<script data-guard="true" data-root="../" src="../assets/access-guard.js"></script>
+<style>
     :root {
       --bg: #070a10;
       --panel: rgba(14, 18, 27, .92);
@@ -237,6 +238,10 @@
       --accent: var(--cyan);
     }
 
+    .game-card[data-game="异"] {
+      --accent: var(--pink);
+    }
+
     .game-head {
       display: flex;
       align-items: flex-start;
@@ -425,291 +430,278 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/gucc-theme.css?v=5" />
-  <script src="../assets/gucc-shell.js?v=5" data-root="../" defer></script>
+<link href="../assets/gucc-theme.css?v=5" rel="stylesheet"/>
+<script data-root="../" defer="" src="../assets/gucc-shell.js?v=5"></script>
 </head>
 <body class="gucc-enhanced">
-  <main class="wrap">
-    <div class="topline">
-      <a class="brand" href="../" aria-label="返回 GUCC Portal">
-        <img src="../assets/icons/gucc-icon.svg?v=5" alt="" />
-        <span>
-          <strong>GUCC 资料库</strong>
-          <span>Wiki and reference routes</span>
-        </span>
-      </a>
-      <a class="back" href="../">返回 Portal</a>
-    </div>
+<main class="wrap">
+<div class="topline">
+<a aria-label="返回 GUCC Portal" class="brand" href="../">
+<img alt="" src="../assets/icons/gucc-icon.svg?v=5"/>
+<span>
+<strong>GUCC 资料库</strong>
+<span>Wiki and reference routes</span>
+</span>
+</a>
+<a class="back" href="../">返回 Portal</a>
+</div>
+<section class="hero">
+<div>
+<p class="eyebrow">Resource Library</p>
+<h1>游戏资料导航</h1>
+<p class="subtitle">汇总常用官方 Wiki、攻略合集、官方图文公告和外部参考。按游戏与研究优先级排列，敌人、装备体系这类容易漏掉的资料也单独标记。</p>
+</div>
+<aside aria-label="资料库统计" class="signal">
+<div class="signal-row">
+<div class="signal-label">Games</div>
+<div class="signal-value">崩坏：星穹铁道 / 明日方舟：终末地 / 绝区零 / 鸣潮 / 异环</div>
+</div>
+<div class="signal-row">
+<div class="signal-label">Routes</div>
+<div class="signal-value">26 条已配置资料入口，按 Rank 代表优先级。</div>
+</div>
+<div class="signal-row">
+<div class="signal-label">Watch</div>
+<div class="signal-value">敌人资料、工业蓝图、合鸣效果等低频但高价值项已标注。</div>
+</div>
+</aside>
+</section>
+<nav aria-label="按游戏筛选" class="filters">
+<button class="filter-btn active" data-filter="all" type="button">全部</button>
+<button class="filter-btn" data-filter="崩" type="button">崩</button>
+<button class="filter-btn" data-filter="终" type="button">终</button>
+<button class="filter-btn" data-filter="绝" type="button">绝</button>
+<button class="filter-btn" data-filter="鸣" type="button">鸣</button>
+<button class="filter-btn" data-filter="异" type="button">异</button></nav>
+<section aria-label="资料入口" class="grid" id="resourceGrid">
+<article class="game-card" data-game="崩">
+<header class="game-head">
+<div class="game-title">
+<span class="game-mark">崩</span>
+<div>
+<h2>崩坏：星穹铁道</h2>
+<p>米游社官方 Wiki 路由</p>
+</div>
+</div>
+<span class="count">5 routes</span>
+</header>
+<div class="resource-list">
+<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/18?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
+<span class="rank">01</span>
+<span class="resource-main">
+<span class="resource-title"><span>角色</span></span>
+<span class="source">bbs.mihoyo.com / sr wiki channel 18</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/19?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
+<span class="rank">02</span>
+<span class="resource-main">
+<span class="resource-title"><span>光锥</span></span>
+<span class="source">bbs.mihoyo.com / sr wiki channel 19</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/30?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
+<span class="rank">03</span>
+<span class="resource-main">
+<span class="resource-title"><span>遗器</span></span>
+<span class="source">bbs.mihoyo.com / sr wiki channel 30</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/23?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
+<span class="rank">04</span>
+<span class="resource-main">
+<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
+<span class="source">bbs.mihoyo.com / sr wiki channel 23</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://space.bilibili.com/1340190821/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">05</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
+</article>
+<article class="game-card" data-game="终">
+<header class="game-head">
+<div class="game-title">
+<span class="game-mark">终</span>
+<div>
+<h2>明日方舟：终末地</h2>
+<p>森空岛 Wiki 与工业蓝图参考</p>
+</div>
+</div>
+<span class="count">8 routes</span>
+</header>
+<div class="resource-list">
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?mainTypeId=1&amp;subTypeId=1" rel="noopener noreferrer" target="_blank">
+<span class="rank">01</span>
+<span class="resource-main">
+<span class="resource-title"><span>干员</span></span>
+<span class="source">wiki.skland.com / endfield catalog</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=2" rel="noopener noreferrer" target="_blank">
+<span class="rank">02</span>
+<span class="resource-main">
+<span class="resource-title"><span>武器</span></span>
+<span class="source">wiki.skland.com / weapons</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=4" rel="noopener noreferrer" target="_blank">
+<span class="rank">03</span>
+<span class="resource-main">
+<span class="resource-title"><span>装备</span></span>
+<span class="source">wiki.skland.com / equipment</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=7" rel="noopener noreferrer" target="_blank">
+<span class="rank">04</span>
+<span class="resource-main">
+<span class="resource-title"><span>武器基质</span></span>
+<span class="source">wiki.skland.com / matrix</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=3" rel="noopener noreferrer" target="_blank">
+<span class="rank">05</span>
+<span class="resource-main">
+<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
+<span class="source">wiki.skland.com / enemies</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=2&amp;typeSubId=11" rel="noopener noreferrer" target="_blank">
+<span class="rank">06</span>
+<span class="resource-main">
+<span class="resource-title"><span>攻略合集</span><span class="note">基础养成参考</span></span>
+<span class="source">wiki.skland.com / guide collection</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://docs.qq.com/sheet/DUEh1aHpCVVd4ZUdh?tab=dl5rqp&amp;nlc=1" rel="noopener noreferrer" target="_blank">
+<span class="rank">07</span>
+<span class="resource-main">
+<span class="resource-title"><span>工业蓝图参考</span><span class="note">非官方攻略</span></span>
+<span class="source">docs.qq.com / industrial blueprint sheet</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://space.bilibili.com/1265652806/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">08</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
+</article>
+<article class="game-card" data-game="绝">
+<header class="game-head">
+<div class="game-title">
+<span class="game-mark">绝</span>
+<div>
+<h2>绝区零</h2>
+<p>米游社百科全屏路由</p>
+</div>
+</div>
+<span class="count">6 routes</span>
+</header>
+<div class="resource-list">
+<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/43?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
+<span class="rank">01</span>
+<span class="resource-main">
+<span class="resource-title"><span>代理人</span></span>
+<span class="source">baike.mihoyo.com / zzz agents</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/45?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
+<span class="rank">02</span>
+<span class="resource-main">
+<span class="resource-title"><span>音擎</span></span>
+<span class="source">baike.mihoyo.com / zzz engines</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/46?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
+<span class="rank">03</span>
+<span class="resource-main">
+<span class="resource-title"><span>驱动盘</span></span>
+<span class="source">baike.mihoyo.com / zzz drive discs</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/44?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
+<span class="rank">04</span>
+<span class="resource-main">
+<span class="resource-title"><span>邦布</span><span class="note">特殊小队员</span></span>
+<span class="source">baike.mihoyo.com / zzz bangboo</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/65?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
+<span class="rank">05</span>
+<span class="resource-main">
+<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
+<span class="source">baike.mihoyo.com / zzz enemies</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://space.bilibili.com/1636034895/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">06</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
+</article>
+<article class="game-card" data-game="鸣">
+<header class="game-head">
+<div class="game-title">
+<span class="game-mark">鸣</span>
+<div>
+<h2>鸣潮</h2>
+<p>库街区 Wiki 路由</p>
+</div>
+</div>
+<span class="count">6 routes</span>
+</header>
+<div class="resource-list">
+<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1105" rel="noopener noreferrer" target="_blank">
+<span class="rank">01</span>
+<span class="resource-main">
+<span class="resource-title"><span>共鸣者</span></span>
+<span class="source">wiki.kurobbs.com / resonators</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1106" rel="noopener noreferrer" target="_blank">
+<span class="rank">02</span>
+<span class="resource-main">
+<span class="resource-title"><span>武器</span></span>
+<span class="source">wiki.kurobbs.com / weapons</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1107" rel="noopener noreferrer" target="_blank">
+<span class="rank">03</span>
+<span class="resource-main">
+<span class="resource-title"><span>声骸</span></span>
+<span class="source">wiki.kurobbs.com / echoes</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1219" rel="noopener noreferrer" target="_blank">
+<span class="rank">04</span>
+<span class="resource-main">
+<span class="resource-title"><span>合鸣效果</span></span>
+<span class="source">wiki.kurobbs.com / set effects</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1158" rel="noopener noreferrer" target="_blank">
+<span class="rank">05</span>
+<span class="resource-main">
+<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
+<span class="source">wiki.kurobbs.com / enemies</span>
+</span>
+<span class="open">›</span>
+</a>
+<a class="resource" href="https://space.bilibili.com/1955897084/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">06</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
+</article>
+<article class="game-card" data-game="异"><header class="game-head"><div class="game-title"><span class="game-mark">异</span><div><h2>异环</h2><p>官方 Bilibili 图文公告入口</p></div></div><span class="count">1 route</span></header><div class="resource-list"><a class="resource" href="https://space.bilibili.com/3546636978489848/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">01</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">版本更新 / 维护公告</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div></article></section>
 
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Resource Library</p>
-        <h1>游戏资料导航</h1>
-        <p class="subtitle">
-          汇总常用官方 Wiki、攻略合集和外部参考。按游戏与研究优先级排列，敌人、装备体系这类容易漏掉的资料也单独标记。
-        </p>
-      </div>
-      <aside class="signal" aria-label="资料库统计">
-        <div class="signal-row">
-          <div class="signal-label">Games</div>
-          <div class="signal-value">崩坏：星穹铁道 / 明日方舟：终末地 / 绝区零 / 鸣潮</div>
-        </div>
-        <div class="signal-row">
-          <div class="signal-label">Routes</div>
-          <div class="signal-value">21 条已配置资料入口，按 Rank 代表优先级。</div>
-        </div>
-        <div class="signal-row">
-          <div class="signal-label">Watch</div>
-          <div class="signal-value">敌人资料、工业蓝图、合鸣效果等低频但高价值项已标注。</div>
-        </div>
-      </aside>
-    </section>
-
-    <nav class="filters" aria-label="按游戏筛选">
-      <button class="filter-btn active" type="button" data-filter="all">全部</button>
-      <button class="filter-btn" type="button" data-filter="崩">崩</button>
-      <button class="filter-btn" type="button" data-filter="终">终</button>
-      <button class="filter-btn" type="button" data-filter="绝">绝</button>
-      <button class="filter-btn" type="button" data-filter="鸣">鸣</button>
-    </nav>
-
-    <section class="grid" id="resourceGrid" aria-label="资料入口">
-      <article class="game-card" data-game="崩">
-        <header class="game-head">
-          <div class="game-title">
-            <span class="game-mark">崩</span>
-            <div>
-              <h2>崩坏：星穹铁道</h2>
-              <p>米游社官方 Wiki 路由</p>
-            </div>
-          </div>
-          <span class="count">4 routes</span>
-        </header>
-        <div class="resource-list">
-          <a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/18?bbs_presentation_style=no_header" target="_blank" rel="noopener noreferrer">
-            <span class="rank">01</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>角色</span></span>
-              <span class="source">bbs.mihoyo.com / sr wiki channel 18</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/19?bbs_presentation_style=no_header" target="_blank" rel="noopener noreferrer">
-            <span class="rank">02</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>光锥</span></span>
-              <span class="source">bbs.mihoyo.com / sr wiki channel 19</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/30?bbs_presentation_style=no_header" target="_blank" rel="noopener noreferrer">
-            <span class="rank">03</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>遗器</span></span>
-              <span class="source">bbs.mihoyo.com / sr wiki channel 30</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/23?bbs_presentation_style=no_header" target="_blank" rel="noopener noreferrer">
-            <span class="rank">04</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-              <span class="source">bbs.mihoyo.com / sr wiki channel 23</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-        </div>
-      </article>
-
-      <article class="game-card" data-game="终">
-        <header class="game-head">
-          <div class="game-title">
-            <span class="game-mark">终</span>
-            <div>
-              <h2>明日方舟：终末地</h2>
-              <p>森空岛 Wiki 与工业蓝图参考</p>
-            </div>
-          </div>
-          <span class="count">7 routes</span>
-        </header>
-        <div class="resource-list">
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?mainTypeId=1&subTypeId=1" target="_blank" rel="noopener noreferrer">
-            <span class="rank">01</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>干员</span></span>
-              <span class="source">wiki.skland.com / endfield catalog</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&typeSubId=2" target="_blank" rel="noopener noreferrer">
-            <span class="rank">02</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>武器</span></span>
-              <span class="source">wiki.skland.com / weapons</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&typeSubId=4" target="_blank" rel="noopener noreferrer">
-            <span class="rank">03</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>装备</span></span>
-              <span class="source">wiki.skland.com / equipment</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&typeSubId=7" target="_blank" rel="noopener noreferrer">
-            <span class="rank">04</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>武器基质</span></span>
-              <span class="source">wiki.skland.com / matrix</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&typeSubId=3" target="_blank" rel="noopener noreferrer">
-            <span class="rank">05</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-              <span class="source">wiki.skland.com / enemies</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=2&typeSubId=11" target="_blank" rel="noopener noreferrer">
-            <span class="rank">06</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>攻略合集</span><span class="note">基础养成参考</span></span>
-              <span class="source">wiki.skland.com / guide collection</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://docs.qq.com/sheet/DUEh1aHpCVVd4ZUdh?tab=dl5rqp&nlc=1" target="_blank" rel="noopener noreferrer">
-            <span class="rank">07</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>工业蓝图参考</span><span class="note">非官方攻略</span></span>
-              <span class="source">docs.qq.com / industrial blueprint sheet</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-        </div>
-      </article>
-
-      <article class="game-card" data-game="绝">
-        <header class="game-head">
-          <div class="game-title">
-            <span class="game-mark">绝</span>
-            <div>
-              <h2>绝区零</h2>
-              <p>米游社百科全屏路由</p>
-            </div>
-          </div>
-          <span class="count">5 routes</span>
-        </header>
-        <div class="resource-list">
-          <a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/43?mhy_presentation_style=fullscreen" target="_blank" rel="noopener noreferrer">
-            <span class="rank">01</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>代理人</span></span>
-              <span class="source">baike.mihoyo.com / zzz agents</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/45?mhy_presentation_style=fullscreen" target="_blank" rel="noopener noreferrer">
-            <span class="rank">02</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>音擎</span></span>
-              <span class="source">baike.mihoyo.com / zzz engines</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/46?mhy_presentation_style=fullscreen" target="_blank" rel="noopener noreferrer">
-            <span class="rank">03</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>驱动盘</span></span>
-              <span class="source">baike.mihoyo.com / zzz drive discs</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/44?mhy_presentation_style=fullscreen" target="_blank" rel="noopener noreferrer">
-            <span class="rank">04</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>邦布</span><span class="note">特殊小队员</span></span>
-              <span class="source">baike.mihoyo.com / zzz bangboo</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/65?mhy_presentation_style=fullscreen" target="_blank" rel="noopener noreferrer">
-            <span class="rank">05</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-              <span class="source">baike.mihoyo.com / zzz enemies</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-        </div>
-      </article>
-
-      <article class="game-card" data-game="鸣">
-        <header class="game-head">
-          <div class="game-title">
-            <span class="game-mark">鸣</span>
-            <div>
-              <h2>鸣潮</h2>
-              <p>库街区 Wiki 路由</p>
-            </div>
-          </div>
-          <span class="count">5 routes</span>
-        </header>
-        <div class="resource-list">
-          <a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&sid=1105" target="_blank" rel="noopener noreferrer">
-            <span class="rank">01</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>共鸣者</span></span>
-              <span class="source">wiki.kurobbs.com / resonators</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&sid=1106" target="_blank" rel="noopener noreferrer">
-            <span class="rank">02</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>武器</span></span>
-              <span class="source">wiki.kurobbs.com / weapons</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&sid=1107" target="_blank" rel="noopener noreferrer">
-            <span class="rank">03</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>声骸</span></span>
-              <span class="source">wiki.kurobbs.com / echoes</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&sid=1219" target="_blank" rel="noopener noreferrer">
-            <span class="rank">04</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>合鸣效果</span></span>
-              <span class="source">wiki.kurobbs.com / set effects</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-          <a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&sid=1158" target="_blank" rel="noopener noreferrer">
-            <span class="rank">05</span>
-            <span class="resource-main">
-              <span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-              <span class="source">wiki.kurobbs.com / enemies</span>
-            </span>
-            <span class="open">›</span>
-          </a>
-        </div>
-      </article>
-    </section>
-
-    <section class="todo">
-      <h2>待补全：异环</h2>
-      <p>原始表里已预留 6 个异环资料槽位，但类型与链接还未填写。后续拿到官方 Wiki 或可靠资料源后，可以按同样结构补进本页。</p>
-    </section>
-  </main>
-
-  <script>
+</main>
+<script>
     const buttons = [...document.querySelectorAll('.filter-btn')];
     const cards = [...document.querySelectorAll('.game-card')];
 

@@ -1085,6 +1085,11 @@ button.action-danger{
     color:#53606e!important;
     border:1px solid rgba(126,137,151,.24)!important;
   }
+  .mobile-tools-sheet .action-danger{
+    background:#fff1f2!important;
+    color:#9f3042!important;
+    border-color:#f1b9c2!important;
+  }
 }
 
 
@@ -1290,6 +1295,9 @@ button.action-danger{
 .card h2{position:relative;min-height:34px;}
 .collapse-toggle{margin-left:auto!important;flex:0 0 auto;padding:5px 9px!important;min-height:28px!important;border-radius:999px!important;font-size:12px!important;line-height:1!important;box-shadow:none!important;background:#fff!important;color:#566474!important;border:1px solid rgba(126,137,151,.36)!important;}
 .collapse-toggle:hover{background:#f2f6f8!important;border-color:#8aa9ba!important}
+.module-view-toggle{margin-left:auto!important;flex:0 0 auto;padding:5px 10px!important;min-height:34px!important;border-radius:999px!important;font-size:12px!important;line-height:1!important;box-shadow:none!important;background:#e8f6f6!important;color:#176875!important;border:1px solid #9dcdd3!important;}
+.module-view-toggle:hover{background:#dff2f3!important;border-color:#67adb7!important}
+#sec-00 .module-view-toggle ~ .collapse-toggle{margin-left:6px!important}
 .card.collapsed > :not(h2){display:none!important}
 .card.collapsed{padding-bottom:12px!important}
 .card.collapsed h2{margin-bottom:0!important;border-bottom:0!important;padding-bottom:0!important}
@@ -1583,12 +1591,18 @@ body.gucc-enhanced .structure-floating-nav.show{
   body.gucc-enhanced .page .dock{
     position:static!important;
   }
+  body.gucc-enhanced .page > .dock{
+    display:none!important;
+  }
   body.gucc-enhanced .mobile-float{
     left:50%!important;
     right:auto!important;
     bottom:calc(72px + env(safe-area-inset-bottom))!important;
     transform:translateX(-50%)!important;
     max-width:calc(100vw - 16px)!important;
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    width:min(360px,calc(100vw - 16px))!important;
     justify-content:center!important;
     gap:4px!important;
     padding:4px!important;
@@ -1601,11 +1615,11 @@ body.gucc-enhanced .structure-floating-nav.show{
   }
   body.gucc-enhanced .mobile-float button{
     min-width:0!important;
-    min-height:40px!important;
+    min-height:44px!important;
     padding:5px 8px!important;
     border-radius:10px!important;
     font-size:11px!important;
-    flex:0 0 auto!important;
+    white-space:nowrap!important;
   }
   body.gucc-enhanced .mobile-save-fab{
     bottom:calc(72px + env(safe-area-inset-bottom))!important;
@@ -2457,9 +2471,9 @@ Google Drive / 本地项目目录：
 </div>
 <div class="mobile-float no-print">
   <button class="action-save" onclick="saveLocal()" title="保存到当前浏览器">保存</button>
-  <button class="action-export-md" onclick="toggleMobileExportSheet()" title="选择导出格式">导出</button>
+  <button id="mobileExportToggle" class="action-export-md" onclick="toggleMobileExportSheet()" title="选择导出格式" aria-controls="mobileExportSheet" aria-expanded="false">导出</button>
   <button class="action-import" onclick="document.getElementById('importFile').click()" title="导入 Markdown / JSON">导入</button>
-  <button class="action-link" onclick="insertSmartLink()" title="给选中文本加链接">链接</button>
+  <button id="mobileToolsToggle" class="action-link" onclick="toggleMobileToolsSheet()" title="打开更多工具" aria-controls="mobileToolsSheet" aria-expanded="false">工具</button>
 </div>
 <div id="mobileExportSheet" class="mobile-export-sheet no-print" aria-hidden="true">
   <div class="sheet-title">选择导出格式</div>
@@ -2470,6 +2484,17 @@ Google Drive / 本地项目目录：
     <button class="action-export-json" onclick="mobileExport('DONE','json')">完成 JSON</button>
   </div>
   <button class="sheet-cancel" onclick="toggleMobileExportSheet(false)">取消</button>
+</div>
+<div id="mobileToolsSheet" class="mobile-export-sheet mobile-tools-sheet no-print" aria-hidden="true">
+  <div class="sheet-title">更多创作工具</div>
+  <div class="sheet-grid">
+    <button class="action-copy" onclick="toggleMobileToolsSheet(false); copyMarkdown()">复制 Markdown</button>
+    <button class="action-util" onclick="toggleMobileToolsSheet(false); repairLongTextLineBreaks()">整理长文本</button>
+    <button class="action-link" onclick="toggleMobileToolsSheet(false); insertSmartLink()">添加链接</button>
+    <button class="action-util" onclick="toggleMobileToolsSheet(false); window.print()">打印 / PDF</button>
+  </div>
+  <button class="action-danger sheet-cancel" onclick="toggleMobileToolsSheet(false); clearAll()">清空当前页面</button>
+  <button class="sheet-cancel" onclick="toggleMobileToolsSheet(false)">取消</button>
 </div>
 
 <script src="./ai-prompts.js"></script>
@@ -3351,11 +3376,26 @@ async function copyMarkdown(){
 }
 
 function toggleMobileExportSheet(force){
-  const sheet = document.getElementById('mobileExportSheet');
+  return toggleMobileSheet('mobileExportSheet', force);
+}
+function toggleMobileToolsSheet(force){
+  return toggleMobileSheet('mobileToolsSheet', force);
+}
+function toggleMobileSheet(sheetId, force){
+  const sheet = document.getElementById(sheetId);
   if(!sheet) return;
   const show = typeof force === 'boolean' ? force : !sheet.classList.contains('show');
-  sheet.classList.toggle('show', show);
-  sheet.setAttribute('aria-hidden', show ? 'false' : 'true');
+  ['mobileExportSheet', 'mobileToolsSheet'].forEach(id => {
+    const panel = document.getElementById(id);
+    if(!panel) return;
+    const active = id === sheetId && show;
+    panel.classList.toggle('show', active);
+    panel.setAttribute('aria-hidden', active ? 'false' : 'true');
+    document.querySelectorAll(`[aria-controls="${id}"]`).forEach(button => {
+      button.setAttribute('aria-expanded', active ? 'true' : 'false');
+    });
+  });
+  return show;
 }
 function mobileExport(stage, type){
   toggleMobileExportSheet(false);
@@ -4427,6 +4467,47 @@ function setCardCollapsed(card, collapsed){
     btn.title = collapsed ? '展开这个区域' : '收纳这个区域';
   }
 }
+function secondaryCards(){
+  return Array.from(document.querySelectorAll('.card[id]')).filter(card => card.id !== 'sec-00');
+}
+function syncModuleViewToggle(){
+  const button = document.getElementById('moduleViewToggle');
+  if(!button) return;
+  const cards = secondaryCards();
+  const allCollapsed = cards.length > 0 && cards.every(card => card.classList.contains('collapsed'));
+  button.textContent = allCollapsed ? '全部展开' : '全部收起';
+  button.setAttribute('aria-pressed', allCollapsed ? 'true' : 'false');
+  button.title = allCollapsed ? '展开除总控外的全部模块' : '收起除总控外的全部模块';
+}
+function toggleAllCards(){
+  const cards = secondaryCards();
+  const shouldCollapse = !cards.every(card => card.classList.contains('collapsed'));
+  cards.forEach(card => {
+    setCardCollapsed(card, shouldCollapse);
+    saveCollapseState(card.id, shouldCollapse);
+  });
+  syncModuleViewToggle();
+  toast(shouldCollapse ? '已收起其他模块' : '已展开全部模块');
+}
+function setupModuleViewToggle(){
+  const heading = document.querySelector('#sec-00 > h2');
+  if(!heading) return;
+  let button = heading.querySelector('#moduleViewToggle');
+  if(!button){
+    button = document.createElement('button');
+    button.id = 'moduleViewToggle';
+    button.type = 'button';
+    button.className = 'module-view-toggle no-print';
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleAllCards();
+    });
+    const ownToggle = heading.querySelector('.collapse-toggle');
+    heading.insertBefore(button, ownToggle || null);
+  }
+  syncModuleViewToggle();
+}
 function setupCollapsibleCards(){
   const saved = collapseState();
   document.querySelectorAll('.card[id]').forEach(card => {
@@ -4443,11 +4524,13 @@ function setupCollapsibleCards(){
         const next = !card.classList.contains('collapsed');
         setCardCollapsed(card, next);
         saveCollapseState(card.id, next);
+        syncModuleViewToggle();
       });
       h2.appendChild(btn);
     }
     setCardCollapsed(card, saved[card.id] === true);
   });
+  setupModuleViewToggle();
 }
 
 fields().forEach(el => {

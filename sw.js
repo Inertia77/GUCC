@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v7";
+const CACHE_VERSION = "gucc-pwa-v10";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -21,7 +21,9 @@ const APP_SHELL = [
   "./apps/command-center/index.html",
   "./apps/command-center/styles/app.css",
   "./apps/command-center/styles/interactions-v1.css",
-  "./apps/command-center/src/main.js",
+  "./apps/command-center/styles/navigation-v1.css",
+  "./apps/command-center/styles/content-v1.css",
+  "./apps/command-center/src/main-v5.2.6.js",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
   "./apps/command-center/src/config-state.js",

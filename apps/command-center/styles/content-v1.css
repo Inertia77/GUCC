@@ -1,0 +1,89 @@
+.note-stack {
+  display: grid;
+  gap: 9px;
+}
+
+.note-block {
+  display: grid;
+  grid-template-columns: minmax(92px, 120px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 11px 12px;
+  border: 1px solid rgba(118, 247, 255, .12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.note-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.preserved-text,
+.rich-text {
+  min-width: 0;
+  color: var(--text);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.field-help {
+  display: block;
+  margin: 3px 0 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.inline-link {
+  display: inline;
+  color: var(--accent2);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: rgba(118, 247, 255, .38);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.inline-link span {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: .82em;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+body.gucc-enhanced .note-label,
+body.gucc-enhanced .field-help {
+  color: var(--gucc-muted) !important;
+}
+
+body.gucc-enhanced .preserved-text,
+body.gucc-enhanced .rich-text {
+  color: var(--gucc-text);
+}
+
+body.gucc-enhanced .inline-link {
+  color: var(--gucc-cyan) !important;
+}
+
+@media (max-width: 640px) {
+  .note-block {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    padding: 10px;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+}

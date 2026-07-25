@@ -71,6 +71,52 @@ export function safeExternalUrl(value) {
   }
 }
 
+export function renderMultilineText(value) {
+  const text = String(value ?? '');
+  if (!text.trim()) return '';
+  return `<div class="preserved-text">${escapeHtml(text)}</div>`;
+}
+
+function splitUrlTail(value) {
+  let url = String(value || '');
+  let tail = '';
+  while (/[.,!?;:，。！？；：、)\]}>】）》」』]$/.test(url)) {
+    tail = url.slice(-1) + tail;
+    url = url.slice(0, -1);
+  }
+  return { url, tail };
+}
+
+export function renderRichText(value) {
+  const text = String(value ?? '');
+  if (!text.trim()) return '';
+
+  const pattern = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/gi;
+  let cursor = 0;
+  let html = '';
+
+  for (const match of text.matchAll(pattern)) {
+    html += escapeHtml(text.slice(cursor, match.index));
+
+    const isMarkdownLink = Boolean(match[2]);
+    const normalized = isMarkdownLink
+      ? { url: match[2], tail: '' }
+      : splitUrlTail(match[3]);
+    const safeUrl = safeExternalUrl(normalized.url);
+
+    if (!safeUrl) {
+      html += escapeHtml(match[0]);
+    } else {
+      const label = isMarkdownLink ? match[1] : normalized.url;
+      html += `<a class="inline-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}<span aria-hidden="true">↗</span></a>${escapeHtml(normalized.tail)}`;
+    }
+    cursor = match.index + match[0].length;
+  }
+
+  html += escapeHtml(text.slice(cursor));
+  return `<div class="rich-text">${html}</div>`;
+}
+
 export function renderLinks(links) {
   if (!Array.isArray(links) || !links.length) return '';
   return `<div class="meta">${links.map((link) => {

@@ -25,18 +25,42 @@ function syncView() {
   $('#signupBtn').disabled = !config.ready;
 }
 
+function activateTab(button, { focus = false } = {}) {
+  const panel = $(`#${button?.dataset.tab}`);
+  if (!button || !panel) return;
+
+  closeActiveDrawer();
+  $$('.tabs [role="tab"]').forEach((item) => {
+    const active = item === button;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-selected', active ? 'true' : 'false');
+    item.tabIndex = active ? 0 : -1;
+  });
+  $$('.tab-panel').forEach((item) => {
+    const active = item === panel;
+    item.classList.toggle('active', active);
+    item.hidden = !active;
+  });
+  if (focus) button.focus();
+}
+
 function initTabs() {
-  $$('.tabs button').forEach((button) => {
-    button.addEventListener('click', () => {
-      const panel = $(`#${button.dataset.tab}`);
-      if (!panel) return;
-      closeActiveDrawer();
-      $$('.tabs button').forEach((item) => item.classList.remove('active'));
-      $$('.tab-panel').forEach((item) => item.classList.remove('active'));
-      button.classList.add('active');
-      panel.classList.add('active');
+  const buttons = $$('.tabs [role="tab"]');
+  buttons.forEach((button, index) => {
+    button.addEventListener('click', () => activateTab(button));
+    button.addEventListener('keydown', (event) => {
+      let nextIndex = null;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (index + 1) % buttons.length;
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (index - 1 + buttons.length) % buttons.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = buttons.length - 1;
+      if (nextIndex === null) return;
+      event.preventDefault();
+      activateTab(buttons[nextIndex], { focus: true });
     });
   });
+
+  activateTab(buttons.find((button) => button.classList.contains('active')) || buttons[0]);
 }
 
 function initAuth() {

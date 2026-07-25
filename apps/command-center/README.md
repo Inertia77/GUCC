@@ -34,7 +34,7 @@ http://localhost:8000/apps/command-center/
 index.html
 styles/app.css
 src/
-├─ main.js
+├─ main-v5.2.6.js
 ├─ config.js
 ├─ config-state.js
 ├─ auth.js

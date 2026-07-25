@@ -16,6 +16,8 @@
   <script src="../../assets/access-guard.js" data-root="../../" data-guard="true"></script>
   <link rel="stylesheet" href="styles/app.css?v=5.2.2" />
   <link rel="stylesheet" href="styles/interactions-v1.css" />
+  <link rel="stylesheet" href="styles/navigation-v1.css" />
+  <link rel="stylesheet" href="styles/content-v1.css" />
   <link rel="stylesheet" href="../../assets/gucc-theme.css?v=7" />
   <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
 </head>
@@ -53,36 +55,14 @@
       </form>
 
       <section id="mainView" class="hidden">
-        <nav class="tabs" aria-label="主要功能">
-          <button type="button" data-tab="dashboard" class="active">总览</button>
-          <button type="button" data-tab="characters">角色</button>
-          <button type="button" data-tab="parties">配队</button>
-          <button type="button" data-tab="versions">版本</button>
-          <button type="button" data-tab="resources">资源</button>
-          <button type="button" data-tab="settings">设置/测试</button>
+        <nav class="tabs" aria-label="主要功能" role="tablist">
+          <button id="tab-characters" type="button" data-tab="characters" class="active" role="tab" aria-controls="characters" aria-selected="true">角色</button>
+          <button id="tab-parties" type="button" data-tab="parties" role="tab" aria-controls="parties" aria-selected="false">配队</button>
+          <button id="tab-versions" type="button" data-tab="versions" role="tab" aria-controls="versions" aria-selected="false">版本</button>
+          <button id="tab-more" type="button" data-tab="more" class="tab-more" role="tab" aria-controls="more" aria-selected="false">更多</button>
         </nav>
 
-        <section id="dashboard" class="tab-panel active">
-          <div class="grid2">
-            <div class="card">
-              <h2>系统状态</h2>
-              <button id="pingBtn" type="button">测试后端连接</button>
-              <pre id="pingResult" class="log" aria-live="polite"></pre>
-            </div>
-            <div class="card">
-              <h2>操作顺序</h2>
-              <ol class="steps">
-                <li>登录</li>
-                <li>设置/测试 → 测试后端连接</li>
-                <li>角色 → 搜索现有角色</li>
-                <li>新增测试角色</li>
-                <li>确认 Supabase 里数据已写入</li>
-              </ol>
-            </div>
-          </div>
-        </section>
-
-        <section id="characters" class="tab-panel">
+        <section id="characters" class="tab-panel active" role="tabpanel" aria-labelledby="tab-characters">
           <div class="toolbar card compact">
             <input id="charKeyword" placeholder="搜索角色名 / 游戏 / 状态，例如 千咲" />
             <input id="charGame" placeholder="游戏简称，例如 绝 / 鸣 / 崩" />
@@ -93,7 +73,7 @@
           <div id="characterEditor" class="card editor hidden"></div>
         </section>
 
-        <section id="parties" class="tab-panel">
+        <section id="parties" class="tab-panel" role="tabpanel" aria-labelledby="tab-parties">
           <div class="toolbar card compact">
             <input id="partyKeyword" placeholder="搜索配队描述 / 成员 / 类型 / 状态 / 持有状态" />
             <input id="partyGame" placeholder="游戏简称" />
@@ -104,7 +84,7 @@
           <div id="partyEditor" class="card editor hidden"></div>
         </section>
 
-        <section id="versions" class="tab-panel">
+        <section id="versions" class="tab-panel" role="tabpanel" aria-labelledby="tab-versions">
           <div class="toolbar card compact">
             <input id="versionKeyword" placeholder="搜索版本 / 卡池角色" />
             <input id="versionGame" placeholder="游戏简称" />
@@ -115,27 +95,73 @@
           <div id="versionEditor" class="card editor hidden"></div>
         </section>
 
-        <section id="resources" class="tab-panel">
-          <div class="toolbar card compact">
-            <input id="resourceKeyword" placeholder="搜索链接标题 / URL / 备注" />
-            <button id="searchResourceBtn" type="button">搜索资源</button>
+        <section id="more" class="tab-panel more-panel" role="tabpanel" aria-labelledby="tab-more">
+          <div class="more-intro">
+            <div>
+              <p class="kicker">SECONDARY TOOLS</p>
+              <h2>辅助与维护</h2>
+            </div>
+            <p>低频查询、系统状态与配置测试统一收纳在这里，不影响角色、配队和版本的日常操作。</p>
           </div>
-          <div id="resourceResults" class="list"></div>
-        </section>
 
-        <section id="settings" class="tab-panel">
-          <div class="card">
-            <h2>当前配置</h2>
-            <pre id="configView" class="log"></pre>
-            <button id="runSmokeTestBtn" type="button">运行烟雾测试</button>
-            <pre id="smokeResult" class="log" aria-live="polite"></pre>
+          <div class="auxiliary-stack">
+            <details class="auxiliary-card">
+              <summary>
+                <span><strong>资源链接</strong><small>搜索资料标题、URL 与备注</small></span>
+                <span class="auxiliary-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div class="auxiliary-content">
+                <div class="toolbar card compact">
+                  <input id="resourceKeyword" placeholder="搜索链接标题 / URL / 备注" />
+                  <button id="searchResourceBtn" type="button">搜索资源</button>
+                </div>
+                <div id="resourceResults" class="list"></div>
+              </div>
+            </details>
+
+            <details class="auxiliary-card">
+              <summary>
+                <span><strong>系统状态</strong><small>连接检查与维护操作说明</small></span>
+                <span class="auxiliary-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div class="auxiliary-content grid2">
+                <div class="card">
+                  <h2>连接状态</h2>
+                  <button id="pingBtn" type="button">测试后端连接</button>
+                  <pre id="pingResult" class="log" aria-live="polite"></pre>
+                </div>
+                <div class="card">
+                  <h2>维护顺序</h2>
+                  <ol class="steps">
+                    <li>确认当前账号已登录</li>
+                    <li>检查后端连接状态</li>
+                    <li>再进行角色、配队或版本的数据维护</li>
+                  </ol>
+                </div>
+              </div>
+            </details>
+
+            <details class="auxiliary-card">
+              <summary>
+                <span><strong>配置与测试</strong><small>部署配置和烟雾测试，仅维护时使用</small></span>
+                <span class="auxiliary-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div class="auxiliary-content">
+                <div class="card">
+                  <h2>当前配置</h2>
+                  <pre id="configView" class="log"></pre>
+                  <button id="runSmokeTestBtn" type="button">运行烟雾测试</button>
+                  <pre id="smokeResult" class="log" aria-live="polite"></pre>
+                </div>
+              </div>
+            </details>
           </div>
         </section>
       </section>
     </main>
   </div>
 
-  <script type="module" src="src/main.js?v=5.2.4"></script>
+  <script type="module" src="src/main-v5.2.6.js"></script>
   <script src="../../assets/pwa-install.js?v=2" data-root="../../"></script>
 </body>
 </html>

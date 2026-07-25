@@ -11,6 +11,7 @@ import {
   renderLinks,
   renderListState,
   renderMeta,
+  renderMultilineText,
   withBusy
 } from '../ui.js';
 
@@ -80,6 +81,24 @@ function collectLinks(form) {
     if (hasAnyValue && !link.url) throw new Error(`第 ${index + 1} 条链接需要填写 URL。`);
     return hasAnyValue ? link : null;
   }).filter(Boolean);
+}
+
+function renderCharacterNotes(row) {
+  const notes = [
+    { label: '角色备注', value: row.note || row.character_note },
+    { label: '研究 / 养成备注', value: row.research_note },
+    { label: '当前评价备注', value: row.evaluation_note }
+  ].filter((item) => String(item.value || '').trim());
+
+  if (!notes.length) return '';
+  return `
+    <div class="note-stack" aria-label="角色备注">
+      ${notes.map((item) => `
+        <section class="note-block">
+          <div class="note-label">${escapeHtml(item.label)}</div>
+          ${renderMultilineText(item.value)}
+        </section>`).join('')}
+    </div>`;
 }
 
 function openEditor(data = {}) {
@@ -201,7 +220,7 @@ export async function searchCharacters() {
             <button type="button" data-delete-char="${escapeHtml(row.id)}" class="danger">删除</button>
           </div>
         </div>
-        <div class="hint">${escapeHtml(row.research_note || row.evaluation_note || row.note || '')}</div>
+        ${renderCharacterNotes(row)}
         ${renderLinks(row.links || row.resources)}
       </article>`).join('');
   } catch (error) {

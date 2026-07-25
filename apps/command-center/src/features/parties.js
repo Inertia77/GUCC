@@ -10,6 +10,7 @@ import {
   readForm,
   renderListState,
   renderMeta,
+  renderRichText,
   withBusy
 } from '../ui.js';
 
@@ -51,7 +52,11 @@ function openEditor(data = {}) {
       <label>状态 <input name="status" value="${escapeHtml(data.status || '')}" /></label>
       <label>持有状态 <input name="hold_status" value="${escapeHtml(data.hold_status || '')}" /></label>
       ${[0, 1, 2, 3].map((index) => `<label>成员 ${index + 1} <input name="m${index + 1}" value="${escapeHtml(members[index]?.name || members[index]?.member_name_raw || '')}" /></label>`).join('')}
-      <label class="wide">说明 <textarea name="description">${escapeHtml(data.description || '')}</textarea></label>
+      <label class="wide">
+        说明
+        <span class="field-help">支持换行、直接粘贴网址，或使用 [链接标题](https://网址) 格式。</span>
+        <textarea name="description" placeholder="每行可写一条说明；链接示例：[配队演示](https://...)">${escapeHtml(data.description || '')}</textarea>
+      </label>
       <div class="button-row wide">
         <button type="submit">保存配队</button>
         <button type="button" id="cancelPartyEdit" class="ghost">取消</button>
@@ -136,7 +141,7 @@ export async function searchParties() {
           </div>
         </div>
         <div class="hint">成员：${escapeHtml((row.members || []).map((member) => member.name || member.member_name_raw).join(' / '))}</div>
-        <div>${escapeHtml(row.description || '')}</div>
+        ${renderRichText(row.description || '')}
       </article>`).join('');
   } catch (error) {
     renderListState(container, error.message, 'error');

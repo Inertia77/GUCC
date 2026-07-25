@@ -1,0 +1,194 @@
+/* Primary work lives in three tabs; maintenance tools stay deliberately quiet. */
+body.gucc-enhanced .tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(112px, 176px)) minmax(56px, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+body.gucc-enhanced .tabs button:not(.tab-more) {
+  min-height: 48px;
+  font-size: 17px;
+}
+
+body.gucc-enhanced .tabs .tab-more {
+  justify-self: end;
+  min-height: 38px;
+  padding-inline: 12px;
+  border-color: rgba(154, 170, 189, .18);
+  background: transparent;
+  color: var(--dim);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.gucc-enhanced .tabs .tab-more:hover,
+body.gucc-enhanced .tabs .tab-more:focus-visible {
+  border-color: rgba(118, 247, 255, .28);
+  background: rgba(255, 255, 255, .045);
+  color: var(--muted);
+}
+
+body.gucc-enhanced .tabs .tab-more.active {
+  border-color: rgba(118, 247, 255, .28);
+  background: rgba(118, 247, 255, .08);
+  color: var(--text);
+  box-shadow: none;
+}
+
+body.gucc-enhanced .more-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+  padding: 4px 4px 10px;
+}
+
+body.gucc-enhanced .more-intro h2,
+body.gucc-enhanced .more-intro p {
+  margin: 0;
+}
+
+body.gucc-enhanced .more-intro .kicker {
+  margin: 0 0 4px;
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: .16em;
+}
+
+body.gucc-enhanced .more-intro > p {
+  max-width: 620px;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: right;
+}
+
+body.gucc-enhanced .auxiliary-stack {
+  display: grid;
+  gap: 10px;
+}
+
+body.gucc-enhanced .auxiliary-card {
+  border: 1px solid rgba(154, 170, 189, .16);
+  border-radius: 16px;
+  background: rgba(10, 15, 24, .62);
+  overflow: hidden;
+}
+
+body.gucc-enhanced .auxiliary-card > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 68px;
+  padding: 12px 16px;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+}
+
+body.gucc-enhanced .auxiliary-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+body.gucc-enhanced .auxiliary-card > summary:hover {
+  background: rgba(255, 255, 255, .028);
+  color: var(--text);
+}
+
+body.gucc-enhanced .auxiliary-card > summary strong,
+body.gucc-enhanced .auxiliary-card > summary small {
+  display: block;
+}
+
+body.gucc-enhanced .auxiliary-card > summary strong {
+  color: var(--text);
+  font-size: 15px;
+}
+
+body.gucc-enhanced .auxiliary-card > summary small {
+  margin-top: 3px;
+  color: var(--dim);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+body.gucc-enhanced .auxiliary-chevron {
+  color: var(--dim);
+  font-size: 20px;
+  transition: transform .16s ease;
+}
+
+body.gucc-enhanced .auxiliary-card[open] .auxiliary-chevron {
+  transform: rotate(180deg);
+}
+
+body.gucc-enhanced .auxiliary-content {
+  padding: 14px;
+  border-top: 1px solid rgba(154, 170, 189, .13);
+}
+
+body.gucc-enhanced .auxiliary-content > .toolbar {
+  position: static;
+  top: auto;
+}
+
+body.gucc-enhanced .auxiliary-content > .card:last-child,
+body.gucc-enhanced .auxiliary-content > .toolbar:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 620px) {
+  body.gucc-enhanced .tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 5px;
+  }
+
+  body.gucc-enhanced .tabs button:not(.tab-more) {
+    min-width: 0;
+    min-height: 46px;
+    padding-inline: 8px;
+    font-size: 15px;
+  }
+
+  body.gucc-enhanced .tabs .tab-more {
+    min-width: 48px;
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+
+  body.gucc-enhanced .more-intro {
+    display: block;
+    padding-inline: 2px;
+  }
+
+  body.gucc-enhanced .more-intro > p {
+    margin-top: 7px;
+    text-align: left;
+  }
+
+  body.gucc-enhanced .auxiliary-card {
+    border-radius: 14px;
+  }
+
+  body.gucc-enhanced .auxiliary-card > summary {
+    min-height: 64px;
+    padding: 10px 13px;
+  }
+
+  body.gucc-enhanced .auxiliary-content {
+    padding: 10px;
+  }
+
+  body.gucc-enhanced .auxiliary-content.grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.gucc-enhanced .auxiliary-chevron {
+    transition: none;
+  }
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#080b12" />
+  <title>GUCC · 当前离线</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/icons/gucc-icon.svg" />
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: #f3f7ff;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(116,243,255,.2), transparent 32rem),
+        radial-gradient(circle at 80% 90%, rgba(120,255,186,.14), transparent 34rem),
+        #070a10;
+    }
+    main {
+      width: min(460px, 100%);
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 26px;
+      background: rgba(13,18,30,.82);
+      box-shadow: 0 28px 90px rgba(0,0,0,.38);
+    }
+    img { width: 62px; height: 62px; }
+    h1 { margin: 20px 0 8px; font-size: clamp(26px, 8vw, 40px); }
+    p { margin: 0 0 22px; color: #a8b6c8; line-height: 1.7; }
+    button {
+      min-height: 48px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 14px;
+      color: #04100f;
+      background: linear-gradient(135deg, #78ffba, #74f3ff);
+      font: inherit;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="./assets/icons/gucc-icon.svg" alt="" />
+    <h1>现在处于离线状态</h1>
+    <p>已经打开过的 GUCC 页面仍可继续使用；需要同步 Supabase 数据时，请恢复网络连接后重试。</p>
+    <button type="button" onclick="location.reload()">重新连接</button>
+  </main>
+</body>
+</html>

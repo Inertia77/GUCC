@@ -4,11 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#080b12" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GUCC" />
   <meta http-equiv="Cache-Control" content="no-store" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>GUCC Portal</title>
   <link rel="icon" type="image/svg+xml" href="./assets/icons/gucc-icon.svg?v=5" />
+  <link rel="apple-touch-icon" href="./assets/icons/gucc-icon-192.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./assets/pwa-install.css?v=1" />
   <script src="./assets/access-guard.js" data-root="./"></script>
   <style>
     :root {
@@ -1103,7 +1110,10 @@
           <span>GameUp creator command deck</span>
         </span>
       </a>
-      <button class="lock-btn" id="lockBtn" type="button">锁定</button>
+      <div class="pwa-actions">
+        <button class="install-btn" id="installAppBtn" type="button" hidden>安装 App</button>
+        <button class="lock-btn" id="lockBtn" type="button">锁定</button>
+      </div>
     </div>
 
     <section class="hero" aria-labelledby="portalTitle">
@@ -1284,5 +1294,6 @@
       });
     })();
   </script>
+  <script src="./assets/pwa-install.js?v=1" data-root="./"></script>
 </body>
 </html>

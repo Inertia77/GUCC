@@ -4,11 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#070a10" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta http-equiv="Cache-Control" content="no-store" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>GameUp Command Center</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg?v=5" />
+  <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png" />
+  <link rel="manifest" href="../../manifest.webmanifest" />
   <script src="../../assets/access-guard.js" data-root="../../" data-guard="true"></script>
   <link rel="stylesheet" href="styles/app.css?v=5.2.2" />
   <link rel="stylesheet" href="../../assets/gucc-theme.css?v=5" />
@@ -131,5 +135,6 @@
   </div>
 
   <script type="module" src="src/main.js?v=5.2.4"></script>
+  <script src="../../assets/pwa-install.js?v=1" data-root="../../"></script>
 </body>
 </html>

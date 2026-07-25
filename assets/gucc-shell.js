@@ -6,12 +6,12 @@
   const isActive = (needle) => path.includes(needle);
 
   const links = [
-    { key: 'portal', label: 'Portal', icon: '⌂', href: normalizedRoot, active: path.endsWith('/GUCC/') || path.endsWith('/') && !path.includes('/apps/') && !path.includes('/reference/') && !path.includes('/docs/') },
-    { key: 'db', label: 'DB', icon: '◆', href: `${normalizedRoot}apps/command-center/`, active: isActive('/apps/command-center/') || isActive('/apps/gameup-command-center/') },
-    { key: 'ws', label: 'Work', icon: '✦', href: `${normalizedRoot}apps/video-workspace/`, active: isActive('/apps/video-workspace/') },
-    { key: 'cover', label: 'Cover', icon: '▣', href: `${normalizedRoot}apps/cover-generator/`, active: isActive('/apps/cover-generator/') },
-    { key: 'prompt', label: 'Prompt', icon: '✎', href: `${normalizedRoot}reference/ai-prompts.html`, active: isActive('/reference/ai-prompts') },
-    { key: 'library', label: 'Library', icon: '☰', href: `${normalizedRoot}reference/resource-library.html`, active: isActive('/reference/resource-library') || isActive('/reference/story-library') || isActive('/docs/') },
+    { key: 'portal', label: '首页', icon: '⌂', href: normalizedRoot, active: path.endsWith('/GUCC/') || path.endsWith('/') && !path.includes('/apps/') && !path.includes('/reference/') && !path.includes('/docs/') },
+    { key: 'db', label: '数据', icon: 'DB', href: `${normalizedRoot}apps/command-center/`, active: isActive('/apps/command-center/') || isActive('/apps/gameup-command-center/') },
+    { key: 'ws', label: '工作台', icon: 'WS', href: `${normalizedRoot}apps/video-workspace/`, active: isActive('/apps/video-workspace/') },
+    { key: 'cover', label: '封面', icon: 'CG', href: `${normalizedRoot}apps/cover-generator/`, active: isActive('/apps/cover-generator/') },
+    { key: 'prompt', label: '提示词', icon: 'AI', href: `${normalizedRoot}reference/ai-prompts.html`, active: isActive('/reference/ai-prompts') },
+    { key: 'library', label: '资料库', icon: 'LIB', href: `${normalizedRoot}reference/resource-library.html`, active: isActive('/reference/resource-library') || isActive('/reference/story-library') || isActive('/docs/') },
   ];
 
   const enhance = () => {
@@ -22,7 +22,7 @@
     dock.className = 'gucc-shell-dock';
     dock.setAttribute('aria-label', 'GUCC quick navigation');
     dock.innerHTML = links.map((item) => `
-      <a class="gucc-shell-link${item.active ? ' is-active' : ''}" href="${item.href}">
+      <a class="gucc-shell-link${item.active ? ' is-active' : ''}" href="${item.href}" title="${item.label}"${item.active ? ' aria-current="page"' : ''}>
         <b aria-hidden="true">${item.icon}</b><span>${item.label}</span>
       </a>
     `).join('');

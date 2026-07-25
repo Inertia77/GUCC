@@ -57,6 +57,9 @@
 html {
   min-height: 100%;
   background: var(--gucc-bg);
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body.gucc-enhanced {
@@ -213,7 +216,7 @@ body.gucc-enhanced a:hover {
 
 body.gucc-enhanced button,
 body.gucc-enhanced .copy {
-  min-height: 42px;
+  min-height: 44px;
   border: 1px solid transparent !important;
   border-radius: 14px !important;
   background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
@@ -267,6 +270,16 @@ body.gucc-enhanced select {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035) !important;
 }
 
+body.gucc-enhanced input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body.gucc-enhanced select {
+  min-height: 44px;
+}
+
+body.gucc-enhanced :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid rgba(116, 243, 255, .86);
+  outline-offset: 3px;
+}
+
 body.gucc-enhanced input::placeholder,
 body.gucc-enhanced textarea::placeholder {
   color: rgba(168, 182, 200, .62) !important;
@@ -301,6 +314,7 @@ body.gucc-enhanced .output {
 
 body.gucc-enhanced table {
   overflow: hidden;
+  max-width: 100%;
 }
 
 body.gucc-enhanced th {
@@ -317,7 +331,6 @@ body.gucc-enhanced .pill,
 body.gucc-enhanced .tag,
 body.gucc-enhanced .idx,
 body.gucc-enhanced .ratio-tab,
-body.gucc-enhanced .panel-row,
 body.gucc-enhanced .checklist label,
 body.gucc-enhanced .section-title-badge,
 body.gucc-enhanced .banner-chip,
@@ -439,6 +452,10 @@ body.gucc-enhanced .gucc-shell-link.is-active {
   transform: translateY(-1px);
 }
 
+body.gucc-enhanced .gucc-shell-link.is-active {
+  box-shadow: 0 8px 24px rgba(116, 243, 255, .18);
+}
+
 body.gucc-enhanced .gucc-shell-link:hover b,
 body.gucc-enhanced .gucc-shell-link.is-active b {
   filter: drop-shadow(0 1px 0 rgba(255,255,255,.22));
@@ -459,15 +476,43 @@ body.gucc-enhanced .gucc-back-home {
 }
 
 @media (min-width: 1024px) {
+  body.gucc-enhanced {
+    padding-right: 84px;
+    padding-bottom: 32px;
+  }
+
   body.gucc-enhanced .gucc-shell-dock {
-    width: auto;
-    min-width: 520px;
+    left: auto;
+    right: 10px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: 64px;
+    min-width: 0;
+    max-width: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 7px;
+    border-radius: 18px;
+  }
+
+  body.gucc-enhanced .gucc-shell-link {
+    min-height: 48px;
+    padding: 4px 2px;
+    border-radius: 13px;
+    font-size: 9px;
+    gap: 3px;
+  }
+
+  body.gucc-enhanced .gucc-shell-link b {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 900px) {
   body.gucc-enhanced {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
   }
 
   body.gucc-enhanced .app,
@@ -503,6 +548,10 @@ body.gucc-enhanced .gucc-back-home {
   body.gucc-enhanced .topline,
   body.gucc-enhanced .hero {
     gap: 14px !important;
+  }
+
+  body.gucc-enhanced :where(.topbar, .topline, .hero) {
+    margin-top: max(10px, env(safe-area-inset-top)) !important;
   }
 
   body.gucc-enhanced h1 {
@@ -545,6 +594,20 @@ body.gucc-enhanced .gucc-back-home {
     flex: 1 1 140px;
   }
 
+  body.gucc-enhanced :where(.card, .panel, .item, .toolbar, .hero, .topbar) {
+    min-width: 0;
+  }
+
+  body.gucc-enhanced :where(img, video, canvas, iframe) {
+    max-width: 100%;
+  }
+
+  body.gucc-enhanced :where(table, pre, .log, .output) {
+    max-width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   body.gucc-enhanced .gucc-shell-dock {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     width: min(100vw - 18px, 760px);
@@ -560,7 +623,7 @@ body.gucc-enhanced .gucc-back-home {
 
 @media (max-width: 640px) {
   body.gucc-enhanced {
-    padding-bottom: calc(58px + env(safe-area-inset-bottom));
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
   }
 
   body.gucc-enhanced .app,
@@ -581,42 +644,121 @@ body.gucc-enhanced .gucc-back-home {
     padding: 14px !important;
   }
 
+  body.gucc-enhanced h1 {
+    font-size: clamp(28px, 9vw, 38px) !important;
+  }
+
+  body.gucc-enhanced h2 {
+    font-size: clamp(19px, 6vw, 25px);
+    line-height: 1.18;
+  }
+
+  body.gucc-enhanced p,
+  body.gucc-enhanced li {
+    line-height: 1.65;
+  }
+
+  body.gucc-enhanced input,
+  body.gucc-enhanced textarea,
+  body.gucc-enhanced select {
+    font-size: 16px !important;
+  }
+
+  body.gucc-enhanced input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  body.gucc-enhanced select {
+    min-height: 48px;
+  }
+
+  body.gucc-enhanced button,
+  body.gucc-enhanced .copy,
+  body.gucc-enhanced :where(.portal-link, .back-link, .link-btn, .gucc-back-home) {
+    min-height: 44px;
+  }
+
+  body.gucc-enhanced :where(.actions, .btns, .button-row) {
+    width: 100%;
+  }
+
+  body.gucc-enhanced :where(.actions, .btns, .button-row) > :where(button, a) {
+    min-width: 0;
+  }
+
+  body.gucc-enhanced .tabs {
+    top: max(6px, env(safe-area-inset-top));
+    margin-inline: -2px;
+    padding: 6px;
+  }
+
+  body.gucc-enhanced .tabs button {
+    min-height: 44px;
+  }
+
   body.gucc-enhanced .gucc-shell-dock {
     left: 50% !important;
     right: auto !important;
     top: auto !important;
     bottom: calc(6px + env(safe-area-inset-bottom)) !important;
     transform: translateX(-50%) !important;
-    width: min(420px, calc(100vw - 18px)) !important;
+    width: min(520px, calc(100vw - 12px)) !important;
     min-width: 0 !important;
     max-width: calc(100vw - 18px) !important;
     grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-    gap: 3px !important;
-    padding: 4px !important;
-    border-radius: 14px !important;
+    gap: 4px !important;
+    padding: 5px !important;
+    border-radius: 18px !important;
   }
 
   body.gucc-enhanced .gucc-shell-link {
     position: relative !important;
-    min-height: 30px !important;
-    flex-direction: row !important;
-    gap: 0 !important;
-    border-radius: 10px !important;
-    font-size: 0 !important;
+    min-height: 54px !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    padding: 5px 2px !important;
+    border-radius: 13px !important;
+    font-size: 9px !important;
     line-height: 1 !important;
   }
 
   body.gucc-enhanced .gucc-shell-link b {
-    font-size: 14px !important;
+    font-size: 16px !important;
   }
 
   body.gucc-enhanced .gucc-shell-link span {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    clip: rect(0 0 0 0) !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
     white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 380px) {
+  body.gucc-enhanced .gucc-shell-dock {
+    gap: 2px !important;
+    padding-inline: 3px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-link {
+    min-height: 52px !important;
+    font-size: 8px !important;
+  }
+}
+
+@media (pointer: coarse) {
+  body.gucc-enhanced :where(button, input, select, summary, .gucc-shell-link, .link-btn, .portal-link, .back-link) {
+    touch-action: manipulation;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.gucc-enhanced *,
+  body.gucc-enhanced *::before,
+  body.gucc-enhanced *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 }
 

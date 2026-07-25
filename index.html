@@ -852,6 +852,10 @@
         border-radius: 24px;
       }
 
+      .gate-form input {
+        font-size: 16px;
+      }
+
       .gate-mark img {
         width: 44px;
         height: 44px;
@@ -860,7 +864,7 @@
       .portal {
         width: min(100% - 24px, 1180px);
         padding-top: 12px;
-        padding-bottom: calc(88px + env(safe-area-inset-bottom));
+        padding-bottom: calc(102px + env(safe-area-inset-bottom));
       }
 
       .topline {
@@ -884,7 +888,7 @@
       }
 
       .lock-btn {
-        min-height: 38px;
+        min-height: 44px;
         padding: 0 12px;
         border-radius: 14px;
         font-size: 13px;
@@ -1005,6 +1009,55 @@
         font-size: 22px;
       }
 
+      .hero {
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .hero-panel {
+        min-height: 0;
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+
+      .portal-title h1 {
+        font-size: clamp(44px, 18vw, 68px);
+        line-height: .92;
+      }
+
+      .subtitle {
+        margin-top: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+      }
+
+      .hero-link {
+        width: 100%;
+        min-height: 48px;
+      }
+
+      .signal-panel {
+        padding: 13px;
+        border-radius: 24px;
+      }
+
+      .priority-grid {
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .app-card {
+        min-height: 220px;
+        padding: 18px;
+        border-radius: 24px;
+      }
+
       .reference-panel {
         margin-top: 12px;
         border-radius: 24px;
@@ -1035,11 +1088,11 @@
         bottom: calc(10px + env(safe-area-inset-bottom));
         z-index: 10;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        padding: 8px;
-        border: 1px solid rgba(255, 255, 255, .12);
-        border-radius: 24px;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 4px;
+        padding: 5px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        border-radius: 18px;
         background: rgba(7, 10, 16, .74);
         box-shadow: 0 18px 60px rgba(0, 0, 0, .42);
         backdrop-filter: blur(22px);
@@ -1048,21 +1101,232 @@
       .dock-link {
         display: grid;
         place-items: center;
-        gap: 3px;
-        min-height: 48px;
-        border-radius: 18px;
+        gap: 4px;
+        min-width: 0;
+        min-height: 56px;
+        padding: 5px 1px;
+        border-radius: 13px;
         color: var(--text);
         text-decoration: none;
         background: rgba(255, 255, 255, .055);
         border: 1px solid rgba(255, 255, 255, .07);
-        font-size: 11px;
+        font-size: 9px;
         font-weight: 850;
       }
 
       .dock-link strong {
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1;
         color: var(--dock, var(--cyan));
+      }
+    }
+
+    @media (max-width: 380px) {
+      .portal {
+        width: min(100% - 16px, 1180px);
+      }
+
+      .quick-dock {
+        left: 6px;
+        right: 6px;
+        gap: 2px;
+        padding-inline: 3px;
+      }
+
+      .dock-link {
+        font-size: 8px;
+      }
+    }
+
+    /* v8: tighter command-deck hierarchy and calmer interaction states */
+    .portal {
+      width: min(1240px, calc(100% - 40px));
+      padding-top: 18px;
+    }
+
+    .topline {
+      top: 10px;
+      margin-bottom: 16px;
+      border-color: rgba(148, 180, 204, .22);
+      background: rgba(5, 10, 19, .78);
+    }
+
+    .hero {
+      grid-template-columns: minmax(0, 1.18fr) minmax(340px, .82fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .hero-panel,
+    .signal-panel {
+      border-radius: 24px;
+      border-color: rgba(148, 180, 204, .2);
+    }
+
+    .hero-panel {
+      min-height: 330px;
+      padding: clamp(28px, 4vw, 42px);
+      background:
+        radial-gradient(circle at 88% 10%, rgba(255, 93, 168, .13), transparent 31%),
+        radial-gradient(circle at 0% 100%, rgba(120, 255, 186, .14), transparent 42%),
+        linear-gradient(145deg, rgba(30, 54, 67, .78), rgba(10, 16, 29, .92) 58%, rgba(7, 12, 23, .96));
+    }
+
+    .hero-panel::before {
+      opacity: .68;
+    }
+
+    .portal-title h1 {
+      font-size: clamp(54px, 7.2vw, 90px);
+      line-height: .9;
+    }
+
+    .subtitle {
+      max-width: 660px;
+      margin-top: 16px;
+      line-height: 1.72;
+    }
+
+    .hero-actions {
+      margin-top: 22px;
+    }
+
+    .hero-link,
+    .primary-btn {
+      box-shadow: 0 12px 30px rgba(92, 235, 219, .16);
+    }
+
+    .signal-panel {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto 1fr;
+      align-content: start;
+      align-items: stretch;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(116, 243, 255, .08), transparent 42%),
+        linear-gradient(160deg, rgba(18, 28, 45, .94), rgba(8, 14, 25, .88));
+    }
+
+    .signal-card {
+      min-height: 142px;
+      padding: 17px;
+      border-color: rgba(148, 180, 204, .14);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .signal-strip {
+      grid-column: 1 / -1;
+      align-self: end;
+      padding-top: 2px;
+    }
+
+    .priority-grid {
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .app-card {
+      min-height: 248px;
+      border-radius: 24px;
+      border-color: rgba(148, 180, 204, .18);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255, 255, 255, .09), transparent 34%),
+        linear-gradient(165deg, rgba(20, 32, 50, .96), rgba(7, 14, 26, .94));
+    }
+
+    .app-card.command,
+    .app-card.workspace,
+    .app-card.cover {
+      grid-column: span 4;
+    }
+
+    .app-card.cover h2 {
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    .hero-link,
+    .app-card,
+    .reference-link,
+    .dock-link,
+    .lock-btn,
+    .primary-btn {
+      transition:
+        transform .16s ease,
+        border-color .16s ease,
+        background-color .16s ease,
+        box-shadow .16s ease;
+    }
+
+    .hero-link:active,
+    .app-card:active,
+    .reference-link:active,
+    .dock-link:active,
+    .lock-btn:active,
+    .primary-btn:active {
+      transform: translateY(1px) scale(.992);
+    }
+
+    button:disabled,
+    [aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: .5;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .portal {
+        width: min(100% - 24px, 1240px);
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .signal-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: auto 1fr;
+      }
+
+      .app-card.command,
+      .app-card.workspace,
+      .app-card.cover {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .portal {
+        width: min(100% - 20px, 1240px);
+      }
+
+      .brand {
+        min-height: 44px;
+      }
+
+      .hero-panel {
+        padding: 22px 18px;
+      }
+
+      .portal-title h1 {
+        font-size: clamp(46px, 17vw, 64px);
+      }
+
+      .signal-panel {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      .signal-card {
+        min-height: auto;
+      }
+
+      .signal-strip {
+        grid-column: auto;
+      }
+
+      .app-card {
+        min-height: 188px;
       }
     }
 
@@ -1237,6 +1501,9 @@
     <a class="dock-link" href="./apps/command-center/" style="--dock: var(--mint)"><strong>DB</strong><span>数据</span></a>
     <a class="dock-link" href="./apps/video-workspace/" style="--dock: var(--cyan)"><strong>WS</strong><span>创作</span></a>
     <a class="dock-link" href="./apps/cover-generator/" style="--dock: var(--pink)"><strong>CG</strong><span>封面</span></a>
+    <a class="dock-link" href="./reference/ai-prompts.html" style="--dock: var(--violet)"><strong>AI</strong><span>提示词</span></a>
+    <a class="dock-link" href="./reference/story-library.html" style="--dock: var(--amber)"><strong>ST</strong><span>剧情</span></a>
+    <a class="dock-link" href="./reference/resource-library.html" style="--dock: var(--cyan)"><strong>LIB</strong><span>资料</span></a>
   </nav>
 
   <script>

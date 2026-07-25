@@ -10,11 +10,15 @@
     :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
     * { box-sizing: border-box; }
     body {
-      min-height: 100vh;
+      min-height: 100svh;
       margin: 0;
       display: grid;
       place-items: center;
-      padding: 24px;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(18px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
       color: #f3f7ff;
       background:
         radial-gradient(circle at 18% 12%, rgba(116,243,255,.2), transparent 32rem),
@@ -41,6 +45,13 @@
       background: linear-gradient(135deg, #78ffba, #74f3ff);
       font: inherit;
       font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    button:focus-visible { outline: 3px solid #74f3ff; outline-offset: 3px; }
+    @media (max-width: 520px) {
+      main { padding: 22px 18px; border-radius: 22px; }
+      button { width: 100%; }
     }
   </style>
 </head>

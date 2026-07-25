@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f5f6f8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1422">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>GUCC WorkSpace v4.0.3｜视频项目模板与归档工作台</title>
@@ -1316,8 +1316,8 @@ textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!imp
 @media(max-width:980px){#sec-06 .publish-format-note{font-size:12px}}
 
 </style>
-  <link rel="stylesheet" href="../../assets/gucc-theme.css?v=5" />
-  <script src="../../assets/gucc-shell.js?v=5" data-root="../../" defer></script>
+  <link rel="stylesheet" href="../../assets/gucc-theme.css?v=7" />
+  <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
 <style>
 /* v4.0.4: WorkSpace readability pass. Keep the shell dark, make the work surface readable. */
 body.gucc-enhanced{
@@ -1539,7 +1539,7 @@ body.gucc-enhanced .structure-floating-nav.show{
 }
 @media(max-width:980px){
   body.gucc-enhanced{
-    --ws-bottom-safe-space:calc(142px + env(safe-area-inset-bottom));
+    --ws-bottom-safe-space:calc(176px + env(safe-area-inset-bottom));
     padding-bottom:var(--ws-bottom-safe-space)!important;
   }
   body.gucc-enhanced .page{
@@ -1551,32 +1551,33 @@ body.gucc-enhanced .structure-floating-nav.show{
     bottom:calc(6px + env(safe-area-inset-bottom))!important;
     top:auto!important;
     transform:translateX(-50%)!important;
-    width:min(420px,calc(100vw - 12px))!important;
+    width:min(520px,calc(100vw - 12px))!important;
     min-width:0!important;
     display:grid!important;
     grid-template-columns:repeat(6,minmax(0,1fr))!important;
-    gap:3px!important;
-    padding:4px!important;
-    border-radius:14px!important;
+    gap:4px!important;
+    padding:5px!important;
+    border-radius:18px!important;
     z-index:90!important;
   }
   body.gucc-enhanced .gucc-shell-link{
-    min-height:30px!important;
+    min-height:54px!important;
     position:relative!important;
-    flex-direction:row!important;
-    gap:0!important;
-    border-radius:10px!important;
-    font-size:0!important;
+    flex-direction:column!important;
+    gap:3px!important;
+    padding:5px 2px!important;
+    border-radius:13px!important;
+    font-size:9px!important;
   }
   body.gucc-enhanced .gucc-shell-link b{
-    font-size:14px!important;
+    font-size:16px!important;
   }
   body.gucc-enhanced .gucc-shell-link span{
-    position:absolute!important;
-    width:1px!important;
-    height:1px!important;
-    overflow:hidden!important;
-    clip:rect(0 0 0 0)!important;
+    position:static!important;
+    width:auto!important;
+    height:auto!important;
+    overflow:visible!important;
+    clip:auto!important;
     white-space:nowrap!important;
   }
   body.gucc-enhanced .page .dock{
@@ -1585,7 +1586,7 @@ body.gucc-enhanced .structure-floating-nav.show{
   body.gucc-enhanced .mobile-float{
     left:50%!important;
     right:auto!important;
-    bottom:calc(46px + env(safe-area-inset-bottom))!important;
+    bottom:calc(72px + env(safe-area-inset-bottom))!important;
     transform:translateX(-50%)!important;
     max-width:calc(100vw - 16px)!important;
     justify-content:center!important;
@@ -1600,18 +1601,18 @@ body.gucc-enhanced .structure-floating-nav.show{
   }
   body.gucc-enhanced .mobile-float button{
     min-width:0!important;
-    min-height:28px!important;
+    min-height:40px!important;
     padding:5px 8px!important;
     border-radius:10px!important;
     font-size:11px!important;
     flex:0 0 auto!important;
   }
   body.gucc-enhanced .mobile-save-fab{
-    bottom:calc(46px + env(safe-area-inset-bottom))!important;
+    bottom:calc(72px + env(safe-area-inset-bottom))!important;
     z-index:88!important;
   }
   body.gucc-enhanced .mobile-export-sheet{
-    bottom:calc(88px + env(safe-area-inset-bottom))!important;
+    bottom:calc(122px + env(safe-area-inset-bottom))!important;
     max-height:calc(100vh - 120px)!important;
     overflow:auto!important;
     z-index:89!important;
@@ -1619,10 +1620,10 @@ body.gucc-enhanced .structure-floating-nav.show{
   body.gucc-enhanced .structure-floating-nav{
     left:12px!important;
     right:12px!important;
-    bottom:calc(92px + env(safe-area-inset-bottom))!important;
+    bottom:calc(126px + env(safe-area-inset-bottom))!important;
     z-index:87!important;
-    min-height:34px!important;
-    max-height:38px!important;
+    min-height:42px!important;
+    max-height:46px!important;
     padding:4px 6px!important;
     border-radius:12px!important;
     gap:5px!important;
@@ -1636,7 +1637,7 @@ body.gucc-enhanced .structure-floating-nav.show{
     white-space:nowrap!important;
   }
   body.gucc-enhanced .structure-floating-nav button{
-    min-height:26px!important;
+    min-height:36px!important;
     padding:4px 8px!important;
     font-size:11px!important;
     flex:0 0 auto!important;
@@ -1644,12 +1645,12 @@ body.gucc-enhanced .structure-floating-nav.show{
 }
 @media(max-width:560px){
   body.gucc-enhanced{
-    --ws-bottom-safe-space:calc(142px + env(safe-area-inset-bottom));
+    --ws-bottom-safe-space:calc(176px + env(safe-area-inset-bottom));
   }
 }
 
 body.gucc-enhanced .page button{
-  min-height:36px!important;
+  min-height:44px!important;
   border:1px solid #cad5df!important;
   border-radius:10px!important;
   background:#eef4f8!important;
@@ -1662,8 +1663,6 @@ body.gucc-enhanced .page button:hover{
   border-color:#8fb4c1!important;
 }
 body.gucc-enhanced .page button.action-save,
-body.gucc-enhanced .page button.action-export-md,
-body.gucc-enhanced .page button.action-export-json,
 body.gucc-enhanced .page button.action-import,
 body.gucc-enhanced .page button.action-ai,
 body.gucc-enhanced .page button.action-copy,
@@ -1675,6 +1674,8 @@ body.gucc-enhanced .page button.hot-action{
 }
 body.gucc-enhanced .page button.ghost,
 body.gucc-enhanced .page button.secondary,
+body.gucc-enhanced .page button.action-export-md,
+body.gucc-enhanced .page button.action-export-json,
 body.gucc-enhanced .page button.action-util,
 body.gucc-enhanced .collapse-toggle{
   background:#f7fafc!important;
@@ -1792,6 +1793,74 @@ body.gucc-enhanced .role-legend span:nth-child(3){border-color:#cbd5df!important
 body.gucc-enhanced .role-legend span:nth-child(4){border-color:#d3dfbd!important;background:#f2f8e8!important;color:#4f642f!important}
 body.gucc-enhanced .role-legend span:nth-child(5){border-color:#ebd2bc!important;background:#fff4e9!important;color:#7a4f2e!important}
 
+body.gucc-enhanced .hero .portal-link{
+  min-height:38px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  padding:7px 10px!important;
+  border:1px solid #cad5df!important;
+  border-radius:999px!important;
+  background:#eef4f8!important;
+  color:#263746!important;
+  font-weight:800!important;
+}
+
+@media(max-width:980px){
+  body.gucc-enhanced .hero > .btns,
+  body.gucc-enhanced .hero > .role-legend{
+    display:none!important;
+  }
+
+  body.gucc-enhanced .hero .portal-link{
+    min-height:44px!important;
+    margin-bottom:4px!important;
+  }
+
+  body.gucc-enhanced .section-nav a{
+    min-height:44px!important;
+  }
+
+  body.gucc-enhanced .ai-structure-import summary{
+    display:flex;
+    align-items:center;
+    min-height:44px;
+  }
+
+  body.gucc-enhanced .hero .hero-note{
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+    padding-bottom:2px!important;
+    scrollbar-width:none;
+  }
+
+  body.gucc-enhanced .hero .hero-note::-webkit-scrollbar{
+    display:none;
+  }
+
+  body.gucc-enhanced .hero .file-preview-box{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:5px!important;
+    align-items:start!important;
+  }
+
+  body.gucc-enhanced #sec-00 .control-naming-actions button{
+    min-height:44px!important;
+  }
+
+  body.gucc-enhanced .hero #fileNamePreview{
+    max-height:none;
+    overflow-x:auto;
+    overflow-y:hidden;
+    white-space:pre;
+    padding-bottom:3px;
+    scrollbar-width:thin;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px!important;
+    line-height:1.45!important;
+  }
+}
+
 body.gucc-enhanced #aiOutput,
 body.gucc-enhanced .ai-structure-paste,
 body.gucc-enhanced #chapterPreview,
@@ -1856,6 +1925,231 @@ body.gucc-enhanced #sec-00 .control-grid .field .role-badge{
     margin-left:6px!important;
   }
 }
+
+/* v4.0.5: creator-canvas color system and interaction polish */
+body.gucc-enhanced{
+  --ws-ink:#1b2938;
+  --ws-text:#31465a;
+  --ws-muted:#62758a;
+  --ws-line:#c7d4df;
+  --ws-line-soft:#dde6ed;
+  --ws-panel:#f1f5f8;
+  --ws-panel-strong:#f8fafc;
+  --ws-canvas:#e8eff4;
+  --ws-cyan:#47d8d1;
+  --ws-cyan-deep:#0c7d88;
+  --ws-violet:#7c69bb;
+  background:
+    radial-gradient(circle at 18% 0%,rgba(71,216,209,.13),transparent 32vw),
+    radial-gradient(circle at 88% 8%,rgba(124,105,187,.13),transparent 28vw),
+    linear-gradient(145deg,#07101d,#0c1726 48%,#091622)!important;
+}
+
+body.gucc-enhanced .page{
+  background:transparent!important;
+}
+
+body.gucc-enhanced .hero{
+  padding:24px 26px!important;
+  border:1px solid rgba(105,223,218,.38)!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(124,105,187,.25),transparent 36%),
+    radial-gradient(circle at 0% 100%,rgba(71,216,209,.16),transparent 44%),
+    linear-gradient(145deg,#142638,#0d1828 58%,#101725)!important;
+  color:#f4f8fc!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.28)!important;
+}
+
+body.gucc-enhanced .hero h1{
+  color:#f5f9fd!important;
+  font-size:clamp(28px,3vw,38px)!important;
+}
+
+body.gucc-enhanced .hero .sub,
+body.gucc-enhanced .hero .tiny,
+body.gucc-enhanced .hero .status{
+  color:#b7c6d6!important;
+}
+
+body.gucc-enhanced .hero .eyebrow,
+body.gucc-enhanced .hero .tag,
+body.gucc-enhanced .hero .role-legend span{
+  border-color:rgba(184,207,226,.22)!important;
+  background:rgba(255,255,255,.075)!important;
+  color:#d7e5f1!important;
+}
+
+body.gucc-enhanced .hero .portal-link{
+  border-color:rgba(184,207,226,.24)!important;
+  background:rgba(255,255,255,.08)!important;
+  color:#e5f2f9!important;
+}
+
+body.gucc-enhanced .hero .progressbox{
+  border-color:rgba(184,207,226,.2)!important;
+  background:rgba(4,12,23,.38)!important;
+  color:#eef7fb!important;
+  box-shadow:none!important;
+}
+
+body.gucc-enhanced .hero .bar{
+  background:rgba(214,230,242,.16)!important;
+}
+
+body.gucc-enhanced .hero .bar span{
+  background:linear-gradient(90deg,#55e0c0,#4bd7e2,#9e7de0)!important;
+}
+
+body.gucc-enhanced .section-nav{
+  border:1px solid rgba(150,177,198,.5)!important;
+  border-radius:16px!important;
+  background:rgba(230,238,244,.96)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.18)!important;
+  scrollbar-color:#8ba6b8 transparent;
+}
+
+body.gucc-enhanced .section-nav a{
+  min-height:38px;
+  border-color:#c7d5df!important;
+  background:#f8fafc!important;
+  color:#40566a!important;
+}
+
+body.gucc-enhanced .section-nav a:hover{
+  border-color:#6e9dab!important;
+  background:#ffffff!important;
+}
+
+body.gucc-enhanced .section-nav a.active{
+  border-color:#168795!important;
+  background:#d9f3f3!important;
+  color:#0c6570!important;
+  box-shadow:inset 0 -2px 0 #168795!important;
+}
+
+body.gucc-enhanced .card{
+  border:1px solid rgba(145,169,188,.66)!important;
+  border-radius:16px!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.8),rgba(239,245,248,.96)),
+    var(--ws-canvas)!important;
+  box-shadow:0 14px 36px rgba(2,10,20,.18)!important;
+}
+
+body.gucc-enhanced .card.card-00{
+  --module:#168795!important;
+  border-color:rgba(22,135,149,.58)!important;
+}
+
+body.gucc-enhanced .card.card-ai{
+  --module:#7c69bb!important;
+  border-color:rgba(124,105,187,.52)!important;
+}
+
+body.gucc-enhanced .card.card-01{--module:#168795!important}
+body.gucc-enhanced .card.card-02{--module:#5279b8!important}
+body.gucc-enhanced .card.card-03{--module:#7c69bb!important}
+body.gucc-enhanced .card.card-04{--module:#a45f78!important}
+body.gucc-enhanced .card.card-05{--module:#708557!important}
+body.gucc-enhanced .card.card-06{--module:#437eaa!important}
+body.gucc-enhanced .card.card-07{--module:#5c8366!important}
+body.gucc-enhanced .card.card-08{--module:#966b74!important}
+
+body.gucc-enhanced .card.card-01,
+body.gucc-enhanced .card.card-02,
+body.gucc-enhanced .card.card-03,
+body.gucc-enhanced .card.card-04,
+body.gucc-enhanced .card.card-05,
+body.gucc-enhanced .card.card-06,
+body.gucc-enhanced .card.card-07,
+body.gucc-enhanced .card.card-08{
+  border-color:color-mix(in srgb,var(--module) 46%,#d5e0e8)!important;
+}
+
+body.gucc-enhanced .card:before{
+  height:4px!important;
+  background:linear-gradient(90deg,var(--module),color-mix(in srgb,var(--module) 35%,transparent))!important;
+}
+
+body.gucc-enhanced .card h2{
+  color:#24384a!important;
+}
+
+body.gucc-enhanced .page input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body.gucc-enhanced .page select,
+body.gucc-enhanced .page textarea,
+body.gucc-enhanced .page .richbox{
+  border-color:#c5d3de!important;
+  background:#fdfefe!important;
+}
+
+body.gucc-enhanced .page button{
+  transition:transform .14s ease,border-color .14s ease,background .14s ease,box-shadow .14s ease!important;
+}
+
+body.gucc-enhanced .page button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 7px 18px rgba(27,54,73,.1)!important;
+}
+
+body.gucc-enhanced .page button:active{
+  transform:translateY(1px) scale(.985);
+  box-shadow:none!important;
+}
+
+body.gucc-enhanced .page button:disabled,
+body.gucc-enhanced .page [aria-disabled="true"]{
+  cursor:not-allowed!important;
+  opacity:.52!important;
+  transform:none!important;
+  box-shadow:none!important;
+}
+
+body.gucc-enhanced .toast{
+  left:auto!important;
+  right:calc(var(--ws-side-actions) + 20px)!important;
+  top:18px!important;
+  width:max-content!important;
+  max-width:min(380px,calc(100vw - var(--ws-side-actions) - 44px))!important;
+  padding:11px 14px!important;
+  border:1px solid rgba(71,216,209,.5)!important;
+  border-radius:14px!important;
+  background:rgba(10,26,39,.96)!important;
+  color:#e9fbfb!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.28)!important;
+  overflow-wrap:anywhere;
+}
+
+@media(max-width:980px){
+  body.gucc-enhanced .hero{
+    padding:20px 18px!important;
+    border-radius:18px!important;
+  }
+
+  body.gucc-enhanced .card{
+    border-radius:14px!important;
+  }
+
+  body.gucc-enhanced .toast{
+    left:12px!important;
+    right:12px!important;
+    top:auto!important;
+    bottom:calc(142px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.gucc-enhanced *,
+  body.gucc-enhanced *:before,
+  body.gucc-enhanced *:after{
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+  }
+}
 </style>
 </head>
 <body class="gucc-enhanced">
@@ -1897,7 +2191,7 @@ body.gucc-enhanced #sec-00 .control-grid .field .role-badge{
     <button class="action-util" onclick="repairLongTextLineBreaks()">整理长文本换行</button>
     <input id="importFile" type="file" accept=".md,.markdown,.json,.gucc.md,.gucc.json,.forge.md,.forge.json,text/markdown,application/json" style="display:none" onchange="importFile(event)">
   </div>
-  <div class="progressbox no-print" style="margin-top:12px">
+  <div class="progressbox file-preview-box no-print" style="margin-top:12px">
     <strong>文件名预览</strong>
     <div class="tiny" id="fileNamePreview">填写标题后自动生成</div>
   </div>
@@ -2280,6 +2574,23 @@ function updateActiveNav(){
   navs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
 }
 window.addEventListener('scroll', updateActiveNav, {passive:true});
+document.querySelector('.section-nav')?.addEventListener('click', (event) => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = document.querySelector(link.getAttribute('href'));
+  if (!target) return;
+
+  event.preventDefault();
+  const nav = event.currentTarget;
+  const targetTop = target.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 14;
+  window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+  nav.querySelectorAll('a').forEach((item) => item.classList.toggle('active', item === link));
+  nav.scrollTo({
+    left: Math.max(0, link.offsetLeft - (nav.clientWidth - link.offsetWidth) / 2),
+    behavior: 'smooth'
+  });
+  history.replaceState(null, '', link.getAttribute('href'));
+});
 
 function isRich(el){ return !!(el && el.classList && el.classList.contains("richbox")); }
 function escapeHtmlText(s){
@@ -2389,7 +2700,8 @@ function toast(msg){
   const t = $("#toast");
   t.textContent = msg;
   t.style.display = "block";
-  setTimeout(()=>t.style.display="none", 2200);
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(()=>t.style.display="none", 2200);
 }
 function setStatus(msg){ $("#statusText").textContent = msg; }
 function getVal(el){

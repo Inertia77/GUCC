@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#070a10" />
   <title>GUCC AI Prompt Library</title>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=5" />
@@ -195,10 +195,11 @@
       .toc { position: static; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/gucc-theme.css?v=5" />
-  <script src="../assets/gucc-shell.js?v=5" data-root="../" defer></script>
+  <link rel="stylesheet" href="../assets/gucc-theme.css?v=7" />
+  <link rel="stylesheet" href="../assets/gucc-reference-v4.css" />
+  <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
 </head>
-<body class="gucc-enhanced">
+<body class="gucc-enhanced gucc-reference prompt-page">
   <main class="wrap">
     <div class="topline">
       <a class="brand" href="../">
@@ -306,6 +307,11 @@
         if (line.startsWith('### ')) {
           closeList();
           html.push(`<h3>${inlineMarkdown(line.slice(4).trim())}</h3>`);
+          continue;
+        }
+        if (line.startsWith('> ')) {
+          closeList();
+          html.push(`<blockquote>${inlineMarkdown(line.slice(2).trim())}</blockquote>`);
           continue;
         }
         if (/^- /.test(line)) {

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#070a10" />
   <title>GUCC Story Library</title>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/gucc-icon.svg?v=5" />
@@ -307,10 +307,11 @@
       .sidebar { position: static; max-height: none; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/gucc-theme.css?v=5" />
-  <script src="../assets/gucc-shell.js?v=5" data-root="../" defer></script>
+  <link rel="stylesheet" href="../assets/gucc-theme.css?v=7" />
+  <link rel="stylesheet" href="../assets/gucc-reference-v4.css" />
+  <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
 </head>
-<body class="gucc-enhanced">
+<body class="gucc-enhanced gucc-reference story-page">
   <main class="wrap">
     <div class="topline">
       <a class="brand" href="../">
@@ -335,6 +336,10 @@
 
     <section class="layout">
       <aside class="sidebar">
+        <button class="library-nav-toggle" id="libraryNavToggle" type="button" aria-expanded="false">
+          <span>浏览资料目录</span>
+          <span id="libraryNavCurrent">当前：分册说明</span>
+        </button>
         <input id="search" class="search" placeholder="搜索游戏 / 文件名 / 版本" />
         <div id="nav"></div>
       </aside>
@@ -496,7 +501,22 @@
     const sourceLink = document.querySelector('#openSource');
     const copyButton = document.querySelector('#copyPath');
     const search = document.querySelector('#search');
+    const sidebar = document.querySelector('.sidebar');
+    const navToggle = document.querySelector('#libraryNavToggle');
+    const navCurrent = document.querySelector('#libraryNavCurrent');
+    const mobileLibrary = window.matchMedia('(max-width: 980px)');
     let activePath = '';
+
+    function setNavCollapsed(collapsed) {
+      sidebar.classList.toggle('is-collapsed', collapsed);
+      navToggle.setAttribute('aria-expanded', String(!collapsed));
+      navToggle.querySelector('span:first-child').textContent = collapsed ? '浏览资料目录' : '收起资料目录';
+    }
+
+    setNavCollapsed(mobileLibrary.matches);
+    navToggle.addEventListener('click', () => {
+      setNavCollapsed(!sidebar.classList.contains('is-collapsed'));
+    });
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -619,7 +639,7 @@
         });
         if (!docs.length) return '';
         return `
-          <details ${index < 3 || term ? 'open' : ''}>
+          <details ${index < 3 || term || docs.some((entry) => fullPath(group, entry) === activePath) ? 'open' : ''}>
             <summary>${escapeHtml(group.title)}</summary>
             ${docs.map((entry) => {
               const path = fullPath(group, entry);
@@ -632,10 +652,31 @@
       }).join('');
     }
 
+    function updateNavSelection(path) {
+      nav.querySelectorAll('.doc-link').forEach((button) => {
+        button.classList.toggle('active', button.dataset.path === path);
+      });
+
+      const activeButton = [...nav.querySelectorAll('.doc-link')]
+        .find((button) => button.dataset.path === path);
+      if (activeButton) {
+        const group = activeButton.closest('details');
+        if (group) group.open = true;
+        const sidebarRect = sidebar.getBoundingClientRect();
+        const buttonRect = activeButton.getBoundingClientRect();
+        if (buttonRect.top < sidebarRect.top) {
+          sidebar.scrollTop -= sidebarRect.top - buttonRect.top + 12;
+        } else if (buttonRect.bottom > sidebarRect.bottom) {
+          sidebar.scrollTop += buttonRect.bottom - sidebarRect.bottom + 12;
+        }
+      }
+    }
+
     async function loadDoc(path, title) {
       activePath = path;
-      renderNav(search.value);
+      updateNavSelection(path);
       titleEl.textContent = title;
+      navCurrent.textContent = `当前：${title}`;
       pathEl.textContent = path;
       sourceLink.href = path;
       doc.textContent = 'Loading...';
@@ -656,6 +697,10 @@
       const button = event.target.closest('.doc-link');
       if (!button) return;
       loadDoc(button.dataset.path, button.dataset.title);
+      if (mobileLibrary.matches) {
+        setNavCollapsed(true);
+        document.querySelector('.reader').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
 
     search.addEventListener('input', () => renderNav(search.value));

@@ -1,6 +1,6 @@
 (() => {
   const script = document.currentScript;
-  const root = new URL(script?.dataset.root || "../", script?.src || location.href);
+  const root = new URL(script?.dataset.root || "../", document.baseURI);
   const installButton = document.querySelector("#installAppBtn");
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches
     || window.navigator.standalone === true;

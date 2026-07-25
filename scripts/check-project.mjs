@@ -90,8 +90,23 @@ for (const file of appScripts) {
   checkImports(file);
 }
 checkSyntax(resolve(root, 'assets', 'access-guard.js'));
+checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
+checkSyntax(resolve(root, 'sw.js'));
 
 checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'gameup-api', 'index.ts'));
+
+const manifestPath = resolve(root, 'manifest.webmanifest');
+try {
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  if (manifest.display !== 'standalone') errors.push('PWA manifest display 必须为 standalone');
+  if (manifest.start_url !== './') errors.push('PWA manifest start_url 必须保持在项目根目录');
+  for (const icon of manifest.icons || []) {
+    const iconPath = icon.src.split(/[?#]/, 1)[0];
+    if (!existsSync(resolve(root, iconPath))) errors.push(`PWA 图标不存在: ${icon.src}`);
+  }
+} catch (error) {
+  errors.push(`${manifestPath}: PWA manifest 无法解析: ${error.message}`);
+}
 
 const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v1";
+const CACHE_VERSION = "gucc-pwa-v2";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -13,9 +13,9 @@ const APP_SHELL = [
   "./assets/pwa-install.css",
   "./assets/pwa-install.js",
   "./assets/icons/gucc-icon.svg",
-  "./assets/icons/gucc-icon-192.png",
-  "./assets/icons/gucc-icon-512.png",
-  "./assets/icons/gucc-icon-maskable-512.png",
+  "./assets/icons/gucc-icon-192.png?v=2",
+  "./assets/icons/gucc-icon-512.png?v=2",
+  "./assets/icons/gucc-icon-maskable-512.png?v=2",
   "./apps/command-center/",
   "./apps/command-center/index.html",
   "./apps/command-center/styles/app.css",

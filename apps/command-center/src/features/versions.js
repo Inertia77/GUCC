@@ -1,6 +1,8 @@
 import { API } from '../api.js';
 import {
   $,
+  bindCollapseAllControls,
+  bindCollapsibleCards,
   bindEnterSearch,
   escapeHtml,
   log,
@@ -10,6 +12,7 @@ import {
   readForm,
   renderListState,
   renderMeta,
+  renderCollapseButton,
   withBusy
 } from '../ui.js';
 
@@ -264,6 +267,8 @@ function openEditor(data = {}) {
 
 export async function searchVersions() {
   const container = $('#versionResults');
+  const controls = $('#versionResultControls');
+  controls.hidden = true;
   renderListState(container, '查询中...');
 
   try {
@@ -289,14 +294,18 @@ export async function searchVersions() {
             </div>
             ${renderMeta([row.game_code, row.start_date])}
           </div>
-          <div class="actions">
+          <div class="actions collapsible-actions">
+            ${renderCollapseButton(`${row.version_no || ''} ${row.version_name || ''}`.trim() || '版本详情')}
             <button type="button" data-edit-version="${escapeHtml(row.id)}" class="secondary">编辑</button>
             <button type="button" data-delete-version="${escapeHtml(row.id)}" class="danger">删除</button>
           </div>
         </div>
-        ${renderVersionNote(row.note)}
-        ${renderBannerGroups(row.banners || [])}
+        <div class="item-content" data-card-content>
+          ${renderVersionNote(row.note)}
+          ${renderBannerGroups(row.banners || [])}
+        </div>
       </article>`).join('');
+    controls.hidden = false;
   } catch (error) {
     renderListState(container, error.message, 'error');
   }
@@ -304,6 +313,8 @@ export async function searchVersions() {
 
 export function initVersions() {
   const searchButton = $('#searchVersionBtn');
+  bindCollapsibleCards($('#versionResults'));
+  bindCollapseAllControls($('#versionResultControls'), $('#versionResults'));
   searchButton.addEventListener('click', () => withBusy(searchButton, '搜索中...', searchVersions));
   bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchVersions);
   $('#newVersionBtn').addEventListener('click', () => openEditor({ banners: [] }));

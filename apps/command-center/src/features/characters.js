@@ -1,6 +1,8 @@
 import { API } from '../api.js';
 import {
   $,
+  bindCollapseAllControls,
+  bindCollapsibleCards,
   bindEnterSearch,
   escapeHtml,
   log,
@@ -11,6 +13,7 @@ import {
   renderLinks,
   renderListState,
   renderMeta,
+  renderCollapseButton,
   renderMultilineText,
   withBusy
 } from '../ui.js';
@@ -194,6 +197,8 @@ function openEditor(data = {}) {
 
 export async function searchCharacters() {
   const container = $('#characterResults');
+  const controls = $('#characterResultControls');
+  controls.hidden = true;
   renderListState(container, '查询中...');
 
   try {
@@ -215,14 +220,18 @@ export async function searchCharacters() {
             <div class="item-title">${escapeHtml(row.character_name || row.name)}</div>
             ${renderMeta([row.game_code || row.game_title, row.element, row.profession, row.research_status, row.build_status, row.like_level, row.role_type, row.power_rank])}
           </div>
-          <div class="actions">
+          <div class="actions collapsible-actions">
+            ${renderCollapseButton(row.character_name || row.name)}
             <button type="button" data-detail-char="${escapeHtml(row.id)}" class="secondary">详情/编辑</button>
             <button type="button" data-delete-char="${escapeHtml(row.id)}" class="danger">删除</button>
           </div>
         </div>
-        ${renderCharacterNotes(row)}
-        ${renderLinks(row.links || row.resources)}
+        <div class="item-content" data-card-content>
+          ${renderCharacterNotes(row)}
+          ${renderLinks(row.links || row.resources)}
+        </div>
       </article>`).join('');
+    controls.hidden = false;
   } catch (error) {
     renderListState(container, error.message, 'error');
   }
@@ -230,6 +239,8 @@ export async function searchCharacters() {
 
 export function initCharacters() {
   const searchButton = $('#searchCharBtn');
+  bindCollapsibleCards($('#characterResults'));
+  bindCollapseAllControls($('#characterResultControls'), $('#characterResults'));
   searchButton.addEventListener('click', () => withBusy(searchButton, '搜索中...', searchCharacters));
   bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchCharacters);
   $('#newCharBtn').addEventListener('click', () => openEditor({ links: [] }));

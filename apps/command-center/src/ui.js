@@ -61,6 +61,45 @@ export function renderMeta(items) {
   return `<div class="meta">${items.filter(Boolean).map((item) => `<span class="badge">${escapeHtml(item)}</span>`).join('')}</div>`;
 }
 
+export function renderCollapseButton(label = '卡片内容') {
+  return `<button type="button" class="secondary collapse-toggle" data-card-toggle aria-expanded="true" aria-label="收起${escapeHtml(label)}">收起</button>`;
+}
+
+function setCardCollapsed(card, collapsed) {
+  const content = card?.querySelector('[data-card-content]');
+  const button = card?.querySelector('[data-card-toggle]');
+  if (!card || !content || !button) return;
+
+  content.hidden = collapsed;
+  card.classList.toggle('is-collapsed', collapsed);
+  button.setAttribute('aria-expanded', String(!collapsed));
+  button.setAttribute('aria-label', `${collapsed ? '展开' : '收起'}${card.querySelector('.item-title')?.textContent?.trim() || '卡片内容'}`);
+  button.textContent = collapsed ? '展开' : '收起';
+}
+
+export function bindCollapsibleCards(container) {
+  if (!container) return;
+  container.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-card-toggle]');
+    if (!button) return;
+
+    const card = button.closest('.item');
+    const content = card?.querySelector('[data-card-content]');
+    if (!card || !content) return;
+    setCardCollapsed(card, !content.hidden);
+  });
+}
+
+export function bindCollapseAllControls(controls, container) {
+  if (!controls || !container) return;
+  controls.querySelectorAll('[data-card-action]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const collapsed = button.dataset.cardAction === 'collapse';
+      container.querySelectorAll('.item').forEach((card) => setCardCollapsed(card, collapsed));
+    });
+  });
+}
+
 export function safeExternalUrl(value) {
   if (!value) return '';
   try {

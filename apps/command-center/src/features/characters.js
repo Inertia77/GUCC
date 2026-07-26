@@ -18,16 +18,28 @@ import {
   withBusy
 } from '../ui.js';
 
-function normalizeLinks(links) {
-  return Array.isArray(links) && links.length ? links : [{ title: '', url: '', relation_type: '', source: '', note: '' }];
+const DEFAULT_LINK_RELATION_TYPE = 'official_profile';
+
+function createEmptyLink() {
+  return {
+    title: '',
+    url: '',
+    relation_type: DEFAULT_LINK_RELATION_TYPE,
+    source: '',
+    note: ''
+  };
 }
 
-function renderLinkRow(link = {}) {
+function normalizeLinks(links) {
+  return Array.isArray(links) && links.length ? links : [createEmptyLink()];
+}
+
+function renderLinkRow(link = createEmptyLink()) {
   return `
     <div class="structured-row" data-link-row>
       <label>链接标题 <input data-link-field="title" value="${escapeHtml(link.title || link.resource_title || '')}" placeholder="官方资料 / 先行研究" /></label>
       <label>URL <input data-link-field="url" value="${escapeHtml(link.url || link.resource_url || '')}" placeholder="https://..." /></label>
-      <label>关系类型 <input data-link-field="relation_type" value="${escapeHtml(link.relation_type || '')}" placeholder="official / research / guide" /></label>
+      <label>关系类型 <input data-link-field="relation_type" value="${escapeHtml(link.relation_type || '')}" placeholder="official_profile / research / guide" /></label>
       <label>来源 <input data-link-field="source" value="${escapeHtml(link.source || '')}" placeholder="wiki / bbs / docs" /></label>
       <label class="row-wide">备注 <input data-link-field="note" value="${escapeHtml(link.note || '')}" placeholder="可留空" /></label>
       <button type="button" class="ghost remove-row" data-remove-link>删除</button>
@@ -52,7 +64,7 @@ function renderLinkEditor(links) {
 
 function emptyLinkRow(row) {
   row.querySelectorAll('[data-link-field]').forEach((input) => {
-    input.value = '';
+    input.value = input.dataset.linkField === 'relation_type' ? DEFAULT_LINK_RELATION_TYPE : '';
   });
 }
 
@@ -228,7 +240,7 @@ export async function searchCharacters() {
         </div>
         <div class="item-content" data-card-content>
           ${renderCharacterNotes(row)}
-          ${renderLinks(row.links || row.resources)}
+          ${renderLinks(row.links || row.resources, { highlightRelationType: DEFAULT_LINK_RELATION_TYPE })}
         </div>
       </article>`).join('');
     controls.hidden = false;

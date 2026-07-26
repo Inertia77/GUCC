@@ -156,13 +156,15 @@ export function renderRichText(value) {
   return `<div class="rich-text">${html}</div>`;
 }
 
-export function renderLinks(links) {
+export function renderLinks(links, { highlightRelationType = '' } = {}) {
   if (!Array.isArray(links) || !links.length) return '';
   return `<div class="meta">${links.map((link) => {
     const url = safeExternalUrl(link.url || link.resource_url);
     if (!url) return '';
     const title = link.title || link.resource_title || url;
-    return `<a class="link-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">↗ ${escapeHtml(title)}</a>`;
+    const isHighlighted = highlightRelationType && link.relation_type === highlightRelationType;
+    const className = `link-btn${isHighlighted ? ' primary-reference-link' : ''}`;
+    return `<a class="${className}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">↗ ${escapeHtml(title)}</a>`;
   }).join('')}</div>`;
 }
 

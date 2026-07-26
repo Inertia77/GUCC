@@ -475,6 +475,29 @@ h2 {
   border-color: rgba(119, 255, 184, .42);
 }
 
+.link-btn.primary-reference-link,
+body.gucc-enhanced .link-btn.primary-reference-link {
+  color: #eafff4 !important;
+  border-color: rgba(119, 255, 184, .68) !important;
+  background:
+    linear-gradient(135deg, rgba(119, 255, 184, .18), rgba(118, 247, 255, .1)) !important;
+  box-shadow:
+    0 0 0 1px rgba(119, 255, 184, .08) inset,
+    0 0 16px rgba(119, 255, 184, .12) !important;
+  font-weight: 800;
+}
+
+.link-btn.primary-reference-link:hover,
+body.gucc-enhanced .link-btn.primary-reference-link:hover {
+  color: #fff !important;
+  border-color: var(--accent) !important;
+  background:
+    linear-gradient(135deg, rgba(119, 255, 184, .26), rgba(118, 247, 255, .15)) !important;
+  box-shadow:
+    0 0 0 1px rgba(119, 255, 184, .12) inset,
+    0 0 20px rgba(119, 255, 184, .2) !important;
+}
+
 .steps {
   color: var(--muted);
   line-height: 1.9;

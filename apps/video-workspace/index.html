@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1422">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>GUCC WorkSpace v4.0.3｜视频项目模板与归档工作台</title>
+<title>GUCC WorkSpace v4.1.0｜视频项目模板与归档工作台</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg?v=5">
 <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png?v=2">
 <link rel="manifest" href="../../manifest.webmanifest">
@@ -1308,13 +1308,13 @@ button.action-danger{
 .field.role-ai .richbox.mid{height:150px}.field.role-ai .richbox.big{height:230px}.field.role-auto .richbox{height:78px;resize:none}
 #sec-00 .project-title-input{min-height:76px!important;height:auto!important;resize:vertical;overflow:auto}
 #sec-00 .control-bottom-grid .richbox{min-height:72px;height:82px;overflow:auto;resize:vertical}
-#sec-02 [data-key="evidenceLocker"]{height:180px}#sec-02 [data-key="aiAnalysis"]{height:170px}#sec-04 [data-key="script"]{height:260px}#sec-06 [data-key="publishCN"]{height:170px}#sec-06 [data-key="publishMulti"]{height:240px}
+#sec-02 [data-key="evidenceLocker"]{height:180px}#sec-02 [data-key="aiAnalysis"]{height:170px}#sec-04 [data-key="script"]{height:260px}#sec-06 [data-key="publishCN"]{height:170px}#sec-06 [data-key="publishMulti"]{height:240px}#sec-07 [data-key="diffusionPackage"]{height:240px}
 .prompt-output,#aiOutput{display:none;height:240px;min-height:160px!important;max-height:56vh!important;overflow:auto!important;resize:vertical!important;}
 .ai-structure-paste{height:168px;min-height:120px!important;max-height:46vh;overflow:auto;}
 .output{min-height:118px!important;max-height:390px;overflow:auto;}
 textarea[readonly]{min-height:118px!important;max-height:360px;overflow:auto!important;}
 .section-goal-input{min-height:64px!important;height:78px;overflow:auto;resize:vertical}.section-content-input{min-height:92px!important;height:112px;overflow:auto;resize:vertical}.section-visual-input{min-height:78px!important;height:92px;overflow:auto;resize:vertical}.section-transition-input{min-height:56px!important;height:68px;overflow:auto;resize:vertical}
-@media(max-width:980px){.collapse-toggle{font-size:12px!important;padding:6px 9px!important}.richbox{min-height:82px}.field.role-ai .richbox,.field.role-auto .richbox{resize:none;max-height:42vh}#sec-02 [data-key="evidenceLocker"]{height:190px}#sec-02 [data-key="aiAnalysis"]{height:180px}#sec-04 [data-key="script"]{height:260px;max-height:55vh}#sec-06 [data-key="publishCN"]{height:180px;max-height:48vh}#sec-06 [data-key="publishMulti"]{height:230px;max-height:52vh}#aiOutput{height:280px;max-height:58vh!important;resize:none!important}.ai-structure-paste{height:190px;max-height:50vh;resize:none}.section-goal-input,.section-content-input,.section-visual-input,.section-transition-input{resize:none;max-height:42vh}}
+@media(max-width:980px){.collapse-toggle{font-size:12px!important;padding:6px 9px!important}.richbox{min-height:82px}.field.role-ai .richbox,.field.role-auto .richbox{resize:none;max-height:42vh}#sec-02 [data-key="evidenceLocker"]{height:190px}#sec-02 [data-key="aiAnalysis"]{height:180px}#sec-04 [data-key="script"]{height:260px;max-height:55vh}#sec-06 [data-key="publishCN"]{height:180px;max-height:48vh}#sec-06 [data-key="publishMulti"]{height:230px;max-height:52vh}#sec-07 [data-key="diffusionPackage"]{height:240px;max-height:52vh}#aiOutput{height:280px;max-height:58vh!important;resize:none!important}.ai-structure-paste{height:190px;max-height:50vh;resize:none}.section-goal-input,.section-content-input,.section-visual-input,.section-transition-input{resize:none;max-height:42vh}}
 
 
 /* v4.0.3: exported Markdown readability helpers */
@@ -1879,8 +1879,9 @@ body.gucc-enhanced #aiOutput,
 body.gucc-enhanced .ai-structure-paste,
 body.gucc-enhanced #chapterPreview,
 body.gucc-enhanced #localDraftContent,
-body.gucc-enhanced #sec-08 textarea[readonly],
-body.gucc-enhanced #sec-06 .field.role-ai .richbox{
+body.gucc-enhanced #sec-09 textarea[readonly],
+body.gucc-enhanced #sec-06 .field.role-ai .richbox,
+body.gucc-enhanced #sec-07 .field.role-ai .richbox{
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",monospace!important;
   background:
     linear-gradient(180deg,rgba(255,255,255,.88),rgba(240,251,253,.96)),
@@ -2172,7 +2173,7 @@ body.gucc-enhanced .toast{
 <div class="page">
 <section class="hero">
   <a class="portal-link no-print" href="../../">← GUCC Portal</a><br>
-  <span class="eyebrow">GUCC WorkSpace v4.0.3 · Prompt / Structure / Archive</span>
+  <span class="eyebrow">GUCC WorkSpace v4.1.0 · Prompt / Publish / Diffusion / Archive</span>
   <h1>GUCC WorkSpace</h1>
   <p class="sub">用于游戏视频项目的本地优先工作台。编辑内容会自动保存到当前浏览器；阶段性导出 Markdown / JSON 到 Google Drive 或本地归档，换设备时可直接导入继续工作。</p>
   <div class="progressbox">
@@ -2221,8 +2222,9 @@ body.gucc-enhanced .toast{
   <a href="#sec-04"><b>04</b> 文案</a>
   <a href="#sec-05"><b>05</b> 素材</a>
   <a href="#sec-06"><b>06</b> 发布</a>
-  <a href="#sec-07"><b>07</b> 复盘</a>
-  <a href="#sec-08"><b>08</b> 规则</a>
+  <a href="#sec-07"><b>07</b> 扩散</a>
+  <a href="#sec-08"><b>08</b> 复盘</a>
+  <a href="#sec-09"><b>09</b> 规则</a>
   <span class="nav-hint">✍ 你写 · 🤖 AI · 🔒 自动 · ▾ 选择</span>
 </nav>
 
@@ -2240,7 +2242,7 @@ body.gucc-enhanced .toast{
     <div class="control-grid control-grid-3">
       <div class="field"><label>游戏</label><select data-key="game"><option>鸣潮</option><option>绝区零</option><option>崩铁</option><option>终末地</option><option>异环</option><option>综合</option></select></div>
       <div class="field"><label>内容类型</label><select data-key="type"><option>What 机制翻译</option><option>Why 争议解释</option><option>Test 实测观察</option><option>Soft How 温和建议</option><option>Meta 二游现象</option><option>活动/版本整理</option><option>其他/杂谈</option></select><div class="tiny">Meta＝行业、版本生态、玩家行为、资源焦虑等现象；普通闲聊选其他。</div></div>
-      <div class="field"><label>状态</label><select data-key="status"><option>0-灵感</option><option>1-立项</option><option>2-资料中</option><option>3-脚本中</option><option>4-待录制</option><option>5-剪辑中</option><option>6-待发布</option><option>7-已发布</option><option>8-已归档</option></select></div>
+      <div class="field"><label>状态</label><select data-key="status"><option>0-灵感</option><option>1-立项</option><option>2-资料中</option><option>3-脚本中</option><option>4-待录制</option><option>5-剪辑中</option><option>6-待发布</option><option>7-已发布</option><option>8-扩散中</option><option>9-待复盘</option><option>10-已归档</option></select></div>
     </div>
   </div>
 
@@ -2260,7 +2262,7 @@ body.gucc-enhanced .toast{
       <div class="field"><label>游戏代码（自动）</label><input data-key="gameCode" readonly placeholder="WW / ZZZ / HSR / ENF / NTE"></div>
       <div class="field short-title-field"><label>简易标题（手写）</label><input data-key="projectShortTitle" placeholder="例：资源压力"><div class="tiny">建议 8 字内；系统只自动补游戏代码。</div></div>
       <div class="field"><label>简称预览（自动合成）</label><input data-key="projectShortName" readonly placeholder="例：WW资源压力"></div>
-      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v4.0.3" readonly></div>
+      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v4.1.0" readonly></div>
     </div>
     <div class="btns no-print control-naming-actions"><button class="ghost hot-action" type="button" onclick="refreshShortName()">更新游戏代码 / 文件名</button></div>
   </div>
@@ -2281,16 +2283,17 @@ body.gucc-enhanced .toast{
 <button onclick="copyPrompt('script')">③ 脚本生成 Prompt</button>
 <button onclick="copyPrompt('platform')">④ 主平台发布包 Prompt</button>
 <button class="secondary" onclick="copyPrompt('translate')">⑤ 多语言本地化 Prompt</button>
-<button class="mint" onclick="copyPrompt('review')">⑥ 复盘分析 Prompt</button>
+<button class="secondary" onclick="copyPrompt('diffusion')">⑥ 后期扩散 Prompt</button>
+<button class="mint" onclick="copyPrompt('review')">⑦ 复盘分析 Prompt</button>
 </div>
 <textarea id="aiOutput" class="output prompt-output" readonly placeholder="点击上方 Prompt 按钮后，这里会显示当前 Prompt。点击此框或 Ctrl+A 只会选中本 Prompt。"></textarea>
-<p class="tiny">提示：①只读 00/01/02；②读 AI 分析；③读 03 结构；④读 04 文案；⑤读简中发布包；⑥读复盘数据。这样不会循环引用。</p>
+<p class="tiny">提示：①只读 00/01/02；②读 AI 分析；③读 03 结构；④读 04 文案；⑤读简中发布包；⑥读正式发布记录并生成扩散包；⑦读发布、扩散和复盘数据。这样不会循环引用。</p>
 </section>
 </div>
 
 <section id="sec-status" class="card card-status" style="margin-top:15px">
 <h2><span class="idx">ST</span> Status / 制作进度</h2>
-<p class="sub">这里专门记录项目推进状态。完成度只看这一组状态；必须「复盘完成」和「归档完成」都勾上，项目才会显示 100%。</p>
+<p class="sub">这里专门记录项目推进状态。正式发布与后期扩散分开计算；必须「复盘完成」和「归档完成」都勾上，项目才会显示 100%。</p>
 <div class="status-actions no-print"><button class="hot-action" onclick="completeAllStatus()">一键勾选全部完成</button><button class="ghost" onclick="clearAllStatus()">清空状态</button></div>
 <div class="status-board checklist">
 <label><input type="checkbox" data-key="ckBrief" data-progress="true"> Brief 完成</label>
@@ -2300,11 +2303,12 @@ body.gucc-enhanced .toast{
 <label><input type="checkbox" data-key="ckEdit" data-progress="true"> 正片已剪</label>
 <label><input type="checkbox" data-key="ckSubtitle" data-progress="true"> 字幕已校对</label>
 <label><input type="checkbox" data-key="ckCover" data-progress="true"> 封面已完成</label>
-<label><input type="checkbox" data-key="ckPublish" data-progress="true"> 发布完成</label>
+<label><input type="checkbox" data-key="ckPublish" data-progress="true"> 正式发布完成</label>
+<label><input type="checkbox" data-key="ckDiffuse" data-progress="true"> 后期扩散完成</label>
 <label><input type="checkbox" data-key="ckReview" data-progress="true"> 复盘完成</label>
 <label><input type="checkbox" data-key="ckArchive" data-progress="true"> 归档完成</label>
 </div>
-<div class="status-note">顺序建议：Brief → 资料 → 脚本 → 素材 → 剪辑 → 字幕 → 封面 → 发布 → 复盘 → 归档。</div>
+<div class="status-note">顺序建议：Brief → 资料 → 脚本 → 素材 → 剪辑 → 字幕 → 封面 → 正式发布 → 后期扩散 → 复盘 → 归档。</div>
 </section>
 
 
@@ -2383,7 +2387,7 @@ body.gucc-enhanced .toast{
 </section>
 
 <section id="sec-06" class="card card-06">
-<h2><span class="idx">06</span> 发布包生成</h2>
+<h2><span class="idx">06</span> 正式发布 / 发布包</h2>
 <div class="btns">
 <button class="action-draft" onclick="toggleLocalPackageDraft()">本地参考草案</button>
 <button class="action-ai" onclick="copyPrompt('platform', {jumpToAi:true})">AI 完整平台包</button>
@@ -2406,22 +2410,37 @@ body.gucc-enhanced .toast{
 </div>
 <div class="field"><label>简中：标题 / 简介 / 标签 / 章节</label><div data-key="publishCN" class="mid richbox" contenteditable="true" data-placeholder=""></div></div>
 <div class="field"><label>多语言：繁中 / EN / JP / KR / FR</label><div data-key="publishMulti" class="mid richbox" contenteditable="true" data-placeholder="把 AI 多语言输出整段贴这里；繁中和外语都放同一个框，方便统一导出。"></div><div class="tiny">繁中不再单独开框：YouTube 海外中文、English、日本語、한국어、Français 都在这里管理。</div></div>
+<div class="field"><label>正式发布记录：时间 / 平台 / 视频链接</label><div data-key="publishLog" class="richbox" contenteditable="true" data-placeholder="一行一个主平台：2026-08-03 20:00｜Bilibili｜https://...｜标题/封面版本。"></div><div class="tiny">这里只记正片或原生视频发布；图文、社交帖和社区转载统一放到 07 后期扩散。</div></div>
 </section>
 </div>
 
 <section id="sec-07" class="card card-07" style="margin-top:15px">
-<h2><span class="idx">07</span> 进度记录 / 结项反思</h2>
+<h2><span class="idx">07</span> 后期扩散 / 内容再分发</h2>
+<p class="sub">正片发布后再做图文、社交帖和社区内容，把流量引回主视频。这里不重复上传正片，也不把每个平台机械贴同一段文案。</p>
+<div class="btns no-print" style="margin:4px 0 10px">
+<button class="action-ai" onclick="copyPrompt('diffusion', {jumpToAi:true})">生成后期扩散包</button>
+</div>
+<div class="grid2">
+<div class="field"><label>扩散目标 / 时间窗口</label><div data-key="diffusionGoal" class="richbox" contenteditable="true" data-placeholder="例：首发后 24 小时承接搜索与讨论；3-7 天补长尾。写清优先平台和不做的平台。"></div></div>
+<div class="field"><label>可复用素材 / 切片清单</label><div data-key="diffusionAssets" class="richbox" contenteditable="true" data-placeholder="例：封面竖版、3 张信息卡、15 秒观点切片、评论区高频问题截图。"></div></div>
+</div>
+<div class="field"><label>后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab</label><div data-key="diffusionPackage" class="mid richbox" contenteditable="true" data-placeholder="把 AI 生成的分平台扩散节奏、图文结构、文案和 CTA 粘贴到这里。"></div></div>
+<div class="field"><label>扩散执行记录：时间 / 平台 / 链接 / 初步结果</label><div data-key="diffusionLog" class="richbox" contenteditable="true" data-placeholder="一行一条：2026-08-04 12:00｜微博｜https://...｜引流/互动结果。"></div></div>
+</section>
+
+<section id="sec-08" class="card card-08" style="margin-top:15px">
+<h2><span class="idx">08</span> 进度记录 / 结项复盘</h2>
 <div class="grid2">
 <div class="field"><label>进度记录 DATE / 进度</label><div data-key="progressLog" class="richbox" contenteditable="true" data-placeholder="2026-06-13 立项；..."></div></div>
 <div class="field"><label>结项反思 DATE / REPORT</label><div data-key="review" class="richbox" contenteditable="true" data-placeholder="发布后写：播放、收藏、评论问题、下次改进。"></div></div>
 </div>
 </section>
 
-<section id="sec-08" class="card card-08 no-print" style="margin-top:15px">
-<h2><span class="idx">08</span> 版本 / 文件夹 / 命名军规</h2>
+<section id="sec-09" class="card card-09 no-print" style="margin-top:15px">
+<h2><span class="idx">09</span> 版本 / 文件夹 / 命名军规</h2>
 <p class="sub">
 你的结构现在定为：<strong>GUCC WorkSpace 是模板工作台</strong>；模板源码、说明和版本记录统一由 GitHub 管理；具体项目导出的 <strong>.md / .json</strong> 放 Google Drive 做 WIP 与归档。  
-从本版开始进入 <strong>v4.0.x</strong> 版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
+当前为 <strong>v4.1.x</strong> 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
 </p>
 <textarea readonly class="mid">GUCC/                              # GitHub 仓库
 └─ apps/video-workspace/
@@ -2433,9 +2452,9 @@ body.gucc-enhanced .toast{
 
 Google Drive / 本地项目目录：
 ├─ 01_Working/                   # 进行中的项目导出
-│  └─ WIP_YYYYMMDD-HHmm_v4.0.x_游戏代码简易标题.md / .json
+│  └─ WIP_YYYYMMDD-HHmm_v4.1.x_游戏代码简易标题.md / .json
 └─ 99_Archive/                   # 已完成项目归档
-   └─ YYYYMMDD-HHmm_v4.0.x_游戏代码简易标题.md / .json</textarea>
+   └─ YYYYMMDD-HHmm_v4.1.x_游戏代码简易标题.md / .json</textarea>
 <p class="tiny">
 模板与版本记录走 GitHub；01_Working 和 99_Archive 走 Google Drive 或本地同步目录，只放具体项目导出的 WIP / DONE 文件。浏览器自动保存用于防止意外丢失，不能替代跨设备的 Markdown / JSON 存档。
 </p>
@@ -2499,7 +2518,7 @@ Google Drive / 本地项目目录：
 
 <script src="./ai-prompts.js"></script>
 <script>
-const TEMPLATE_VERSION = "4.0.3";
+const TEMPLATE_VERSION = "4.1.0";
 const APP_NAME = "GUCC WorkSpace";
 const STORAGE_KEY = "GUCC_WORKSPACE_CURRENT";
 const LEGACY_STORAGE_KEYS = ["INERTIA_PROJECT_FORGE_V3_1_CURRENT"];
@@ -2543,6 +2562,14 @@ function migrateMultiLanguageFields(d){
   }
   return d;
 }
+function migrateWorkflowFields(d){
+  if(!d || typeof d !== "object") return d;
+  if(d.status === "8-已归档"){
+    d.status = "10-已归档";
+    if(d.ckDiffuse === undefined || d.ckDiffuse === null || d.ckDiffuse === "") d.ckDiffuse = true;
+  }
+  return d;
+}
 
 
 const FIELD_ROLE_MAP = {
@@ -2553,7 +2580,8 @@ const FIELD_ROLE_MAP = {
   officialInfo:'user', communityDebate:'user', testNotes:'user', evidenceLocker:'user',
   aiAnalysis:'ai', script:'ai',
   gameFootage:'user', visualPlan:'user',
-  publishCN:'ai', publishMulti:'ai',
+  publishCN:'ai', publishMulti:'ai', publishLog:'user',
+  diffusionGoal:'user', diffusionAssets:'user', diffusionPackage:'ai', diffusionLog:'user',
   progressLog:'user', review:'user',
   chapterTable:'auto', sectionsJson:'auto'
 };
@@ -2749,10 +2777,11 @@ function collect(stage){
   d.__workspaceName = APP_NAME;
   d.__workspaceVersion = TEMPLATE_VERSION;
   d.__templateVersion = TEMPLATE_VERSION;
-  d.__schemaVersion = "gucc-workspace-schema-1";
-  d.__lineBreakPolicy = "preserve-lf-v4.0.3";
+  d.__schemaVersion = "gucc-workspace-schema-2";
+  d.__lineBreakPolicy = "preserve-lf-v4.1.0";
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
+  migrateWorkflowFields(d);
   d.__exportStage = normalizeStage(stage || inferStage(d.status));
   d.__savedAt = new Date().toISOString();
   d.__fileNamePreview = buildFileName(d.__exportStage, "md", d);
@@ -2762,6 +2791,7 @@ function fill(d){
   if(!d) return;
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
+  migrateWorkflowFields(d);
   const importedVersion = d.__workspaceVersion || d.__templateVersion || d.__forgeVersion || "unknown";
   migrateShortFieldsForImport(d);
   normalizeShortFields(d);
@@ -3088,8 +3118,8 @@ function beautifyTitleCandidateLists(t){
 }
 function promotePublishSubheadings(t){
   let out = String(t || '');
-  const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险'];
-  const mid = ['核心卖点','目标观众','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','正文 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险'];
+  const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','小红书视频','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险','执行前检查','扩散节奏','小红书图文','微信公众号','微博','X','HoYoLab','执行清单','回填模板'];
+  const mid = ['核心卖点','目标观众','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','视频标题 5 个','正文 1 版','视频说明 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险','0-2 小时｜首发承接','24 小时内｜讨论放大','3-7 天｜长尾补充'];
   const minor = ['封面主视觉','封面字建议','最推荐封面字组合','必补截图'];
   out = promoteBulletLabelsToHeadings(out, major, 3);
   out = promotePlainLabelsToHeadings(out, major, 3);
@@ -3330,21 +3360,24 @@ ${mdBlock("截图 / 图表 / 封面方向", d.visualPlan)}
 
 ---
 
-## 06 发布包
+## 06 正式发布 / 发布包
 ${mdBlock("简中：标题 / 简介 / 标签 / 章节", d.publishCN, 3, "publish")}
 ${mdBlock("多语言：繁中 / EN / JP / KR / FR", d.publishMulti, 3, "publish")}
+${mdBlock("正式发布记录：时间 / 平台 / 视频链接", d.publishLog)}
 
 ---
 
-## 07 进度记录
-
-${exportReadableText(d.progressLog) || "（未填写）"}
+## 07 后期扩散 / 内容再分发
+${mdBlock("扩散目标 / 时间窗口", d.diffusionGoal)}
+${mdBlock("可复用素材 / 切片清单", d.diffusionAssets)}
+${mdBlock("后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab", d.diffusionPackage, 3, "publish")}
+${mdBlock("扩散执行记录：时间 / 平台 / 链接 / 初步结果", d.diffusionLog)}
 
 ---
 
-## 08 结项反思
-
-${exportReadableText(d.review) || "（未填写）"}
+## 08 进度记录 / 结项复盘
+${mdBlock("进度记录 DATE / 进度", d.progressLog)}
+${mdBlock("结项反思 DATE / REPORT", d.review)}
 `;
 }
 function makeMarkdown(stage, supplied){
@@ -3483,10 +3516,16 @@ function parseMarkdown(text){
   d.publishCN = block("简中：标题 / 简介 / 标签 / 章节");
   d.publishTW = block("繁中：YouTube / 海外中文");
   d.publishMulti = block("多语言：繁中 / EN / JP / KR / FR") || block("多语言：繁中 / EN / JP / KR / FR");
-  d.progressLog = topBlock("07 进度记录");
-  d.review = topBlock("08 结项反思");
+  d.publishLog = block("正式发布记录：时间 / 平台 / 视频链接");
+  d.diffusionGoal = block("扩散目标 / 时间窗口");
+  d.diffusionAssets = block("可复用素材 / 切片清单");
+  d.diffusionPackage = block("后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab");
+  d.diffusionLog = block("扩散执行记录：时间 / 平台 / 链接 / 初步结果");
+  d.progressLog = block("进度记录 DATE / 进度") || topBlock("07 进度记录");
+  d.review = block("结项反思 DATE / REPORT") || topBlock("08 结项反思");
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
+  migrateWorkflowFields(d);
   return d;
 }
 

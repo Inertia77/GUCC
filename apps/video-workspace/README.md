@@ -1,6 +1,6 @@
 # GUCC WorkSpace
 
-视频项目工作台，用来整理选题、资料、结构、脚本、封面方向和导出归档文件。
+视频项目工作台，用来整理选题、资料、结构、脚本、封面方向、正式发布、后期扩散和导出归档文件。
 
 ## 入口
 
@@ -29,9 +29,11 @@ http://localhost:8000/apps/video-workspace/
 
 1. 从 GUCC Portal 打开工作台。
 2. 创建或导入项目。
-3. 阶段性导出 WIP Markdown 和 WIP JSON。
-4. 项目完成后导出 DONE Markdown 和 DONE JSON。
-5. WIP 放同步盘工作目录，DONE 放归档目录。
+3. 在 06 完成各视频平台正式发布，并回填发布时间、平台和视频链接。
+4. 在 07 用发布链接和复用素材生成后期扩散包，执行图文、社交帖和社区分发。
+5. 在 08 汇总主视频与扩散结果后复盘。
+6. 阶段性导出 WIP Markdown 和 WIP JSON；完成后导出 DONE Markdown 和 DONE JSON。
+7. WIP 放同步盘工作目录，DONE 放归档目录。
 
 ## 维护规则
 

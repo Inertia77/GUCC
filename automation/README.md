@@ -4,7 +4,7 @@ Windows 批处理脚本区，用于批量打开网页入口，不修改仓库数
 
 | 目录 | 用途 |
 |---|---|
-| `creator-platforms/` | 创作者平台的数据、互动、发布和主页巡检 |
+| `creator-platforms/` | 创作者平台的数据、互动、正式视频发布、后期扩散和主页巡检 |
 | `game-research/` | 游戏官方资料、Wiki、Bilibili 观察列表 |
 
 运行前提醒：

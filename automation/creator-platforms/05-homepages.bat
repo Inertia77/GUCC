@@ -1,15 +1,15 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
 chcp 65001 >nul
-title 04 Homepage Check All
+title 05 Homepage Check All
 
 REM ==================================================
-REM 04 Homepage Check All
+REM 05 Homepage Check All
 REM Generated as ASCII-safe batch. URLs with % are escaped.
 REM ==================================================
 
 echo.
-echo [04 Homepage Check All]
+echo [05 Homepage Check All]
 echo Opening pages...
 
 call :open "https://space.bilibili.com/314599386" "Bilibili - channel"

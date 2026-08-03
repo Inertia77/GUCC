@@ -158,6 +158,27 @@ if (!workspaceVersion) {
     if (!workspaceSource.includes(expected)) errors.push(`视频工作台版本显示不一致：缺少 ${expected}`);
   }
 }
+for (const expected of [
+  'href="#sec-07"><b>07</b> 扩散',
+  'href="#sec-08"><b>08</b> 复盘',
+  'href="#sec-09"><b>09</b> 规则',
+  'data-key="publishLog"',
+  'data-key="diffusionPackage"',
+  'data-key="diffusionLog"',
+  'data-key="ckDiffuse"'
+]) {
+  if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少后期扩散工作流标记：${expected}`);
+}
+
+const videoPublishBatch = readFileSync(resolve(root, 'automation', 'creator-platforms', '03-publishing.bat'), 'utf8');
+const diffusionBatch = readFileSync(resolve(root, 'automation', 'creator-platforms', '04-post-diffusion.bat'), 'utf8');
+for (const videoHost of ['member.bilibili.com', 'studio.youtube.com', 'tiktok.com/tiktokstudio/upload']) {
+  if (!videoPublishBatch.includes(videoHost)) errors.push(`正式发布脚本缺少视频入口：${videoHost}`);
+}
+for (const nonVideoHost of ['mp.weixin.qq.com', 'weibo.com', 'x.com/compose/post', 'hoyolab.com/newArticle']) {
+  if (videoPublishBatch.includes(nonVideoHost)) errors.push(`正式发布脚本仍混入非视频入口：${nonVideoHost}`);
+  if (!diffusionBatch.includes(nonVideoHost)) errors.push(`后期扩散脚本缺少入口：${nonVideoHost}`);
+}
 
 const appSources = [readFileSync(appHtml, 'utf8'), ...appScripts.map((file) => readFileSync(file, 'utf8'))];
 const declaredIds = new Set();

@@ -9,14 +9,15 @@ REM This will open many browser tabs.
 REM ==================================================
 
 echo.
-echo [WARNING] This will open analytics, interaction, publish and homepage pages.
+echo [WARNING] This will open analytics, interaction, video publish, post-diffusion and homepage pages.
 echo Press Ctrl+C to cancel, or any key to continue.
 pause >nul
 
 call "%~dp001-analytics.bat" /nopause
 call "%~dp002-interactions.bat" /nopause
 call "%~dp003-publishing.bat" /nopause
-call "%~dp004-homepages.bat" /nopause
+call "%~dp004-post-diffusion.bat" /nopause
+call "%~dp005-homepages.bat" /nopause
 
 echo.
 echo All batches finished.

@@ -2652,25 +2652,110 @@ function escapeHtmlText(s){
 function escapeAttr(s){ return String(s || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function markdownToHtml(md){
   let safe = escapeHtmlText(md || "");
-  safe = safe.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, text, url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${text}</a>`);
+  safe = safe.replace(/\[((?:\\.|[^\]\\\n])+)\]\((https?:\/\/[^\s)]+)\)/g, (m, text, url) => {
+    const label = text.replace(/\\([\\\[\]])/g, "$1");
+    return `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+  });
   return safe.replace(/\n/g,"<br>");
 }
+function markdownFenceInfo(line){
+  const match = String(line || "").match(/^ {0,3}(`{3,}|~{3,})/);
+  return match ? {char:match[1][0], length:match[1].length} : null;
+}
+function isMarkdownFenceClose(line, fence){
+  if(!fence) return false;
+  const marker = fence.char === "`" ? "`" : "~";
+  return new RegExp("^ {0,3}" + marker + "{" + fence.length + ",}[ \\t]*$").test(String(line || ""));
+}
+function transformMarkdownOutsideFences(s, transform){
+  const lines = normalizeLineBreaks(s || "").split("\n");
+  const parts = [];
+  let outside = [];
+  let fenced = [];
+  let fence = null;
+  const flushOutside = () => {
+    if(!outside.length) return;
+    parts.push(transform(outside.join("\n")));
+    outside = [];
+  };
+  for(const line of lines){
+    if(!fence){
+      const opening = markdownFenceInfo(line);
+      if(opening){
+        flushOutside();
+        fence = opening;
+        fenced = [line];
+      }else{
+        outside.push(line);
+      }
+      continue;
+    }
+    fenced.push(line);
+    if(isMarkdownFenceClose(line, fence)){
+      parts.push(fenced.join("\n"));
+      fenced = [];
+      fence = null;
+    }
+  }
+  if(fenced.length) parts.push(fenced.join("\n"));
+  flushOutside();
+  return parts.join("\n");
+}
 function cleanMarkdownText(s){
-  // 保留 Markdown 需要的缩进。旧版会把每行开头空格吃掉，
-  // 导致嵌套列表、标题候选的说明、章节表格全部挤成同一级项目符号。
-  return normalizeLineBreaks(s || "")
-    .replace(/\u00a0/g," ")
+  // 只清理围栏代码块之外的空白；缩进、连续空格和 Markdown 的行尾双空格都有语义。
+  // 代码块中的空行和对齐空格必须逐字保留，否则导出后代码会被改写。
+  const normalized = normalizeLineBreaks(s || "").replace(/\u00a0/g," ");
+  return transformMarkdownOutsideFences(normalized, chunk => chunk
     .split("\n")
     .map(line => {
-      const m = line.match(/^(\s*)([\s\S]*?)$/);
-      const indent = (m && m[1] ? m[1] : "").replace(/\t/g,"  ");
-      const body = (m && m[2] ? m[2] : "").replace(/[ \t]{2,}/g," ").trimEnd();
-      return indent + body;
+      if(!line.trim()) return "";
+      const trailing = (line.match(/[ \t]+$/) || [""])[0];
+      const body = line.slice(0, line.length - trailing.length);
+      return trailing.replace(/\t/g, " ").length >= 2 ? body + "  " : body;
     })
     .join("\n")
-    .replace(/[ \t]+\n/g,"\n")
-    .replace(/\n{3,}/g,"\n\n")
-    .trimEnd();
+    .replace(/\n{3,}/g,"\n\n"))
+    .replace(/\n+$/g, "");
+}
+function markdownInlineCode(value){
+  const text = normalizeLineBreaks(value || "").replace(/\n/g, " ");
+  const longest = Math.max(0, ...(text.match(/`+/g) || []).map(run => run.length));
+  const fence = "`".repeat(Math.max(1, longest + 1));
+  const pad = /^`|`$|^ | $/.test(text) ? " " : "";
+  return fence + pad + text + pad + fence;
+}
+function markdownFencedCode(value){
+  const text = normalizeLineBreaks(value || "").replace(/\n+$/g, "");
+  const longest = Math.max(0, ...(text.match(/`+/g) || []).map(run => run.length));
+  const fence = "`".repeat(Math.max(3, longest + 1));
+  return "\n" + fence + "\n" + text + "\n" + fence + "\n";
+}
+function escapeMarkdownLinkText(value){
+  return String(value || "").replace(/([\\\[\]])/g, "\\$1");
+}
+function escapeMarkdownLinkDestination(value){
+  const href = String(value || "").trim().replace(/[\u0000-\u001f\u007f]/g, "");
+  try{
+    return encodeURI(href).replace(/\(/g, "%28").replace(/\)/g, "%29");
+  }catch(e){
+    return href.replace(/\s/g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29");
+  }
+}
+function escapeMarkdownTableCell(value){
+  return cleanMarkdownText(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/\|/g, "\\|")
+    .replace(/\n/g, "<br>");
+}
+function tableNodeToMarkdown(table){
+  const rows = Array.from(table && table.rows ? table.rows : []);
+  if(!rows.length) return "";
+  const values = rows.map(row => Array.from(row.cells || []).map(cell => escapeMarkdownTableCell(nodeToMarkdown(cell))));
+  const width = Math.max(1, ...values.map(row => row.length));
+  const padded = values.map(row => row.concat(Array(Math.max(0, width - row.length)).fill("")));
+  const renderRow = row => "| " + row.join(" | ") + " |";
+  return "\n" + renderRow(padded[0]) + "\n" + renderRow(Array(width).fill("---")) +
+    (padded.length > 1 ? "\n" + padded.slice(1).map(renderRow).join("\n") : "") + "\n";
 }
 function nodeToMarkdown(node){
   if(!node) return "";
@@ -2678,15 +2763,16 @@ function nodeToMarkdown(node){
   if(node.nodeType !== Node.ELEMENT_NODE) return "";
   const tag = node.tagName;
   if(tag === "BR") return "\n";
+  if(tag === "HR") return "\n\n---\n\n";
   if(tag === "A"){
     const text = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join("")) || node.textContent || "链接";
     const href = node.getAttribute("href") || "";
-    return href ? `[${text}](${href})` : text;
+    return href ? `[${escapeMarkdownLinkText(text)}](${escapeMarkdownLinkDestination(href)})` : text;
   }
   if(tag === "IMG"){
     const alt = node.getAttribute("alt") || "图片";
     const src = node.getAttribute("src") || "";
-    return src ? `![${alt}](${src})` : alt;
+    return src ? `![${escapeMarkdownLinkText(alt)}](${escapeMarkdownLinkDestination(src)})` : alt;
   }
   if(tag === "LI"){
     const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
@@ -2702,11 +2788,12 @@ function nodeToMarkdown(node){
     const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
     return inner ? "\n\n" + "#".repeat(Math.min(level + 1, 6)) + " " + inner + "\n\n" : "";
   }
+  if(tag === "TABLE") return tableNodeToMarkdown(node);
   if(tag === "TR"){
-    const cells = Array.from(node.children).filter(c => c.tagName === "TD" || c.tagName === "TH").map(c => cleanMarkdownText(nodeToMarkdown(c)));
-    return cells.length ? cells.join(" | ") + "\n" : "";
+    const cells = Array.from(node.children).filter(c => c.tagName === "TD" || c.tagName === "TH").map(c => escapeMarkdownTableCell(nodeToMarkdown(c)));
+    return cells.length ? "| " + cells.join(" | ") + " |\n" : "";
   }
-  if(tag === "TABLE" || tag === "THEAD" || tag === "TBODY"){
+  if(tag === "THEAD" || tag === "TBODY" || tag === "TFOOT"){
     const inner = cleanMarkdownText(Array.from(node.childNodes).map(nodeToMarkdown).join(""));
     return inner ? "\n" + inner + "\n" : "";
   }
@@ -2716,7 +2803,7 @@ function nodeToMarkdown(node){
   }
   if(tag === "PRE" || tag === "CODE"){
     const inner = node.textContent || "";
-    return tag === "PRE" ? "\n```\n" + normalizeLineBreaks(inner).trimEnd() + "\n```\n" : "`" + inner + "`";
+    return tag === "PRE" ? markdownFencedCode(inner) : markdownInlineCode(inner);
   }
   const inner = Array.from(node.childNodes).map(nodeToMarkdown).join("");
   const blockTags = new Set(["DIV","P","SECTION","ARTICLE","HEADER","FOOTER","ASIDE","MAIN"]);
@@ -3035,7 +3122,11 @@ function decodeData(s){
 }
 function mdEscapeRegExp(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function normalizeMarkdownBullets(t){
-  return cleanMarkdownText(t || "").replace(/^\s*[＊*•・]\s+/gm, '- ');
+  return transformMarkdownOutsideFences(cleanMarkdownText(t || ""), chunk => chunk.replace(/^([ \t]*)([＊*•・])[ \t]+(.*)$/gm, (line, indent, marker, body) => {
+    // `* * *` 是合法分隔线，不应被误认成项目符号。
+    if(marker === '*' && /^(?:\*\s*){2,}$/.test(body.trim())) return line;
+    return indent + '- ' + body;
+  }));
 }
 function makeBoldLabel(label, rest){
   return '- **' + label + '：**' + (rest ? ' ' + rest.trim() : '');
@@ -3059,31 +3150,45 @@ function promotePlainLabelsToHeadings(t, labels, level){
 }
 function beautifyLabelBullets(t){
   const labelSet = /^(优点|缺点|理由|评价|适合|风险|备注|核心卖点|目标观众|不适合|事实前提|免责声明|说明|对应正片|时长|切片主题|主字|副字|封面主视觉|封面字建议|必补截图|可能误导的表达|需要补充的截图|评论区可能问什么|简中|繁中|English|日本語|한국어|Français|French|中文|日文|韩文|法文|游戏词|版本词|机制词|情绪词|平台泛词)$/;
-  return String(t || '').split('\n').map(line => {
+  return transformMarkdownOutsideFences(String(t || ''), chunk => chunk.split('\n').map(line => {
     const m = line.match(/^(\s*)[-*]\s*([^：:\n]{1,32})[：:]\s*(.*)$/);
     if(!m) return line;
     const label = m[2].trim();
     const rest = m[3] || '';
     if(labelSet.test(label)) return m[1] + makeBoldLabel(label, rest);
     return line;
-  }).join('\n');
+  }).join('\n'));
 }
 function renumberOrderedLists(t){
-  const lines = String(t || '').split('\n');
-  let n = 1, inList = false;
-  return lines.map(line => {
-    if(/^\s*\d+\.\s+/.test(line)){
-      const indent = (line.match(/^\s*/) || [''])[0];
-      if(!inList){ n = 1; inList = true; }
-      const body = line.replace(/^\s*\d+\.\s+/, '');
-      return indent + (n++) + '. ' + body;
-    }
-    if(!/^\s*$/.test(line) && !/^\s{2,}[-*]\s+/.test(line)) inList = false;
-    return line;
-  }).join('\n');
+  return transformMarkdownOutsideFences(String(t || ''), chunk => {
+    const counters = [];
+    const indentWidth = indent => indent.replace(/\t/g, '    ').length;
+    return chunk.split('\n').map(line => {
+      const match = line.match(/^([ \t]*)(\d+)\.\s+(.*)$/);
+      if(match){
+        const indent = match[1];
+        const width = indentWidth(indent);
+        while(counters.length && counters[counters.length - 1].width > width) counters.pop();
+        let current = counters.find(item => item.width === width);
+        if(!current){
+          current = {width, value:0};
+          counters.push(current);
+          counters.sort((a,b) => a.width - b.width);
+        }
+        current.value += 1;
+        counters.splice(counters.findIndex(item => item.width === width) + 1);
+        return indent + current.value + '. ' + match[3];
+      }
+      if(/^\s*$/.test(line) || /^([ \t]*)[-*+]\s+/.test(line)) return line;
+      const leading = (line.match(/^[ \t]*/) || [''])[0];
+      if(!counters.length || indentWidth(leading) <= counters[0].width) counters.length = 0;
+      return line;
+    }).join('\n');
+  });
 }
 function beautifyTitleCandidateLists(t){
-  const lines = String(t || '').split('\n');
+  return transformMarkdownOutsideFences(String(t || ''), chunk => {
+  const lines = chunk.split('\n');
   let n = 1;
   let inTitleBlock = false;
   const out = [];
@@ -3115,9 +3220,11 @@ function beautifyTitleCandidateLists(t){
     out.push(line);
   }
   return out.join('\n');
+  });
 }
 function promotePublishSubheadings(t){
-  let out = String(t || '');
+  return transformMarkdownOutsideFences(String(t || ''), chunk => {
+  let out = chunk;
   const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','小红书视频','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险','执行前检查','扩散节奏','小红书图文','微信公众号','微博','X','HoYoLab','执行清单','回填模板'];
   const mid = ['核心卖点','目标观众','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','视频标题 5 个','正文 1 版','视频说明 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险','0-2 小时｜首发承接','24 小时内｜讨论放大','3-7 天｜长尾补充'];
   const minor = ['封面主视觉','封面字建议','最推荐封面字组合','必补截图'];
@@ -3130,12 +3237,15 @@ function promotePublishSubheadings(t){
   // 常见二级列表标题写法带冒号且后面没有正文，也提升为小标题。
   out = out.replace(/^[-*]\s*(正文\s*1\s*版|切片脚本\d+[^\n：:]*)[：:]?\s*$/gmi, '#### $1');
   return out;
+  });
 }
 function beautifyTermTranslationBlocks(t){
-  let out = String(t || '');
+  return transformMarkdownOutsideFences(String(t || ''), chunk => {
+  let out = chunk;
   // “喝汤 / 起飞 / 接口”等术语块，用五级标题区分，不再混在同一级项目符号里。
   out = out.replace(/(^|\n)\s*[-*]\s*(“[^”]{1,24}”|"[^"]{1,24}"|「[^」]{1,24}」|『[^』]{1,24}』)[：:]\s*$/gm, '$1\n\n##### $2\n');
   return out;
+  });
 }
 function beautifyPublishMarkdown(t){
   let out = normalizeMarkdownBullets(t || '');
@@ -3156,18 +3266,21 @@ function formatPublishMarkdown(v){
 function formatAIAnalysisMarkdown(v){
   let t = normalizeMarkdownBullets(v || '');
   if(!t) return '';
-  t = t.replace(/(^|\n)(\d+)\.\s*([^\n：:]{2,42})[：:]\s*/g, '$1\n\n### $2. $3\n\n');
+  t = transformMarkdownOutsideFences(t, chunk => chunk.replace(/(^|\n)(\d+)\.\s*([^\n：:]{2,42})[：:]\s*/g, '$1\n\n### $2. $3\n\n'));
   const labels = [
     '证据池整理','选题结论','核心矛盾','信息边界与待核实','推荐切口','下一步动作清单','空洞检查','一句话理由','最适合的平台形态','B站标准长视频','短视频/图文','建议时长区间','短版','标准版','深度版','建议主轴改成','结论是否太早','资料是否不足','官方资料不足','社区资料不足','实测资料不足','观众是否明确','最容易被喷/被误解的点','官方已确认信息','社区高频问题','信息冲突 / 待核实','建议继续检索的关键词','官方向','B站/NGA/贴吧向','小红书/抖音向','英文社区向','核心内容','优点','缺点','推荐度','标题方向','资料补强','实测/截图','结构风险','下一步动作','当前阶段结论'
   ];
-  labels.forEach(label => {
-    const esc = mdEscapeRegExp(label);
-    t = t.replace(new RegExp('(^|\\n)(' + esc + ')[：:]\\s*', 'g'), '$1- **$2：** ');
+  t = transformMarkdownOutsideFences(t, chunk => {
+    let out = chunk;
+    labels.forEach(label => {
+      const esc = mdEscapeRegExp(label);
+      out = out.replace(new RegExp('(^|\\n)(' + esc + ')[：:]\\s*', 'g'), '$1- **$2：** ');
+    });
+    return out.replace(/(^|\n)【事实】/g, '$1- **【事实】** ')
+      .replace(/(^|\n)【待核实】/g, '$1- **【待核实】** ')
+      .replace(/(^|\n)【建议】/g, '$1- **【建议】** ')
+      .replace(/(切口\s*[A-Z]：[^\n]+)/g, '\n\n#### $1');
   });
-  t = t.replace(/(^|\n)【事实】/g, '$1- **【事实】** ')
-       .replace(/(^|\n)【待核实】/g, '$1- **【待核实】** ')
-       .replace(/(^|\n)【建议】/g, '$1- **【建议】** ');
-  t = t.replace(/(切口\s*[A-Z]：[^\n]+)/g, '\n\n#### $1');
   t = beautifyPublishMarkdown(t);
   return cleanMarkdownText(t);
 }
@@ -3181,14 +3294,17 @@ function formatDefaultMarkdown(v){
       '脚本前检查','资料缺口','事实风险','节奏风险','需要补录/补截图','开头 Hook','结尾','脚本落地检查',
       'English','YouTube title options','Description','Tags','Search keywords','日本語','タイトル案','概要欄','タグ','検索キーワード','한국어','제목 후보','설명','태그','검색 키워드','Français','Titres','Mots-clés','本地化风险','各语言本地化取舍'
     ];
-    labels.forEach(label => {
-      const esc = mdEscapeRegExp(label);
-      t = t.replace(new RegExp('(^|[\\n。！？；;：:])\\s*(' + esc + '[：:]?)', 'g'), '$1\n\n$2');
+    t = transformMarkdownOutsideFences(t, chunk => {
+      let out = chunk;
+      labels.forEach(label => {
+        const esc = mdEscapeRegExp(label);
+        out = out.replace(new RegExp('(^|[\\n。！？；;：:])\\s*(' + esc + '[：:]?)', 'g'), '$1\n\n$2');
+      });
+      return out.replace(/\s+(第\d+节[｜|])/g,'\n\n$1')
+        .replace(/\s+(【口播】|【依据】|【画面】|【剪辑提示】|【可选轻梗】)/g,'\n\n$1')
+        .replace(/\s+(-\s)/g,'\n$1')
+        .replace(/\s+(\d+\.\s)/g,'\n$1');
     });
-    t = t.replace(/\s+(第\d+节[｜|])/g,'\n\n$1')
-         .replace(/\s+(【口播】|【依据】|【画面】|【剪辑提示】|【可选轻梗】)/g,'\n\n$1')
-         .replace(/\s+(-\s)/g,'\n$1')
-         .replace(/\s+(\d+\.\s)/g,'\n$1');
   }
   t = beautifyTitleCandidateLists(t);
   t = beautifyLabelBullets(t);
@@ -3308,19 +3424,19 @@ function mdBody(d){
 
 | 项目 | 内容 |
 |---|---|
-| 模板版本 | v${d.__workspaceVersion || d.__templateVersion || d.__forgeVersion || TEMPLATE_VERSION} |
-| 导出阶段 | ${d.__exportStage || ""} |
-| 游戏代码 | ${d.gameCode || gameAbbrev(d.game) || ""} |
-| 项目简易标题 | ${d.projectShortTitle || ""} |
-| 文件简称 | ${d.projectShortName || ""} |
-| 游戏 | ${d.game || ""} |
-| 内容类型 | ${d.type || ""} |
-| 状态 | ${d.status || ""} |
-| DDL | ${d.ddl || ""} |
-| 版本 / 卡池 / 活动 | ${d.version || ""} |
-| 时长估算 | ${d.duration || ""} |
-| 优先级 | ${d.priority || ""} |
-| 本地工程路径 | ${d.localPath || ""} |
+| 模板版本 | ${escapeMarkdownTableCell('v' + (d.__workspaceVersion || d.__templateVersion || d.__forgeVersion || TEMPLATE_VERSION))} |
+| 导出阶段 | ${escapeMarkdownTableCell(d.__exportStage)} |
+| 游戏代码 | ${escapeMarkdownTableCell(d.gameCode || gameAbbrev(d.game))} |
+| 项目简易标题 | ${escapeMarkdownTableCell(d.projectShortTitle)} |
+| 文件简称 | ${escapeMarkdownTableCell(d.projectShortName)} |
+| 游戏 | ${escapeMarkdownTableCell(d.game)} |
+| 内容类型 | ${escapeMarkdownTableCell(d.type)} |
+| 状态 | ${escapeMarkdownTableCell(d.status)} |
+| DDL | ${escapeMarkdownTableCell(d.ddl)} |
+| 版本 / 卡池 / 活动 | ${escapeMarkdownTableCell(d.version)} |
+| 时长估算 | ${escapeMarkdownTableCell(d.duration)} |
+| 优先级 | ${escapeMarkdownTableCell(d.priority)} |
+| 本地工程路径 | ${escapeMarkdownTableCell(d.localPath)} |
 ${mdBlock("项目备注", d.projectMemo)}
 
 ---

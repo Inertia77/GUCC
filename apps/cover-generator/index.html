@@ -110,7 +110,7 @@
     .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .stack { display: grid; gap: 10px; }
     .hint { font-size: 12px; color: var(--muted); line-height: 1.45; }
-    .ratio-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+    .ratio-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
     .ratio-tab {
       width: 100%;
       appearance: none;
@@ -203,8 +203,9 @@
     .cover-element.selected {
       outline: 2px solid var(--brand2);
       outline-offset: 2px;
-      z-index: 1000 !important;
     }
+    .cover-element.cover-image.selected { z-index: 70 !important; }
+    .cover-element.cover-text.selected { z-index: 1000 !important; }
     .cover-element img { width: 100%; height: 100%; pointer-events: none; display: block; }
     .cover-element .text-preview {
       width: 100%;
@@ -261,7 +262,7 @@
     .element-item.active { border-color: var(--brand2); background: rgba(0,212,255,.1); }
     .element-item .name { font-size: 13px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .element-item .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 310px; overflow: auto; padding-right: 4px; }
+    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 430px; overflow: auto; padding-right: 4px; }
     .style-card {
       width: 100%;
       appearance: none;
@@ -279,7 +280,7 @@
       font-size: 13px;
     }
     .style-card.active { border-color: var(--brand2); background: rgba(0,212,255,.11); }
-    .mini-previews { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+    .mini-previews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
     .mini {
       width: 100%;
       appearance: none;
@@ -300,16 +301,89 @@
     .progress { height: 8px; border-radius: 99px; background: rgba(255,255,255,.12); overflow: hidden; margin-top: 8px; display: none; }
     .progress div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand2)); transition: width .2s; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; padding: 2px 5px; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,.08); color: #dbe4ff; }
+    .design-layer { position: absolute; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+    .design-layer::before, .design-layer::after { content: ''; position: absolute; pointer-events: none; }
+    .design-none { background: none; }
+    .design-impact { background: linear-gradient(104deg,rgba(4,6,12,.96) 0 34%,rgba(8,9,18,.67) 54%,transparent 78%),radial-gradient(circle at 82% 20%,rgba(255,46,77,.24),transparent 34%),linear-gradient(0deg,rgba(5,6,12,.42),transparent 38%); }
+    .design-impact::before { width: 13%; height: 145%; right: 8%; top: -22%; background: linear-gradient(180deg,rgba(255,55,82,.88),rgba(177,15,52,.54)); transform: skewX(-13deg); box-shadow: 26px 0 0 rgba(255,255,255,.08),-13px 0 34px rgba(255,35,72,.24); mix-blend-mode: screen; }
+    .design-impact::after { left: 4%; top: 8%; width: 1%; height: 26%; background: #ff3854; box-shadow: 0 0 22px rgba(255,56,84,.72),14px 0 0 rgba(255,255,255,.14); }
+    .design-cinematic { background: linear-gradient(180deg,rgba(2,3,8,.48) 0 7%,transparent 18% 67%,rgba(2,3,8,.94) 94%),radial-gradient(ellipse at 64% 38%,transparent 0 24%,rgba(2,4,9,.58) 82%); }
+    .design-cinematic::before { inset: 4%; border: 1px solid rgba(255,214,132,.62); box-shadow: inset 0 0 42px rgba(0,0,0,.26),0 0 0 1px rgba(0,0,0,.32); }
+    .design-cinematic::after { left: 7%; bottom: 6%; width: 14%; height: 2px; background: linear-gradient(90deg,#ffe0a0,rgba(255,224,160,.05)); box-shadow: 0 0 16px rgba(255,209,104,.44); }
+    .design-editorial { background: linear-gradient(90deg,rgba(7,17,29,.96) 0 39%,rgba(7,17,29,.52) 54%,transparent 76%),linear-gradient(180deg,rgba(89,227,255,.10),transparent 44%); }
+    .design-editorial::before { left: 4%; top: 7%; width: 35%; height: 1px; background: #93ecff; box-shadow: 0 10px 0 rgba(147,236,255,.18),0 20px 0 rgba(147,236,255,.08); }
+    .design-editorial::after { left: 4%; bottom: 7%; width: 10%; height: 4px; background: linear-gradient(90deg,#60e8ff 0 66%,rgba(255,255,255,.84) 66%); }
+    .design-tech { background: linear-gradient(110deg,rgba(2,10,27,.95) 0 40%,rgba(18,9,50,.52) 70%,transparent),repeating-linear-gradient(0deg,rgba(75,228,255,.065) 0 1px,transparent 1px 8%),repeating-linear-gradient(90deg,rgba(75,228,255,.035) 0 1px,transparent 1px 8%); }
+    .design-tech::before { inset: 4%; border: 1px solid rgba(76,228,255,.48); clip-path: polygon(0 0,24% 0,24% 2px,100% 2px,100% 75%,calc(100% - 2px) 75%,calc(100% - 2px) 100%,70% 100%,70% calc(100% - 2px),0 calc(100% - 2px)); box-shadow: inset 0 0 30px rgba(57,208,255,.05); }
+    .design-tech::after { right: 5%; top: 6%; width: 7%; height: 3px; background: #a17aff; box-shadow: -15px 0 0 #4de4ff,-30px 0 0 rgba(77,228,255,.25),0 0 16px rgba(142,108,255,.5); }
+    .design-guide { background: linear-gradient(96deg,rgba(4,15,29,.95) 0 42%,rgba(4,15,29,.28) 72%,transparent),linear-gradient(180deg,transparent 64%,rgba(4,15,29,.34)); }
+    .design-guide::before { left: 3.8%; top: 8%; width: 42%; height: 82%; border-radius: 14px; background: linear-gradient(145deg,rgba(11,29,50,.72),rgba(6,18,34,.46)); border: 1px solid rgba(255,225,91,.40); box-shadow: inset 0 1px rgba(255,255,255,.06),0 18px 40px rgba(0,0,0,.18); backdrop-filter: blur(3px); }
+    .design-guide::after { left: 5.2%; top: 11%; width: 13%; height: 5px; background: linear-gradient(90deg,#ffe15a,#ffb536); border-radius: 99px; box-shadow: 0 0 14px rgba(255,223,91,.24); }
+    .design-playful { background: linear-gradient(112deg,rgba(29,8,40,.92) 0 39%,rgba(29,8,40,.28) 70%,transparent),radial-gradient(circle at 83% 18%,rgba(255,122,201,.30),transparent 31%),radial-gradient(circle at 72% 80%,rgba(255,194,81,.18),transparent 25%); }
+    .design-playful::before { width: 14%; aspect-ratio: 1; right: 6%; top: 7%; border: 3px solid rgba(255,151,216,.82); border-radius: 50%; box-shadow: 14px 12px 0 rgba(255,190,83,.24),0 0 24px rgba(255,117,200,.16); }
+    .design-playful::after { left: 4%; bottom: 7%; width: 18%; height: 6px; border-radius: 99px; background: linear-gradient(90deg,#ff75c8 0 62%,#ffc857 62%); }
+    .design-minimalist { background: linear-gradient(90deg,rgba(7,10,16,.76) 0 34%,rgba(7,10,16,.22) 58%,transparent 76%),linear-gradient(180deg,transparent 70%,rgba(3,5,9,.52)); }
+    .design-minimalist::before { left: 5%; top: 8%; width: 1px; height: 14%; background: rgba(255,255,255,.76); box-shadow: 7px 0 0 rgba(255,255,255,.18); }
+    .design-minimalist::after { left: 5%; bottom: 7%; width: 24%; height: 1px; background: linear-gradient(90deg,rgba(255,255,255,.88),transparent); }
+    .design-luxe { background: linear-gradient(106deg,rgba(12,6,12,.96) 0 41%,rgba(38,12,24,.56) 65%,transparent 82%),radial-gradient(circle at 84% 18%,rgba(255,205,111,.20),transparent 28%); }
+    .design-luxe::before { inset: 4.5%; border: 1px solid rgba(255,211,126,.60); box-shadow: inset 0 0 0 5px rgba(255,211,126,.035),inset 0 0 46px rgba(0,0,0,.22); }
+    .design-luxe::after { left: 5%; top: 8%; width: 18%; height: 2px; background: linear-gradient(90deg,#ffe1a1,transparent); box-shadow: 0 0 15px rgba(255,213,130,.35); }
+    .design-dossier { background: linear-gradient(98deg,rgba(13,20,18,.96) 0 44%,rgba(20,27,22,.48) 70%,transparent),repeating-linear-gradient(0deg,rgba(216,181,94,.055) 0 1px,transparent 1px 7%); }
+    .design-dossier::before { left: 3.8%; top: 7%; width: 43%; height: 86%; border: 1px solid rgba(218,184,96,.44); background: linear-gradient(135deg,rgba(41,48,35,.52),rgba(12,19,17,.30)); clip-path: polygon(0 0,92% 0,100% 8%,100% 100%,0 100%); }
+    .design-dossier::after { left: 5.2%; top: 10%; width: 11%; height: 4px; background: #d9b55c; box-shadow: 0 10px 0 rgba(217,181,92,.22); }
+    .design-retro { background: linear-gradient(108deg,rgba(16,5,35,.94) 0 39%,rgba(16,5,35,.34) 68%,transparent),repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 5px),radial-gradient(circle at 80% 18%,rgba(0,238,255,.24),transparent 30%); }
+    .design-retro::before { inset: 4%; border: 2px solid rgba(0,234,255,.64); box-shadow: 5px 5px 0 rgba(255,49,181,.42),0 0 24px rgba(0,234,255,.10); }
+    .design-retro::after { left: 5%; bottom: 7%; width: 21%; height: 5px; background: linear-gradient(90deg,#00eaff 0 48%,#ff31b5 48%); box-shadow: 0 0 14px rgba(0,234,255,.28); }
+    .design-preset-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .design-card, .prompt-style-card { --accent: var(--brand2); width: 100%; min-width: 0; padding: 10px; text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,.055); box-shadow: none; }
+    .design-card:hover, .prompt-style-card:hover { border-color: color-mix(in srgb, var(--accent) 70%, white 12%); }
+    .design-card.active, .prompt-style-card.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent) inset; }
+    .design-card .preset-swatch, .prompt-style-card .preset-swatch { display: block; width: 100%; height: 6px; margin-bottom: 8px; border-radius: 99px; background: linear-gradient(90deg,var(--accent),transparent); }
+    .design-card strong, .prompt-style-card strong { display: block; font-size: 13px; color: #fff; }
+    .design-card small, .prompt-style-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; font-weight: 600; }
+    .ai-prompt-lab { margin-top: 14px; padding: 18px; }
+    .ai-prompt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+    .ai-prompt-head h2 { margin: 0 0 6px; font-size: 20px; }
+    .ai-prompt-head p { margin: 0; max-width: 860px; color: var(--muted); line-height: 1.6; font-size: 13px; }
+    .ai-prompt-layout { display: grid; grid-template-columns: minmax(280px,.72fr) minmax(460px,1.28fr); gap: 14px; align-items: start; }
+    .ai-prompt-controls, .ai-prompt-output { display: grid; gap: 10px; min-width: 0; }
+    .prompt-style-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+    #aiPromptOutput { min-height: 480px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.65; }
+    .prompt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .prompt-actions button { flex: 1 1 180px; }
+    .prompt-status { min-height: 18px; color: #89f2c9; font-size: 12px; }
     @media (max-width: 1280px) {
       .grid { grid-template-columns: 1fr; }
       .workspace { min-height: auto; }
       .stage-shell { height: 560px; }
       .hero { align-items: flex-start; flex-direction: column; }
       .hero .actions { justify-content: flex-start; }
+      .ai-prompt-layout { grid-template-columns: 1fr; }
     }
   </style>
   <link rel="stylesheet" href="../../assets/gucc-theme.css?v=7" />
   <style>
+    body.gucc-enhanced .design-card,
+    body.gucc-enhanced .prompt-style-card {
+      color: var(--text) !important;
+      background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 8%, rgba(13,18,31,.96)), rgba(13,18,31,.96)) !important;
+      border-color: color-mix(in srgb, var(--accent) 32%, rgba(255,255,255,.12)) !important;
+      box-shadow: none !important;
+    }
+
+    body.gucc-enhanced .design-card:hover,
+    body.gucc-enhanced .prompt-style-card:hover,
+    body.gucc-enhanced .design-card.active,
+    body.gucc-enhanced .prompt-style-card.active {
+      background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 19%, rgba(13,18,31,.96)), rgba(13,18,31,.96)) !important;
+      border-color: var(--accent) !important;
+    }
+
+    body.gucc-enhanced .design-card strong,
+    body.gucc-enhanced .prompt-style-card strong {
+      color: #fff !important;
+    }
+
     @media (max-width: 980px) {
       input[type="range"] {
         min-height: 44px;
@@ -436,6 +510,30 @@
 
       body.gucc-enhanced textarea {
         min-height: 84px;
+      }
+
+      body.gucc-enhanced .design-preset-grid,
+      body.gucc-enhanced .prompt-style-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      body.gucc-enhanced .ai-prompt-lab {
+        margin-top: 10px;
+        padding: 12px !important;
+      }
+
+      body.gucc-enhanced .ai-prompt-head {
+        display: grid;
+        gap: 8px;
+      }
+
+      body.gucc-enhanced .ai-prompt-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      body.gucc-enhanced #aiPromptOutput {
+        min-height: 420px;
+        font-size: 12px;
       }
 
       body.gucc-enhanced .ratio-tabs {
@@ -567,7 +665,7 @@
     <header class="hero">
       <div>
         <h1>🎮 游戏视频封面多比例批量生成器</h1>
-        <p>一次添加背景、图片、文字；五种比例自动同步；每个比例单独微调；最后一键导出。PS 反复横跳，到此为止。</p>
+        <p>一次添加背景、图片、文字；四种常用比例自动同步；套用整体设计模板后再逐比例微调，最后一键导出。</p>
       </div>
       <div class="actions">
         <button class="secondary" id="saveProjectBtn">保存项目</button>
@@ -602,7 +700,7 @@
             <button id="addImageUrlBtn" class="secondary">添加链接图片</button>
             <label style="margin:0"><input type="file" id="imageUpload" accept="image/*" multiple style="display:none"><button type="button" class="secondary" style="width:100%" onclick="document.getElementById('imageUpload').click()">上传图片</button></label>
           </div>
-          <p class="hint">图片元素可添加多张。添加一次，五个比例都会出现；每个比例可以分别调整大小和位置。</p>
+          <p class="hint">第一张横向截图会自动铺满画布作为底图；竖向立绘、Logo 等保持为可移动主体。设计装饰始终压在截图上，文字位于最上层。</p>
         </div>
 
         <div class="section stack">
@@ -612,8 +710,14 @@
           <p class="hint">文字也可以添加多个：主标题、副标题、角标、吐槽、期数都分开做，后期改起来不挠头。</p>
         </div>
 
+        <div class="section stack">
+          <h3>4. 自动设计模板</h3>
+          <div id="designPresetGrid" class="design-preset-grid"></div>
+          <p class="hint">“无模板”只关闭设计叠层，不改变现有排版；其余模板会把素材重新编排到四个比例。模板不会删除素材，但会覆盖各比例的位置、大小和文字样式。</p>
+        </div>
+
         <div class="section">
-          <h3>元素列表</h3>
+          <h3>5. 元素列表</h3>
           <div id="elementList" class="element-list"></div>
         </div>
       </aside>
@@ -634,11 +738,12 @@
         <div class="stage-shell" id="stageShell">
           <div class="stage" id="stage">
             <div class="bg-layer" id="bgLayer"><img id="bgImg" alt="background"></div>
+            <div class="design-layer" id="designLayer" aria-hidden="true"></div>
             <div class="safe-guide"></div>
           </div>
         </div>
         <div class="mini-previews" id="miniPreviews"></div>
-        <p class="hint" style="margin-top:12px">实用原则：先在 16:9 做主构图，再逐个切到竖屏、4:3 等比例微调。别指望所有比例自动完美，封面这活儿还得留一点“人类审美税”。</p>
+        <p class="hint" style="margin-top:12px">既可以选择“无模板”完全自由排版，也可以先套模板再微调。建议以 16:9 检查横版主构图，最后检查 3:4 / 9:16 的人物与标题安全区。</p>
       </section>
 
       <aside class="panel">
@@ -692,7 +797,7 @@
         </div>
 
         <div class="section">
-          <h3>20 个游戏解说文字模板</h3>
+          <h3>28 个文字设计模板</h3>
           <div id="styleGrid" class="style-grid"></div>
         </div>
 
@@ -710,16 +815,48 @@
         </div>
       </aside>
     </main>
+
+    <section class="panel ai-prompt-lab" id="aiPromptLab">
+      <div class="ai-prompt-head">
+        <div>
+          <h2>AI 封面 Prompt 工作区</h2>
+          <p>适合“上传参考图 → 把 Prompt 发给图片 AI → 直接取得四张封面”的流程。十种风格分别成稿，Prompt 会明确要求 16:9、4:3、3:4、9:16 独立重构，不允许只裁同一张图。</p>
+        </div>
+        <button type="button" class="secondary" id="useCurrentCoverBtn">读取当前画布标题</button>
+      </div>
+      <div class="ai-prompt-layout">
+        <div class="ai-prompt-controls">
+          <div>
+            <label>选择生成风格</label>
+            <div id="promptStyleGrid" class="prompt-style-grid"></div>
+          </div>
+          <div><label for="aiPromptTitle">封面主标题</label><input id="aiPromptTitle" placeholder="例：这个机制到底坑不坑？"></div>
+          <div><label for="aiPromptSubtitle">副标题 / 角标（可留空）</label><input id="aiPromptSubtitle" placeholder="例：3.4 版本实测"></div>
+          <div><label for="aiPromptSubject">参考图主体说明</label><textarea id="aiPromptSubject" rows="4" placeholder="例：以我上传的角色立绘为唯一人物参考，保留服装、发色、武器和面部特征；背景参考第二张游戏截图。"></textarea></div>
+          <div><label for="aiPromptNotes">本期重点 / 不可改动项</label><textarea id="aiPromptNotes" rows="4" placeholder="例：突出资源焦虑和角色表情；不要改变角色服装，不出现其他角色，不照搬参考图水印。"></textarea></div>
+          <div><label for="aiTextMode">文字处理</label><select id="aiTextMode"><option value="full">直接生成带字成品封面</option><option value="clean">只生成无字底图并预留标题区</option></select></div>
+          <p class="hint">使用时把参考图片和复制出的 Prompt 一起发给 AI。若模型不擅长中文，建议选择“无字底图”，再回到本生成器叠字。</p>
+        </div>
+        <div class="ai-prompt-output">
+          <label for="aiPromptOutput">当前风格 Prompt（可直接复制）</label>
+          <textarea id="aiPromptOutput" readonly spellcheck="false"></textarea>
+          <div class="prompt-actions">
+            <button type="button" class="ok" id="copyAiPromptBtn">复制当前风格 Prompt</button>
+            <button type="button" class="secondary" id="copyAllAiPromptsBtn">复制全部十种风格</button>
+          </div>
+          <div class="prompt-status" id="promptStatus" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
   </div>
 
 <script>
 (() => {
   const ratios = {
     r16_9:  { label: '16:9',  name: '横屏标准', w: 1920, h: 1080 },
-    r16_10: { label: '16:10', name: '宽屏封面', w: 1920, h: 1200 },
-    r4_3:   { label: '4:3',   name: '传统横图', w: 1600, h: 1200 },
+    r4_3:   { label: '4:3',   name: '横版信息流', w: 1600, h: 1200 },
     r3_4:   { label: '3:4',   name: '竖版封面', w: 1200, h: 1600 },
-    r9_16:  { label: '9:16',  name: '短视频竖屏', w: 1080, h: 1920 }
+    r9_16:  { label: '9:16',  name: '竖屏短视频', w: 1080, h: 1920 }
   };
   const ratioKeys = Object.keys(ratios);
 
@@ -729,56 +866,167 @@
     { id:'pingfang', name:'苹方 / 系统黑体', font:'"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif' },
     { id:'yahei', name:'微软雅黑 / Windows', font:'"Microsoft YaHei UI", "Microsoft YaHei", "SimHei", sans-serif' },
     { id:'harmony', name:'HarmonyOS / MiSans', font:'"HarmonyOS Sans SC", "MiSans", "OPPO Sans", "Noto Sans SC", sans-serif' },
-    { id:'impact', name:'Impact 英文冲击', font:'Impact, Haettenschweiler, "Arial Black", "Noto Sans SC", sans-serif' }
+    { id:'impact', name:'Impact 英文冲击', font:'Impact, Haettenschweiler, "Arial Black", "Noto Sans SC", sans-serif' },
+    { id:'serif', name:'现代宋体 / 杂志衬线', font:'"Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, Georgia, serif' },
+    { id:'song', name:'宋体 / 编辑标题', font:'"Songti SC", "STSong", SimSun, "Noto Serif SC", serif' },
+    { id:'kai', name:'楷体 / 东方题字', font:'KaiTi, "STKaiti", "Kaiti SC", "Noto Serif SC", serif' },
+    { id:'rounded', name:'圆体 / 轻松可爱', font:'"M PLUS Rounded 1c", "Arial Rounded MT Bold", "PingFang SC", "Microsoft YaHei", sans-serif' },
+    { id:'condensed', name:'窄体 / 竞技速度', font:'"Arial Narrow", "Roboto Condensed", Impact, "Noto Sans SC", sans-serif' }
   ];
 
   const modernFont = fontPresets[0].font;
 
-  // v4 的原则：不要再用假 3D、超粗描边、花哨阴影。中文封面字最稳的是：粗黑体 + 高对比 + 极少特效。
+  // 简单款以字形和留白取胜；华丽款使用克制的描边、光晕与字体差异，并保持 Canvas 导出一致。
   const textStyles = [
-    { id:'classic', name:'干净爆款白字', font:modernFont, color:'#ffffff', stroke:'#101010', strokeWidth:2.5, shadow:'0 .10em .22em rgba(0,0,0,.62)', weight:900, italic:false, bg:'' },
-    { id:'yellow', name:'黄白爆款标题', font:modernFont, color:'#ffe45c', stroke:'#111111', strokeWidth:2.5, shadow:'0 .10em .20em rgba(0,0,0,.58)', weight:900, italic:false, bg:'' },
-    { id:'blue', name:'蓝色科技攻略', font:modernFont, color:'#ecfbff', stroke:'#0660b8', strokeWidth:2.2, shadow:'0 0 .20em rgba(0,210,255,.32), 0 .08em .18em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
-    { id:'red', name:'红色重点标题', font:modernFont, color:'#ff4747', stroke:'#ffffff', strokeWidth:2.0, shadow:'0 .08em .18em rgba(0,0,0,.46)', weight:900, italic:false, bg:'' },
-    { id:'blackwhite', name:'黑白硬核标题', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:3.0, shadow:'0 .10em .18em rgba(0,0,0,.65)', weight:900, italic:false, bg:'' },
-    { id:'orange', name:'橙色冲击标题', font:modernFont, color:'#ffb13b', stroke:'#151515', strokeWidth:2.4, shadow:'0 .10em .20em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
-    { id:'gold', name:'金色高光标题', font:modernFont, color:'#ffd75a', stroke:'#15110a', strokeWidth:2.2, shadow:'0 0 .20em rgba(255,215,90,.30), 0 .10em .18em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
-    { id:'green', name:'绿色路线攻略', font:modernFont, color:'#7dff68', stroke:'#092909', strokeWidth:2.4, shadow:'0 .10em .20em rgba(0,0,0,.55)', weight:900, italic:false, bg:'' },
-    { id:'pink', name:'粉色轻松吐槽', font:modernFont, color:'#ff8ad8', stroke:'#21111e', strokeWidth:2.0, shadow:'0 .08em .18em rgba(0,0,0,.48)', weight:900, italic:false, bg:'' },
-    { id:'purple', name:'紫色异能标题', font:modernFont, color:'#d9c2ff', stroke:'#1d102d', strokeWidth:2.2, shadow:'0 0 .18em rgba(166,103,255,.28), 0 .08em .18em rgba(0,0,0,.48)', weight:900, italic:false, bg:'' },
-    { id:'darkboss', name:'BOSS压迫感', font:modernFont, color:'#f2f2f2', stroke:'#111111', strokeWidth:2.8, shadow:'0 .12em .22em rgba(0,0,0,.72)', weight:900, italic:false, bg:'' },
-    { id:'speed', name:'速度斜体标题', font:modernFont, color:'#ffffff', stroke:'#0834bf', strokeWidth:2.0, shadow:'.06em .04em 0 rgba(255,48,92,.75), 0 .10em .20em rgba(0,0,0,.50)', weight:900, italic:true, bg:'' },
-    { id:'minimal', name:'极简白字', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .10em .24em rgba(0,0,0,.78)', weight:900, italic:false, bg:'' },
-    { id:'clean', name:'清爽字幕白字', font:modernFont, color:'#ffffff', stroke:'#111111', strokeWidth:1.6, shadow:'0 .08em .18em rgba(0,0,0,.60)', weight:800, italic:false, bg:'' },
-    { id:'subtitle', name:'副标题小字', font:modernFont, color:'#ecf2ff', stroke:'#111111', strokeWidth:1.4, shadow:'0 .08em .16em rgba(0,0,0,.58)', weight:800, italic:false, bg:'' },
-    { id:'whitecard', name:'黑底白字条', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .04em .10em rgba(0,0,0,.35)', weight:900, italic:false, bg:'rgba(0,0,0,.66)' },
-    { id:'yellowtag', name:'黄底黑字标签', font:modernFont, color:'#111111', stroke:'#111111', strokeWidth:0, shadow:'0 .04em .08em rgba(255,255,255,.18)', weight:900, italic:false, bg:'rgba(255,218,60,.94)' },
-    { id:'redtag', name:'红底白字警告', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .10em rgba(0,0,0,.32)', weight:900, italic:false, bg:'rgba(231,42,64,.92)' },
-    { id:'label', name:'蓝底角标', font:modernFont, color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .12em rgba(0,0,0,.35)', weight:900, italic:false, bg:'rgba(28,98,255,.88)' },
-    { id:'silver', name:'银灰冷感标题', font:modernFont, color:'#eeeeee', stroke:'#1b1b1b', strokeWidth:2.0, shadow:'0 .10em .20em rgba(0,0,0,.58)', weight:900, italic:false, bg:'' }
+    { id:'classic', name:'极简｜纯白粗黑', color:'#ffffff', stroke:'#11141a', strokeWidth:2.2, shadow:'0 .10em .22em rgba(0,0,0,.62)', shadowColor:'rgba(0,0,0,.58)', weight:900, bg:'' },
+    { id:'minimal', name:'极简｜无描边白字', color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .12em .26em rgba(0,0,0,.80)', shadowColor:'rgba(0,0,0,.70)', weight:800, letterSpacing:.015, bg:'' },
+    { id:'clean', name:'简洁｜清爽字幕', color:'#f7fbff', stroke:'#111827', strokeWidth:1.2, shadow:'0 .07em .16em rgba(0,0,0,.58)', shadowColor:'rgba(0,0,0,.52)', weight:700, bg:'' },
+    { id:'subtitle', name:'简洁｜轻量副标题', color:'#e8eef8', stroke:'#10141c', strokeWidth:.8, shadow:'0 .06em .13em rgba(0,0,0,.55)', shadowColor:'rgba(0,0,0,.48)', weight:650, letterSpacing:.04, bg:'' },
+    { id:'yellow', name:'醒目｜黄白爆款', color:'#ffe45c', stroke:'#111111', strokeWidth:2.4, shadow:'0 .10em .20em rgba(0,0,0,.58)', shadowColor:'rgba(0,0,0,.56)', weight:900, bg:'' },
+    { id:'red', name:'醒目｜红色结论', color:'#ff4b55', stroke:'#ffffff', strokeWidth:1.7, shadow:'0 .09em .18em rgba(0,0,0,.48)', shadowColor:'rgba(0,0,0,.46)', weight:900, bg:'' },
+    { id:'blackwhite', name:'醒目｜黑白硬核', color:'#ffffff', stroke:'#050505', strokeWidth:3.0, shadow:'0 .11em .19em rgba(0,0,0,.70)', shadowColor:'rgba(0,0,0,.68)', weight:950, bg:'' },
+    { id:'orange', name:'醒目｜橙色冲击', color:'#ffb33f', stroke:'#17130f', strokeWidth:2.2, shadow:'0 .10em .20em rgba(0,0,0,.58)', shadowColor:'rgba(0,0,0,.55)', weight:900, bg:'' },
+    { id:'gold', name:'精致｜暖金高光', color:'#ffdc76', stroke:'#211609', strokeWidth:1.8, shadow:'0 0 .18em rgba(255,210,111,.28),0 .10em .18em rgba(0,0,0,.60)', shadowColor:'rgba(73,43,6,.58)', weight:850, letterSpacing:.025, bg:'' },
+    { id:'green', name:'攻略｜路线荧绿', color:'#9aff78', stroke:'#0b2c14', strokeWidth:2.0, shadow:'0 .10em .20em rgba(0,0,0,.58)', shadowColor:'rgba(0,0,0,.54)', weight:900, bg:'' },
+    { id:'pink', name:'轻松｜莓粉吐槽', color:'#ff98d9', stroke:'#291324', strokeWidth:1.8, shadow:'0 .08em .18em rgba(0,0,0,.50)', shadowColor:'rgba(0,0,0,.48)', weight:900, fontPreset:'rounded', bg:'' },
+    { id:'purple', name:'幻想｜紫晶异能', color:'#dcc9ff', stroke:'#25113e', strokeWidth:2.0, shadow:'0 0 .20em rgba(171,112,255,.38),0 .08em .18em rgba(0,0,0,.48)', shadowColor:'rgba(74,29,122,.58)', weight:900, bg:'' },
+    { id:'darkboss', name:'压迫｜BOSS黑银', color:'#f0f0f0', stroke:'#090909', strokeWidth:2.8, shadow:'0 .13em .24em rgba(0,0,0,.76)', shadowColor:'rgba(0,0,0,.72)', weight:950, letterSpacing:.015, bg:'' },
+    { id:'speed', name:'竞技｜速度斜体', color:'#ffffff', stroke:'#0737c8', strokeWidth:1.9, shadow:'.06em .04em 0 rgba(255,48,92,.78),0 .10em .20em rgba(0,0,0,.52)', shadowColor:'rgba(255,48,92,.62)', weight:900, italic:true, fontPreset:'condensed', letterSpacing:-.015, bg:'' },
+    { id:'whitecard', name:'标签｜磨砂黑条', color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .04em .10em rgba(0,0,0,.28)', shadowColor:'rgba(0,0,0,.28)', weight:850, bg:'rgba(6,9,14,.76)' },
+    { id:'yellowtag', name:'标签｜黄底黑字', color:'#111318', stroke:'#111111', strokeWidth:0, shadow:'0 .03em .07em rgba(255,255,255,.18)', shadowColor:'rgba(0,0,0,.14)', weight:900, bg:'rgba(255,222,72,.96)' },
+    { id:'redtag', name:'标签｜红底警告', color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .10em rgba(0,0,0,.32)', shadowColor:'rgba(0,0,0,.28)', weight:900, bg:'rgba(225,39,64,.95)' },
+    { id:'label', name:'标签｜蓝色信息角标', color:'#ffffff', stroke:'#000000', strokeWidth:0, shadow:'0 .05em .12em rgba(0,0,0,.34)', shadowColor:'rgba(0,0,0,.30)', weight:850, bg:'rgba(31,102,244,.92)' },
+    { id:'silver', name:'精致｜银灰冷感', color:'#edf2f7', stroke:'#202733', strokeWidth:1.7, shadow:'0 .10em .20em rgba(0,0,0,.58)', shadowColor:'rgba(0,0,0,.55)', weight:800, letterSpacing:.035, bg:'' },
+    { id:'ink', name:'杂志｜黑墨标题', color:'#f7f1e7', stroke:'#11100e', strokeWidth:.7, shadow:'0 .10em .22em rgba(0,0,0,.66)', shadowColor:'rgba(0,0,0,.62)', weight:800, fontPreset:'serif', letterSpacing:.045, bg:'' },
+    { id:'editorialserif', name:'杂志｜现代宋体', color:'#ffffff', stroke:'#131820', strokeWidth:.5, shadow:'0 .08em .20em rgba(0,0,0,.70)', shadowColor:'rgba(0,0,0,.66)', weight:700, fontPreset:'song', letterSpacing:.08, bg:'' },
+    { id:'elegantkai', name:'东方｜雅致楷书', color:'#fff3d3', stroke:'#20170f', strokeWidth:1.0, shadow:'0 .10em .22em rgba(0,0,0,.68)', shadowColor:'rgba(0,0,0,.62)', weight:700, fontPreset:'kai', letterSpacing:.10, bg:'' },
+    { id:'luxe', name:'华丽｜鎏金典藏', color:'#ffe4a3', stroke:'#3b2209', strokeWidth:1.8, shadow:'0 0 .22em rgba(255,211,119,.46),0 .12em .22em rgba(0,0,0,.68)', shadowColor:'rgba(101,58,8,.68)', weight:800, fontPreset:'serif', letterSpacing:.055, bg:'' },
+    { id:'crystal', name:'华丽｜冰晶辉光', color:'#f4feff', stroke:'#3ac9e8', strokeWidth:1.5, shadow:'0 0 .25em rgba(73,226,255,.58),0 .10em .18em rgba(0,0,0,.48)', shadowColor:'rgba(46,207,236,.62)', weight:850, letterSpacing:.02, bg:'' },
+    { id:'neon', name:'华丽｜霓虹双光', color:'#ffffff', stroke:'#00dce8', strokeWidth:1.5, shadow:'-.04em 0 .12em rgba(255,49,181,.80),.04em 0 .15em rgba(0,234,255,.86),0 .10em .18em rgba(0,0,0,.55)', shadowColor:'rgba(0,224,238,.72)', weight:900, fontPreset:'condensed', bg:'' },
+    { id:'glitch', name:'华丽｜故障竞技', color:'#ffffff', stroke:'#161525', strokeWidth:1.4, shadow:'-.055em 0 0 rgba(0,234,255,.88),.055em 0 0 rgba(255,44,160,.82),0 .10em .18em rgba(0,0,0,.56)', shadowColor:'rgba(255,44,160,.58)', weight:950, italic:true, fontPreset:'condensed', letterSpacing:-.02, bg:'' },
+    { id:'sticker', name:'华丽｜潮流贴纸', color:'#2a1530', stroke:'#ffffff', strokeWidth:3.0, shadow:'.07em .09em 0 rgba(255,190,83,.92),0 .15em .20em rgba(0,0,0,.32)', shadowColor:'rgba(255,190,83,.78)', weight:950, fontPreset:'rounded', bg:'' },
+    { id:'manga', name:'华丽｜漫画怒吼', color:'#fff36e', stroke:'#16110c', strokeWidth:3.2, shadow:'.055em .065em 0 rgba(255,69,56,.92),0 .13em .20em rgba(0,0,0,.55)', shadowColor:'rgba(255,69,56,.66)', weight:950, italic:true, fontPreset:'condensed', letterSpacing:-.025, bg:'' }
   ];
 
+  const designPresets = [
+    {
+      id:'none', name:'无模板', tag:'自由排版', accent:'#9aa6b8',
+      desc:'关闭所有设计叠层，保留当前图片、文字、位置和样式，完全自由制作。', noPrompt:true
+    },
+    {
+      id:'impact', name:'极限冲击', tag:'高点击', accent:'#ff344e',
+      desc:'双层红黑斜切、聚焦暗区与警示线，适合争议、抽卡、避坑和强结论。',
+      titleStyle:'classic', subtitleStyle:'redtag', titleAlign:'left',
+      aiDirection:'高点击率游戏视频封面，红黑斜切构图，强烈明暗冲突，人物表情和动作有张力，标题短、粗、直接，核心卖点在一秒内可读。',
+      aiPalette:'煤黑、纯白、警示红，少量暖橙高光'
+    },
+    {
+      id:'cinematic', name:'电影宽银幕', tag:'剧情感', accent:'#ffd168',
+      desc:'宽银幕暗角、香槟金细框与下沉标题，适合剧情、角色故事和世界观。',
+      titleStyle:'gold', subtitleStyle:'whitecard', titleAlign:'left',
+      aiDirection:'电影海报式游戏封面，克制高级，强调角色关系、氛围光和环境叙事，画面有前中后景，标题落在暗部并保持留白。',
+      aiPalette:'深黑、暖金、低饱和环境色，局部轮廓光'
+    },
+    {
+      id:'editorial', name:'杂志编辑部', tag:'高级干净', accent:'#57e5ff',
+      desc:'专题杂志式信息分栏、精细刻度与留白，适合版本观察和理性分析。',
+      titleStyle:'editorialserif', subtitleStyle:'label', titleAlign:'left',
+      aiDirection:'现代编辑设计与游戏媒体专题封面，信息分屏、清楚网格、克制留白，像高质量杂志头图，避免廉价特效。',
+      aiPalette:'海军蓝、冷白、浅青，极少量高饱和强调色'
+    },
+    {
+      id:'tech', name:'全息 HUD', tag:'机制解析', accent:'#4de4ff',
+      desc:'双向精密网格、断角框与青紫能量标识，适合机制、数值、配队和实测。',
+      titleStyle:'crystal', subtitleStyle:'label', titleAlign:'left',
+      aiDirection:'游戏机制解析封面，冷色科技 HUD、数据线框和能量光效，但主体必须清楚，避免堆满小字和复杂界面。',
+      aiPalette:'深蓝、青色霓虹、紫色能量光，白色信息层级'
+    },
+    {
+      id:'guide', name:'攻略信息卡', tag:'一眼看懂', accent:'#ffdf5b',
+      desc:'磨砂信息面板、黄色索引与稳定栅格，适合新手攻略、路线和清单。',
+      titleStyle:'yellow', subtitleStyle:'yellowtag', titleAlign:'left',
+      aiDirection:'高可读性的游戏攻略封面，像精心设计的信息卡，人物或关键道具清晰，标题区稳定，重点被黄色标记但不过度花哨。',
+      aiPalette:'深蓝黑、亮黄、白色，少量游戏原生主题色'
+    },
+    {
+      id:'playful', name:'潮流贴纸', tag:'轻松社媒', accent:'#ff75c8',
+      desc:'莓粉与暖橙撞色、双环贴纸和轻松留白，适合梗、体验分享和吐槽。',
+      titleStyle:'sticker', subtitleStyle:'yellowtag', titleAlign:'left',
+      aiDirection:'轻松有梗的游戏社交媒体封面，表情和反差优先，粉橙撞色与贴纸感图形，活泼但不幼稚，不做低质表情包拼贴。',
+      aiPalette:'莓果粉、暖橙、深紫，白色高光'
+    },
+    {
+      id:'minimalist', name:'克制极简', tag:'留白质感', accent:'#f2f4f8',
+      desc:'安静暗场、极细基准线和大片呼吸区，适合随笔、观点、角色欣赏和氛围内容。',
+      titleStyle:'minimal', subtitleStyle:'subtitle', titleAlign:'left',
+      aiDirection:'极简主义游戏内容封面，以单一强主体、大面积负空间、精确对齐和极少装饰建立高级感，拒绝堆砌标签与特效。',
+      aiPalette:'深灰黑、柔白、低饱和原图色，只保留一个微弱强调色'
+    },
+    {
+      id:'luxe', name:'鎏金典藏', tag:'华丽精致', accent:'#f4cc7a',
+      desc:'酒红黑渐层、双层金框与古典衬线题字，适合角色传记、周年、收藏和高规格专题。',
+      titleStyle:'luxe', subtitleStyle:'whitecard', titleAlign:'left',
+      aiDirection:'高端典藏版游戏海报风格，酒红黑空间、香槟金装饰、细腻轮廓光和古典但克制的构图，华丽而不俗艳。',
+      aiPalette:'酒红、墨黑、香槟金、象牙白，局部柔暖高光'
+    },
+    {
+      id:'dossier', name:'战术档案', tag:'硬核调查', accent:'#d9b55c',
+      desc:'军绿黑信息框、档案切角和黄铜索引，适合考据、设定、装备、阵营与深度调查。',
+      titleStyle:'ink', subtitleStyle:'yellowtag', titleAlign:'left',
+      aiDirection:'战术档案与机密调查报告式游戏封面，具有克制的军事信息设计、切角卡片、编号感与实物质感，主体仍然清晰有戏剧性。',
+      aiPalette:'军绿黑、烟灰、黄铜色、旧纸白，少量警示橙'
+    },
+    {
+      id:'retro', name:'霓虹街机', tag:'复古电玩', accent:'#00eaff',
+      desc:'青粉错位边框、扫描线与街机辉光，适合复古游戏、竞速、音乐、科幻和高能剪辑。',
+      titleStyle:'neon', subtitleStyle:'redtag', titleAlign:'left',
+      aiDirection:'精致的复古街机与新复古未来主义游戏封面，青粉霓虹错位、CRT 扫描线和清晰速度感，避免廉价赛博朋克素材堆砌。',
+      aiPalette:'深紫黑、电光青、霓虹粉，少量亮白与橙红'
+    }
+  ];
+
+  const promptPresets = designPresets.filter(preset => !preset.noPrompt);
+
   function fontFamilyById(id, style) {
-    return (fontPresets.find(f => f.id === id)?.font) || style?.font || modernFont;
+    const stylePreset = style?.fontPreset && fontPresets.find(f => f.id === style.fontPreset)?.font;
+    if (!id || id === 'default') return stylePreset || style?.font || modernFont;
+    return (fontPresets.find(f => f.id === id)?.font) || stylePreset || style?.font || modernFont;
   }
 
   const $ = id => document.getElementById(id);
+  function defaultAiPromptState() {
+    return { styleId:'impact', title:'', subtitle:'', subject:'', notes:'', textMode:'full' };
+  }
   const state = {
     currentRatio: 'r16_9',
+    designPreset: 'none',
     selectedId: null,
     bgEditing: false,
     showGuide: false,
     nextId: 1,
     bg: { src: '', image: null, name: '' },
     templates: {},
-    elements: []
+    elements: [],
+    aiPrompt: defaultAiPromptState()
   };
   let previewScale = 0.35;
   let drag = null;
 
   function initTemplates() {
+    state.templates = {};
     ratioKeys.forEach(key => {
       state.templates[key] = { bg: { x: 0, y: 0, zoom: 1 }, layouts: {} };
+    });
+  }
+
+  function mergeSavedTemplates(savedTemplates) {
+    const saved = savedTemplates && typeof savedTemplates === 'object' ? savedTemplates : {};
+    ratioKeys.forEach(key => {
+      const incoming = saved[key] || {};
+      state.templates[key] = {
+        bg: { x:0, y:0, zoom:1, ...(incoming.bg || {}) },
+        layouts: { ...(incoming.layouts || {}) }
+      };
     });
   }
 
@@ -788,6 +1036,7 @@
   function layoutOf(id, key = state.currentRatio) { return state.templates[key].layouts[id]; }
 
   function setStatus(msg) { $('status').textContent = msg || ''; }
+  function setPromptStatus(msg) { $('promptStatus').textContent = msg || ''; }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function uid() { return 'el_' + state.nextId++; }
 
@@ -818,6 +1067,109 @@
     return { x: r.w * .58, y: r.h * .24, w: r.w * .32, h: r.h * .48, rot: 0, opacity: 1, z: 50, fit: 'contain' };
   }
 
+  function isLandscapeSceneImage(el) {
+    if (!el || el.type !== 'image' || !el.image) return false;
+    const width = el.image.naturalWidth || el.image.width || 0;
+    const height = el.image.naturalHeight || el.image.height || 0;
+    return width > 0 && height > 0 && width / height >= 1.15;
+  }
+
+  function fullBleedImageLayout(key) {
+    const r = ratios[key];
+    return { x: 0, y: 0, w: r.w, h: r.h, rot: 0, opacity: 1, z: 20, fit: 'cover' };
+  }
+
+  function presetLayoutFor(type, index, key, presetId = state.designPreset) {
+    const r = ratios[key];
+    const vertical = r.h > r.w;
+    const unit = Math.min(r.w, r.h);
+    const titleLayouts = {
+      impact:    vertical ? [.07,.08,.86,.28] : [.055,.16,.54,.38],
+      cinematic: vertical ? [.07,.67,.86,.22] : [.065,.62,.72,.27],
+      editorial: vertical ? [.07,.09,.86,.26] : [.055,.17,.50,.34],
+      tech:      vertical ? [.07,.10,.86,.27] : [.06,.17,.53,.35],
+      guide:     vertical ? [.075,.11,.85,.26] : [.055,.20,.46,.34],
+      playful:   vertical ? [.07,.10,.86,.27] : [.055,.17,.54,.35],
+      minimalist:vertical ? [.08,.12,.84,.24] : [.07,.22,.46,.30],
+      luxe:      vertical ? [.08,.62,.84,.25] : [.065,.57,.57,.29],
+      dossier:   vertical ? [.07,.12,.84,.27] : [.055,.19,.45,.34],
+      retro:     vertical ? [.07,.10,.86,.29] : [.06,.18,.52,.36]
+    };
+    const imageLayouts = {
+      impact:    vertical ? [.08,.34,.84,.58] : [.51,.09,.47,.83],
+      cinematic: vertical ? [.04,.05,.92,.75] : [.40,.03,.59,.91],
+      editorial: vertical ? [.08,.34,.84,.58] : [.49,.06,.49,.88],
+      tech:      vertical ? [.07,.35,.86,.57] : [.50,.08,.48,.84],
+      guide:     vertical ? [.08,.37,.84,.55] : [.48,.09,.50,.83],
+      playful:   vertical ? [.07,.34,.86,.59] : [.49,.08,.49,.84],
+      minimalist:vertical ? [.08,.34,.84,.58] : [.50,.07,.48,.86],
+      luxe:      vertical ? [.06,.06,.88,.69] : [.42,.04,.56,.90],
+      dossier:   vertical ? [.08,.36,.84,.56] : [.48,.07,.50,.86],
+      retro:     vertical ? [.07,.35,.86,.58] : [.49,.07,.49,.86]
+    };
+    if (type === 'text') {
+      const title = titleLayouts[presetId] || titleLayouts.impact;
+      if (index === 0) {
+        return { x:r.w*title[0], y:r.h*title[1], w:r.w*title[2], h:r.h*title[3], rot:0, opacity:1, z:120, fontSize:Math.round(unit*(vertical ? .105 : .115)) };
+      }
+      if (index === 1) {
+        const y = presetId === 'cinematic'
+          ? (vertical ? .59 : .54)
+          : Math.min(.88, title[1] + title[3] + (vertical ? .025 : .035));
+        return { x:r.w*title[0], y:r.h*y, w:r.w*(vertical ? .62 : .40), h:r.h*(vertical ? .075 : .105), rot:0, opacity:1, z:125, fontSize:Math.round(unit*(vertical ? .043 : .050)) };
+      }
+      const extraY = vertical ? .91 - Math.min(index-2, 2)*.07 : .08 + (index-2)*.09;
+      return { x:r.w*(vertical ? .07 : .70), y:r.h*extraY, w:r.w*(vertical ? .55 : .25), h:r.h*.065, rot:0, opacity:1, z:130+index, fontSize:Math.round(unit*.038) };
+    }
+    const image = imageLayouts[presetId] || imageLayouts.impact;
+    const offset = Math.min(index, 3) * .025;
+    return { x:r.w*(image[0]+offset), y:r.h*(image[1]+offset), w:r.w*Math.max(.18,image[2]-offset), h:r.h*Math.max(.18,image[3]-offset), rot:0, opacity:index === 0 ? 1 : .92, z:50+index, fit:'contain' };
+  }
+
+  function applyElementTextStyle(el, styleId, align) {
+    const style = textStyles.find(item => item.id === styleId) || textStyles[0];
+    el.styleId = style.id;
+    el.color = style.color;
+    el.strokeColor = style.stroke;
+    el.align = align || el.align || 'left';
+  }
+
+  function applyDesignPreset(presetId, options = {}) {
+    const preset = designPresets.find(item => item.id === presetId) || designPresets[0];
+    state.designPreset = preset.id;
+    if (preset.id === 'none') {
+      renderAll();
+      if (!options.silent) {
+        autosave();
+        setStatus('已关闭设计模板：当前图片、文字、位置和样式全部保留。');
+      }
+      return;
+    }
+    const textElements = state.elements.filter(el => el.type === 'text');
+    const imageElements = state.elements.filter(el => el.type === 'image');
+    const sceneImage = imageElements.find(isLandscapeSceneImage);
+    const subjectImages = imageElements.filter(el => el !== sceneImage);
+    textElements.forEach((el, index) => applyElementTextStyle(el, index === 0 ? preset.titleStyle : preset.subtitleStyle, index === 0 ? preset.titleAlign : 'center'));
+    ratioKeys.forEach(key => {
+      textElements.forEach((el, index) => { state.templates[key].layouts[el.id] = presetLayoutFor('text', index, key, preset.id); });
+      if (sceneImage) state.templates[key].layouts[sceneImage.id] = fullBleedImageLayout(key);
+      subjectImages.forEach((el, index) => { state.templates[key].layouts[el.id] = presetLayoutFor('image', index, key, preset.id); });
+    });
+    renderAll();
+    if (!options.silent) {
+      autosave();
+      setStatus(`已应用「${preset.name}」：四个比例已分别重构。`);
+    }
+  }
+
+  function renderDesignPresetGrid() {
+    const grid = $('designPresetGrid');
+    if (!grid) return;
+    grid.innerHTML = designPresets.map(preset => `<button type="button" class="design-card ${preset.id === state.designPreset ? 'active' : ''}" data-design-preset="${preset.id}" aria-pressed="${preset.id === state.designPreset}" style="--accent:${preset.accent}">
+      <span class="preset-swatch"></span><strong>${preset.name} · ${preset.tag}</strong><small>${preset.desc}</small>
+    </button>`).join('');
+  }
+
   function addElement(el) {
     state.elements.push(el);
     ratioKeys.forEach(key => {
@@ -831,8 +1183,17 @@
   async function addImageFromSrc(src, name = '图片元素') {
     try {
       const img = await loadImage(src);
-      addElement({ id: uid(), type: 'image', name, src, image: img, fit: 'contain' });
-      setStatus('图片已添加。');
+      const alreadyHasScene = state.elements.some(isLandscapeSceneImage);
+      const el = { id: uid(), type: 'image', name, src, image: img, fit: 'contain' };
+      addElement(el);
+      if (!alreadyHasScene && isLandscapeSceneImage(el)) {
+        ratioKeys.forEach(key => { state.templates[key].layouts[el.id] = fullBleedImageLayout(key); });
+        renderAll();
+        autosave();
+        setStatus('横向截图已自动铺满四个比例；设计装饰和文字会保持在图片上方。');
+      } else {
+        setStatus('图片已添加。');
+      }
     } catch (e) {
       alert('图片加载失败。外链可能禁止跨域，建议先下载后用本地上传。');
     }
@@ -890,6 +1251,146 @@
     });
   }
 
+  function renderPromptStyleGrid() {
+    const grid = $('promptStyleGrid');
+    if (!grid) return;
+    grid.innerHTML = promptPresets.map(preset => `<button type="button" class="prompt-style-card ${preset.id === state.aiPrompt.styleId ? 'active' : ''}" data-prompt-style="${preset.id}" aria-pressed="${preset.id === state.aiPrompt.styleId}" style="--accent:${preset.accent}">
+      <span class="preset-swatch"></span><strong>${preset.name}</strong><small>${preset.tag}</small>
+    </button>`).join('');
+  }
+
+  function buildAiPrompt(presetId) {
+    const preset = promptPresets.find(item => item.id === presetId) || promptPresets[0];
+    const title = state.aiPrompt.title.trim() || '【请填写封面主标题】';
+    const subtitle = state.aiPrompt.subtitle.trim();
+    const subject = state.aiPrompt.subject.trim() || '以我随消息上传的参考图片为准，识别主要角色、场景、道具和游戏视觉语言。';
+    const notes = state.aiPrompt.notes.trim() || '保持主体身份与关键设定准确；画面重点服务于标题，不增加无关角色或信息。';
+    const textInstruction = state.aiPrompt.textMode === 'clean'
+      ? `不要在图片里生成任何文字、字母、数字、Logo 或伪文字。请为主标题“${title}”预留高对比、干净、可后期叠字的安全区域${subtitle ? `，并为副标题“${subtitle}”预留次级区域` : ''}。`
+      : `制作带字成品封面。主标题必须逐字准确写成“${title}”${subtitle ? `，副标题必须逐字准确写成“${subtitle}”` : '，不要添加副标题'}。只允许出现我指定的文字，不要生成额外文案、乱码或伪文字；如果无法保证中文准确，请改为输出同构图的无字版本并完整保留标题安全区。`;
+
+    return `你是一名资深游戏内容封面设计师。请结合我上传的参考图片，为同一期游戏内容制作 4 张“分别重新构图”的成品封面，而不是把一张母图机械裁成四个尺寸。
+
+【内容信息】
+- 主标题：${title}
+- 副标题 / 角标：${subtitle || '无'}
+- 参考图主体说明：${subject}
+- 本期重点与不可改动项：${notes}
+
+【本次风格：${preset.name}｜${preset.tag}】
+${preset.aiDirection}
+色彩方向：${preset.aiPalette}。
+整体标准：像成熟内容团队正式发布的封面，有清晰视觉层级、单一焦点和设计完成度；手机缩略图尺寸下仍能一眼识别主体和核心信息。
+
+【必须分别交付的 4 个文件】
+1. 横版 16:9，1920×1080
+2. 横版 4:3，1600×1200
+3. 竖版 3:4，1200×1600
+4. 竖版 9:16，1080×1920
+
+必须输出四张独立图片、四个独立文件。禁止输出四宫格、拼贴预览、带尺寸标注的样张。横版与竖版要重新安排人物、视线、背景信息和标题区；不能只做中心裁切。人物脸部、关键动作、武器或核心道具不得被标题和画面边缘遮挡。
+
+【参考图片使用规则】
+- 把上传图片作为角色身份、服装、发型、武器、场景和游戏美术风格的最高优先级参考。
+- 保持人物可识别性和游戏设定准确，不擅自换脸、换服装、改配色或新增角色。
+- 可以重构光影、景深、背景层次和镜头，但不要原样复制参考图中的水印、平台 UI、字幕、边框或无关 Logo。
+- 多张参考图若有冲突，以“参考图主体说明”和“不可改动项”为准。
+
+【文字与排版】
+${textInstruction}
+标题区必须与主体分离，留出足够呼吸感；避免文字压脸、压武器、贴边或跨越复杂背景。不要堆砌十几个小标签，不使用廉价 3D 字、过粗描边和失控光效。
+
+【质量与禁止项】
+- 画面清晰、主体完整、结构可信，避免畸形手指、重复肢体、错误五官、融化武器和透视崩坏。
+- 不生成平台水印、AI 水印、二维码、进度条、播放器控件、点赞图标或未经要求的品牌 Logo。
+- 不做毫无重点的素材拼贴，不把角色缩得过小，不用大片无意义烟雾遮挡信息。
+- 四个比例保持同一主题、色彩系统和角色状态，但每张都必须像为该比例原生设计。
+
+输出前请逐张检查：比例与分辨率正确、主体身份准确、标题安全、缩略图可读、四张不是简单裁切。直接生成图片，不要只回复设计建议。`;
+  }
+
+  function updateAiPromptOutput() {
+    if (!$('aiPromptOutput')) return;
+    $('aiPromptOutput').value = buildAiPrompt(state.aiPrompt.styleId);
+    renderPromptStyleGrid();
+  }
+
+  function syncAiPromptForm() {
+    const prompt = state.aiPrompt;
+    $('aiPromptTitle').value = prompt.title || '';
+    $('aiPromptSubtitle').value = prompt.subtitle || '';
+    $('aiPromptSubject').value = prompt.subject || '';
+    $('aiPromptNotes').value = prompt.notes || '';
+    $('aiTextMode').value = prompt.textMode || 'full';
+    updateAiPromptOutput();
+  }
+
+  function readAiPromptForm() {
+    state.aiPrompt.title = $('aiPromptTitle').value;
+    state.aiPrompt.subtitle = $('aiPromptSubtitle').value;
+    state.aiPrompt.subject = $('aiPromptSubject').value;
+    state.aiPrompt.notes = $('aiPromptNotes').value;
+    state.aiPrompt.textMode = $('aiTextMode').value;
+    updateAiPromptOutput();
+    autosave();
+  }
+
+  async function copyText(text, successMessage) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const helper = document.createElement('textarea');
+        helper.value = text;
+        helper.style.position = 'fixed';
+        helper.style.opacity = '0';
+        document.body.appendChild(helper);
+        helper.select();
+        if (!document.execCommand('copy')) throw new Error('copy unavailable');
+        helper.remove();
+      }
+      setPromptStatus(successMessage);
+    } catch (error) {
+      $('aiPromptOutput').focus();
+      $('aiPromptOutput').select();
+      setPromptStatus('自动复制受限，已选中 Prompt，请手动复制。');
+    }
+  }
+
+  function copyAllAiPrompts() {
+    const all = promptPresets.map((preset, index) => `================ ${index + 1}. ${preset.name} ================\n\n${buildAiPrompt(preset.id)}`).join('\n\n\n');
+    copyText(all, '已复制全部十种风格 Prompt。');
+  }
+
+  function useCurrentCoverForPrompt() {
+    const textElements = state.elements.filter(el => el.type === 'text');
+    if (!textElements.length) {
+      setPromptStatus('当前画布没有文字元素，请手动填写标题。');
+      return;
+    }
+    state.aiPrompt.title = textElements[0]?.text?.replace(/\n+/g, ' ').trim() || '';
+    state.aiPrompt.subtitle = textElements[1]?.text?.replace(/\n+/g, ' ').trim() || '';
+    syncAiPromptForm();
+    autosave();
+    setPromptStatus('已读取画布中的主标题和副标题。');
+  }
+
+  function bindAiPromptEvents() {
+    $('promptStyleGrid').addEventListener('click', event => {
+      const card = event.target.closest('[data-prompt-style]');
+      if (!card) return;
+      state.aiPrompt.styleId = card.dataset.promptStyle;
+      updateAiPromptOutput();
+      autosave();
+      setPromptStatus(`已切换为「${designPresets.find(item => item.id === state.aiPrompt.styleId)?.name}」Prompt。`);
+    });
+    ['aiPromptTitle','aiPromptSubtitle','aiPromptSubject','aiPromptNotes'].forEach(id => $(id).addEventListener('input', readAiPromptForm));
+    $('aiTextMode').addEventListener('change', readAiPromptForm);
+    $('copyAiPromptBtn').addEventListener('click', () => copyText($('aiPromptOutput').value, '已复制当前风格 Prompt。'));
+    $('copyAllAiPromptsBtn').addEventListener('click', copyAllAiPrompts);
+    $('useCurrentCoverBtn').addEventListener('click', useCurrentCoverForPrompt);
+  }
+
   function domTextStyle(style, size, color, strokeColor, compact = false, fontPresetId = 'default') {
     const textShadow = style.shadow || '0 .10em .22em rgba(0,0,0,.55)';
     const rawStroke = style.strokeWidth || 0;
@@ -897,7 +1398,8 @@
     const stroke = compact ? Math.min(0.9, rawStroke * 0.22) : Math.min(1.35, rawStroke * previewScale * 0.62);
     const bg = style.bg ? `background:${style.bg};padding:${compact ? '5px 10px' : Math.round(size*.12)+'px '+Math.round(size*.18)+'px'};border-radius:${compact ? '9px' : Math.round(size*.12)+'px'};box-decoration-break:clone;-webkit-box-decoration-break:clone;` : '';
     const family = fontFamilyById(fontPresetId, style);
-    return `font-family:${family};font-weight:${style.weight || 900};font-style:${style.italic ? 'italic' : 'normal'};letter-spacing:${compact ? '0' : '0.01em'};color:${color || style.color};-webkit-text-stroke:${stroke}px ${strokeColor || style.stroke};text-shadow:${textShadow};${bg}`;
+    const spacing = compact ? Math.max(-.02, Math.min(.08, style.letterSpacing || 0)) : (style.letterSpacing ?? .01);
+    return `font-family:${family};font-weight:${style.weight || 900};font-style:${style.italic ? 'italic' : 'normal'};letter-spacing:${spacing}em;color:${color || style.color};-webkit-text-stroke:${stroke}px ${strokeColor || style.stroke};text-shadow:${textShadow};${bg}`;
   }
 
   function computePreviewScale() {
@@ -924,6 +1426,8 @@
     st.style.height = Math.round(r.h * previewScale) + 'px';
     st.classList.toggle('show-guide', state.showGuide);
     $('sizeBadge').textContent = `${r.label} / ${r.w}×${r.h}`;
+    const designLayer = $('designLayer');
+    designLayer.className = `design-layer design-${state.designPreset || 'none'}`;
 
     document.querySelectorAll('.ratio-tab').forEach(t => {
       const active = t.dataset.ratio === state.currentRatio;
@@ -956,7 +1460,7 @@
       const lay = layoutOf(el.id);
       if (!lay) return;
       const node = document.createElement('div');
-      node.className = 'cover-element' + (el.id === state.selectedId ? ' selected' : '');
+      node.className = `cover-element cover-${el.type}` + (el.id === state.selectedId ? ' selected' : '');
       node.dataset.id = el.id;
       node.style.left = lay.x * previewScale + 'px';
       node.style.top = lay.y * previewScale + 'px';
@@ -964,7 +1468,9 @@
       node.style.height = lay.h * previewScale + 'px';
       node.style.transform = `rotate(${lay.rot || 0}deg)`;
       node.style.opacity = lay.opacity ?? 1;
-      node.style.zIndex = lay.z || 1;
+      node.style.zIndex = el.type === 'image'
+        ? Math.min(60, lay.z || 1)
+        : Math.max(100, lay.z || 1);
 
       if (el.type === 'image') {
         const img = document.createElement('img');
@@ -1059,6 +1565,7 @@
     renderElementList();
     renderInspector();
     renderMiniPreviews();
+    renderDesignPresetGrid();
   }
 
   function escapeHtml(str) {
@@ -1107,6 +1614,11 @@
       const style = textStyles[0];
       addElement({ id: uid(), type: 'text', text: raw.replace(/\\n/g, '\n'), styleId: style.id, color: style.color, strokeColor: style.stroke, align: 'left', name: '文字' });
     };
+    $('designPresetGrid').addEventListener('click', event => {
+      const card = event.target.closest('[data-design-preset]');
+      if (!card) return;
+      applyDesignPreset(card.dataset.designPreset);
+    });
 
     $('elementList').onclick = e => {
       const item = e.target.closest('.element-item');
@@ -1316,7 +1828,7 @@
       });
     });
     renderAll(); autosave();
-    setStatus('已把当前比例布局按比例复制到其他四个比例。');
+    setStatus('已把当前比例布局按比例复制到其他三个比例。');
   }
 
   function drawImageFit(ctx, img, x, y, w, h, fit) {
@@ -1358,12 +1870,14 @@
       ctx.fill();
     }
     ctx.font = `${s.italic ? 'italic ' : ''}${s.weight || 900} ${fontSize}px ${fontFamilyById(el.fontFamily || 'default', s)}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = `${s.letterSpacing || 0}em`;
     ctx.textBaseline = 'top';
     ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(0,0,0,.48)';
-    ctx.shadowBlur = fontSize * .035;
-    ctx.shadowOffsetX = fontSize * .018;
-    ctx.shadowOffsetY = fontSize * .035;
+    const luminous = ['gold','purple','luxe','crystal','neon','glitch'].includes(s.id);
+    ctx.shadowColor = s.shadowColor || 'rgba(0,0,0,.48)';
+    ctx.shadowBlur = fontSize * (luminous ? .10 : .035);
+    ctx.shadowOffsetX = s.id === 'glitch' ? fontSize * .035 : fontSize * .012;
+    ctx.shadowOffsetY = fontSize * .03;
     const lines = wrapText(ctx, el.text, lay.w);
     const lineH = fontSize * 1.05;
     const totalH = lines.length * lineH;
@@ -1395,6 +1909,97 @@
     ctx.closePath();
   }
 
+  function drawDesignPresetOverlay(ctx, key) {
+    const r = ratios[key];
+    const W = r.w;
+    const H = r.h;
+    const vertical = H > W;
+    const id = state.designPreset || 'none';
+    if (id === 'none') return;
+    ctx.save();
+    if (id === 'impact') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(5,7,13,.93)'); shade.addColorStop(vertical ? .72 : .38,'rgba(5,7,13,.66)'); shade.addColorStop(vertical ? 1 : .80,'rgba(5,7,13,0)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = 'rgba(255,49,77,.52)';
+      ctx.beginPath(); ctx.moveTo(W*.79,-H*.12); ctx.lineTo(W*.96,-H*.12); ctx.lineTo(W*.78,H*1.12); ctx.lineTo(W*.61,H*1.12); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.07)';
+      ctx.beginPath(); ctx.moveTo(W*.83,-H*.12); ctx.lineTo(W*.86,-H*.12); ctx.lineTo(W*.68,H*1.12); ctx.lineTo(W*.65,H*1.12); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#ff344e'; ctx.fillRect(W*.04,H*.09,Math.max(5,W*.009),H*.24);
+      ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fillRect(W*.052,H*.09,Math.max(2,W*.002),H*.24);
+    } else if (id === 'cinematic') {
+      const bottom = ctx.createLinearGradient(0,H*.18,0,H);
+      bottom.addColorStop(0,'rgba(2,4,9,.04)'); bottom.addColorStop(1,'rgba(2,4,9,.90)');
+      ctx.fillStyle = bottom; ctx.fillRect(0,0,W,H);
+      const vignette = ctx.createRadialGradient(W*.58,H*.35,Math.min(W,H)*.08,W*.58,H*.35,Math.max(W,H)*.72);
+      vignette.addColorStop(0,'rgba(0,0,0,0)'); vignette.addColorStop(1,'rgba(0,0,0,.47)');
+      ctx.fillStyle = vignette; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle = 'rgba(255,209,104,.58)'; ctx.lineWidth = Math.max(2,Math.min(W,H)*.0015); ctx.strokeRect(W*.04,H*.04,W*.92,H*.92);
+      ctx.fillStyle = 'rgba(2,3,8,.44)'; ctx.fillRect(0,0,W,H*.055); ctx.fillRect(0,H*.945,W,H*.055);
+      ctx.fillStyle = '#ffd168'; ctx.fillRect(W*.07,H*.93,W*.13,Math.max(2,H*.0025));
+    } else if (id === 'editorial') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(9,17,28,.94)'); shade.addColorStop(vertical ? .78 : .45,'rgba(9,17,28,.64)'); shade.addColorStop(vertical ? 1 : .76,'rgba(9,17,28,0)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = 'rgba(135,238,255,.88)'; ctx.fillRect(W*.04,H*.07,W*.34,Math.max(2,H*.0015));
+      ctx.fillStyle = 'rgba(135,238,255,.25)'; ctx.fillRect(W*.04,H*.085,W*.22,Math.max(2,H*.001));
+      ctx.fillStyle = 'rgba(135,238,255,.10)'; ctx.fillRect(W*.04,H*.10,W*.13,Math.max(2,H*.001));
+      ctx.fillStyle = '#57e5ff'; ctx.fillRect(W*.04,H*.92,W*.08,Math.max(4,H*.004));
+    } else if (id === 'tech') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(4,12,31,.94)'); shade.addColorStop(vertical ? .76 : .45,'rgba(10,16,43,.62)'); shade.addColorStop(1,'rgba(24,12,56,.10)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle = 'rgba(64,226,255,.10)'; ctx.lineWidth = 1;
+      for (let y=H*.08; y<H; y+=H*.09) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+      for (let x=W*.04; x<W; x+=W*.08) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      ctx.strokeStyle = 'rgba(69,222,255,.46)'; ctx.lineWidth = Math.max(2,Math.min(W,H)*.0014); ctx.strokeRect(W*.04,H*.04,W*.92,H*.92);
+      ctx.fillStyle = '#4de4ff'; ctx.fillRect(W*.84,H*.06,W*.06,Math.max(3,H*.003));
+      ctx.fillStyle = '#8e6cff'; ctx.fillRect(W*.91,H*.06,W*.05,Math.max(3,H*.003));
+    } else if (id === 'guide') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(5,16,32,.94)'); shade.addColorStop(vertical ? .82 : .45,'rgba(5,16,32,.58)'); shade.addColorStop(1,'rgba(5,16,32,0)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = 'rgba(9,24,43,.48)'; roundRect(ctx,W*.038,H*.08,W*(vertical ? .924 : .42),H*.82,Math.min(W,H)*.018); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,223,91,.38)'; ctx.lineWidth = Math.max(2,Math.min(W,H)*.0015); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = Math.max(1,Math.min(W,H)*.0008); roundRect(ctx,W*.048,H*.095,W*(vertical ? .904 : .40),H*.79,Math.min(W,H)*.014); ctx.stroke();
+      ctx.fillStyle = '#ffdf5b'; roundRect(ctx,W*.052,H*.11,W*.12,Math.max(5,H*.006),Math.max(3,H*.003)); ctx.fill();
+    } else if (id === 'playful') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(28,10,37,.91)'); shade.addColorStop(vertical ? .74 : .43,'rgba(28,10,37,.54)'); shade.addColorStop(1,'rgba(28,10,37,0)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle = 'rgba(255,142,210,.78)'; ctx.lineWidth = Math.max(3,Math.min(W,H)*.003); ctx.beginPath(); ctx.arc(W*.87,H*.13,Math.min(W,H)*.075,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,190,83,.34)'; ctx.beginPath(); ctx.arc(W*.90,H*.17,Math.min(W,H)*.075,0,Math.PI*2); ctx.stroke();
+      const accent = ctx.createLinearGradient(W*.04,0,W*.21,0); accent.addColorStop(0,'#ff75c8'); accent.addColorStop(1,'#ffc857');
+      ctx.fillStyle = accent; roundRect(ctx,W*.04,H*.92,W*.17,Math.max(5,H*.006),Math.max(3,H*.003)); ctx.fill();
+    } else if (id === 'minimalist') {
+      const shade = ctx.createLinearGradient(0,0,W,0);
+      shade.addColorStop(0,'rgba(7,10,16,.80)'); shade.addColorStop(vertical ? .76 : .36,'rgba(7,10,16,.34)'); shade.addColorStop(vertical ? 1 : .76,'rgba(7,10,16,0)');
+      ctx.fillStyle = shade; ctx.fillRect(0,0,W,H);
+      const bottom = ctx.createLinearGradient(0,H*.66,0,H); bottom.addColorStop(0,'rgba(3,5,9,0)'); bottom.addColorStop(1,'rgba(3,5,9,.52)'); ctx.fillStyle=bottom; ctx.fillRect(0,H*.60,W,H*.40);
+      ctx.fillStyle = 'rgba(255,255,255,.78)'; ctx.fillRect(W*.05,H*.08,Math.max(2,W*.001),H*.14);
+      const line=ctx.createLinearGradient(W*.05,0,W*.29,0); line.addColorStop(0,'rgba(255,255,255,.86)'); line.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=line; ctx.fillRect(W*.05,H*.93,W*.24,Math.max(2,H*.0015));
+    } else if (id === 'luxe') {
+      const shade=ctx.createLinearGradient(0,0,W,0); shade.addColorStop(0,'rgba(12,6,12,.96)'); shade.addColorStop(vertical?.78:.43,'rgba(38,12,24,.62)'); shade.addColorStop(1,'rgba(38,12,24,0)'); ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);
+      const glow=ctx.createRadialGradient(W*.84,H*.18,0,W*.84,H*.18,Math.max(W,H)*.34); glow.addColorStop(0,'rgba(255,205,111,.20)');glow.addColorStop(1,'rgba(255,205,111,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle='rgba(255,211,126,.62)';ctx.lineWidth=Math.max(2,Math.min(W,H)*.0015);ctx.strokeRect(W*.045,H*.045,W*.91,H*.91);
+      ctx.strokeStyle='rgba(255,211,126,.12)';ctx.strokeRect(W*.052,H*.052,W*.896,H*.896);
+      const gold=ctx.createLinearGradient(W*.05,0,W*.23,0);gold.addColorStop(0,'#ffe1a1');gold.addColorStop(1,'rgba(255,225,161,0)');ctx.fillStyle=gold;ctx.fillRect(W*.05,H*.08,W*.18,Math.max(2,H*.002));
+    } else if (id === 'dossier') {
+      const shade=ctx.createLinearGradient(0,0,W,0);shade.addColorStop(0,'rgba(13,20,18,.96)');shade.addColorStop(vertical?.82:.45,'rgba(20,27,22,.58)');shade.addColorStop(1,'rgba(20,27,22,0)');ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(41,48,35,.44)';roundRect(ctx,W*.038,H*.07,W*(vertical?.924:.43),H*.86,Math.min(W,H)*.006);ctx.fill();
+      ctx.strokeStyle='rgba(218,184,96,.46)';ctx.lineWidth=Math.max(2,Math.min(W,H)*.0014);ctx.stroke();
+      ctx.strokeStyle='rgba(216,181,94,.075)';ctx.lineWidth=1;for(let y=H*.12;y<H*.92;y+=H*.07){ctx.beginPath();ctx.moveTo(W*.04,y);ctx.lineTo(W*(vertical?.96:.46),y);ctx.stroke();}
+      ctx.fillStyle='#d9b55c';ctx.fillRect(W*.052,H*.10,W*.11,Math.max(4,H*.004));ctx.fillStyle='rgba(217,181,92,.23)';ctx.fillRect(W*.052,H*.117,W*.08,Math.max(2,H*.002));
+    } else if (id === 'retro') {
+      const shade=ctx.createLinearGradient(0,0,W,0);shade.addColorStop(0,'rgba(16,5,35,.95)');shade.addColorStop(vertical?.76:.41,'rgba(16,5,35,.50)');shade.addColorStop(1,'rgba(16,5,35,0)');ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(255,255,255,.032)';for(let y=0;y<H;y+=Math.max(5,H*.008)){ctx.fillRect(0,y,W,1);}
+      ctx.strokeStyle='rgba(0,234,255,.68)';ctx.lineWidth=Math.max(3,Math.min(W,H)*.002);ctx.strokeRect(W*.04,H*.04,W*.92,H*.92);
+      ctx.strokeStyle='rgba(255,49,181,.45)';ctx.strokeRect(W*.046,H*.047,W*.92,H*.92);
+      const neon=ctx.createLinearGradient(W*.05,0,W*.26,0);neon.addColorStop(0,'#00eaff');neon.addColorStop(.48,'#00eaff');neon.addColorStop(.48,'#ff31b5');neon.addColorStop(1,'#ff31b5');ctx.fillStyle=neon;ctx.fillRect(W*.05,H*.93,W*.21,Math.max(5,H*.005));
+    }
+    ctx.restore();
+  }
+
   function renderToCanvas(key) {
     const r = ratios[key];
     const canvas = document.createElement('canvas');
@@ -1407,19 +2012,23 @@
       const cr = coverRect(state.bg.image, r.w, r.h, state.templates[key].bg);
       ctx.drawImage(state.bg.image, cr.x, cr.y, cr.w, cr.h);
     }
-    [...state.elements].sort((a,b) => (state.templates[key].layouts[a.id]?.z || 0) - (state.templates[key].layouts[b.id]?.z || 0)).forEach(el => {
+    const sortedElements = [...state.elements].sort((a,b) => (state.templates[key].layouts[a.id]?.z || 0) - (state.templates[key].layouts[b.id]?.z || 0));
+    sortedElements.filter(el => el.type === 'image').forEach(el => {
       const lay = state.templates[key].layouts[el.id];
       if (!lay) return;
-      if (el.type === 'image' && el.image) {
+      if (el.image) {
         ctx.save();
         ctx.globalAlpha = lay.opacity ?? 1;
         ctx.translate(lay.x + lay.w/2, lay.y + lay.h/2);
         ctx.rotate((lay.rot || 0) * Math.PI / 180);
         drawImageFit(ctx, el.image, -lay.w/2, -lay.h/2, lay.w, lay.h, lay.fit || el.fit || 'contain');
         ctx.restore();
-      } else if (el.type === 'text') {
-        drawTextElement(ctx, el, lay);
       }
+    });
+    drawDesignPresetOverlay(ctx, key);
+    sortedElements.filter(el => el.type === 'text').forEach(el => {
+      const lay = state.templates[key].layouts[el.id];
+      if (lay) drawTextElement(ctx, el, lay);
     });
     return canvas;
   }
@@ -1477,18 +2086,23 @@
   function serializableState() {
     return {
       currentRatio: state.currentRatio,
+      designPreset: state.designPreset,
       nextId: state.nextId,
       bg: { src: state.bg.src, name: state.bg.name },
       templates: state.templates,
-      elements: state.elements.map(e => ({ ...e, image: undefined }))
+      elements: state.elements.map(e => ({ ...e, image: undefined })),
+      aiPrompt: { ...state.aiPrompt }
     };
   }
 
   async function hydrate(data) {
-    state.currentRatio = data.currentRatio || 'r16_9';
+    state.currentRatio = ratios[data.currentRatio] ? data.currentRatio : 'r16_9';
+    state.designPreset = designPresets.some(item => item.id === data.designPreset) ? data.designPreset : 'none';
     state.nextId = data.nextId || 1;
+    state.aiPrompt = { ...defaultAiPromptState(), ...(data.aiPrompt || {}) };
+    if (!promptPresets.some(item => item.id === state.aiPrompt.styleId)) state.aiPrompt.styleId = 'impact';
     initTemplates();
-    state.templates = data.templates || state.templates;
+    mergeSavedTemplates(data.templates);
     state.elements = [];
     if (data.bg?.src) {
       try { state.bg = { src: data.bg.src, name: data.bg.name || '背景图', image: await loadImage(data.bg.src) }; } catch { state.bg = { src:'', name:'', image:null }; }
@@ -1499,8 +2113,14 @@
       }
       state.elements.push(e);
     }
+    ratioKeys.forEach(key => {
+      state.elements.forEach(el => {
+        if (!state.templates[key].layouts[el.id]) state.templates[key].layouts[el.id] = defaultLayoutFor(el.type, key);
+      });
+    });
     state.selectedId = null;
     renderAll();
+    syncAiPromptForm();
   }
 
   let saveTimer = null;
@@ -1520,21 +2140,24 @@
   }
   function resetProject() {
     if (!confirm('确定清空当前项目？这个操作不会删除已下载的图片。')) return;
-    state.currentRatio = 'r16_9'; state.selectedId = null; state.nextId = 1; state.bg = {src:'', image:null, name:''}; state.elements = [];
-    initTemplates(); renderAll(); autosave();
+    state.currentRatio = 'r16_9'; state.designPreset = 'none'; state.selectedId = null; state.nextId = 1; state.bg = {src:'', image:null, name:''}; state.elements = []; state.aiPrompt = defaultAiPromptState();
+    initTemplates(); renderAll(); syncAiPromptForm(); autosave();
   }
 
   function bootstrapDemo() {
     const style = textStyles[0];
-    addElement({ id: uid(), type:'text', text:'游戏解说\n封面标题', styleId:style.id, color:style.color, strokeColor:style.stroke, align:'left', name:'主标题' });
-    const style2 = textStyles[12];
-    addElement({ id: uid(), type:'text', text:'EP.01 / 高能名场面', styleId:style2.id, color:style2.color, strokeColor:style2.stroke, align:'center', name:'副标题' });
+    const title = { id: uid(), type:'text', text:'游戏解说\n封面标题', styleId:style.id, color:style.color, strokeColor:style.stroke, align:'left', name:'主标题' };
+    addElement(title);
+    const style2 = textStyles.find(item => item.id === 'subtitle');
+    const subtitle = { id: uid(), type:'text', text:'EP.01 / 高能名场面', styleId:style2.id, color:style2.color, strokeColor:style2.stroke, align:'center', name:'副标题' };
+    addElement(subtitle);
     ratioKeys.forEach(key => {
-      const r = ratios[key];
-      const second = state.elements[1];
-      const l = state.templates[key].layouts[second.id];
-      l.x = r.w * .07; l.y = r.h * .72; l.w = r.w * .56; l.h = r.h * .12; l.fontSize = Math.round(Math.min(r.w,r.h)*.055);
+      state.templates[key].layouts[title.id] = presetLayoutFor('text', 0, key, 'minimalist');
+      state.templates[key].layouts[subtitle.id] = presetLayoutFor('text', 1, key, 'minimalist');
     });
+    state.designPreset = 'none';
+    state.aiPrompt.title = '游戏解说 封面标题';
+    state.aiPrompt.subtitle = 'EP.01 / 高能名场面';
   }
 
   function init() {
@@ -1543,6 +2166,8 @@
     createExportChecks();
     createStyleGrid();
     bindEvents();
+    bindAiPromptEvents();
+    syncAiPromptForm();
     const saved = localStorage.getItem('gameCoverGeneratorProject');
     if (saved) hydrate(JSON.parse(saved));
     else { bootstrapDemo(); renderAll(); }

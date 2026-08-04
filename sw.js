@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v17";
+const CACHE_VERSION = "gucc-pwa-v18";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

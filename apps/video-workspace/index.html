@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1422">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>GUCC WorkSpace v4.1.0｜视频项目模板与归档工作台</title>
+<title>GUCC WorkSpace v4.2.0｜AI 驱动视频创作与归档工作台</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg?v=5">
 <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png?v=2">
 <link rel="manifest" href="../../manifest.webmanifest">
@@ -2165,6 +2165,34 @@ body.gucc-enhanced .toast{
     animation-duration:.01ms!important;
   }
 }
+
+/* v4.2.0: standalone AI-first workbench and conversation handoff */
+.workspace-opening{display:flex;flex-direction:column;gap:15px}
+.ai-workbench-lead{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:12px 14px;margin:10px 0 14px;border:1px solid #d9d4ef;border-radius:12px;
+  background:linear-gradient(135deg,#f7f4ff,#eef9fb);
+}
+.ai-workbench-lead strong{display:block;color:#43386f;margin-bottom:4px}
+.ai-mode-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ai-mode-tag{padding:4px 8px;border-radius:999px;background:#fff;border:1px solid #d9d4ef;color:#68569c;font-size:11px;font-weight:800;white-space:nowrap}
+.ai-workbench-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+.ai-lane{min-width:0;padding:13px;border:1px solid #d7e0e8;border-radius:13px;background:rgba(255,255,255,.74)}
+.ai-lane h3{margin:0 0 5px;color:#30465a;font-size:15px}
+.ai-lane p{margin:0 0 10px;color:#738093;font-size:12px;line-height:1.55}
+.ai-lane .btns{align-items:stretch}
+.ai-lane button{flex:1 1 140px;text-align:left}
+.ai-handoff-panel{margin-top:12px;padding:12px;border:1px dashed #9ab9c5;border-radius:12px;background:#f3fafb}
+.ai-handoff-panel summary{cursor:pointer;font-weight:900;color:#285b68}
+.ai-handoff-panel textarea{width:100%;min-height:150px;margin-top:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",monospace}
+.ai-output-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ai-output-actions .tiny{margin:0;flex:1 1 260px}
+@media(max-width:980px){
+  .ai-workbench-grid{grid-template-columns:1fr}
+  .ai-workbench-lead{flex-direction:column}
+  .ai-mode-tags{justify-content:flex-start}
+  .ai-lane button{flex:1 1 100%}
+}
 </style>
 </head>
 <body class="gucc-enhanced">
@@ -2173,7 +2201,7 @@ body.gucc-enhanced .toast{
 <div class="page">
 <section class="hero">
   <a class="portal-link no-print" href="../../">← GUCC Portal</a><br>
-  <span class="eyebrow">GUCC WorkSpace v4.1.0 · Prompt / Publish / Diffusion / Archive</span>
+  <span class="eyebrow">GUCC WorkSpace v4.2.0 · AI-first / Publish / Import / Archive</span>
   <h1>GUCC WorkSpace</h1>
   <p class="sub">用于游戏视频项目的本地优先工作台。编辑内容会自动保存到当前浏览器；阶段性导出 Markdown / JSON 到 Google Drive 或本地归档，换设备时可直接导入继续工作。</p>
   <div class="progressbox">
@@ -2228,7 +2256,7 @@ body.gucc-enhanced .toast{
   <span class="nav-hint">✍ 你写 · 🤖 AI · 🔒 自动 · ▾ 选择</span>
 </nav>
 
-<div class="grid2">
+<div class="workspace-opening">
 <section id="sec-00" class="card card-00 control-card">
 <h2><span class="idx">00</span> 项目总控</h2>
 
@@ -2262,7 +2290,7 @@ body.gucc-enhanced .toast{
       <div class="field"><label>游戏代码（自动）</label><input data-key="gameCode" readonly placeholder="WW / ZZZ / HSR / ENF / NTE"></div>
       <div class="field short-title-field"><label>简易标题（手写）</label><input data-key="projectShortTitle" placeholder="例：资源压力"><div class="tiny">建议 8 字内；系统只自动补游戏代码。</div></div>
       <div class="field"><label>简称预览（自动合成）</label><input data-key="projectShortName" readonly placeholder="例：WW资源压力"></div>
-      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v4.1.0" readonly></div>
+      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v4.2.0" readonly></div>
     </div>
     <div class="btns no-print control-naming-actions"><button class="ghost hot-action" type="button" onclick="refreshShortName()">更新游戏代码 / 文件名</button></div>
   </div>
@@ -2275,19 +2303,49 @@ body.gucc-enhanced .toast{
 </section>
 
 <section id="sec-ai" class="card card-ai">
-<h2><span class="idx">AI</span> AI 作战区</h2>
-<p class="sub">不接 API，按阶段生成 Prompt。新版定位是“共同策划搭子”：要求 AI 主动查官方与社区资料、交叉核验、指出我的输入问题，并按真实项目情况决定结构和时长，而不是死套模板。</p>
-<div class="btns">
-<button onclick="copyPrompt('analysis')">① 立项/资料分析 Prompt</button>
-<button onclick="copyPrompt('outline')">② 章节结构 Prompt</button>
-<button onclick="copyPrompt('script')">③ 脚本生成 Prompt</button>
-<button onclick="copyPrompt('platform')">④ 主平台发布包 Prompt</button>
-<button class="secondary" onclick="copyPrompt('translate')">⑤ 多语言本地化 Prompt</button>
-<button class="secondary" onclick="copyPrompt('diffusion')">⑥ 后期扩散 Prompt</button>
-<button class="mint" onclick="copyPrompt('review')">⑦ 复盘分析 Prompt</button>
+<h2><span class="idx">AI</span> AI 驱动创作区</h2>
+<div class="ai-workbench-lead">
+  <div><strong>可以完全脱离模板推进，想回填时再收口。</strong><span class="sub">把 Prompt 复制到你正在使用的 AI 对话里，持续让它修改独立 HTML、文档或脚本；只有在要进入生产、存档或复盘时，才需要整理回 Workspace。</span></div>
+  <div class="ai-mode-tags"><span class="ai-mode-tag">不接 API</span><span class="ai-mode-tag">可独立产出 HTML</span><span class="ai-mode-tag">可回填 MD / JSON</span></div>
+</div>
+<div class="ai-workbench-grid">
+  <div class="ai-lane">
+    <h3>1｜自由创作</h3>
+    <p>在 AI 对话里完成策划、结构、文案和可视化文件，不要求先把模板填满。</p>
+    <div class="btns">
+      <button onclick="copyPrompt('analysis')">选题陪聊 Prompt</button>
+      <button onclick="copyPrompt('outline')">章节结构 Prompt</button>
+      <button onclick="copyPrompt('script')">口播文案 Prompt</button>
+      <button class="secondary" onclick="copyPrompt('artifact')">独立 HTML 策划稿</button>
+    </div>
+  </div>
+  <div class="ai-lane">
+    <h3>2｜发布生产</h3>
+    <p>同一个完整视频适配各平台，只改标题、简介、话题和标签，不生成平台切片。</p>
+    <div class="btns">
+      <button onclick="copyPrompt('platform')">中文全平台发布包</button>
+      <button class="secondary" onclick="copyPrompt('translate')">海外多语言发布包</button>
+      <button class="secondary" onclick="copyPrompt('diffusion')">发布后图文扩散</button>
+    </div>
+  </div>
+  <div class="ai-lane">
+    <h3>3｜收口回填</h3>
+    <p>让 AI 汇总当前对话和独立文件，生成可导入数据；JSON 最稳，Markdown 更适合阅读。</p>
+    <div class="btns">
+      <button class="mint" onclick="copyPrompt('workspaceJson')">汇总为 Workspace JSON</button>
+      <button class="mint" onclick="copyPrompt('workspaceMarkdown')">汇总为 Workspace Markdown</button>
+      <button class="secondary" onclick="copyPrompt('review')">复盘分析 Prompt</button>
+    </div>
+  </div>
 </div>
 <textarea id="aiOutput" class="output prompt-output" readonly placeholder="点击上方 Prompt 按钮后，这里会显示当前 Prompt。点击此框或 Ctrl+A 只会选中本 Prompt。"></textarea>
-<p class="tiny">提示：①只读 00/01/02；②读 AI 分析；③读 03 结构；④读 04 文案；⑤读简中发布包；⑥读正式发布记录并生成扩散包；⑦读发布、扩散和复盘数据。这样不会循环引用。</p>
+<div class="ai-output-actions no-print"><button class="ghost" type="button" onclick="copyCurrentPrompt()">再次复制当前 Prompt</button><span class="tiny">Prompt 会带上当前页面已填写的内容；空白页面也能使用，AI 会结合所在对话的已有上下文继续工作。</span></div>
+<details class="ai-handoff-panel no-print">
+  <summary>把 AI 生成的 Workspace JSON / Markdown 粘贴回来</summary>
+  <p class="tiny">支持 AI 常见的 JSON / Markdown 代码围栏。导入会覆盖当前模板字段，建议先导出当前 WIP。</p>
+  <textarea id="aiImportPaste" placeholder="粘贴 AI 生成的完整 JSON 或符合收口 Prompt 骨架的 Markdown……"></textarea>
+  <div class="btns" style="margin-top:8px"><button class="hot-action" type="button" onclick="importAIPackage()">导入到 Workspace 模板</button><button class="ghost" type="button" onclick="document.getElementById('aiImportPaste').value=''">清空</button></div>
+</details>
 </section>
 </div>
 
@@ -2326,7 +2384,7 @@ body.gucc-enhanced .toast{
 <div class="field"><label>官方信息 / 链接</label><div data-key="officialInfo" class="richbox" contenteditable="true" data-placeholder="公告、前瞻、版本日历、角色页、兑换码、活动日期等。"></div></div>
 <div class="field"><label>社区争议 / 玩家问题</label><div data-key="communityDebate" class="richbox" contenteditable="true" data-placeholder="评论区、B站、NGA、X、Reddit等观点。"></div></div>
 <div class="field"><label>自己的观察 / 实测条件</label><div data-key="testNotes" class="richbox" contenteditable="true" data-placeholder="账号练度、队伍、测试条件、限制。"></div></div>
-<div class="field"><label>证据池 / Evidence Locker</label><div data-key="evidenceLocker" class="richbox" contenteditable="true" data-placeholder="建议一行一条：E1｜来源链接/平台｜已确认事实｜支撑观点｜可用画面｜可信度。没有链接也先写来源线索，不确定就标待核实。"></div><div class="tiny">后续 AI 会优先按 E1/E2 这类证据编号写结构和脚本；没有证据支撑的判断会被要求标待核实。</div></div>
+<div class="field"><label>事实核对 / 参考来源（可选）</label><div data-key="evidenceLocker" class="richbox" contenteditable="true" data-placeholder="只记会影响结论的内容：版本日期、机制数值、官方原话、来源链接、仍待确认的问题。普通策划讨论不用编号。"></div><div class="tiny">这个区域不是研究任务清单。只有关键事实需要核对；结构、文案和创意判断不再强制绑定证据编号。</div></div>
 <div class="field"><label>AI 分析结果</label><div data-key="aiAnalysis" class="richbox" contenteditable="true" data-placeholder="把 AI 给你的分析、信息缺口、结构建议贴这里。"></div></div>
 </section>
 </div>
@@ -2416,13 +2474,13 @@ body.gucc-enhanced .toast{
 
 <section id="sec-07" class="card card-07" style="margin-top:15px">
 <h2><span class="idx">07</span> 后期扩散 / 内容再分发</h2>
-<p class="sub">正片发布后再做图文、社交帖和社区内容，把流量引回主视频。这里不重复上传正片，也不把每个平台机械贴同一段文案。</p>
+<p class="sub">所有视频平台都发布同一个完整正片；这里仅在发布后制作图文、社交帖和社区内容。除非你另行提出，不生成视频切片。</p>
 <div class="btns no-print" style="margin:4px 0 10px">
 <button class="action-ai" onclick="copyPrompt('diffusion', {jumpToAi:true})">生成后期扩散包</button>
 </div>
 <div class="grid2">
 <div class="field"><label>扩散目标 / 时间窗口</label><div data-key="diffusionGoal" class="richbox" contenteditable="true" data-placeholder="例：首发后 24 小时承接搜索与讨论；3-7 天补长尾。写清优先平台和不做的平台。"></div></div>
-<div class="field"><label>可复用素材 / 切片清单</label><div data-key="diffusionAssets" class="richbox" contenteditable="true" data-placeholder="例：封面竖版、3 张信息卡、15 秒观点切片、评论区高频问题截图。"></div></div>
+<div class="field"><label>可复用素材 / 图文卡片清单</label><div data-key="diffusionAssets" class="richbox" contenteditable="true" data-placeholder="例：封面竖版、3 张信息卡、资料截图、评论区高频问题截图。"></div></div>
 </div>
 <div class="field"><label>后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab</label><div data-key="diffusionPackage" class="mid richbox" contenteditable="true" data-placeholder="把 AI 生成的分平台扩散节奏、图文结构、文案和 CTA 粘贴到这里。"></div></div>
 <div class="field"><label>扩散执行记录：时间 / 平台 / 链接 / 初步结果</label><div data-key="diffusionLog" class="richbox" contenteditable="true" data-placeholder="一行一条：2026-08-04 12:00｜微博｜https://...｜引流/互动结果。"></div></div>
@@ -2440,7 +2498,7 @@ body.gucc-enhanced .toast{
 <h2><span class="idx">09</span> 版本 / 文件夹 / 命名军规</h2>
 <p class="sub">
 你的结构现在定为：<strong>GUCC WorkSpace 是模板工作台</strong>；模板源码、说明和版本记录统一由 GitHub 管理；具体项目导出的 <strong>.md / .json</strong> 放 Google Drive 做 WIP 与归档。  
-当前为 <strong>v4.1.x</strong> 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
+当前为 <strong>v4.2.x</strong> 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
 </p>
 <textarea readonly class="mid">GUCC/                              # GitHub 仓库
 └─ apps/video-workspace/
@@ -2452,9 +2510,9 @@ body.gucc-enhanced .toast{
 
 Google Drive / 本地项目目录：
 ├─ 01_Working/                   # 进行中的项目导出
-│  └─ WIP_YYYYMMDD-HHmm_v4.1.x_游戏代码简易标题.md / .json
+│  └─ WIP_YYYYMMDD-HHmm_v4.2.x_游戏代码简易标题.md / .json
 └─ 99_Archive/                   # 已完成项目归档
-   └─ YYYYMMDD-HHmm_v4.1.x_游戏代码简易标题.md / .json</textarea>
+   └─ YYYYMMDD-HHmm_v4.2.x_游戏代码简易标题.md / .json</textarea>
 <p class="tiny">
 模板与版本记录走 GitHub；01_Working 和 99_Archive 走 Google Drive 或本地同步目录，只放具体项目导出的 WIP / DONE 文件。浏览器自动保存用于防止意外丢失，不能替代跨设备的 Markdown / JSON 存档。
 </p>
@@ -2518,7 +2576,7 @@ Google Drive / 本地项目目录：
 
 <script src="./ai-prompts.js"></script>
 <script>
-const TEMPLATE_VERSION = "4.1.0";
+const TEMPLATE_VERSION = "4.2.0";
 const APP_NAME = "GUCC WorkSpace";
 const STORAGE_KEY = "GUCC_WORKSPACE_CURRENT";
 const LEGACY_STORAGE_KEYS = ["INERTIA_PROJECT_FORGE_V3_1_CURRENT"];
@@ -2864,8 +2922,8 @@ function collect(stage){
   d.__workspaceName = APP_NAME;
   d.__workspaceVersion = TEMPLATE_VERSION;
   d.__templateVersion = TEMPLATE_VERSION;
-  d.__schemaVersion = "gucc-workspace-schema-2";
-  d.__lineBreakPolicy = "preserve-lf-v4.1.0";
+  d.__schemaVersion = "gucc-workspace-schema-3";
+  d.__lineBreakPolicy = "preserve-lf-v4.2.0";
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
   migrateWorkflowFields(d);
@@ -2970,6 +3028,8 @@ function clearAll(){
   if(paste) paste.value = '';
   const prompt = document.getElementById('aiOutput');
   if(prompt){ prompt.value = ''; prompt.style.display = 'none'; }
+  const aiImport = document.getElementById('aiImportPaste');
+  if(aiImport) aiImport.value = '';
   localStorage.removeItem(STORAGE_KEY);
   LEGACY_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
   refreshShortName();
@@ -3225,8 +3285,8 @@ function beautifyTitleCandidateLists(t){
 function promotePublishSubheadings(t){
   return transformMarkdownOutsideFences(String(t || ''), chunk => {
   let out = chunk;
-  const major = ['发布定位','B站标题候选','推荐主标题','B站简介','B站标签','小红书','小红书视频','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险','执行前检查','扩散节奏','小红书图文','微信公众号','微博','X','HoYoLab','执行清单','回填模板'];
-  const mid = ['核心卖点','目标观众','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','视频标题 5 个','正文 1 版','视频说明 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险','0-2 小时｜首发承接','24 小时内｜讨论放大','3-7 天｜长尾补充'];
+  const major = ['发布定位','B站','抖音','小红书','小红书视频','微信视频号','YouTube 简体中文','TikTok 简体中文','B站标题候选','推荐主标题','B站简介','B站标签','抖音 / 视频号 / TikTok 中文切片','置顶评论','发布前检查','发布前安全检查','标题是否兑现','空洞检查','术语核验','繁体中文','English','日本語','한국어','Français','本地化风险','执行前检查','扩散节奏','小红书图文','微信公众号','微博','X','HoYoLab','执行清单','回填模板'];
+  const mid = ['核心卖点','目标观众','不能承诺的内容','共用封面大字建议','最终标题','备选标题','简介','标签','最终发布文案（含 hashtag，总计不超过 60 字符）','备选发布文案 2 个','最终首句 / 标题','备选 2 个','完整描述与话题','Hashtags','后台 Tags','最终说明与话题','术语核验','证据边界','不适合使用的标题方向','稳妥版 5 个','有点击欲版 5 个','轻松吐槽版 5 个','SEO/搜索友好版 5 个','游戏词','版本词','机制词','情绪词','平台泛词','标题 5 个','视频标题 5 个','正文 1 版','视频说明 1 版','话题标签','短标题','切片脚本1','切片脚本2','切片脚本3','YouTube title options x10','YouTube title options','タイトル案 10個','제목 후보 10개','Titres x10','Description','概要欄','설명','Tags','タグ','태그','Mots-clés','Search keywords','検索キーワード','검색 키워드','确认译名','待确认译名','不建议直译的中文表达','各语言本地化取舍','可能误导的表达','需要补充的截图/封面字','评论区可能问什么','繁中风险','English 风险','日本語风险','한국어风险','Français 风险','0-2 小时｜首发承接','24 小时内｜讨论放大','3-7 天｜长尾补充'];
   const minor = ['封面主视觉','封面字建议','最推荐封面字组合','必补截图'];
   out = promoteBulletLabelsToHeadings(out, major, 3);
   out = promotePlainLabelsToHeadings(out, major, 3);
@@ -3268,7 +3328,7 @@ function formatAIAnalysisMarkdown(v){
   if(!t) return '';
   t = transformMarkdownOutsideFences(t, chunk => chunk.replace(/(^|\n)(\d+)\.\s*([^\n：:]{2,42})[：:]\s*/g, '$1\n\n### $2. $3\n\n'));
   const labels = [
-    '证据池整理','选题结论','核心矛盾','信息边界与待核实','推荐切口','下一步动作清单','空洞检查','一句话理由','最适合的平台形态','B站标准长视频','短视频/图文','建议时长区间','短版','标准版','深度版','建议主轴改成','结论是否太早','资料是否不足','官方资料不足','社区资料不足','实测资料不足','观众是否明确','最容易被喷/被误解的点','官方已确认信息','社区高频问题','信息冲突 / 待核实','建议继续检索的关键词','官方向','B站/NGA/贴吧向','小红书/抖音向','英文社区向','核心内容','优点','缺点','推荐度','标题方向','资料补强','实测/截图','结构风险','下一步动作','当前阶段结论'
+    '快速判断','推荐切口','需要修正','必要核对','下一步','证据池整理','选题结论','核心矛盾','信息边界与待核实','下一步动作清单','空洞检查','一句话理由','最适合的平台形态','B站标准长视频','短视频/图文','建议时长区间','短版','标准版','深度版','建议主轴改成','结论是否太早','资料是否不足','官方资料不足','社区资料不足','实测资料不足','观众是否明确','最容易被喷/被误解的点','官方已确认信息','社区高频问题','信息冲突 / 待核实','建议继续检索的关键词','官方向','B站/NGA/贴吧向','小红书/抖音向','英文社区向','核心内容','优点','缺点','推荐度','标题方向','资料补强','实测/截图','结构风险','下一步动作','当前阶段结论'
   ];
   t = transformMarkdownOutsideFences(t, chunk => {
     let out = chunk;
@@ -3453,7 +3513,7 @@ ${mdBlock("这期不做什么", d.notDo)}
 ${mdBlock("官方信息 / 链接", d.officialInfo)}
 ${mdBlock("社区争议 / 玩家问题", d.communityDebate)}
 ${mdBlock("自己的观察 / 实测条件", d.testNotes)}
-${mdBlock("证据池 / Evidence Locker", d.evidenceLocker)}
+${mdBlock("事实核对 / 参考来源", d.evidenceLocker)}
 ${mdBlock("AI 分析结果", d.aiAnalysis, 3, "analysis")}
 
 ---
@@ -3485,7 +3545,7 @@ ${mdBlock("正式发布记录：时间 / 平台 / 视频链接", d.publishLog)}
 
 ## 07 后期扩散 / 内容再分发
 ${mdBlock("扩散目标 / 时间窗口", d.diffusionGoal)}
-${mdBlock("可复用素材 / 切片清单", d.diffusionAssets)}
+${mdBlock("可复用素材 / 图文卡片清单", d.diffusionAssets)}
 ${mdBlock("后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab", d.diffusionPackage, 3, "publish")}
 ${mdBlock("扩散执行记录：时间 / 平台 / 链接 / 初步结果", d.diffusionLog)}
 
@@ -3576,6 +3636,33 @@ function importFile(evt){
   };
   reader.readAsText(file, "utf-8");
 }
+function stripAIResultFence(raw){
+  const text = normalizeLineBreaks(raw || "").trim();
+  const fenced = text.match(/^```(?:json|markdown|md)?[ \t]*\n([\s\S]*?)\n```[ \t]*$/i);
+  return fenced ? fenced[1].trim() : text;
+}
+function importAIPackage(){
+  const area = document.getElementById('aiImportPaste');
+  const text = stripAIResultFence(area?.value || '');
+  if(!text){
+    toast('请先粘贴 AI 生成的 JSON 或 Markdown');
+    return;
+  }
+  if(!confirm('导入会覆盖当前 Workspace 字段。建议已先导出当前 WIP。确定继续？')) return;
+  try{
+    const d = text.startsWith('{') ? JSON.parse(text) : parseMarkdown(text);
+    if(!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('没有识别到项目对象');
+    fill(d);
+    saveLocal();
+    updateFileNamePreview();
+    if(area) area.value = '';
+    setStatus('已从 AI 汇总结果导入 Workspace');
+    toast('AI 汇总结果导入成功');
+    scrollToElementWithOffset('#sec-00', 96);
+  }catch(e){
+    alert('导入失败：' + e.message + '\n请确认内容是完整 JSON，或使用“汇总为 Workspace Markdown”Prompt 规定的标题骨架。');
+  }
+}
 function parseMarkdown(text){
   text = normalizeLineBreaks(text || "");
   const markerPairs = [[DATA_MARKER_START, DATA_MARKER_END], ...LEGACY_DATA_MARKERS];
@@ -3623,7 +3710,7 @@ function parseMarkdown(text){
   d.officialInfo = block("官方信息 / 链接");
   d.communityDebate = block("社区争议 / 玩家问题");
   d.testNotes = block("自己的观察 / 实测条件");
-  d.evidenceLocker = block("证据池 / Evidence Locker") || block("证据池");
+  d.evidenceLocker = block("事实核对 / 参考来源") || block("证据池 / Evidence Locker") || block("证据池");
   d.aiAnalysis = block("AI 分析结果");
   d.chapterTable = topBlock("03 内容结构 / 分镜节奏");
   d.script = topBlock("04 文案");
@@ -3634,7 +3721,7 @@ function parseMarkdown(text){
   d.publishMulti = block("多语言：繁中 / EN / JP / KR / FR") || block("多语言：繁中 / EN / JP / KR / FR");
   d.publishLog = block("正式发布记录：时间 / 平台 / 视频链接");
   d.diffusionGoal = block("扩散目标 / 时间窗口");
-  d.diffusionAssets = block("可复用素材 / 切片清单");
+  d.diffusionAssets = block("可复用素材 / 图文卡片清单") || block("可复用素材 / 切片清单");
   d.diffusionPackage = block("后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab");
   d.diffusionLog = block("扩散执行记录：时间 / 平台 / 链接 / 初步结果");
   d.progressLog = block("进度记录 DATE / 进度") || topBlock("07 进度记录");
@@ -3703,7 +3790,7 @@ ${titleSeeds.map((x,i)=>`${i+1}. ${x}`).join("\\n")}
 ${tagsFor(d,true)}
 
 下一步：
-点击「AI 完整平台包」，让 AI 基于正式文案生成最终标题、简介、标签和短视频切片。`;
+点击「AI 完整平台包」，让 AI 为同一个完整视频生成各平台可直接发布的标题、简介、话题和标签。`;
 }
 function toggleLocalPackageDraft(){
   const panel = $('#localDraftPanel');
@@ -3786,6 +3873,29 @@ async function copyPrompt(kind, options={}){
   }catch(e){
     setStatus("AI Prompt 已显示。剪贴板被浏览器限制，请在 Prompt 框内全选复制。");
     toast("Prompt 已显示，请手动复制");
+  }
+}
+async function copyCurrentPrompt(){
+  const box = document.getElementById('aiOutput');
+  const prompt = box && ('value' in box ? box.value : box.textContent);
+  if(!prompt){
+    toast('请先选择一个 Prompt');
+    return;
+  }
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(prompt);
+    }else{
+      box.focus();
+      if(typeof box.select === 'function') box.select();
+      document.execCommand('copy');
+    }
+    setStatus('已再次复制当前 AI Prompt');
+    toast('当前 Prompt 已复制');
+  }catch(e){
+    box.focus();
+    if(typeof box.select === 'function') box.select();
+    toast('请手动复制已选中的 Prompt');
   }
 }
 function setupPromptOutputSelect(){
@@ -4593,7 +4703,9 @@ function clearAIStructureText(){
 }
 function renderSectionsFromData(d){
   let sections = [];
-  if(d && d.sectionsJson){
+  if(d && Array.isArray(d.sectionsJson)){
+    sections = d.sectionsJson;
+  }else if(d && d.sectionsJson){
     try{ sections = JSON.parse(d.sectionsJson); }catch(e){ sections = []; }
   }
   if(!sections.length && d && d.chapterTable){ sections = parseAISectionsText(d.chapterTable); }

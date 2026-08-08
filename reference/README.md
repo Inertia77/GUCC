@@ -8,7 +8,7 @@
 |---|---|
 | `ai-prompts.html` | 可复制 Prompt 阅读页，读取 `ai-prompts.md` |
 | `story-library.html` | 剧情资料库网页阅读器，读取 `story-library/story-library/` 下的 Markdown |
-| `resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
+| `resource-library.html` | 游戏 Wiki、官方资料、测试服数据库与社区情报入口 |
 
 这些 HTML 页面都接入了 GUCC Access Key。
 
@@ -27,3 +27,4 @@
 - 剧情内容改 `story-library/story-library/` 下的 Markdown，网页阅读器自动读取。
 - 新增剧情文件后，需要同步更新 `reference/story-library.html` 里的 manifest。
 - 不确定是否应该放进应用入口的资料，先放 `reference/`。
+- 前瞻情报源维护在 `data/imports/gacha-leak-sources-2026-08-07.json`；页面会自动读取，停更或受限来源应改为归档状态，不要直接删除历史记录。

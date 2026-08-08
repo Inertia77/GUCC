@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v18";
+const CACHE_VERSION = "gucc-pwa-v20";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "./assets/access-guard.js",
   "./assets/gucc-theme.css",
   "./assets/gucc-reference-v4.css",
+  "./assets/resource-library-v5.css",
   "./assets/gucc-shell.js",
   "./assets/pwa-install.css",
   "./assets/pwa-install.js",
@@ -37,7 +38,10 @@ const APP_SHELL = [
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/ai-prompts.js",
   "./apps/cover-generator/",
-  "./apps/cover-generator/index.html"
+  "./apps/cover-generator/index.html",
+  "./reference/resource-library.html",
+  "./reference/resource-library.js",
+  "./data/imports/gacha-leak-sources-2026-08-07.json"
 ];
 
 self.addEventListener("install", (event) => {

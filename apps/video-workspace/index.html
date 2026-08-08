@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1422">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>GUCC Studio v5.0.0｜AI 提示词与内容工作区</title>
+<title>GUCC Studio v5.1.0｜AI 提示词与内容工作区</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg?v=5">
 <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png?v=2">
 <link rel="manifest" href="../../manifest.webmanifest">
@@ -257,6 +257,7 @@ textarea{
 .card:before{left:0;right:0;top:0;height:4px;width:auto;bottom:auto;border-radius:0;background:var(--module,#8a98ab);opacity:.9}
 .card-00{--module:var(--ww);border-color:rgba(96,127,149,.45)}
 .card-ai{--module:var(--zzz);border-color:rgba(124,111,159,.45)}
+.card-prestudy{--module:var(--enf);border-color:rgba(125,138,103,.42)}
 .card-01{--module:var(--ww);border-color:rgba(96,127,149,.38)}
 .card-02{--module:var(--hsr);border-color:rgba(108,132,185,.38)}
 .card-03{--module:var(--zzz);border-color:rgba(124,111,159,.40)}
@@ -2063,6 +2064,7 @@ body.gucc-enhanced .card.card-ai{
 }
 
 body.gucc-enhanced .card.card-01{--module:#168795!important}
+body.gucc-enhanced .card.card-prestudy{--module:#62a887!important}
 body.gucc-enhanced .card.card-02{--module:#5279b8!important}
 body.gucc-enhanced .card.card-03{--module:#7c69bb!important}
 body.gucc-enhanced .card.card-04{--module:#a45f78!important}
@@ -2224,7 +2226,7 @@ body.gucc-enhanced .page #structureMiniNav{display:flex!important;grid-template-
 body.gucc-enhanced .page #structureMiniNav{display:none!important}
 body.gucc-enhanced #structureFloatingNav{position:fixed!important;left:auto!important;right:92px!important;top:auto!important;bottom:18px!important;width:max-content!important;max-width:min(760px,calc(100vw - 220px))!important;min-height:0!important;height:auto!important;padding:6px!important;gap:5px!important;align-items:center!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;border-radius:15px!important;box-shadow:0 16px 44px rgba(0,0,0,.38)!important;z-index:88!important;scrollbar-width:thin!important}body.gucc-enhanced #structureFloatingNav .mini-title{flex:0 0 auto!important;padding:0 7px!important;font-size:10px!important}body.gucc-enhanced #structureFloatingNav button{flex:0 0 auto!important;width:auto!important;max-width:180px!important;min-height:34px!important;padding:6px 9px!important}
 @media(max-width:980px){body.gucc-enhanced #structureFloatingNav{left:12px!important;right:12px!important;bottom:calc(126px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:none!important;padding:5px!important;border-radius:13px!important}body.gucc-enhanced #structureFloatingNav .mini-title{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:nowrap!important}}
-body[data-workspace-mode="workspace"] #sec-ai{display:none!important}body[data-workspace-mode="ai"] .workspace-only,body[data-workspace-mode="ai"] #sectionNav,body[data-workspace-mode="ai"] #sec-00,body[data-workspace-mode="ai"] #sec-status,body[data-workspace-mode="ai"] #sec-03,body[data-workspace-mode="ai"] #sec-04,body[data-workspace-mode="ai"] #sec-07,body[data-workspace-mode="ai"] #sec-08,body[data-workspace-mode="ai"] #sec-09,body[data-workspace-mode="ai"] .page>.grid2,body[data-workspace-mode="ai"] .page>.dock,body[data-workspace-mode="ai"] .mobile-float,body[data-workspace-mode="ai"] .mobile-export-sheet{display:none!important}body[data-workspace-mode="ai"] .workspace-opening{display:block!important;margin-top:16px!important}body[data-workspace-mode="ai"] #sec-ai{display:block!important;margin:0!important}
+body[data-workspace-mode="workspace"] #sec-ai{display:none!important}body[data-workspace-mode="ai"] .workspace-only,body[data-workspace-mode="ai"] #sectionNav,body[data-workspace-mode="ai"] #sec-00,body[data-workspace-mode="ai"] #sec-status,body[data-workspace-mode="ai"] #sec-prestudy,body[data-workspace-mode="ai"] #sec-03,body[data-workspace-mode="ai"] #sec-04,body[data-workspace-mode="ai"] #sec-07,body[data-workspace-mode="ai"] #sec-08,body[data-workspace-mode="ai"] #sec-09,body[data-workspace-mode="ai"] .page>.grid2,body[data-workspace-mode="ai"] .page>.dock,body[data-workspace-mode="ai"] .mobile-float,body[data-workspace-mode="ai"] .mobile-export-sheet{display:none!important}body[data-workspace-mode="ai"] .workspace-opening{display:block!important;margin-top:16px!important}body[data-workspace-mode="ai"] #sec-ai{display:block!important;margin:0!important}
 body.gucc-enhanced .section-nav{position:sticky!important;top:10px!important;z-index:40!important;margin:16px 0!important;padding:8px!important;border-radius:16px!important;background:rgba(8,13,23,.9)!important;backdrop-filter:blur(22px)!important}body.gucc-enhanced .section-nav a{background:transparent!important;border-color:transparent!important;color:var(--studio-muted)!important;border-radius:9px!important}body.gucc-enhanced .section-nav a.active{background:rgba(116,243,255,.12)!important;border-color:rgba(116,243,255,.25)!important;color:var(--studio-cyan)!important}body.gucc-enhanced .section-nav b{color:inherit!important}body.gucc-enhanced .nav-hint{color:var(--studio-dim)!important}
 body.gucc-enhanced .card{padding:19px!important;border-radius:20px!important;margin-top:15px!important}body.gucc-enhanced .card:before{height:2px!important;background:linear-gradient(90deg,var(--studio-cyan),var(--studio-violet))!important;opacity:.7!important}body.gucc-enhanced .card h2{margin:0 0 14px!important;padding:0 0 13px!important;border-bottom:1px solid var(--studio-line)!important;color:var(--studio-text)!important;font-size:18px!important}body.gucc-enhanced .idx,body.gucc-enhanced .section-title-badge{background:rgba(116,243,255,.08)!important;border-color:rgba(116,243,255,.2)!important;color:var(--studio-cyan)!important}
 body.gucc-enhanced p,body.gucc-enhanced li,body.gucc-enhanced .sub,body.gucc-enhanced .status,body.gucc-enhanced label,body.gucc-enhanced .tiny,body.gucc-enhanced .small,body.gucc-enhanced .muted,body.gucc-enhanced .nav-hint{color:var(--studio-muted)!important}body.gucc-enhanced .field label{color:#bdc9d8!important}body.gucc-enhanced .control-title-block,body.gucc-enhanced .control-section,body.gucc-enhanced .section-row{background:rgba(3,8,15,.38)!important;border-color:rgba(255,255,255,.08)!important;box-shadow:none!important;border-radius:14px!important}
@@ -2297,6 +2299,7 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
     <div class="content-map-head"><strong>内容地图</strong><span>导入后按创作阶段展开，点击任一卡片继续编辑</span></div>
     <div class="content-map-grid">
       <button id="mapPosition" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-01')"><i>01</i><b>定位</b><small>等待核心问题</small></button>
+      <button id="mapPreStudy" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-prestudy')"><i>PS</i><b>事前学习</b><small>等待学习目标</small></button>
       <button id="mapResearch" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-02')"><i>02</i><b>资料</b><small>等待资料与分析</small></button>
       <button id="mapStructure" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-03')"><i>03</i><b>结构</b><small>等待章节结构</small></button>
       <button id="mapScript" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-04')"><i>04</i><b>文案</b><small>等待口播文案</small></button>
@@ -2309,6 +2312,7 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
 <nav class="section-nav no-print" id="sectionNav" aria-label="页面导航">
   <a href="#sec-00"><b>00</b> 总控</a>
   <a href="#sec-status"><b>ST</b> 状态</a>
+  <a href="#sec-prestudy"><b>PS</b> 事前学习</a>
   <a href="#sec-01"><b>01</b> 定位</a>
   <a href="#sec-02"><b>02</b> 资料</a>
   <a href="#sec-03"><b>03</b> 结构</a>
@@ -2354,7 +2358,7 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
       <div class="field"><label>游戏代码（自动）</label><input data-key="gameCode" readonly placeholder="WW / ZZZ / HSR / ENF / NTE"></div>
       <div class="field short-title-field"><label>简易标题（手写）</label><input data-key="projectShortTitle" placeholder="例：资源压力"><div class="tiny">建议 8 字内；系统只自动补游戏代码。</div></div>
       <div class="field"><label>简称预览（自动合成）</label><input data-key="projectShortName" readonly placeholder="例：WW资源压力"></div>
-      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v5.0.0" readonly></div>
+      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v5.1.0" readonly></div>
     </div>
     <div class="btns no-print control-naming-actions"><button class="ghost hot-action" type="button" onclick="refreshShortName()">更新游戏代码 / 文件名</button></div>
   </div>
@@ -2431,6 +2435,7 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
 <div class="status-actions no-print"><button class="hot-action" onclick="completeAllStatus()">一键勾选全部完成</button><button class="ghost" onclick="clearAllStatus()">清空状态</button></div>
 <div class="status-board checklist">
 <label><input type="checkbox" data-key="ckBrief" data-progress="true"> Brief 完成</label>
+<label><input type="checkbox" data-key="ckPreStudy" data-progress="true"> 事前学习完成</label>
 <label><input type="checkbox" data-key="ckResearch" data-progress="true"> 资料整理完成</label>
 <label><input type="checkbox" data-key="ckScript" data-progress="true"> 脚本可录制</label>
 <label><input type="checkbox" data-key="ckRecord" data-progress="true"> 素材已录</label>
@@ -2442,7 +2447,23 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
 <label><input type="checkbox" data-key="ckReview" data-progress="true"> 复盘完成</label>
 <label><input type="checkbox" data-key="ckArchive" data-progress="true"> 归档完成</label>
 </div>
-<div class="status-note">顺序建议：Brief → 资料 → 脚本 → 素材 → 剪辑 → 字幕 → 封面 → 正式发布 → 后期扩散 → 复盘 → 归档。</div>
+<div class="status-note">顺序建议：Brief → 事前学习 → 资料 → 脚本 → 素材 → 剪辑 → 字幕 → 封面 → 正式发布 → 后期扩散 → 复盘 → 归档。</div>
+</section>
+
+<section id="sec-prestudy" class="card card-prestudy" style="margin-top:15px">
+<h2><span class="idx">PS</span> 事前学习 / Pre-study</h2>
+<p class="sub">正式整理资料前，先补齐理解这个题目所需的基础知识。这里只记录会影响选题、判断或表达的学习内容，不必做成完整研究报告。</p>
+<div class="grid2">
+  <div>
+    <div class="field"><label>学习目标：开始查资料前需要先弄懂什么？</label><div data-key="preStudyGoal" class="richbox" contenteditable="true" data-placeholder="例：先理解当前版本的资源循环、活动规则和玩家常用术语。"></div></div>
+    <div class="field"><label>学习材料 / 链接</label><div data-key="preStudyMaterials" class="richbox" contenteditable="true" data-placeholder="官方说明、攻略、机制解析、术语表、已有视频等。"></div></div>
+  </div>
+  <div>
+    <div class="field"><label>学习笔记 / 关键概念</label><div data-key="preStudyNotes" class="richbox" contenteditable="true" data-placeholder="用自己的话记录关键概念、因果关系和容易混淆的点。"></div></div>
+    <div class="field"><label>对本期企划的影响 / 可直接采用的结论</label><div data-key="preStudyTakeaways" class="richbox" contenteditable="true" data-placeholder="学完后，题目、切口、结论或表达方式需要怎样调整？"></div></div>
+    <div class="field"><label>仍未理解 / 待确认</label><div data-key="preStudyQuestions" class="richbox" contenteditable="true" data-placeholder="只留下会阻碍下一步的问题，后续转入 02 资料与 AI 分析继续核对。"></div></div>
+  </div>
+</div>
 </section>
 
 
@@ -2574,7 +2595,7 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
 <h2><span class="idx">09</span> 版本 / 文件夹 / 命名军规</h2>
 <p class="sub">
 你的结构现在定为：<strong>GUCC WorkSpace 是模板工作台</strong>；模板源码、说明和版本记录统一由 GitHub 管理；具体项目导出的 <strong>.md / .json</strong> 放 Google Drive 做 WIP 与归档。  
-当前为 <strong>v5.0.x</strong> AI-first 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
+当前为 <strong>v5.1.x</strong> AI-first 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
 </p>
 <textarea readonly class="mid">GUCC/                              # GitHub 仓库
 └─ apps/video-workspace/
@@ -2586,9 +2607,9 @@ body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top
 
 Google Drive / 本地项目目录：
 ├─ 01_Working/                   # 进行中的项目导出
-│  └─ WIP_YYYYMMDD-HHmm_v5.0.x_游戏代码简易标题.md / .json
+│  └─ WIP_YYYYMMDD-HHmm_v5.1.x_游戏代码简易标题.md / .json
 └─ 99_Archive/                   # 已完成项目归档
-   └─ YYYYMMDD-HHmm_v5.0.x_游戏代码简易标题.md / .json</textarea>
+   └─ YYYYMMDD-HHmm_v5.1.x_游戏代码简易标题.md / .json</textarea>
 <p class="tiny">
 模板与版本记录走 GitHub；01_Working 和 99_Archive 走 Google Drive 或本地同步目录，只放具体项目导出的 WIP / DONE 文件。浏览器自动保存用于防止意外丢失，不能替代跨设备的 Markdown / JSON 存档。
 </p>
@@ -2652,7 +2673,7 @@ Google Drive / 本地项目目录：
 
 <script src="./ai-prompts.js"></script>
 <script>
-const TEMPLATE_VERSION = "5.0.0";
+const TEMPLATE_VERSION = "5.1.0";
 const APP_NAME = "GUCC Studio";
 const STORAGE_KEY = "GUCC_WORKSPACE_CURRENT";
 const WORKSPACE_MODE_KEY = "GUCC_STUDIO_MODE";
@@ -2712,7 +2733,7 @@ function updateWorkspaceOverview(){
   const status = fieldText("status").trim();
   const sections = typeof getSectionsFromUI === "function" ? getSectionsFromUI() : [];
   const script = fieldText("script").replace(/\s/g, "");
-  const moduleKeys = ["coreQuestion","coreConclusion","officialInfo","aiAnalysis","script","visualPlan","publishCN","diffusionPackage","review"];
+  const moduleKeys = ["coreQuestion","coreConclusion","preStudyNotes","officialInfo","aiAnalysis","script","visualPlan","publishCN","diffusionPackage","review"];
   const completed = moduleKeys.filter(key => fieldText(key).trim()).length;
   const hasProject = !!(title || completed);
   const titleBox = document.getElementById("snapshotTitle");
@@ -2735,11 +2756,13 @@ function updateWorkspaceOverview(){
     if(small) small.textContent = label;
   };
   const question = fieldText("coreQuestion").trim();
+  const preStudy = [fieldText("preStudyGoal"),fieldText("preStudyNotes"),fieldText("preStudyTakeaways")].join("").replace(/\s/g, "");
   const research = [fieldText("officialInfo"),fieldText("communityDebate"),fieldText("aiAnalysis")].join("").replace(/\s/g, "");
   const structured = hasProject && sections.some(section => [section.goal,section.content,section.visual].some(value => String(value || "").trim()));
   const publish = fieldText("publishCN").trim();
   const review = fieldText("review").trim();
   setMapNode("mapPosition", question, question ? question.slice(0,24) : "等待核心问题");
+  setMapNode("mapPreStudy", preStudy, preStudy ? `${preStudy.length} 字学习记录` : "等待学习目标");
   setMapNode("mapResearch", research, research ? `${research.length} 字资料与分析` : "等待资料与分析");
   setMapNode("mapStructure", structured, structured ? `${sections.length} 个章节已展开` : "等待章节结构");
   setMapNode("mapScript", script, script ? `${script.length} 字口播文案` : "等待口播文案");
@@ -2806,6 +2829,7 @@ const FIELD_ROLE_MAP = {
   version:'user', ddl:'choice', duration:'auto', priority:'choice', game:'choice', type:'choice', status:'choice',
   gameCode:'auto', projectShortName:'auto',
   coreQuestion:'user', coreConclusion:'user', audience:'user', notDo:'user',
+  preStudyGoal:'user', preStudyMaterials:'user', preStudyNotes:'user', preStudyTakeaways:'user', preStudyQuestions:'user',
   officialInfo:'user', communityDebate:'user', testNotes:'user', evidenceLocker:'user',
   aiAnalysis:'ai', script:'ai',
   gameFootage:'user', visualPlan:'user',
@@ -3093,8 +3117,8 @@ function collect(stage){
   d.__workspaceName = APP_NAME;
   d.__workspaceVersion = TEMPLATE_VERSION;
   d.__templateVersion = TEMPLATE_VERSION;
-  d.__schemaVersion = "gucc-workspace-schema-3";
-  d.__lineBreakPolicy = "preserve-lf-v5.0.0";
+  d.__schemaVersion = "gucc-workspace-schema-4";
+  d.__lineBreakPolicy = "preserve-lf-v5.1.0";
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
   migrateWorkflowFields(d);
@@ -3673,6 +3697,15 @@ ${mdBlock("项目备注", d.projectMemo)}
 
 ---
 
+## PS 事前学习 / Pre-study
+${mdBlock("学习目标", d.preStudyGoal)}
+${mdBlock("学习材料 / 链接", d.preStudyMaterials)}
+${mdBlock("学习笔记 / 关键概念", d.preStudyNotes)}
+${mdBlock("对本期企划的影响 / 可直接采用的结论", d.preStudyTakeaways)}
+${mdBlock("仍未理解 / 待确认", d.preStudyQuestions)}
+
+---
+
 ## 01 内容宏观定位
 ${mdBlock("一句话问题", d.coreQuestion)}
 ${mdBlock("核心结论", d.coreConclusion)}
@@ -3884,6 +3917,11 @@ function parseMarkdown(text){
   d.priority = bullet("优先级");
   d.localPath = bullet("本地工程路径");
   d.projectMemo = block("项目备注");
+  d.preStudyGoal = block("学习目标");
+  d.preStudyMaterials = block("学习材料 / 链接");
+  d.preStudyNotes = block("学习笔记 / 关键概念");
+  d.preStudyTakeaways = block("对本期企划的影响 / 可直接采用的结论");
+  d.preStudyQuestions = block("仍未理解 / 待确认");
   d.coreQuestion = block("一句话问题");
   d.coreConclusion = block("核心结论");
   d.audience = block("目标观众");

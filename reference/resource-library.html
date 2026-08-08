@@ -1,720 +1,116 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="#070a10" name="theme-color"/>
-<meta content="no-store" http-equiv="Cache-Control"/>
-<meta content="no-cache" http-equiv="Pragma"/>
-<meta content="0" http-equiv="Expires"/>
-<title>GUCC 资料库</title>
-<link href="../assets/icons/gucc-icon.svg?v=5" rel="icon" type="image/svg+xml"/>
-<script data-guard="true" data-root="../" src="../assets/access-guard.js"></script>
-<style>
-    :root {
-      --bg: #070a10;
-      --panel: rgba(14, 18, 27, .92);
-      --panel2: rgba(18, 24, 35, .96);
-      --line: #293446;
-      --line-soft: rgba(255, 255, 255, .08);
-      --text: #eef5ff;
-      --muted: #9aaabd;
-      --dim: #66758a;
-      --mint: #77ffb8;
-      --cyan: #76f7ff;
-      --pink: #ff5da8;
-      --amber: #ffd166;
-      --violet: #8ea7ff;
-      --radius: 8px;
-      --shadow: 0 24px 70px rgba(0, 0, 0, .34);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: "Segoe UI", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
-      background:
-        repeating-linear-gradient(90deg, rgba(118, 247, 255, .045) 0, rgba(118, 247, 255, .045) 1px, transparent 1px, transparent 88px),
-        repeating-linear-gradient(0deg, rgba(255, 93, 168, .032) 0, rgba(255, 93, 168, .032) 1px, transparent 1px, transparent 88px),
-        linear-gradient(135deg, rgba(7, 10, 16, .99), rgba(9, 16, 22, .99) 48%, rgba(12, 18, 29, .99));
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(108deg, transparent 0 14%, rgba(118, 247, 255, .08) 14.05% 14.2%, transparent 14.3% 100%),
-        linear-gradient(132deg, transparent 0 78%, rgba(119, 255, 184, .07) 78.05% 78.2%, transparent 78.3% 100%);
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .wrap {
-      width: min(1280px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0 48px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .topline {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 42px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-
-    .brand img {
-      width: 38px;
-      height: 38px;
-    }
-
-    .brand strong {
-      display: block;
-      font-size: 15px;
-      line-height: 1;
-    }
-
-    .brand span {
-      display: block;
-      margin-top: 4px;
-      color: var(--dim);
-      font-size: 12px;
-    }
-
-    .back {
-      display: inline-flex;
-      align-items: center;
-      min-height: 40px;
-      padding: 0 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      color: var(--text);
-      background: rgba(255, 255, 255, .035);
-      text-decoration: none;
-      font-weight: 800;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, .8fr);
-      gap: 22px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--cyan);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(36px, 6vw, 64px);
-      line-height: .98;
-      letter-spacing: 0;
-    }
-
-    .subtitle {
-      max-width: 760px;
-      margin: 16px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.8;
-    }
-
-    .signal {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(10, 14, 22, .72);
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .signal-row {
-      display: grid;
-      grid-template-columns: 78px minmax(0, 1fr);
-      gap: 12px;
-      padding: 11px 0;
-      border-top: 1px solid rgba(255, 255, 255, .06);
-    }
-
-    .signal-row:first-child {
-      border-top: 0;
-      padding-top: 0;
-    }
-
-    .signal-row:last-child {
-      padding-bottom: 0;
-    }
-
-    .signal-label {
-      color: var(--dim);
-      font-size: 12px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    .signal-value {
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 22px 0 16px;
-    }
-
-    .filter-btn {
-      min-height: 36px;
-      padding: 0 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      background: rgba(255, 255, 255, .035);
-      cursor: pointer;
-      font: inherit;
-      font-weight: 800;
-    }
-
-    .filter-btn.active {
-      color: #06110f;
-      background: linear-gradient(135deg, var(--mint), var(--cyan));
-      border-color: transparent;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .game-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(18, 24, 35, .94), rgba(10, 14, 22, .94));
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .24);
-      overflow: hidden;
-    }
-
-    .game-card[data-game="崩"] {
-      --accent: var(--violet);
-    }
-
-    .game-card[data-game="终"] {
-      --accent: var(--amber);
-    }
-
-    .game-card[data-game="绝"] {
-      --accent: var(--mint);
-    }
-
-    .game-card[data-game="鸣"] {
-      --accent: var(--cyan);
-    }
-
-    .game-card[data-game="异"] {
-      --accent: var(--pink);
-    }
-
-    .game-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 16px;
-      border-top: 2px solid var(--accent);
-      border-bottom: 1px solid rgba(255, 255, 255, .07);
-    }
-
-    .game-mark {
-      display: inline-grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-radius: var(--radius);
-      color: var(--accent);
-      background: rgba(255, 255, 255, .04);
-      font-weight: 900;
-      font-size: 20px;
-    }
-
-    .game-title {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .game-title h2 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.2;
-    }
-
-    .game-title p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .count {
-      min-height: 27px;
-      display: inline-flex;
-      align-items: center;
-      padding: 0 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      background: rgba(255, 255, 255, .035);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .resource-list {
-      display: grid;
-      gap: 8px;
-      padding: 12px;
-    }
-
-    .resource {
-      display: grid;
-      grid-template-columns: 38px minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-      min-height: 64px;
-      padding: 10px;
-      border: 1px solid rgba(255, 255, 255, .075);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, .025);
-      text-decoration: none;
-      transition: border-color .16s ease, background .16s ease, transform .16s ease;
-    }
-
-    .resource:hover {
-      transform: translateY(-2px);
-      border-color: color-mix(in srgb, var(--accent), var(--line) 45%);
-      background: rgba(255, 255, 255, .045);
-    }
-
-    .rank {
-      display: inline-grid;
-      place-items: center;
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius);
-      color: #06110f;
-      background: var(--accent);
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .resource-main {
-      min-width: 0;
-    }
-
-    .resource-title {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      align-items: center;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .resource-title span:first-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .note {
-      display: inline-flex;
-      align-items: center;
-      min-height: 22px;
-      padding: 0 8px;
-      border: 1px solid rgba(255, 209, 102, .2);
-      border-radius: 999px;
-      color: #ffe3a3;
-      background: rgba(255, 209, 102, .06);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .source {
-      margin-top: 6px;
-      color: var(--dim);
-      font-size: 12px;
-      line-height: 1.45;
-      word-break: break-all;
-    }
-
-    .open {
-      color: var(--accent);
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .todo {
-      margin-top: 14px;
-      border: 1px dashed rgba(255, 255, 255, .13);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, .025);
-      padding: 14px;
-    }
-
-    .todo h2 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    .todo p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 900px) {
-      .hero,
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .wrap {
-        width: min(100% - 24px, 1280px);
-      }
-    }
-
-    @media (max-width: 560px) {
-      .topline,
-      .game-head {
-        flex-direction: column;
-      }
-
-      .resource {
-        grid-template-columns: 32px minmax(0, 1fr);
-      }
-
-      .open {
-        display: none;
-      }
-    }
-  </style>
-<link href="../assets/gucc-theme.css?v=7" rel="stylesheet"/>
-<link href="../assets/gucc-reference-v4.css" rel="stylesheet"/>
-<script data-root="../" defer="" src="../assets/gucc-shell.js?v=6"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070a10">
+  <meta name="description" content="GUCC 游戏官方资料、测试服数据库、数据挖掘与社区情报入口。">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>GUCC 资料库 · Research Atlas</title>
+  <link rel="icon" href="../assets/icons/gucc-icon.svg?v=5" type="image/svg+xml">
+  <script src="../assets/access-guard.js" data-guard="true" data-root="../"></script>
+  <link rel="stylesheet" href="../assets/gucc-theme.css?v=7">
+  <link rel="stylesheet" href="../assets/resource-library-v5.css?v=2">
+  <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
+  <script src="./resource-library.js?v=2" defer></script>
 </head>
 <body class="gucc-enhanced gucc-reference resource-page">
-<main class="wrap">
-<div class="topline">
-<a aria-label="返回 GUCC Portal" class="brand" href="../">
-<img alt="" src="../assets/icons/gucc-icon.svg?v=5"/>
-<span>
-<strong>GUCC 资料库</strong>
-<span>Wiki and reference routes</span>
-</span>
-</a>
-<a class="back" href="../">返回 Portal</a>
-</div>
-<section class="hero">
-<div>
-<p class="eyebrow">Resource Library</p>
-<h1>游戏资料导航</h1>
-<p class="subtitle">汇总常用官方 Wiki、攻略合集、官方图文公告和外部参考。按游戏与研究优先级排列，敌人、装备体系这类容易漏掉的资料也单独标记。</p>
-</div>
-<aside aria-label="资料库统计" class="signal">
-<div class="signal-row">
-<div class="signal-label">Games</div>
-<div class="signal-value">崩坏：星穹铁道 / 明日方舟：终末地 / 绝区零 / 鸣潮 / 异环</div>
-</div>
-<div class="signal-row">
-<div class="signal-label">Routes</div>
-<div class="signal-value">26 条已配置资料入口，按 Rank 代表优先级。</div>
-</div>
-<div class="signal-row">
-<div class="signal-label">Watch</div>
-<div class="signal-value">敌人资料、工业蓝图、合鸣效果等低频但高价值项已标注。</div>
-</div>
-</aside>
-</section>
-<nav aria-label="按游戏筛选" class="filters">
-<button class="filter-btn active" data-filter="all" type="button">全部</button>
-<button class="filter-btn" data-filter="崩" type="button">崩</button>
-<button class="filter-btn" data-filter="终" type="button">终</button>
-<button class="filter-btn" data-filter="绝" type="button">绝</button>
-<button class="filter-btn" data-filter="鸣" type="button">鸣</button>
-<button class="filter-btn" data-filter="异" type="button">异</button></nav>
-<section aria-label="资料入口" class="grid" id="resourceGrid">
-<article class="game-card" data-game="崩">
-<header class="game-head">
-<div class="game-title">
-<span class="game-mark">崩</span>
-<div>
-<h2>崩坏：星穹铁道</h2>
-<p>米游社官方 Wiki 路由</p>
-</div>
-</div>
-<span class="count">5 routes</span>
-</header>
-<div class="resource-list">
-<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/18?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
-<span class="rank">01</span>
-<span class="resource-main">
-<span class="resource-title"><span>角色</span></span>
-<span class="source">bbs.mihoyo.com / sr wiki channel 18</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/19?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
-<span class="rank">02</span>
-<span class="resource-main">
-<span class="resource-title"><span>光锥</span></span>
-<span class="source">bbs.mihoyo.com / sr wiki channel 19</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/30?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
-<span class="rank">03</span>
-<span class="resource-main">
-<span class="resource-title"><span>遗器</span></span>
-<span class="source">bbs.mihoyo.com / sr wiki channel 30</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://bbs.mihoyo.com/sr/wiki/channel/map/17/23?bbs_presentation_style=no_header" rel="noopener noreferrer" target="_blank">
-<span class="rank">04</span>
-<span class="resource-main">
-<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-<span class="source">bbs.mihoyo.com / sr wiki channel 23</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://space.bilibili.com/1340190821/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">05</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
-</article>
-<article class="game-card" data-game="终">
-<header class="game-head">
-<div class="game-title">
-<span class="game-mark">终</span>
-<div>
-<h2>明日方舟：终末地</h2>
-<p>森空岛 Wiki 与工业蓝图参考</p>
-</div>
-</div>
-<span class="count">8 routes</span>
-</header>
-<div class="resource-list">
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?mainTypeId=1&amp;subTypeId=1" rel="noopener noreferrer" target="_blank">
-<span class="rank">01</span>
-<span class="resource-main">
-<span class="resource-title"><span>干员</span></span>
-<span class="source">wiki.skland.com / endfield catalog</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=2" rel="noopener noreferrer" target="_blank">
-<span class="rank">02</span>
-<span class="resource-main">
-<span class="resource-title"><span>武器</span></span>
-<span class="source">wiki.skland.com / weapons</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=4" rel="noopener noreferrer" target="_blank">
-<span class="rank">03</span>
-<span class="resource-main">
-<span class="resource-title"><span>装备</span></span>
-<span class="source">wiki.skland.com / equipment</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=7" rel="noopener noreferrer" target="_blank">
-<span class="rank">04</span>
-<span class="resource-main">
-<span class="resource-title"><span>武器基质</span></span>
-<span class="source">wiki.skland.com / matrix</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=1&amp;typeSubId=3" rel="noopener noreferrer" target="_blank">
-<span class="rank">05</span>
-<span class="resource-main">
-<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-<span class="source">wiki.skland.com / enemies</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.skland.com/endfield/catalog?typeMainId=2&amp;typeSubId=11" rel="noopener noreferrer" target="_blank">
-<span class="rank">06</span>
-<span class="resource-main">
-<span class="resource-title"><span>攻略合集</span><span class="note">基础养成参考</span></span>
-<span class="source">wiki.skland.com / guide collection</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://docs.qq.com/sheet/DUEh1aHpCVVd4ZUdh?tab=dl5rqp&amp;nlc=1" rel="noopener noreferrer" target="_blank">
-<span class="rank">07</span>
-<span class="resource-main">
-<span class="resource-title"><span>工业蓝图参考</span><span class="note">非官方攻略</span></span>
-<span class="source">docs.qq.com / industrial blueprint sheet</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://space.bilibili.com/1265652806/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">08</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
-</article>
-<article class="game-card" data-game="绝">
-<header class="game-head">
-<div class="game-title">
-<span class="game-mark">绝</span>
-<div>
-<h2>绝区零</h2>
-<p>米游社百科全屏路由</p>
-</div>
-</div>
-<span class="count">6 routes</span>
-</header>
-<div class="resource-list">
-<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/43?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
-<span class="rank">01</span>
-<span class="resource-main">
-<span class="resource-title"><span>代理人</span></span>
-<span class="source">baike.mihoyo.com / zzz agents</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/45?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
-<span class="rank">02</span>
-<span class="resource-main">
-<span class="resource-title"><span>音擎</span></span>
-<span class="source">baike.mihoyo.com / zzz engines</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/46?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
-<span class="rank">03</span>
-<span class="resource-main">
-<span class="resource-title"><span>驱动盘</span></span>
-<span class="source">baike.mihoyo.com / zzz drive discs</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/44?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
-<span class="rank">04</span>
-<span class="resource-main">
-<span class="resource-title"><span>邦布</span><span class="note">特殊小队员</span></span>
-<span class="source">baike.mihoyo.com / zzz bangboo</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://baike.mihoyo.com/zzz/wiki/channel/map/2/65?mhy_presentation_style=fullscreen" rel="noopener noreferrer" target="_blank">
-<span class="rank">05</span>
-<span class="resource-main">
-<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-<span class="source">baike.mihoyo.com / zzz enemies</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://space.bilibili.com/1636034895/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">06</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
-</article>
-<article class="game-card" data-game="鸣">
-<header class="game-head">
-<div class="game-title">
-<span class="game-mark">鸣</span>
-<div>
-<h2>鸣潮</h2>
-<p>库街区 Wiki 路由</p>
-</div>
-</div>
-<span class="count">6 routes</span>
-</header>
-<div class="resource-list">
-<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1105" rel="noopener noreferrer" target="_blank">
-<span class="rank">01</span>
-<span class="resource-main">
-<span class="resource-title"><span>共鸣者</span></span>
-<span class="source">wiki.kurobbs.com / resonators</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1106" rel="noopener noreferrer" target="_blank">
-<span class="rank">02</span>
-<span class="resource-main">
-<span class="resource-title"><span>武器</span></span>
-<span class="source">wiki.kurobbs.com / weapons</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1107" rel="noopener noreferrer" target="_blank">
-<span class="rank">03</span>
-<span class="resource-main">
-<span class="resource-title"><span>声骸</span></span>
-<span class="source">wiki.kurobbs.com / echoes</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1219" rel="noopener noreferrer" target="_blank">
-<span class="rank">04</span>
-<span class="resource-main">
-<span class="resource-title"><span>合鸣效果</span></span>
-<span class="source">wiki.kurobbs.com / set effects</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://wiki.kurobbs.com/mc/catalogue/list?fid=1099&amp;sid=1158" rel="noopener noreferrer" target="_blank">
-<span class="rank">05</span>
-<span class="resource-main">
-<span class="resource-title"><span>敌人</span><span class="note">常常被忽略研究</span></span>
-<span class="source">wiki.kurobbs.com / enemies</span>
-</span>
-<span class="open">›</span>
-</a>
-<a class="resource" href="https://space.bilibili.com/1955897084/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">06</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">官方动态</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div>
-</article>
-<article class="game-card" data-game="异"><header class="game-head"><div class="game-title"><span class="game-mark">异</span><div><h2>异环</h2><p>官方 Bilibili 图文公告入口</p></div></div><span class="count">1 route</span></header><div class="resource-list"><a class="resource" href="https://space.bilibili.com/3546636978489848/upload/opus" rel="noopener noreferrer" target="_blank"><span class="rank">01</span><span class="resource-main"><span class="resource-title"><span>Bilibili 官方图文公告</span><span class="note">版本更新 / 维护公告</span></span><span class="source">space.bilibili.com / upload / opus</span></span><span class="open">›</span></a></div></article></section>
+  <main class="library-shell">
+    <header class="library-topbar">
+      <a class="library-brand" href="../" aria-label="返回 GUCC Portal">
+        <img src="../assets/icons/gucc-icon.svg?v=5" alt="">
+        <span><strong>GUCC 资料库</strong><small>RESEARCH ATLAS · 2026.08</small></span>
+      </a>
+      <a class="portal-button" href="../"><span aria-hidden="true">←</span> 返回 Portal</a>
+    </header>
 
-</main>
-<script>
-    const buttons = [...document.querySelectorAll('.filter-btn')];
-    const cards = [...document.querySelectorAll('.game-card')];
+    <section class="atlas-hero" aria-labelledby="pageTitle">
+      <div class="hero-copy">
+        <p class="overline"><span class="live-dot"></span> GUCC RESOURCE LIBRARY</p>
+        <h1 id="pageTitle">游戏资料导航</h1>
+        <p class="hero-lede">官方 Wiki、测试服数据库、数据挖掘与社区消息分层整理。先选游戏，再按可信度和用途找到真正需要的入口。</p>
+        <div class="hero-actions" aria-label="资料类型">
+          <button class="view-switch is-active" type="button" data-view="intel" aria-pressed="true">
+            <span>前瞻情报</span><strong id="intelCount">28</strong>
+          </button>
+          <button class="view-switch" type="button" data-view="official" aria-pressed="false">
+            <span>官方资料</span><strong>26</strong>
+          </button>
+        </div>
+      </div>
+      <aside class="hero-console" aria-label="资料库状态">
+        <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/07</span></div>
+        <div class="console-grid">
+          <div><strong id="activeCount">24</strong><span>活跃来源</span></div>
+          <div><strong>26</strong><span>官方入口</span></div>
+          <div><strong>5</strong><span>覆盖游戏</span></div>
+        </div>
+        <p><span><b>A</b> 结构化数据库</span><span><b>B</b> 交叉参考</span><span><b>C</b> 仅作线索</span></p>
+      </aside>
+    </section>
 
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const filter = button.dataset.filter;
-        buttons.forEach((item) => item.classList.toggle('active', item === button));
-        cards.forEach((card) => {
-          card.classList.toggle('hidden', filter !== 'all' && card.dataset.game !== filter);
-        });
-      });
-    });
-  </script>
+    <section class="research-note" aria-label="使用提醒">
+      <span class="note-icon" aria-hidden="true">i</span>
+      <div><strong>前瞻内容不等于上线内容</strong><p>页面可能包含未公开内容与剧透。不要登录陌生站点或下载程序；转述时请同时标注来源、版本和可信度。</p></div>
+      <button type="button" class="method-button" id="methodButton" aria-expanded="false" aria-controls="methodPanel">查看核验方法</button>
+    </section>
+
+    <section class="method-panel" id="methodPanel" hidden>
+      <div class="method-intro"><p class="section-kicker">EVIDENCE LADDER</p><h2>五步核验，不把传闻写成事实。</h2></div>
+      <ol class="method-steps">
+        <li><b>T</b><span><strong>测试服数据库</strong>先记录版本与 Revision</span></li>
+        <li><b>D</b><span><strong>数据挖掘</strong>寻找可复现的结构化数据</span></li>
+        <li><b>C</b><span><strong>社区多源</strong>核对实机与改动上下文</span></li>
+        <li><b>R</b><span><strong>单一传闻</strong>只保留为待验证线索</span></li>
+        <li><b>O</b><span><strong>官方公开</strong>上线后覆盖旧结论</span></li>
+      </ol>
+    </section>
+
+    <div class="atlas-toolbar" aria-label="资料筛选">
+      <div class="game-filters" id="gameFilters">
+        <button type="button" class="game-filter is-active" data-game="all"><span>ALL</span> 全部</button>
+        <button type="button" class="game-filter" data-game="崩"><i>崩</i> 星穹铁道</button>
+        <button type="button" class="game-filter" data-game="终"><i>终</i> 终末地</button>
+        <button type="button" class="game-filter" data-game="绝"><i>绝</i> 绝区零</button>
+        <button type="button" class="game-filter" data-game="鸣"><i>鸣</i> 鸣潮</button>
+        <button type="button" class="game-filter" data-game="异"><i>异</i> 异环</button>
+      </div>
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <span class="sr-only">搜索资料来源</span>
+        <input id="sourceSearch" type="search" placeholder="搜索站点、用途或类型…" autocomplete="off">
+        <kbd>/</kbd>
+      </label>
+    </div>
+
+    <section class="view-panel" id="intelPanel" data-panel="intel" aria-labelledby="intelHeading">
+      <div class="section-heading">
+        <div><p class="section-kicker">FORWARD INTELLIGENCE</p><h2 id="intelHeading">前瞻情报源</h2><p>测试服、数据挖掘、计算站与社区消息流。默认按游戏优先级排序。</p></div>
+        <div class="trust-legend" aria-label="可信度图例"><span><b class="grade grade-a">A</b> 数据库</span><span><b class="grade grade-b">B</b> 交叉参考</span><span><b class="grade grade-c">C</b> 仅作线索</span></div>
+      </div>
+      <div class="source-summary" id="sourceSummary" aria-live="polite"></div>
+      <div class="intel-grid" id="intelGrid" aria-live="polite"></div>
+      <details class="archive-block" id="archiveBlock">
+        <summary><span><b>WATCH / ARCHIVE</b> 观察中、已停更、不可用或受限来源</span><strong id="archiveVisibleCount">4</strong></summary>
+        <div class="archive-grid" id="archiveGrid"></div>
+      </details>
+      <div class="empty-state" id="intelEmpty" hidden><strong>没有匹配的来源</strong><span>换一个游戏，或清除搜索关键词。</span></div>
+    </section>
+
+    <section class="view-panel" id="officialPanel" data-panel="official" aria-labelledby="officialHeading" hidden>
+      <div class="section-heading">
+        <div><p class="section-kicker">CANONICAL REFERENCES</p><h2 id="officialHeading">官方资料入口</h2><p>用正式服资料确认术语、当前数值与已经上线的内容。</p></div>
+        <span class="official-stamp"><b>26</b> VERIFIED ROUTES</span>
+      </div>
+      <div class="official-grid" id="officialGrid"></div>
+      <div class="empty-state" id="officialEmpty" hidden><strong>没有匹配的入口</strong><span>换一个游戏，或清除搜索关键词。</span></div>
+    </section>
+
+    <footer class="library-footer">
+      <span>GUCC / GAMEUP CONTENT COMMAND CENTER</span>
+      <p>资料用于研究与交叉核验。请遵守各站点条款，不传播账号、隐私或非法获取的内容。</p>
+      <a href="#pageTitle">回到顶部 ↑</a>
+    </footer>
+  </main>
 </body>
 </html>

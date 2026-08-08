@@ -92,6 +92,26 @@ for (const file of appScripts) {
 checkSyntax(resolve(root, 'assets', 'access-guard.js'));
 checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
 checkSyntax(resolve(root, 'sw.js'));
+checkSyntax(resolve(root, 'reference', 'resource-library.js'));
+
+const researchSourcesPath = resolve(root, 'data', 'imports', 'gacha-leak-sources-2026-08-07.json');
+try {
+  const researchSources = JSON.parse(readFileSync(researchSourcesPath, 'utf8'));
+  if (!Array.isArray(researchSources.sites) || researchSources.sites.length === 0) {
+    errors.push('前瞻资料源 JSON 缺少 sites 列表');
+  } else {
+    const sourceIds = new Set();
+    for (const source of researchSources.sites) {
+      for (const field of ['id', 'name', 'url', 'status', 'reliability']) {
+        if (!source[field]) errors.push(`前瞻资料源缺少 ${field}：${source.id || source.name || 'unknown'}`);
+      }
+      if (sourceIds.has(source.id)) errors.push(`前瞻资料源存在重复 id：${source.id}`);
+      sourceIds.add(source.id);
+    }
+  }
+} catch (error) {
+  errors.push(`${researchSourcesPath}: 前瞻资料源 JSON 无法解析: ${error.message}`);
+}
 
 checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'gameup-api', 'index.ts'));
 
@@ -159,15 +179,19 @@ if (!workspaceVersion) {
   }
 }
 for (const expected of [
+  'href="#sec-prestudy"><b>PS</b> 事前学习',
   'href="#sec-07"><b>07</b> 扩散',
   'href="#sec-08"><b>08</b> 复盘',
   'href="#sec-09"><b>09</b> 规则',
   'data-key="publishLog"',
   'data-key="diffusionPackage"',
   'data-key="diffusionLog"',
+  'data-key="preStudyGoal"',
+  'data-key="preStudyNotes"',
+  'data-key="ckPreStudy"',
   'data-key="ckDiffuse"'
 ]) {
-  if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少后期扩散工作流标记：${expected}`);
+  if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少关键工作流标记：${expected}`);
 }
 
 const videoPublishBatch = readFileSync(resolve(root, 'automation', 'creator-platforms', '03-publishing.bat'), 'utf8');

@@ -384,9 +384,392 @@
       color: #fff !important;
     }
 
+    /* Cover Studio: editor-first layout and visual hierarchy. */
+    body.gucc-enhanced {
+      --cover-surface: rgba(8, 13, 23, .82);
+      --cover-line: rgba(148, 163, 184, .15);
+      --cover-cyan: #74f3ff;
+      --cover-mint: #78ffba;
+    }
+
+    body.gucc-enhanced .app {
+      width: min(1500px, calc(100% - 32px));
+      padding: 14px 0 36px;
+    }
+
+    body.gucc-enhanced .hero {
+      flex-direction: row;
+      min-height: 116px;
+      margin-bottom: 12px;
+      padding: 20px 22px !important;
+      border-radius: 24px !important;
+      background:
+        radial-gradient(circle at 76% 0, rgba(116, 243, 255, .11), transparent 32%),
+        linear-gradient(145deg, rgba(22, 30, 46, .94), rgba(8, 13, 23, .92)) !important;
+    }
+
+    .hero-copy { min-width: 0; }
+    .hero-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-title h1 { min-width: 0; }
+    .hero-mark {
+      flex: 0 0 auto;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(116, 243, 255, .28);
+      border-radius: 15px;
+      color: #071111;
+      background: linear-gradient(145deg, var(--cover-mint), var(--cover-cyan));
+      box-shadow: 0 12px 30px rgba(116, 243, 255, .16);
+      font-size: 15px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      text-shadow: none;
+    }
+    .hero-eyebrow {
+      margin: 0 0 7px;
+      color: var(--cover-cyan);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    body.gucc-enhanced .hero h1 {
+      font-size: clamp(24px, 2.15vw, 34px);
+      line-height: 1.08;
+    }
+    body.gucc-enhanced .hero p {
+      max-width: 720px;
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 25px;
+      padding: 4px 9px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 999px;
+      color: #bdc9da;
+      background: rgba(255, 255, 255, .04);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .hero-chip::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--cover-mint);
+      box-shadow: 0 0 10px rgba(120, 255, 186, .65);
+    }
+    body.gucc-enhanced .hero .actions {
+      flex: 0 0 auto;
+      align-self: center;
+    }
+    body.gucc-enhanced .hero .actions button {
+      min-height: 40px;
+      padding: 8px 13px;
+      font-size: 12px;
+    }
+
+    body.gucc-enhanced .grid {
+      grid-template-columns: minmax(248px, 280px) minmax(0, 1fr) minmax(258px, 286px);
+      gap: 12px;
+      align-items: start;
+    }
+
+    body.gucc-enhanced .panel {
+      padding: 13px !important;
+      border-radius: 20px !important;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, .048), transparent 38%),
+        var(--cover-surface) !important;
+    }
+    body.gucc-enhanced .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+    .panel-index {
+      display: inline-grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      border: 1px solid rgba(116, 243, 255, .24);
+      border-radius: 9px;
+      color: var(--cover-cyan);
+      background: rgba(116, 243, 255, .07);
+      font-size: 10px;
+      letter-spacing: .04em;
+    }
+    body.gucc-enhanced .section {
+      margin-top: 8px;
+      padding: 11px !important;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .025);
+    }
+    body.gucc-enhanced .section:first-of-type {
+      margin-top: 0;
+    }
+    body.gucc-enhanced .section h3 {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      letter-spacing: .01em;
+    }
+    body.gucc-enhanced .section h3::before {
+      content: '';
+      width: 4px;
+      height: 12px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, var(--cover-mint), var(--cover-cyan));
+      box-shadow: 0 0 10px rgba(116, 243, 255, .28);
+    }
+    body.gucc-enhanced .stack { gap: 8px; }
+    body.gucc-enhanced .row,
+    body.gucc-enhanced .row3 { gap: 7px; }
+    body.gucc-enhanced label {
+      margin-bottom: 5px;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .02em;
+    }
+    body.gucc-enhanced .hint {
+      margin: 2px 0 0;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+    body.gucc-enhanced input,
+    body.gucc-enhanced select,
+    body.gucc-enhanced textarea {
+      border-radius: 11px !important;
+      font-size: 12px;
+    }
+    body.gucc-enhanced input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    body.gucc-enhanced select {
+      min-height: 38px;
+      padding: 7px 9px;
+    }
+    body.gucc-enhanced textarea { padding: 8px 9px; }
+    body.gucc-enhanced .panel button:not(.ratio-tab):not(.mini) {
+      min-height: 38px;
+      padding: 7px 9px;
+      border-radius: 11px !important;
+      font-size: 11px;
+    }
+    body.gucc-enhanced :is(input, select, textarea):focus {
+      border-color: rgba(116, 243, 255, .58) !important;
+      box-shadow: 0 0 0 3px rgba(116, 243, 255, .08) !important;
+    }
+
+    body.gucc-enhanced .workspace {
+      min-width: 0;
+      min-height: 0;
+      padding: 12px !important;
+      border-color: rgba(116, 243, 255, .20) !important;
+      background:
+        radial-gradient(circle at 50% -20%, rgba(116, 243, 255, .10), transparent 38%),
+        rgba(7, 11, 19, .91) !important;
+    }
+    body.gucc-enhanced .ratio-tabs {
+      gap: 6px;
+      margin-bottom: 9px;
+    }
+    body.gucc-enhanced .ratio-tab {
+      min-height: 47px;
+      padding: 7px 5px;
+      border-radius: 12px !important;
+      font-size: 10px;
+      box-shadow: none !important;
+    }
+    body.gucc-enhanced .ratio-tab strong { font-size: 12px; }
+    body.gucc-enhanced .ratio-tab.active {
+      box-shadow: 0 8px 22px rgba(116, 243, 255, .14) !important;
+    }
+    body.gucc-enhanced .toolbar {
+      margin-bottom: 9px;
+      padding: 8px !important;
+      border-radius: 14px !important;
+      background: rgba(255, 255, 255, .035) !important;
+      box-shadow: none !important;
+    }
+    body.gucc-enhanced .badge {
+      padding: 5px 8px;
+      border-radius: 999px !important;
+      font-size: 10px;
+      box-shadow: none !important;
+    }
+    body.gucc-enhanced .toolbar button.small {
+      min-height: 32px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }
+    body.gucc-enhanced .stage-shell {
+      height: clamp(430px, 55vh, 610px);
+      border-color: rgba(116, 243, 255, .15) !important;
+      border-radius: 15px !important;
+      background-color: rgba(2, 5, 10, .72);
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, .32);
+    }
+    body.gucc-enhanced .stage {
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, .58),
+        0 0 0 1px rgba(116, 243, 255, .13) !important;
+    }
+    body.gucc-enhanced .mini-previews {
+      gap: 6px;
+      margin-top: 8px;
+    }
+    body.gucc-enhanced .mini {
+      padding: 6px;
+      border-radius: 11px !important;
+      box-shadow: none !important;
+    }
+    body.gucc-enhanced .mini.active {
+      border-color: var(--cover-cyan) !important;
+      background: rgba(116, 243, 255, .07) !important;
+    }
+    body.gucc-enhanced .mini span { font-size: 9px; }
+
+    body.gucc-enhanced .element-item {
+      padding: 8px;
+      border-radius: 11px;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    body.gucc-enhanced .element-item:hover { border-color: rgba(116, 243, 255, .35); }
+    body.gucc-enhanced .style-grid {
+      gap: 6px;
+      max-height: 330px;
+    }
+    body.gucc-enhanced .style-card {
+      min-height: 48px;
+      padding: 7px;
+      border-radius: 10px !important;
+      font-size: 11px;
+      box-shadow: none !important;
+    }
+    body.gucc-enhanced .design-preset-grid { gap: 6px; }
+    body.gucc-enhanced .design-card,
+    body.gucc-enhanced .prompt-style-card {
+      min-height: 0 !important;
+      padding: 8px !important;
+      border-radius: 11px !important;
+    }
+    body.gucc-enhanced .design-card small,
+    body.gucc-enhanced .prompt-style-card small {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    body.gucc-enhanced .materials-panel,
+    body.gucc-enhanced .inspector-panel {
+      scrollbar-color: rgba(116, 243, 255, .28) transparent;
+      scrollbar-width: thin;
+    }
+    body.gucc-enhanced .materials-panel::-webkit-scrollbar,
+    body.gucc-enhanced .inspector-panel::-webkit-scrollbar,
+    body.gucc-enhanced .style-grid::-webkit-scrollbar,
+    body.gucc-enhanced .element-list::-webkit-scrollbar { width: 5px; }
+    body.gucc-enhanced .materials-panel::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .inspector-panel::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .style-grid::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .element-list::-webkit-scrollbar-thumb {
+      border-radius: 99px;
+      background: rgba(116, 243, 255, .22);
+    }
+    body.gucc-enhanced .ai-prompt-lab {
+      margin-top: 12px;
+      padding: 18px !important;
+      border-color: rgba(157, 169, 255, .18) !important;
+      background:
+        radial-gradient(circle at 88% 0, rgba(157, 169, 255, .11), transparent 30%),
+        var(--cover-surface) !important;
+    }
+    body.gucc-enhanced .ai-prompt-layout {
+      grid-template-columns: minmax(280px, .72fr) minmax(460px, 1.28fr);
+    }
+
+    @media (min-width: 1181px) {
+      body.gucc-enhanced .materials-panel,
+      body.gucc-enhanced .workspace,
+      body.gucc-enhanced .inspector-panel {
+        position: sticky;
+        top: 14px;
+      }
+      body.gucc-enhanced .materials-panel,
+      body.gucc-enhanced .inspector-panel {
+        max-height: calc(100vh - 28px);
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      body.gucc-enhanced .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+          "workspace workspace"
+          "materials inspector";
+      }
+      body.gucc-enhanced .materials-panel { grid-area: materials; }
+      body.gucc-enhanced .workspace { grid-area: workspace; }
+      body.gucc-enhanced .inspector-panel { grid-area: inspector; }
+      body.gucc-enhanced .stage-shell { height: min(62vh, 620px); }
+      body.gucc-enhanced .ai-prompt-layout { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 980px) {
       input[type="range"] {
         min-height: 44px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body.gucc-enhanced .hero {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      body.gucc-enhanced .hero h1 {
+        font-size: clamp(26px, 5vw, 34px) !important;
+      }
+
+      body.gucc-enhanced .hero .actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      body.gucc-enhanced .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+          "workspace"
+          "materials"
+          "inspector";
+      }
+
+      body.gucc-enhanced .stage-shell {
+        height: min(60vh, 520px);
       }
     }
 
@@ -427,6 +810,17 @@
         margin-bottom: 10px;
       }
 
+      body.gucc-enhanced .hero-title {
+        align-items: flex-start;
+      }
+
+      body.gucc-enhanced .hero-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+        font-size: 13px;
+      }
+
       body.gucc-enhanced .hero h1 {
         max-width: 100%;
         font-size: clamp(26px, 7.6vw, 34px) !important;
@@ -461,6 +855,10 @@
 
       body.gucc-enhanced .grid {
         grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+          "workspace"
+          "materials"
+          "inspector";
         gap: 10px;
       }
 
@@ -473,7 +871,8 @@
       }
 
       body.gucc-enhanced .section {
-        padding: 11px 0;
+        margin-top: 8px;
+        padding: 11px !important;
       }
 
       body.gucc-enhanced .row,
@@ -655,6 +1054,21 @@
       body.gucc-enhanced .row3 > :first-child {
         grid-column: auto;
       }
+
+      body.gucc-enhanced .hero-mark {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.gucc-enhanced *,
+      body.gucc-enhanced *::before,
+      body.gucc-enhanced *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
   </style>
   <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
@@ -663,9 +1077,18 @@
   <a class="gucc-back-home" href="../../">← GUCC Portal</a>
   <div class="app">
     <header class="hero">
-      <div>
-        <h1>🎮 游戏视频封面多比例批量生成器</h1>
-        <p>一次添加背景、图片、文字；四种常用比例自动同步；套用整体设计模板后再逐比例微调，最后一键导出。</p>
+      <div class="hero-copy">
+        <div class="hero-eyebrow">Creative Studio · Cover System</div>
+        <div class="hero-title">
+          <span class="hero-mark" aria-hidden="true">CG</span>
+          <h1>游戏视频封面多比例批量生成器</h1>
+        </div>
+        <p>一次完成素材编排、比例适配与批量导出。先搭主构图，再逐比例精修。</p>
+        <div class="hero-meta" aria-label="功能概览">
+          <span class="hero-chip">4 种常用比例</span>
+          <span class="hero-chip">10 套整体模板</span>
+          <span class="hero-chip">28 种文字样式</span>
+        </div>
       </div>
       <div class="actions">
         <button class="secondary" id="saveProjectBtn">保存项目</button>
@@ -675,8 +1098,8 @@
     </header>
 
     <main class="grid">
-      <aside class="panel">
-        <h2>素材与元素</h2>
+      <aside class="panel materials-panel">
+        <h2 class="panel-title"><span class="panel-index">01</span>素材与元素</h2>
         <div class="section stack">
           <h3>1. 背景图</h3>
           <div class="row">
@@ -746,8 +1169,8 @@
         <p class="hint" style="margin-top:12px">既可以选择“无模板”完全自由排版，也可以先套模板再微调。建议以 16:9 检查横版主构图，最后检查 3:4 / 9:16 的人物与标题安全区。</p>
       </section>
 
-      <aside class="panel">
-        <h2>属性与导出</h2>
+      <aside class="panel inspector-panel">
+        <h2 class="panel-title"><span class="panel-index">02</span>属性与导出</h2>
         <div class="section stack">
           <h3>选中元素属性</h3>
           <div id="emptyInspector" class="hint">当前没有选中元素。点击画布里的图片/文字，或点击左侧元素列表。</div>

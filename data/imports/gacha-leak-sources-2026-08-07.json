@@ -1,0 +1,731 @@
+{
+  "meta": {
+    "title": "五款游戏内鬼 / 测试服 / 数据挖掘资料网站索引",
+    "generated_on": "2026-08-07",
+    "games": [
+      "绝区零",
+      "崩坏：星穹铁道",
+      "鸣潮",
+      "明日方舟：终末地",
+      "异环（Neverness to Everness）"
+    ],
+    "purpose": "用于角色机制预研、测试服版本追踪、热点选题判断与正式公开视频前的后台核对。",
+    "important_note": [
+      "测试服、数据挖掘和爆料内容均可能在正式上线前修改。",
+      "公开视频若要避免内鬼内容，建议只把这些来源用于后台理解，再用官方公告、正式服数据和已公开素材重新建立证据链。",
+      "社区爆料帖的可信度差异很大，优先级通常是：可核验测试服数据库/版本Diff > 数据挖掘 > 有原始来源的社区汇总 > 单一爆料人口述/远期传闻。",
+      "Nanoka 是较新的域名；第三方自动安全扫描曾出现少量警告。建议只浏览页面，不登录、不输入账号密码、不下载可执行文件。"
+    ],
+    "reliability_legend": {
+      "A": "结构化测试服/数据挖掘数据库，可查看版本号、数值或Diff；仍需注意STC（可能变更）。",
+      "A-": "高价值结构化数据库，当前社区使用广泛，但更新完整度或站点成熟度略逊于A。",
+      "B+": "优秀辅助数据库或理论计算站，适合交叉验证和理解机制，但不一定专门追内鬼。",
+      "B": "社区聚合/新闻流；价值高，但必须逐帖检查原始来源和标签。",
+      "C": "爆料生态不稳定或真假混杂，只适合作为线索入口。",
+      "Deprecated": "已停止维护、被限制、仅更新正式服，或不再适合作为未来版本主来源。"
+    }
+  },
+  "quick_start": {
+    "绝区零": [
+      "zzz_gachabase",
+      "zzz_nanoka",
+      "zzz_reddit_leaks"
+    ],
+    "崩坏：星穹铁道": [
+      "hsr_gachabase",
+      "hsr_nanoka",
+      "hsr_honeyhunter",
+      "hsr_reddit_leaks"
+    ],
+    "鸣潮": [
+      "ww_nanoka",
+      "ww_encore",
+      "ww_reddit_leaks",
+      "ww_tethys"
+    ],
+    "明日方舟：终末地": [
+      "endfield_reddit_leaks",
+      "endfield_gg",
+      "endfieldhub",
+      "endfieldcore"
+    ],
+    "异环（Neverness to Everness）": [
+      "nte_nanoka",
+      "nte_reddit_leaks",
+      "nevernessdb",
+      "neverness_gg"
+    ]
+  },
+  "sites": [
+    {
+      "id": "zzz_gachabase",
+      "name": "Gachabase — Zenless Zone Zero",
+      "games": [
+        "绝区零"
+      ],
+      "url": "https://zzz.gachabase.net/",
+      "source_type": [
+        "beta_database",
+        "datamine",
+        "changelog_diff"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "A",
+      "best_for": [
+        "测试服角色完整技能",
+        "音擎",
+        "驱动盘",
+        "版本Revision",
+        "前后版本Diff",
+        "数值改动"
+      ],
+      "notes": "当前绝区零最推荐的主数据库之一。社区经常直接引用其Beta Changelog与Revision更新。",
+      "verification": "2026-08仍能检索到3.x Beta版本与Revision更新。"
+    },
+    {
+      "id": "zzz_nanoka",
+      "name": "Nanoka — Zenless Zone Zero",
+      "games": [
+        "绝区零"
+      ],
+      "url": "https://zzz.nanoka.cc/",
+      "source_type": [
+        "beta_database",
+        "datamine",
+        "endgame_rotation"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "A-",
+      "best_for": [
+        "测试服技能",
+        "物品/驱动盘",
+        "未来高难轮换",
+        "与Gachabase交叉核对"
+      ],
+      "notes": "适合作为Gachabase的第二视角；部分语言文本可能更新不同步，关键机制优先核对中文原文。",
+      "security_note": "Nanoka域名较新；第三方自动安全扫描曾有少量警告。建议浏览为主，不登录、不下载程序。"
+    },
+    {
+      "id": "zzz_reddit_leaks",
+      "name": "r/Zenlesszonezeroleaks_",
+      "games": [
+        "绝区零"
+      ],
+      "url": "https://www.reddit.com/r/Zenlesszonezeroleaks_/",
+      "source_type": [
+        "community_aggregator",
+        "leak_news",
+        "beta_change_feed"
+      ],
+      "status": "active",
+      "priority": 3,
+      "reliability": "B",
+      "best_for": [
+        "最新V1/V2/V3改动",
+        "实机",
+        "动画",
+        "爆料来源追踪",
+        "社区解读"
+      ],
+      "notes": "最好把它当消息入口：看到更新后回Gachabase/Nanoka看完整数据。"
+    },
+    {
+      "id": "hsr_gachabase",
+      "name": "Gachabase — Honkai: Star Rail",
+      "games": [
+        "崩坏：星穹铁道"
+      ],
+      "url": "https://hsr.gachabase.net/",
+      "source_type": [
+        "beta_database",
+        "datamine",
+        "changelog_diff"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "A",
+      "best_for": [
+        "测试服角色",
+        "光锥",
+        "遗器",
+        "版本Diff",
+        "Revision追踪"
+      ],
+      "notes": "星铁预研的主站之一，适合按版本连续追踪数值变化。",
+      "verification": "2026-08可检索到4.4.x Beta角色数据。"
+    },
+    {
+      "id": "hsr_nanoka",
+      "name": "Nanoka — Honkai: Star Rail",
+      "games": [
+        "崩坏：星穹铁道"
+      ],
+      "url": "https://hsr.nanoka.cc/",
+      "source_type": [
+        "beta_database",
+        "datamine",
+        "endgame_rotation"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "A-",
+      "best_for": [
+        "角色/怪物数据",
+        "混沌回忆/虚构叙事/末日幻影等未来轮换",
+        "版本对比"
+      ],
+      "notes": "2026年的星铁泄露社区持续引用Nanoka的Boss、Peak、Story等页面。",
+      "security_note": "同Nanoka总域名提醒：只浏览、不登录、不下载程序。"
+    },
+    {
+      "id": "hsr_honeyhunter",
+      "name": "Honey Hunter World — Honkai: Star Rail",
+      "games": [
+        "崩坏：星穹铁道"
+      ],
+      "url": "https://starrail.honeyhunterworld.com/",
+      "source_type": [
+        "beta_database",
+        "live_database"
+      ],
+      "status": "active",
+      "priority": 3,
+      "reliability": "A-",
+      "best_for": [
+        "角色",
+        "光锥",
+        "遗器",
+        "敌人",
+        "Beta版本数据",
+        "新版本内容总览"
+      ],
+      "notes": "老牌数据库；2026-08页面仍明确标注Live版本与Beta版本号，可作为Gachabase/Nanoka的第三方交叉核验。",
+      "verification": "2026-08页面显示Live 4.4、Beta 4.4.52。"
+    },
+    {
+      "id": "hsr_reddit_leaks",
+      "name": "r/HonkaiStarRail_leaks",
+      "games": [
+        "崩坏：星穹铁道"
+      ],
+      "url": "https://www.reddit.com/r/HonkaiStarRail_leaks/",
+      "source_type": [
+        "community_aggregator",
+        "leak_news",
+        "beta_change_feed"
+      ],
+      "status": "active",
+      "priority": 4,
+      "reliability": "B",
+      "best_for": [
+        "最新泄露",
+        "版本改动汇总",
+        "实机",
+        "远期消息",
+        "追原始来源"
+      ],
+      "notes": "信息量大，但不同帖子的可信度差异非常明显；优先看带直接数据库/原始来源链接的帖子。"
+    },
+    {
+      "id": "ww_nanoka",
+      "name": "Nanoka — Wuthering Waves",
+      "games": [
+        "鸣潮"
+      ],
+      "url": "https://ww.nanoka.cc/",
+      "source_type": [
+        "beta_database",
+        "datamine"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "A-",
+      "best_for": [
+        "未来角色完整技能",
+        "武器",
+        "版本差异",
+        "测试服数值"
+      ],
+      "notes": "目前鸣潮社区常用的Hakush替代站之一。",
+      "security_note": "同Nanoka总域名提醒：只浏览、不登录、不下载程序。"
+    },
+    {
+      "id": "ww_encore",
+      "name": "encore.moe",
+      "games": [
+        "鸣潮"
+      ],
+      "url": "https://encore.moe/",
+      "source_type": [
+        "datamine_database",
+        "asset_database",
+        "diff",
+        "live_and_pre_release_data"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "A-",
+      "best_for": [
+        "角色",
+        "武器",
+        "声骸",
+        "怪物",
+        "高难内容",
+        "故事文本",
+        "Diff",
+        "原始游戏资产"
+      ],
+      "notes": "站方明确说明会使用datamined data和raw assets；适合深挖鸣潮底层资料与差异。",
+      "verification": "2026-08仍在活跃更新。"
+    },
+    {
+      "id": "ww_reddit_leaks",
+      "name": "r/WutheringWavesLeaks",
+      "games": [
+        "鸣潮"
+      ],
+      "url": "https://www.reddit.com/r/WutheringWavesLeaks/",
+      "source_type": [
+        "community_aggregator",
+        "leak_news",
+        "beta_theorycraft"
+      ],
+      "status": "active",
+      "priority": 3,
+      "reliability": "B",
+      "best_for": [
+        "最新V改动",
+        "实机",
+        "角色计算",
+        "DPR预计算",
+        "消息来源"
+      ],
+      "notes": "社区周常帖2026年明确把Nanoka、encore.moe、Tethys列为常用资源，并标注Hakush已退出。"
+    },
+    {
+      "id": "ww_tethys",
+      "name": "Tethys.gg",
+      "games": [
+        "鸣潮"
+      ],
+      "url": "https://tethys.gg/",
+      "source_type": [
+        "theorycraft",
+        "calculations",
+        "guides"
+      ],
+      "status": "active",
+      "priority": 4,
+      "reliability": "B+",
+      "best_for": [
+        "理论计算",
+        "最优配装",
+        "角色机制理解",
+        "正式/预研后的数值解释"
+      ],
+      "notes": "不是纯内鬼数据库，但由鸣潮理论计算社区维护，非常适合把泄露技能翻译成实际DPS、轮轴和配队意义。"
+    },
+    {
+      "id": "ww_prydwen",
+      "name": "Prydwen — Wuthering Waves",
+      "games": [
+        "鸣潮"
+      ],
+      "url": "https://www.prydwen.gg/wuthering-waves/",
+      "source_type": [
+        "live_database",
+        "guides",
+        "theorycraft_companion"
+      ],
+      "status": "active",
+      "priority": 5,
+      "reliability": "B+",
+      "best_for": [
+        "正式服角色基线",
+        "Build",
+        "队伍",
+        "Echo",
+        "与测试服数据做对照"
+      ],
+      "notes": "不是内鬼主站，适合做正式服基线和机制对照。"
+    },
+    {
+      "id": "nte_nanoka",
+      "name": "Nanoka — Neverness to Everness",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://nte.nanoka.cc/",
+      "source_type": [
+        "beta_database",
+        "datamine"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "A-",
+      "best_for": [
+        "未来角色技能",
+        "武器/Arc",
+        "测试数据"
+      ],
+      "notes": "NTE泄露社区已有直接引用Nanoka角色技能与武器页面的记录。",
+      "security_note": "同Nanoka总域名提醒：只浏览、不登录、不下载程序。"
+    },
+    {
+      "id": "nte_reddit_leaks",
+      "name": "r/NTELeaks",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://www.reddit.com/r/NTELeaks/",
+      "source_type": [
+        "community_aggregator",
+        "leak_news"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "B",
+      "best_for": [
+        "最新角色消息",
+        "实机/图像",
+        "Nanoka更新提醒",
+        "来源追踪"
+      ],
+      "notes": "适合当消息流入口。"
+    },
+    {
+      "id": "nevernessdb",
+      "name": "NevernessDB",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://nte-db.com/en/",
+      "source_type": [
+        "community_database",
+        "pre_release_data",
+        "live_database"
+      ],
+      "status": "active",
+      "priority": 3,
+      "reliability": "B+",
+      "best_for": [
+        "角色",
+        "武器",
+        "材料",
+        "模块",
+        "地图",
+        "资料来源追踪"
+      ],
+      "notes": "站点自称source-tracked community database，并明确包含Pre-release data；适合做结构化补充和交叉核验。",
+      "verification": "2026-08站点可访问，主页标注Pre-release data与source-tracked。"
+    },
+    {
+      "id": "neverness_gg",
+      "name": "Neverness.gg",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://neverness.gg/",
+      "source_type": [
+        "live_database",
+        "news",
+        "guides"
+      ],
+      "status": "active",
+      "priority": 4,
+      "reliability": "B+",
+      "best_for": [
+        "正式服新闻",
+        "角色Build",
+        "版本公告整理",
+        "当前/未来卡池"
+      ],
+      "notes": "不是纯内鬼站，但更新快，适合与泄露数据进行正式服事实核对。"
+    },
+    {
+      "id": "nte_prydwen",
+      "name": "Prydwen — Neverness to Everness",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://www.prydwen.gg/neverness-to-everness/",
+      "source_type": [
+        "live_database",
+        "guides",
+        "team_builder"
+      ],
+      "status": "active",
+      "priority": 5,
+      "reliability": "B+",
+      "best_for": [
+        "Build",
+        "队伍",
+        "角色数据库",
+        "正式服机制基线"
+      ],
+      "notes": "不是泄露主站，适合把预研内容与正式服Meta进行对照。"
+    },
+    {
+      "id": "nte_wiki_org",
+      "name": "NTE Wiki (ntewiki.org)",
+      "games": [
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://ntewiki.org/",
+      "source_type": [
+        "live_database",
+        "guides"
+      ],
+      "status": "active",
+      "priority": 6,
+      "reliability": "B",
+      "best_for": [
+        "角色技能",
+        "武器/Arc",
+        "模块",
+        "快速资料查询"
+      ],
+      "notes": "作为普通数据库补充使用，不建议用它单独确认内鬼消息。"
+    },
+    {
+      "id": "endfield_reddit_leaks",
+      "name": "r/ArknightsEndfieldLeak",
+      "games": [
+        "明日方舟：终末地"
+      ],
+      "url": "https://www.reddit.com/r/ArknightsEndfieldLeak/",
+      "source_type": [
+        "community_aggregator",
+        "rumor_feed",
+        "datamine_discussion"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "C",
+      "best_for": [
+        "有限的未来消息",
+        "数据挖掘线索",
+        "中文/韩文爆料搬运"
+      ],
+      "notes": "终末地目前缺少成熟的Beta数据库；该社区可作为线索入口，但远期角色/剧情爆料真假混杂，必须大幅降权。"
+    },
+    {
+      "id": "endfield_gg",
+      "name": "Endfield.gg Database",
+      "games": [
+        "明日方舟：终末地"
+      ],
+      "url": "https://endfield.gg/database/",
+      "source_type": [
+        "live_database",
+        "guides"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "B+",
+      "best_for": [
+        "正式服角色",
+        "武器",
+        "Essence",
+        "物品",
+        "配方",
+        "队伍"
+      ],
+      "notes": "不是内鬼站；终末地爆料稀少时很适合用来确认“当前正式服到底已有些什么”。"
+    },
+    {
+      "id": "endfieldhub",
+      "name": "Endfield Hub",
+      "games": [
+        "明日方舟：终末地"
+      ],
+      "url": "https://endfieldhub.org/database",
+      "source_type": [
+        "live_database",
+        "quantitative_data"
+      ],
+      "status": "active",
+      "priority": 3,
+      "reliability": "B+",
+      "best_for": [
+        "角色数值",
+        "武器副词条",
+        "敌人抗性",
+        "基建/产线数据",
+        "正式服量化对照"
+      ],
+      "notes": "站方称数据来自官方游戏表并以实测复核；适合作为正式服数值基线。"
+    },
+    {
+      "id": "endfieldcore",
+      "name": "EndfieldCore",
+      "games": [
+        "明日方舟：终末地"
+      ],
+      "url": "https://www.endfieldcore.com/",
+      "source_type": [
+        "live_database",
+        "calculators",
+        "team_builder"
+      ],
+      "status": "active",
+      "priority": 4,
+      "reliability": "B+",
+      "best_for": [
+        "角色",
+        "武器",
+        "技能条件",
+        "养成材料计算",
+        "队伍构建",
+        "工厂规划"
+      ],
+      "notes": "不是内鬼站，但适合把传闻机制和正式服已有系统逐项比较。"
+    },
+    {
+      "id": "endfieldleaks_old_sub",
+      "name": "r/EndfieldLeaks（旧社区）",
+      "games": [
+        "明日方舟：终末地"
+      ],
+      "url": "https://www.reddit.com/r/EndfieldLeaks/",
+      "source_type": [
+        "community_aggregator"
+      ],
+      "status": "banned_or_unavailable",
+      "priority": 99,
+      "reliability": "Deprecated",
+      "best_for": [
+        "历史引用"
+      ],
+      "notes": "2026-04社区讨论显示该旧泄露社区已被封/不可用，不建议作为当前入口。"
+    },
+    {
+      "id": "nanoka_root",
+      "name": "Nanoka.cc — Multi-game Root",
+      "games": [
+        "绝区零",
+        "崩坏：星穹铁道",
+        "鸣潮",
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://nanoka.cc/",
+      "source_type": [
+        "multi_game_portal"
+      ],
+      "status": "active",
+      "priority": 1,
+      "reliability": "A-",
+      "best_for": [
+        "快速进入四个游戏的数据库"
+      ],
+      "notes": "主页当前明确列出HSR、Genshin、ZZZ、Wuthering Waves、NTE。",
+      "security_note": "域名较新；第三方自动安全扫描曾有少量警告，建议只浏览。"
+    },
+    {
+      "id": "nanoka_news",
+      "name": "Nanoka.cc News (Telegram Web)",
+      "games": [
+        "绝区零",
+        "崩坏：星穹铁道",
+        "鸣潮",
+        "异环（Neverness to Everness）"
+      ],
+      "url": "https://t.me/s/nanoka_news",
+      "source_type": [
+        "update_feed",
+        "beta_revision_feed"
+      ],
+      "status": "active",
+      "priority": 2,
+      "reliability": "B+",
+      "best_for": [
+        "知道Nanoka什么时候更新",
+        "快速看到版本号/新角色/新数据"
+      ],
+      "notes": "适合订阅式追更；看到更新后再回对应数据库看完整内容。"
+    },
+    {
+      "id": "seele_leaks",
+      "name": "Seele Leaks (Telegram)",
+      "games": [
+        "崩坏：星穹铁道",
+        "绝区零",
+        "可能覆盖其他二游"
+      ],
+      "url": "https://t.me/Seele_Leaks",
+      "source_type": [
+        "rumor_feed",
+        "leak_news"
+      ],
+      "status": "active_or_recently_active",
+      "priority": 5,
+      "reliability": "C",
+      "best_for": [
+        "追消息源",
+        "远期传闻",
+        "测试时间/碎片信息"
+      ],
+      "notes": "不要把单条消息直接当事实；更适合发现线索后再去数据库或多源交叉验证。"
+    },
+    {
+      "id": "hakush",
+      "name": "Hakush.in",
+      "games": [
+        "绝区零",
+        "崩坏：星穹铁道",
+        "鸣潮",
+        "原神"
+      ],
+      "url": "https://hakush.in/",
+      "source_type": [
+        "historical_beta_database"
+      ],
+      "status": "stopped_or_not_recommended_for_new_data",
+      "priority": 99,
+      "reliability": "Deprecated",
+      "best_for": [
+        "历史资料",
+        "旧链接"
+      ],
+      "notes": "曾是非常重要的测试服数据库；2026年鸣潮泄露社区的资源帖已明确写“RIP Hakush”，并推荐Nanoka/encore.moe替代。"
+    },
+    {
+      "id": "homdgcat",
+      "name": "HomDGCat Wiki",
+      "games": [
+        "崩坏：星穹铁道",
+        "原神"
+      ],
+      "url": "https://homdgcat.wiki/",
+      "source_type": [
+        "historical_beta_database",
+        "live_database"
+      ],
+      "status": "live_data_only_or_restricted",
+      "priority": 99,
+      "reliability": "Deprecated",
+      "best_for": [
+        "正式服/历史资料"
+      ],
+      "notes": "2026年遭HoYoverse/Cognosphere诉讼后，站点公开表示未来仅更新live game data，因此不再适合作为未来测试服主来源。"
+    }
+  ],
+  "recommended_workflow": {
+    "角色机制预研": [
+      "先看结构化数据库（Gachabase / Nanoka / encore.moe / Honey Hunter）。",
+      "记录具体版本号、Revision或V1/V2/V3，不要只截最终页面。",
+      "再到对应Leaks Reddit看实机、社区解释和变化摘要。",
+      "用理论计算站（如Tethys）判断数值和配队意义。",
+      "公开视频若不讲内鬼，最后重新只用官方公开内容+正式服证据构建文案。"
+    ],
+    "可信度标记建议": {
+      "T": "测试服数据库/可核验数值",
+      "D": "Datamine数据挖掘",
+      "C": "社区多源共识/搬运",
+      "R": "Rumor单一爆料/远期传闻",
+      "O": "官方公开/正式服"
+    }
+  }
+}

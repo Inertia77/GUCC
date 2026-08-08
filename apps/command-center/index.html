@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png?v=2" />
   <link rel="manifest" href="../../manifest.webmanifest" />
   <script src="../../assets/access-guard.js" data-root="../../" data-guard="true"></script>
-  <link rel="stylesheet" href="styles/app.css?v=5.2.2" />
+  <link rel="stylesheet" href="styles/app.css?v=5.2.3" />
   <link rel="stylesheet" href="styles/interactions-v1.css" />
   <link rel="stylesheet" href="styles/navigation-v1.css" />
   <link rel="stylesheet" href="styles/content-v6.css" />
@@ -76,6 +76,10 @@
               </div>
             </div>
           </div>
+          <aside class="status-convention-note" aria-label="角色研究与养成状态记录规则">
+            <strong>状态记录规则</strong>
+            <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE」。状态之外的特殊信息统一写入「研究/养成备注」，不要新建或混用其他状态类型。</span>
+          </aside>
           <div id="characterResults" class="list"></div>
           <div id="characterEditor" class="card editor hidden"></div>
         </section>
@@ -94,6 +98,10 @@
               </div>
             </div>
           </div>
+          <aside class="status-convention-note" aria-label="配队持有与研究状态记录规则">
+            <strong>状态记录规则</strong>
+            <span>持有状态只用「YES」或「NO」；配队状态只用「待研究 → OK」。不要添加或混用其他状态类型。</span>
+          </aside>
           <div id="partyResults" class="list"></div>
           <div id="partyEditor" class="card editor hidden"></div>
         </section>

@@ -238,6 +238,25 @@ h2 {
   padding: 12px;
 }
 
+.status-convention-note {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: -2px 0 14px;
+  padding: 10px 12px;
+  color: var(--muted);
+  background: rgba(91, 225, 183, .055);
+  border: 1px solid rgba(91, 225, 183, .2);
+  border-radius: var(--radius);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.status-convention-note strong {
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
 .login-card {
   max-width: 540px;
   margin: 54px auto;
@@ -784,6 +803,12 @@ body.gucc-enhanced .link-btn.primary-reference-link:hover {
 
   .toolbar {
     position: static;
+  }
+
+  .status-convention-note {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .item-head {

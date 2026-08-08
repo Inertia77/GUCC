@@ -1,4 +1,4 @@
-/* GUCC WorkSpace AI Prompt templates.
+/* GUCC Studio AI Prompt templates.
    Edit prompts here instead of changing index.html. */
 
 function projectHeaderContext(d){
@@ -265,7 +265,7 @@ function buildPrompt(kind){
 ${workspaceFullContext(d)}`;
   }
   if(kind === "workspaceJson"){
-    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可直接导入 GUCC WorkSpace v4.2.0 的 JSON 文件。
+    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可直接导入 GUCC Studio v5.0.0 的 JSON 文件。
 
 执行规则：
 1. 以当前对话中最新确认的版本为准；旧版本和被我否定的方案不要混入。
@@ -278,12 +278,12 @@ ${workspaceFullContext(d)}`;
 JSON 顶层只使用这些键：
 __workspaceName, __workspaceVersion, __templateVersion, __schemaVersion, __exportStage, projectTitle, game, gameCode, type, status, ddl, version, duration, priority, projectShortTitle, projectShortName, localPath, projectMemo, coreQuestion, coreConclusion, audience, notDo, officialInfo, communityDebate, testNotes, evidenceLocker, aiAnalysis, structurePreset, sectionsJson, chapterTable, script, gameFootage, visualPlan, publishCN, publishMulti, publishLog, diffusionGoal, diffusionAssets, diffusionPackage, diffusionLog, progressLog, review, ckBrief, ckResearch, ckScript, ckRecord, ckEdit, ckSubtitle, ckCover, ckPublish, ckDiffuse, ckReview, ckArchive。
 
-固定元数据：__workspaceName="GUCC WorkSpace"；__workspaceVersion="4.2.0"；__templateVersion="4.2.0"；__schemaVersion="gucc-workspace-schema-3"；__exportStage 根据项目状态写 WIP 或 DONE。
+固定元数据：__workspaceName="GUCC Studio"；__workspaceVersion="5.0.0"；__templateVersion="5.0.0"；__schemaVersion="gucc-workspace-schema-3"；__exportStage 根据项目状态写 WIP 或 DONE。
 
 ${workspaceFullContext(d)}`;
   }
   if(kind === "workspaceMarkdown"){
-    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可导入 GUCC WorkSpace v4.2.0、同时便于人阅读的 Markdown 文件。
+    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可导入 GUCC Studio v5.0.0、同时便于人阅读的 Markdown 文件。
 
 规则：
 1. 以当前对话里最新确认的版本为准；没有的信息写“（未填写）”，不要编造。

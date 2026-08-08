@@ -151,8 +151,8 @@ if (!workspaceVersion) {
   errors.push('视频工作台缺少 TEMPLATE_VERSION');
 } else {
   for (const expected of [
-    `<title>GUCC WorkSpace v${workspaceVersion}`,
-    `GUCC WorkSpace v${workspaceVersion} ·`,
+    `<title>GUCC Studio v${workspaceVersion}`,
+    `GUCC STUDIO · V${workspaceVersion.split('.')[0]}`,
     `value="v${workspaceVersion}"`
   ]) {
     if (!workspaceSource.includes(expected)) errors.push(`视频工作台版本显示不一致：缺少 ${expected}`);

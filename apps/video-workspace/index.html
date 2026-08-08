@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1422">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>GUCC WorkSpace v4.2.0｜AI 驱动视频创作与归档工作台</title>
+<title>GUCC Studio v5.0.0｜AI 提示词与内容工作区</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg?v=5">
 <link rel="apple-touch-icon" href="../../assets/icons/gucc-icon-192.png?v=2">
 <link rel="manifest" href="../../manifest.webmanifest">
@@ -2194,55 +2194,120 @@ body.gucc-enhanced .toast{
   .ai-lane button{flex:1 1 100%}
 }
 </style>
+<style>
+/* v5.0.0: AI-first split studio, aligned with the GUCC v5 visual system. */
+body.gucc-enhanced{--studio-bg:#070a10;--studio-panel:rgba(12,18,30,.84);--studio-panel-strong:rgba(17,24,39,.96);--studio-line:rgba(255,255,255,.12);--studio-text:#f3f7ff;--studio-muted:#9eacc0;--studio-dim:#6f8096;--studio-mint:#78ffba;--studio-cyan:#74f3ff;--studio-violet:#9da9ff;--studio-pink:#ff5da8;color-scheme:dark!important;padding:0 88px 110px 0!important;color:var(--studio-text)!important}
+body.gucc-enhanced .page{width:min(1460px,calc(100% - 44px))!important;margin:22px auto 60px!important;color:var(--studio-text)!important}
+body.gucc-enhanced .studio-header,body.gucc-enhanced .import-gateway,body.gucc-enhanced .card,body.gucc-enhanced .section-nav,body.gucc-enhanced .dock,body.gucc-enhanced .section-row,body.gucc-enhanced .control-title-block,body.gucc-enhanced .control-section,body.gucc-enhanced .progressbox,body.gucc-enhanced .ai-structure-import,body.gucc-enhanced .reference-panel{border:1px solid var(--studio-line)!important;border-radius:20px!important;color:var(--studio-text)!important;background:linear-gradient(145deg,rgba(255,255,255,.07),transparent 38%),var(--studio-panel)!important;box-shadow:0 22px 70px rgba(0,0,0,.26)!important;backdrop-filter:blur(18px)!important}
+body.gucc-enhanced .studio-header{padding:22px 24px 0!important;overflow:hidden;border-color:rgba(116,243,255,.24)!important}
+body.gucc-enhanced .studio-header:before{background:linear-gradient(90deg,var(--studio-mint),var(--studio-cyan),var(--studio-violet),var(--studio-pink))!important}
+.studio-brand{display:flex;align-items:center;justify-content:space-between;gap:16px}
+body.gucc-enhanced .studio-brand .portal-link{min-height:34px!important;padding:6px 10px!important;margin:0!important;border:1px solid var(--studio-line)!important;border-radius:10px!important;background:rgba(255,255,255,.045)!important;color:var(--studio-muted)!important}
+body.gucc-enhanced .eyebrow,.zone-kicker{display:inline-flex;align-items:center;width:max-content;border:0!important;background:transparent!important;padding:0!important;color:var(--studio-cyan)!important;font:800 11px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.16em}
+.studio-headline{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:36px;align-items:end;padding:28px 0 22px}
+body.gucc-enhanced .studio-headline h1{max-width:830px;margin:0 0 10px;font-size:clamp(30px,4vw,56px);line-height:1.02;letter-spacing:-.05em!important}
+body.gucc-enhanced .studio-headline .sub{max-width:820px;margin:0;font-size:15px;line-height:1.75;color:var(--studio-muted)!important}
+.studio-progress{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:end}.studio-progress>span{font-size:12px;color:var(--studio-muted)}.studio-progress>strong{font:800 28px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--studio-mint)}.studio-progress .bar{grid-column:1/-1;height:7px;background:rgba(255,255,255,.09)!important}.studio-progress .bar span{background:linear-gradient(90deg,var(--studio-mint),var(--studio-cyan),var(--studio-violet))!important}
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;margin:0 -24px}
+body.gucc-enhanced .page .mode-button{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;padding:16px 24px!important;min-height:82px!important;border:0!important;border-top:1px solid var(--studio-line)!important;border-radius:0!important;background:rgba(4,8,14,.38)!important;color:var(--studio-muted)!important}
+body.gucc-enhanced .page .mode-button+.mode-button{border-left:1px solid var(--studio-line)!important}.mode-button>span{grid-row:1/3;font:800 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--studio-dim)}.mode-button>b{font-size:17px;color:var(--studio-text)}.mode-button>small{font-size:11px;color:var(--studio-muted)}body.gucc-enhanced .page .mode-button.active{background:linear-gradient(90deg,rgba(116,243,255,.13),rgba(157,169,255,.07))!important;box-shadow:inset 0 -3px 0 var(--studio-cyan)!important}.mode-button.active>span{color:var(--studio-cyan)}
+.import-gateway{display:grid;grid-template-columns:1.1fr .8fr .95fr;gap:14px;margin-top:16px;padding:16px!important}.import-copy{padding:12px 10px}.import-copy h2,.zone-heading h2{margin:6px 0 8px!important;font-size:22px!important;border:0!important;padding:0!important}.import-copy p,.zone-heading p{margin:0 0 15px;color:var(--studio-muted)!important;font-size:13px;line-height:1.65}
+body.gucc-enhanced .page button{min-height:42px!important;padding:9px 13px!important;border:1px solid var(--studio-line)!important;border-radius:11px!important;background:rgba(255,255,255,.065)!important;color:var(--studio-text)!important;box-shadow:none!important;filter:none!important}body.gucc-enhanced .page button:hover{border-color:rgba(116,243,255,.5)!important;background:rgba(116,243,255,.1)!important}
+body.gucc-enhanced .page button.action-import,body.gucc-enhanced .page button.action-ai,body.gucc-enhanced .page button.action-copy,body.gucc-enhanced .page button.action-save,body.gucc-enhanced .page button.hot-action,body.gucc-enhanced .page button.mint{border-color:rgba(116,243,255,.45)!important;background:linear-gradient(135deg,var(--studio-mint),var(--studio-cyan))!important;color:#06110f!important}body.gucc-enhanced .page button.danger,body.gucc-enhanced .page button.action-danger{background:rgba(255,96,112,.13)!important;color:#ff9baa!important;border-color:rgba(255,96,112,.28)!important}
+.drop-zone{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:158px!important;border-style:dashed!important;border-color:rgba(116,243,255,.3)!important;background:rgba(116,243,255,.035)!important}.drop-zone.dragover{background:rgba(116,243,255,.12)!important;border-color:var(--studio-cyan)!important;transform:translateY(-2px)}.drop-icon{font-size:30px;color:var(--studio-cyan)}.drop-zone strong{font-size:14px}.drop-zone small{color:var(--studio-muted)}
+.project-snapshot{min-width:0;padding:16px;border:1px solid var(--studio-line);border-radius:15px;background:rgba(3,7,13,.44)}.snapshot-top{display:flex;justify-content:space-between;gap:10px;color:var(--studio-muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.snapshot-top i{font-style:normal;color:var(--studio-mint)}.project-snapshot h3{margin:20px 0 6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--studio-text)!important}.project-snapshot p{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--studio-muted)!important;font-size:12px}.snapshot-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.snapshot-stats div{padding:9px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.035)}.snapshot-stats strong,.snapshot-stats span{display:block}.snapshot-stats strong{color:var(--studio-cyan);font:800 18px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}.snapshot-stats span{margin-top:3px;color:var(--studio-dim);font-size:10px}
+.content-map{grid-column:1/-1;padding:14px;border-top:1px solid var(--studio-line)}.content-map-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:10px}.content-map-head strong{font-size:13px}.content-map-head span{color:var(--studio-dim);font-size:11px}.content-map-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}body.gucc-enhanced .page .map-node{position:relative;display:grid;grid-template-columns:auto 1fr;gap:3px 9px;min-width:0;text-align:left;padding:12px!important;background:rgba(255,255,255,.03)!important}.map-node i{grid-row:1/3;font:800 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--studio-dim);font-style:normal}.map-node b{font-size:13px;color:var(--studio-text)}.map-node small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--studio-dim);font-size:10px}.map-node.filled{border-color:rgba(120,255,186,.28)!important;background:rgba(120,255,186,.055)!important}.map-node.filled i{color:var(--studio-mint)}.map-node.filled:after{content:"";position:absolute;right:8px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--studio-mint);box-shadow:0 0 12px var(--studio-mint)}
+body.gucc-enhanced .page #structurePreset{background:rgba(3,8,15,.72)!important;color:var(--studio-text)!important;border-color:var(--studio-line)!important}body.gucc-enhanced .page #structureSummary{display:flex;align-items:center;min-height:46px;padding:10px 13px;border:1px solid var(--studio-line)!important;border-radius:11px!important;background:rgba(3,8,15,.5)!important;color:var(--studio-muted)!important}
+body.gucc-enhanced .page #structureMiniNav{position:sticky!important;top:72px!important;z-index:39!important;display:grid!important;grid-template-columns:max-content repeat(auto-fit,minmax(145px,1fr))!important;gap:7px!important;align-items:stretch!important;width:100%!important;margin:10px 0 12px!important;padding:8px!important;overflow:visible!important;white-space:normal!important;border:1px solid var(--studio-line)!important;border-radius:14px!important;background:rgba(7,12,21,.94)!important;box-shadow:0 10px 28px rgba(0,0,0,.22)!important;backdrop-filter:blur(20px)!important}body.gucc-enhanced .page #structureMiniNav .mini-title{display:flex;align-items:center;padding:0 7px;color:var(--studio-muted)!important;font-size:11px!important}body.gucc-enhanced .page #structureMiniNav button,body.gucc-enhanced #structureFloatingNav button{min-width:0!important;min-height:38px!important;padding:7px 9px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;border:1px solid rgba(255,255,255,.1)!important;border-radius:9px!important;background:rgba(255,255,255,.045)!important;color:var(--studio-muted)!important;font-size:11px!important;box-shadow:none!important}body.gucc-enhanced .page #structureMiniNav button:hover,body.gucc-enhanced #structureFloatingNav button:hover{border-color:rgba(116,243,255,.38)!important;background:rgba(116,243,255,.08)!important;color:var(--studio-text)!important}body.gucc-enhanced .page #structureMiniNav button.is-active,body.gucc-enhanced #structureFloatingNav button.is-active{border-color:rgba(116,243,255,.62)!important;background:rgba(116,243,255,.14)!important;color:var(--studio-cyan)!important;box-shadow:inset 0 0 0 1px rgba(116,243,255,.12)!important}
+body.gucc-enhanced #structureFloatingNav{background:rgba(7,12,21,.94)!important;border-color:var(--studio-line)!important;backdrop-filter:blur(20px)!important}body.gucc-enhanced #structureFloatingNav .mini-title{color:var(--studio-muted)!important}
+body.gucc-enhanced .page #structureMiniNav{display:flex!important;grid-template-columns:none!important;width:max-content!important;max-width:100%!important;min-height:0!important;margin:10px 0 12px auto!important;padding:6px!important;gap:5px!important;align-items:center!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;border-radius:15px!important;box-shadow:0 12px 34px rgba(0,0,0,.3)!important;scrollbar-width:thin!important}body.gucc-enhanced .page #structureMiniNav .mini-title{flex:0 0 auto!important;padding:0 8px!important}body.gucc-enhanced .page #structureMiniNav button{flex:0 0 auto!important;width:auto!important;max-width:190px!important;min-height:34px!important;padding:6px 10px!important}
+body.gucc-enhanced .page #structureMiniNav{display:none!important}
+body.gucc-enhanced #structureFloatingNav{position:fixed!important;left:auto!important;right:92px!important;top:auto!important;bottom:18px!important;width:max-content!important;max-width:min(760px,calc(100vw - 220px))!important;min-height:0!important;height:auto!important;padding:6px!important;gap:5px!important;align-items:center!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;border-radius:15px!important;box-shadow:0 16px 44px rgba(0,0,0,.38)!important;z-index:88!important;scrollbar-width:thin!important}body.gucc-enhanced #structureFloatingNav .mini-title{flex:0 0 auto!important;padding:0 7px!important;font-size:10px!important}body.gucc-enhanced #structureFloatingNav button{flex:0 0 auto!important;width:auto!important;max-width:180px!important;min-height:34px!important;padding:6px 9px!important}
+@media(max-width:980px){body.gucc-enhanced #structureFloatingNav{left:12px!important;right:12px!important;bottom:calc(126px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:none!important;padding:5px!important;border-radius:13px!important}body.gucc-enhanced #structureFloatingNav .mini-title{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:nowrap!important}}
+body[data-workspace-mode="workspace"] #sec-ai{display:none!important}body[data-workspace-mode="ai"] .workspace-only,body[data-workspace-mode="ai"] #sectionNav,body[data-workspace-mode="ai"] #sec-00,body[data-workspace-mode="ai"] #sec-status,body[data-workspace-mode="ai"] #sec-03,body[data-workspace-mode="ai"] #sec-04,body[data-workspace-mode="ai"] #sec-07,body[data-workspace-mode="ai"] #sec-08,body[data-workspace-mode="ai"] #sec-09,body[data-workspace-mode="ai"] .page>.grid2,body[data-workspace-mode="ai"] .page>.dock,body[data-workspace-mode="ai"] .mobile-float,body[data-workspace-mode="ai"] .mobile-export-sheet{display:none!important}body[data-workspace-mode="ai"] .workspace-opening{display:block!important;margin-top:16px!important}body[data-workspace-mode="ai"] #sec-ai{display:block!important;margin:0!important}
+body.gucc-enhanced .section-nav{position:sticky!important;top:10px!important;z-index:40!important;margin:16px 0!important;padding:8px!important;border-radius:16px!important;background:rgba(8,13,23,.9)!important;backdrop-filter:blur(22px)!important}body.gucc-enhanced .section-nav a{background:transparent!important;border-color:transparent!important;color:var(--studio-muted)!important;border-radius:9px!important}body.gucc-enhanced .section-nav a.active{background:rgba(116,243,255,.12)!important;border-color:rgba(116,243,255,.25)!important;color:var(--studio-cyan)!important}body.gucc-enhanced .section-nav b{color:inherit!important}body.gucc-enhanced .nav-hint{color:var(--studio-dim)!important}
+body.gucc-enhanced .card{padding:19px!important;border-radius:20px!important;margin-top:15px!important}body.gucc-enhanced .card:before{height:2px!important;background:linear-gradient(90deg,var(--studio-cyan),var(--studio-violet))!important;opacity:.7!important}body.gucc-enhanced .card h2{margin:0 0 14px!important;padding:0 0 13px!important;border-bottom:1px solid var(--studio-line)!important;color:var(--studio-text)!important;font-size:18px!important}body.gucc-enhanced .idx,body.gucc-enhanced .section-title-badge{background:rgba(116,243,255,.08)!important;border-color:rgba(116,243,255,.2)!important;color:var(--studio-cyan)!important}
+body.gucc-enhanced p,body.gucc-enhanced li,body.gucc-enhanced .sub,body.gucc-enhanced .status,body.gucc-enhanced label,body.gucc-enhanced .tiny,body.gucc-enhanced .small,body.gucc-enhanced .muted,body.gucc-enhanced .nav-hint{color:var(--studio-muted)!important}body.gucc-enhanced .field label{color:#bdc9d8!important}body.gucc-enhanced .control-title-block,body.gucc-enhanced .control-section,body.gucc-enhanced .section-row{background:rgba(3,8,15,.38)!important;border-color:rgba(255,255,255,.08)!important;box-shadow:none!important;border-radius:14px!important}
+body.gucc-enhanced .page input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),body.gucc-enhanced .page select,body.gucc-enhanced .page textarea,body.gucc-enhanced .page .richbox{color-scheme:dark!important;border:1px solid rgba(255,255,255,.12)!important;border-left:1px solid rgba(255,255,255,.12)!important;border-radius:11px!important;background:rgba(2,6,12,.62)!important;color:var(--studio-text)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important}body.gucc-enhanced .page input:focus,body.gucc-enhanced .page select:focus,body.gucc-enhanced .page textarea:focus,body.gucc-enhanced .page .richbox:focus{border-color:rgba(116,243,255,.58)!important;background:rgba(5,12,20,.94)!important;box-shadow:0 0 0 3px rgba(116,243,255,.1)!important}body.gucc-enhanced .page input::placeholder,body.gucc-enhanced .page textarea::placeholder,body.gucc-enhanced .richbox:empty:before{color:#64758b!important}
+body.gucc-enhanced .role-badge,body.gucc-enhanced .role-badge.user,body.gucc-enhanced .role-badge.ai,body.gucc-enhanced .role-badge.auto,body.gucc-enhanced .role-badge.choice,body.gucc-enhanced .role-badge.optional{background:rgba(255,255,255,.05)!important;color:var(--studio-muted)!important;border-color:rgba(255,255,255,.1)!important}
+#sec-ai{border-color:rgba(157,169,255,.28)!important;padding:22px!important}.zone-heading{display:flex;justify-content:space-between;gap:30px;align-items:end;padding:4px 2px 20px}.zone-heading>p{max-width:470px;text-align:right}.ai-workbench-lead{border-radius:14px!important;background:linear-gradient(90deg,rgba(157,169,255,.12),rgba(116,243,255,.06))!important;border-color:rgba(157,169,255,.2)!important}.ai-workbench-lead strong{color:var(--studio-text)!important}.ai-mode-tag{background:rgba(255,255,255,.05)!important;border-color:var(--studio-line)!important;color:var(--studio-muted)!important}.ai-workbench-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}.ai-lane{position:relative;min-height:178px;padding:18px!important;border-radius:15px!important;border:1px solid rgba(255,255,255,.09)!important;background:rgba(3,7,14,.42)!important;overflow:hidden}.ai-lane:after{content:attr(data-step);position:absolute;right:12px;top:9px;color:rgba(157,169,255,.18);font:900 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em}.ai-lane h3{color:var(--studio-cyan)!important;margin-bottom:8px!important}.ai-lane p{min-height:44px;color:var(--studio-muted)!important;font-size:13px}.ai-lane-handoff{border-color:rgba(120,255,186,.24)!important;background:linear-gradient(135deg,rgba(120,255,186,.07),rgba(116,243,255,.03))!important}
+.prompt-console{margin-top:14px;border:1px solid var(--studio-line);border-radius:15px;background:#050910;overflow:hidden}.prompt-console-head{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--studio-line);font:800 11px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--studio-cyan);letter-spacing:.08em}.prompt-console-head small{color:var(--studio-dim);font:inherit;letter-spacing:0}body.gucc-enhanced #aiOutput{display:block!important;width:100%;height:360px!important;max-height:55vh!important;margin:0!important;border:0!important;border-radius:0!important;background:#050910!important;color:#c8d7e8!important;font:13px/1.75 ui-monospace,SFMono-Regular,Consolas,"Microsoft YaHei",monospace!important;padding:16px!important}.prompt-console .ai-output-actions{margin:0!important;padding:10px 12px;border-top:1px solid var(--studio-line)}body.gucc-enhanced .ai-handoff-panel{margin-top:12px!important;background:rgba(255,255,255,.035)!important;border-color:var(--studio-line)!important;color:var(--studio-text)!important}
+body.gucc-enhanced .page>.dock{position:sticky!important;inset:auto auto 14px auto!important;transform:none!important;width:100%!important;max-width:none!important;max-height:none!important;margin:16px 0 0!important;padding:8px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;background:rgba(8,13,23,.9)!important;backdrop-filter:blur(22px)!important;z-index:45!important}body.gucc-enhanced .page>.dock .status{display:block!important;color:var(--studio-muted)!important}body.gucc-enhanced .page>.dock .btns{width:auto!important;display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;gap:5px!important}body.gucc-enhanced .page>.dock button{width:auto!important;min-height:34px!important;padding:6px 9px!important;font-size:11px!important}
+body.gucc-enhanced .page>.compact-dock{width:max-content!important;max-width:calc(100% - 16px)!important;min-height:0!important;height:auto!important;margin:12px 0 0 auto!important;padding:5px!important;border-radius:13px!important;justify-content:flex-end!important;background:rgba(8,13,23,.94)!important;box-shadow:0 10px 32px rgba(0,0,0,.28)!important}body.gucc-enhanced .page>.compact-dock .status{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}body.gucc-enhanced .page>.compact-dock .btns{flex-wrap:nowrap!important;overflow-x:auto!important;gap:4px!important}body.gucc-enhanced .page>.compact-dock button{min-height:32px!important;padding:5px 9px!important}
+@media(min-width:981px){body.gucc-enhanced{padding-left:86px!important}body.gucc-enhanced .page>.compact-dock{position:fixed!important;left:10px!important;right:auto!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;width:70px!important;max-width:70px!important;max-height:calc(100vh - 28px)!important;margin:0!important;padding:6px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;overflow-x:hidden!important;overflow-y:auto!important;border-radius:17px!important;z-index:87!important}body.gucc-enhanced .page>.compact-dock .btns{width:100%!important;display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;gap:4px!important;overflow:visible!important}body.gucc-enhanced .page>.compact-dock button{width:100%!important;min-height:32px!important;padding:5px 2px!important;font-size:10px!important;line-height:1.05!important;border-radius:9px!important}body.gucc-enhanced .page>.compact-dock .action-divider{display:block!important;width:100%!important;height:1px!important;min-height:1px!important;margin:2px 0!important;background:var(--studio-line)!important}}
+@media(min-width:981px){body.gucc-enhanced{padding-left:100px!important}body.gucc-enhanced .page>.compact-dock{width:84px!important;max-width:84px!important;overflow-x:visible!important}body.gucc-enhanced .page>.compact-dock button{padding:5px 1px!important;font-size:10px!important;white-space:nowrap!important;overflow:visible!important;letter-spacing:-.02em!important}}
+body.gucc-enhanced .gucc-shell-dock{left:auto!important;right:10px!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;width:64px!important;max-width:64px!important;display:flex!important;flex-direction:column!important}
+@media(max-width:980px){body.gucc-enhanced{padding:0 0 calc(168px + env(safe-area-inset-bottom))!important}body.gucc-enhanced .page{width:min(100% - 20px,760px)!important;margin:10px auto 40px!important}body.gucc-enhanced .page>.dock{display:none!important}.studio-headline{grid-template-columns:1fr;gap:18px}.studio-progress{max-width:none}.import-gateway{grid-template-columns:1fr 1fr}.project-snapshot{grid-column:1/-1}.content-map-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.zone-heading{display:block}.zone-heading>p{text-align:left;max-width:none;margin-top:8px}.ai-workbench-grid{grid-template-columns:1fr!important}body.gucc-enhanced .gucc-shell-dock{left:50%!important;right:auto!important;top:auto!important;bottom:calc(6px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;width:min(520px,calc(100vw - 12px))!important;max-width:calc(100vw - 12px)!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important}}
+@media(max-width:620px){body.gucc-enhanced .studio-header{padding:18px 16px 0!important}.studio-headline{padding:22px 0 18px}.studio-headline h1{font-size:34px!important}.studio-brand .eyebrow{display:none!important}.mode-switch{margin:0 -16px}.mode-button{padding:13px 14px!important}.mode-button small{display:none}.import-gateway{grid-template-columns:1fr}.project-snapshot{grid-column:auto}.drop-zone{min-height:130px!important}.snapshot-stats{gap:5px}.content-map{padding:12px 0 0}.content-map-head{display:block}.content-map-head span{display:block;margin-top:3px}.content-map-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section-nav{top:5px!important}body.gucc-enhanced .page #structureMiniNav{top:58px!important;display:flex!important;overflow-x:auto!important;white-space:nowrap!important}body.gucc-enhanced .page #structureMiniNav .mini-title{flex:0 0 auto}body.gucc-enhanced .page #structureMiniNav button{flex:0 0 auto!important;max-width:190px!important}body.gucc-enhanced #aiOutput{height:300px!important}}
+</style>
 </head>
-<body class="gucc-enhanced">
+<body class="gucc-enhanced" data-workspace-mode="workspace">
 <div class="toast" id="toast"></div>
 
 <div class="page">
-<section class="hero">
-  <a class="portal-link no-print" href="../../">← GUCC Portal</a><br>
-  <span class="eyebrow">GUCC WorkSpace v4.2.0 · AI-first / Publish / Import / Archive</span>
-  <h1>GUCC WorkSpace</h1>
-  <p class="sub">用于游戏视频项目的本地优先工作台。编辑内容会自动保存到当前浏览器；阶段性导出 Markdown / JSON 到 Google Drive 或本地归档，换设备时可直接导入继续工作。</p>
-  <div class="progressbox">
-    <strong>完成度</strong>
-    <div class="bar"><span id="progressBar"></span></div>
-    <strong id="progressText">0%</strong>
+<header class="hero studio-header">
+  <div class="studio-brand">
+    <a class="portal-link no-print" href="../../">← GUCC Portal</a>
+    <span class="eyebrow">GUCC STUDIO · V5</span>
   </div>
-  
-  <div class="hero-note">
-    <span class="tag">Quiet Mode</span>
-    <span class="tag">WW / ZZZ / HSR / ENF / NTE</span>
-    <span class="tag">低饱和 · 轻量 · 本地优先</span>
+  <div class="studio-headline">
+    <div>
+      <h1>从 AI 成稿，到可编辑的内容系统</h1>
+      <p class="sub">先用 Prompt 让 AI 生成完整结构，再导入 JSON / Markdown 继续修改、发布和归档。原有手动填写能力完整保留，但不再是主入口。</p>
+    </div>
+    <div class="studio-progress" aria-label="项目完成度">
+      <span>项目进度</span>
+      <strong id="progressText">0%</strong>
+      <div class="bar"><span id="progressBar"></span></div>
+    </div>
   </div>
+  <div class="mode-switch no-print" role="tablist" aria-label="工作模式">
+    <button id="modeAiButton" class="mode-button" type="button" role="tab" aria-controls="sec-ai" onclick="setWorkspaceMode('ai',{scroll:true})"><span>01</span><b>AI 区</b><small>准备各阶段 Prompt</small></button>
+    <button id="modeWorkspaceButton" class="mode-button active" type="button" role="tab" aria-controls="importGateway" onclick="setWorkspaceMode('workspace',{scroll:true})"><span>02</span><b>工作区</b><small>导入、编辑与导出</small></button>
+  </div>
+  <input id="importFile" type="file" accept=".md,.markdown,.json,.gucc.md,.gucc.json,.forge.md,.forge.json,text/markdown,application/json" style="display:none" onchange="importFile(event)">
+</header>
 
-  <div class="role-legend no-print">
-    <span>✍ 你需要填写</span>
-    <span>🤖 AI生成/粘贴</span>
-    <span>🔒 自动生成</span>
-    <span>▾ 选择/状态</span>
-    <span>◇ 可选补充</span>
+<section id="importGateway" class="import-gateway workspace-only no-print" aria-label="导入项目">
+  <div class="import-copy">
+    <span class="zone-kicker">START HERE</span>
+    <h2>导入 AI 生成的内容包</h2>
+    <p>推荐使用 JSON，它能完整保留结构、状态与所有字段；Markdown 适合阅读、人工改稿和跨工具流转。</p>
+    <div class="btns">
+      <button class="action-import import-primary" onclick="document.getElementById('importFile').click()">选择 JSON / Markdown</button>
+      <button class="ghost" onclick="openBlankWorkspace()">从空白项目开始</button>
+    </div>
   </div>
-
-  <div class="btns no-print" style="margin-top:14px">
-    <button class="action-save" onclick="saveLocal()">保存到当前浏览器</button>
-    <button class="action-export-md" onclick="exportMarkdown('WIP')">导出 WIP Markdown</button>
-    <button class="action-export-json" onclick="exportProject('WIP')">导出 WIP JSON</button>
-    <button class="action-export-md" onclick="exportMarkdown('DONE')">导出 DONE Markdown</button>
-    <button class="action-export-json" onclick="exportProject('DONE')">导出 DONE JSON</button>
-    <button class="action-import" onclick="document.getElementById('importFile').click()">导入 Markdown / JSON</button>
-    <button class="action-util" onclick="repairLongTextLineBreaks()">整理长文本换行</button>
-    <input id="importFile" type="file" accept=".md,.markdown,.json,.gucc.md,.gucc.json,.forge.md,.forge.json,text/markdown,application/json" style="display:none" onchange="importFile(event)">
-  </div>
-  <div class="progressbox file-preview-box no-print" style="margin-top:12px">
-    <strong>文件名预览</strong>
-    <div class="tiny" id="fileNamePreview">填写标题后自动生成</div>
+  <button id="dropZone" class="drop-zone" type="button" onclick="document.getElementById('importFile').click()">
+    <span class="drop-icon">↧</span>
+    <strong>拖放文件到这里</strong>
+    <small>.json · .md · 可重新导入继续编辑</small>
+  </button>
+  <aside class="project-snapshot" aria-live="polite">
+    <div class="snapshot-top"><span>当前项目</span><i id="snapshotState">浏览器草稿</i></div>
+    <h3 id="snapshotTitle">尚未导入项目</h3>
+    <p id="snapshotMeta">导入后会在这里显示结构概览</p>
+    <div class="snapshot-stats">
+      <div><strong id="snapshotSections">0</strong><span>章节</span></div>
+      <div><strong id="snapshotScript">0</strong><span>文案字数</span></div>
+      <div><strong id="snapshotAssets">0</strong><span>已填模块</span></div>
+    </div>
+  </aside>
+  <div class="content-map" aria-label="内容地图">
+    <div class="content-map-head"><strong>内容地图</strong><span>导入后按创作阶段展开，点击任一卡片继续编辑</span></div>
+    <div class="content-map-grid">
+      <button id="mapPosition" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-01')"><i>01</i><b>定位</b><small>等待核心问题</small></button>
+      <button id="mapResearch" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-02')"><i>02</i><b>资料</b><small>等待资料与分析</small></button>
+      <button id="mapStructure" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-03')"><i>03</i><b>结构</b><small>等待章节结构</small></button>
+      <button id="mapScript" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-04')"><i>04</i><b>文案</b><small>等待口播文案</small></button>
+      <button id="mapPublish" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-06')"><i>06</i><b>发布</b><small>等待发布包</small></button>
+      <button id="mapReview" class="map-node" type="button" onclick="jumpWorkspaceSection('#sec-08')"><i>08</i><b>复盘</b><small>等待结项数据</small></button>
+    </div>
   </div>
 </section>
 
 <nav class="section-nav no-print" id="sectionNav" aria-label="页面导航">
   <a href="#sec-00"><b>00</b> 总控</a>
-  <a href="#sec-ai"><b>AI</b> 作战</a>
   <a href="#sec-status"><b>ST</b> 状态</a>
   <a href="#sec-01"><b>01</b> 定位</a>
   <a href="#sec-02"><b>02</b> 资料</a>
@@ -2253,7 +2318,6 @@ body.gucc-enhanced .toast{
   <a href="#sec-07"><b>07</b> 扩散</a>
   <a href="#sec-08"><b>08</b> 复盘</a>
   <a href="#sec-09"><b>09</b> 规则</a>
-  <span class="nav-hint">✍ 你写 · 🤖 AI · 🔒 自动 · ▾ 选择</span>
 </nav>
 
 <div class="workspace-opening">
@@ -2290,7 +2354,7 @@ body.gucc-enhanced .toast{
       <div class="field"><label>游戏代码（自动）</label><input data-key="gameCode" readonly placeholder="WW / ZZZ / HSR / ENF / NTE"></div>
       <div class="field short-title-field"><label>简易标题（手写）</label><input data-key="projectShortTitle" placeholder="例：资源压力"><div class="tiny">建议 8 字内；系统只自动补游戏代码。</div></div>
       <div class="field"><label>简称预览（自动合成）</label><input data-key="projectShortName" readonly placeholder="例：WW资源压力"></div>
-      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v4.2.0" readonly></div>
+      <div class="field"><label>当前模板版本</label><input id="templateVersionInput" value="v5.0.0" readonly></div>
     </div>
     <div class="btns no-print control-naming-actions"><button class="ghost hot-action" type="button" onclick="refreshShortName()">更新游戏代码 / 文件名</button></div>
   </div>
@@ -2303,45 +2367,57 @@ body.gucc-enhanced .toast{
 </section>
 
 <section id="sec-ai" class="card card-ai">
-<h2><span class="idx">AI</span> AI 驱动创作区</h2>
+<div class="zone-heading">
+  <div><span class="zone-kicker">AI PROMPT LAB</span><h2>选择阶段，复制一份带上下文的 Prompt</h2></div>
+  <p>每个模板都会自动读取当前项目内容。可以从空白开始，也可以在导入旧项目后让 AI 续写。</p>
+</div>
 <div class="ai-workbench-lead">
-  <div><strong>可以完全脱离模板推进，想回填时再收口。</strong><span class="sub">把 Prompt 复制到你正在使用的 AI 对话里，持续让它修改独立 HTML、文档或脚本；只有在要进入生产、存档或复盘时，才需要整理回 Workspace。</span></div>
-  <div class="ai-mode-tags"><span class="ai-mode-tag">不接 API</span><span class="ai-mode-tag">可独立产出 HTML</span><span class="ai-mode-tag">可回填 MD / JSON</span></div>
+  <div><strong>建议流程：先生成整体，再按阶段迭代。</strong><span class="sub">把 Prompt 交给你常用的 AI；完成后让它收口成 Workspace JSON，再回到工作区导入。</span></div>
+  <div class="ai-mode-tags"><span class="ai-mode-tag">无需 API</span><span class="ai-mode-tag">自动带入上下文</span><span class="ai-mode-tag">JSON / MD 交接</span></div>
 </div>
 <div class="ai-workbench-grid">
-  <div class="ai-lane">
-    <h3>1｜自由创作</h3>
-    <p>在 AI 对话里完成策划、结构、文案和可视化文件，不要求先把模板填满。</p>
+  <div class="ai-lane" data-step="DISCOVER">
+    <h3>01 · 策划与定位</h3>
+    <p>把模糊想法发展成能成立的选题、核心问题和内容边界。</p>
     <div class="btns">
-      <button onclick="copyPrompt('analysis')">选题陪聊 Prompt</button>
-      <button onclick="copyPrompt('outline')">章节结构 Prompt</button>
-      <button onclick="copyPrompt('script')">口播文案 Prompt</button>
-      <button class="secondary" onclick="copyPrompt('artifact')">独立 HTML 策划稿</button>
+      <button onclick="copyPrompt('analysis')">选题分析</button>
+      <button class="secondary" onclick="copyPrompt('artifact')">完整策划稿</button>
     </div>
   </div>
-  <div class="ai-lane">
-    <h3>2｜发布生产</h3>
-    <p>同一个完整视频适配各平台，只改标题、简介、话题和标签，不生成平台切片。</p>
+  <div class="ai-lane" data-step="BUILD">
+    <h3>02 · 结构与文案</h3>
+    <p>先搭章节与节奏，再扩写成可以直接录制的完整口播稿。</p>
     <div class="btns">
-      <button onclick="copyPrompt('platform')">中文全平台发布包</button>
-      <button class="secondary" onclick="copyPrompt('translate')">海外多语言发布包</button>
-      <button class="secondary" onclick="copyPrompt('diffusion')">发布后图文扩散</button>
+      <button onclick="copyPrompt('outline')">章节结构</button>
+      <button onclick="copyPrompt('script')">口播文案</button>
     </div>
   </div>
-  <div class="ai-lane">
-    <h3>3｜收口回填</h3>
-    <p>让 AI 汇总当前对话和独立文件，生成可导入数据；JSON 最稳，Markdown 更适合阅读。</p>
+  <div class="ai-lane" data-step="PUBLISH">
+    <h3>03 · 发布与扩散</h3>
+    <p>生成中文全平台发布包、多语言适配和发布后的图文扩散内容。</p>
     <div class="btns">
-      <button class="mint" onclick="copyPrompt('workspaceJson')">汇总为 Workspace JSON</button>
-      <button class="mint" onclick="copyPrompt('workspaceMarkdown')">汇总为 Workspace Markdown</button>
-      <button class="secondary" onclick="copyPrompt('review')">复盘分析 Prompt</button>
+      <button onclick="copyPrompt('platform')">中文发布包</button>
+      <button class="secondary" onclick="copyPrompt('translate')">多语言发布包</button>
+      <button class="secondary" onclick="copyPrompt('diffusion')">后期扩散</button>
+    </div>
+  </div>
+  <div class="ai-lane ai-lane-handoff" data-step="HANDOFF">
+    <h3>04 · 收口与交接</h3>
+    <p>让 AI 汇总当前对话，输出可直接导入的项目包；JSON 是首选格式。</p>
+    <div class="btns">
+      <button class="mint" onclick="copyPrompt('workspaceJson')">生成 Workspace JSON</button>
+      <button class="secondary" onclick="copyPrompt('workspaceMarkdown')">生成 Markdown</button>
+      <button class="secondary" onclick="copyPrompt('review')">复盘分析</button>
     </div>
   </div>
 </div>
-<textarea id="aiOutput" class="output prompt-output" readonly placeholder="点击上方 Prompt 按钮后，这里会显示当前 Prompt。点击此框或 Ctrl+A 只会选中本 Prompt。"></textarea>
-<div class="ai-output-actions no-print"><button class="ghost" type="button" onclick="copyCurrentPrompt()">再次复制当前 Prompt</button><span class="tiny">Prompt 会带上当前页面已填写的内容；空白页面也能使用，AI 会结合所在对话的已有上下文继续工作。</span></div>
+<div class="prompt-console">
+  <div class="prompt-console-head"><span>生成结果</span><small>点击模板后自动复制</small></div>
+  <textarea id="aiOutput" class="output prompt-output" readonly placeholder="选择上方任一阶段模板，完整 Prompt 会显示在这里……"></textarea>
+  <div class="ai-output-actions no-print"><button class="action-copy" type="button" onclick="copyCurrentPrompt()">复制当前 Prompt</button><button class="ghost" type="button" onclick="setWorkspaceMode('workspace')">去工作区导入结果 →</button></div>
+</div>
 <details class="ai-handoff-panel no-print">
-  <summary>把 AI 生成的 Workspace JSON / Markdown 粘贴回来</summary>
+  <summary>也可以直接粘贴 AI 生成的 JSON / Markdown</summary>
   <p class="tiny">支持 AI 常见的 JSON / Markdown 代码围栏。导入会覆盖当前模板字段，建议先导出当前 WIP。</p>
   <textarea id="aiImportPaste" placeholder="粘贴 AI 生成的完整 JSON 或符合收口 Prompt 骨架的 Markdown……"></textarea>
   <div class="btns" style="margin-top:8px"><button class="hot-action" type="button" onclick="importAIPackage()">导入到 Workspace 模板</button><button class="ghost" type="button" onclick="document.getElementById('aiImportPaste').value=''">清空</button></div>
@@ -2498,7 +2574,7 @@ body.gucc-enhanced .toast{
 <h2><span class="idx">09</span> 版本 / 文件夹 / 命名军规</h2>
 <p class="sub">
 你的结构现在定为：<strong>GUCC WorkSpace 是模板工作台</strong>；模板源码、说明和版本记录统一由 GitHub 管理；具体项目导出的 <strong>.md / .json</strong> 放 Google Drive 做 WIP 与归档。  
-当前为 <strong>v4.2.x</strong> 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
+当前为 <strong>v5.0.x</strong> AI-first 工作流版本线。仓库入口固定为 <code>apps/video-workspace/index.html</code>，后续升级不再修改公开文件名；旧版模板只放在 <code>legacy/</code> 中，用于兼容老项目。
 </p>
 <textarea readonly class="mid">GUCC/                              # GitHub 仓库
 └─ apps/video-workspace/
@@ -2510,9 +2586,9 @@ body.gucc-enhanced .toast{
 
 Google Drive / 本地项目目录：
 ├─ 01_Working/                   # 进行中的项目导出
-│  └─ WIP_YYYYMMDD-HHmm_v4.2.x_游戏代码简易标题.md / .json
+│  └─ WIP_YYYYMMDD-HHmm_v5.0.x_游戏代码简易标题.md / .json
 └─ 99_Archive/                   # 已完成项目归档
-   └─ YYYYMMDD-HHmm_v4.2.x_游戏代码简易标题.md / .json</textarea>
+   └─ YYYYMMDD-HHmm_v5.0.x_游戏代码简易标题.md / .json</textarea>
 <p class="tiny">
 模板与版本记录走 GitHub；01_Working 和 99_Archive 走 Google Drive 或本地同步目录，只放具体项目导出的 WIP / DONE 文件。浏览器自动保存用于防止意外丢失，不能替代跨设备的 Markdown / JSON 存档。
 </p>
@@ -2525,8 +2601,8 @@ Google Drive / 本地项目目录：
 </div>
 </section>
 
-<div class="dock">
-<div class="status" id="statusText">准备就绪。建议每阶段导出一次 WIP Markdown。</div>
+<div class="dock compact-dock" aria-label="快捷操作">
+<div class="status" id="statusText" aria-live="polite">准备就绪。</div>
 <div class="btns">
 <button class="action-save" title="保存到当前浏览器" onclick="saveLocal()">保存</button>
 <span class="action-divider"></span>
@@ -2537,8 +2613,8 @@ Google Drive / 本地项目目录：
 <span class="action-divider"></span>
 <button class="action-copy" title="复制当前 WIP Markdown" onclick="copyMarkdown()">复制</button>
 <button class="action-import" title="导入 Markdown / JSON" onclick="document.getElementById('importFile').click()">导入</button>
-<button class="action-util" title="把被压成一坨的长文本重新断行" onclick="repairLongTextLineBreaks()">整理</button>
-<button class="action-link" title="给选中文本加链接" onclick="insertSmartLink()">链接</button>
+<button class="action-util" title="整理长文本换行" onclick="repairLongTextLineBreaks()">整理</button>
+<button class="action-link" title="给选中文本添加链接" onclick="insertSmartLink()">链接</button>
 <span class="action-divider"></span>
 <button class="action-util" title="打印或另存为 PDF" onclick="window.print()">PDF</button>
 <button class="action-danger" title="清空当前页面" onclick="clearAll()">清空</button>
@@ -2576,9 +2652,10 @@ Google Drive / 本地项目目录：
 
 <script src="./ai-prompts.js"></script>
 <script>
-const TEMPLATE_VERSION = "4.2.0";
-const APP_NAME = "GUCC WorkSpace";
+const TEMPLATE_VERSION = "5.0.0";
+const APP_NAME = "GUCC Studio";
 const STORAGE_KEY = "GUCC_WORKSPACE_CURRENT";
+const WORKSPACE_MODE_KEY = "GUCC_STUDIO_MODE";
 const LEGACY_STORAGE_KEYS = ["INERTIA_PROJECT_FORGE_V3_1_CURRENT"];
 const DATA_MARKER_START = "<!-- GUCC_WORKSPACE_DATA:";
 const DATA_MARKER_END = ":GUCC_WORKSPACE_DATA -->";
@@ -2592,6 +2669,100 @@ let lastSectionCount = 6;
 const CARD_COLLAPSE_STORAGE_KEY = "GUCC_WORKSPACE_CARD_COLLAPSE";
 const AUTO_SAVE_DELAY = 900;
 let autoSaveTimer = null;
+let snapshotSource = "浏览器草稿";
+
+function setWorkspaceMode(mode, options={}){
+  const next = mode === "ai" ? "ai" : "workspace";
+  document.body.dataset.workspaceMode = next;
+  const aiButton = document.getElementById("modeAiButton");
+  const workspaceButton = document.getElementById("modeWorkspaceButton");
+  if(aiButton){
+    aiButton.classList.toggle("active", next === "ai");
+    aiButton.setAttribute("aria-selected", next === "ai" ? "true" : "false");
+  }
+  if(workspaceButton){
+    workspaceButton.classList.toggle("active", next === "workspace");
+    workspaceButton.setAttribute("aria-selected", next === "workspace" ? "true" : "false");
+  }
+  if(options.persist !== false){
+    try{ localStorage.setItem(WORKSPACE_MODE_KEY, next); }catch(e){}
+  }
+  requestAnimationFrame(() => window.dispatchEvent(new Event('scroll')));
+  if(options.scroll === true){
+    const target = next === "ai" ? document.getElementById("sec-ai") : document.getElementById("importGateway");
+    if(target) target.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+
+function openBlankWorkspace(){
+  setWorkspaceMode("workspace");
+  scrollToElementWithOffset("#sec-00", 96);
+  const title = document.querySelector('[data-key="projectTitle"]');
+  if(title) setTimeout(() => title.focus(), 420);
+}
+
+function jumpWorkspaceSection(selector){
+  setWorkspaceMode("workspace");
+  scrollToElementWithOffset(selector, 96);
+}
+
+function updateWorkspaceOverview(){
+  const title = fieldText("projectTitle").trim();
+  const game = fieldText("game").trim();
+  const status = fieldText("status").trim();
+  const sections = typeof getSectionsFromUI === "function" ? getSectionsFromUI() : [];
+  const script = fieldText("script").replace(/\s/g, "");
+  const moduleKeys = ["coreQuestion","coreConclusion","officialInfo","aiAnalysis","script","visualPlan","publishCN","diffusionPackage","review"];
+  const completed = moduleKeys.filter(key => fieldText(key).trim()).length;
+  const hasProject = !!(title || completed);
+  const titleBox = document.getElementById("snapshotTitle");
+  const metaBox = document.getElementById("snapshotMeta");
+  const stateBox = document.getElementById("snapshotState");
+  if(titleBox) titleBox.textContent = title || (hasProject ? "未命名项目" : "尚未导入项目");
+  if(metaBox) metaBox.textContent = hasProject ? [game,status].filter(Boolean).join(" · ") : "导入后会在这里显示结构概览";
+  if(stateBox) stateBox.textContent = snapshotSource;
+  const sectionBox = document.getElementById("snapshotSections");
+  const scriptBox = document.getElementById("snapshotScript");
+  const assetBox = document.getElementById("snapshotAssets");
+  if(sectionBox) sectionBox.textContent = String(hasProject ? (sections.length || 0) : 0);
+  if(scriptBox) scriptBox.textContent = String(hasProject ? (script.length || 0) : 0);
+  if(assetBox) assetBox.textContent = `${completed}/${moduleKeys.length}`;
+  const setMapNode = (id, filled, label) => {
+    const node = document.getElementById(id);
+    if(!node) return;
+    node.classList.toggle("filled", !!filled);
+    const small = node.querySelector("small");
+    if(small) small.textContent = label;
+  };
+  const question = fieldText("coreQuestion").trim();
+  const research = [fieldText("officialInfo"),fieldText("communityDebate"),fieldText("aiAnalysis")].join("").replace(/\s/g, "");
+  const structured = hasProject && sections.some(section => [section.goal,section.content,section.visual].some(value => String(value || "").trim()));
+  const publish = fieldText("publishCN").trim();
+  const review = fieldText("review").trim();
+  setMapNode("mapPosition", question, question ? question.slice(0,24) : "等待核心问题");
+  setMapNode("mapResearch", research, research ? `${research.length} 字资料与分析` : "等待资料与分析");
+  setMapNode("mapStructure", structured, structured ? `${sections.length} 个章节已展开` : "等待章节结构");
+  setMapNode("mapScript", script, script ? `${script.length} 字口播文案` : "等待口播文案");
+  setMapNode("mapPublish", publish, publish ? "发布包已准备" : "等待发布包");
+  setMapNode("mapReview", review, review ? "已有复盘记录" : "等待结项数据");
+}
+
+function setupStudioDropZone(){
+  const zone = document.getElementById("dropZone");
+  if(!zone) return;
+  ["dragenter","dragover"].forEach(name => zone.addEventListener(name, event => {
+    event.preventDefault();
+    zone.classList.add("dragover");
+  }));
+  ["dragleave","drop"].forEach(name => zone.addEventListener(name, event => {
+    event.preventDefault();
+    zone.classList.remove("dragover");
+  }));
+  zone.addEventListener("drop", event => {
+    const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+    if(file) processImportFile(file);
+  });
+}
 
 function normalizeLineBreaks(v){
   return String(v ?? "").replace(/\r\n?/g,"\n");
@@ -2675,7 +2846,7 @@ function applyFieldRoles(root=document){
   });
 }
 function updateActiveNav(){
-  const cards = Array.from(document.querySelectorAll('.card[id]'));
+  const cards = Array.from(document.querySelectorAll('.card[id]')).filter(card => card.offsetParent !== null && card.id !== 'sec-ai');
   const navs = Array.from(document.querySelectorAll('.section-nav a'));
   let current = '';
   for(const card of cards){
@@ -2923,7 +3094,7 @@ function collect(stage){
   d.__workspaceVersion = TEMPLATE_VERSION;
   d.__templateVersion = TEMPLATE_VERSION;
   d.__schemaVersion = "gucc-workspace-schema-3";
-  d.__lineBreakPolicy = "preserve-lf-v4.2.0";
+  d.__lineBreakPolicy = "preserve-lf-v5.0.0";
   normalizeDataLineBreaks(d);
   migrateMultiLanguageFields(d);
   migrateWorkflowFields(d);
@@ -3059,6 +3230,7 @@ function updateProgress(){
   if(pct >= 100 && (!reviewDone || !archiveDone)) pct = 99;
   $("#progressBar").style.width = pct + "%";
   $("#progressText").textContent = pct + "%";
+  updateWorkspaceOverview();
 }
 
 function sanitizeName(s){
@@ -3615,6 +3787,9 @@ function mobileExport(stage, type){
 function importFile(evt){
   const file = evt.target.files && evt.target.files[0];
   if(!file) return;
+  processImportFile(file, evt.target);
+}
+function processImportFile(file, sourceInput){
   const reader = new FileReader();
   reader.onload = () => {
     const text = String(reader.result || "");
@@ -3628,11 +3803,14 @@ function importFile(evt){
       fill(d);
       saveLocal();
       updateFileNamePreview();
+      snapshotSource = file.name;
+      setWorkspaceMode("workspace");
+      updateWorkspaceOverview();
       toast("导入成功");
     }catch(e){
       alert("导入失败：" + e.message);
     }
-    evt.target.value = "";
+    if(sourceInput) sourceInput.value = "";
   };
   reader.readAsText(file, "utf-8");
 }
@@ -3655,6 +3833,9 @@ function importAIPackage(){
     fill(d);
     saveLocal();
     updateFileNamePreview();
+    snapshotSource = 'AI 粘贴导入';
+    setWorkspaceMode('workspace');
+    updateWorkspaceOverview();
     if(area) area.value = '';
     setStatus('已从 AI 汇总结果导入 Workspace');
     toast('AI 汇总结果导入成功');
@@ -3843,6 +4024,7 @@ function scrollToElementWithOffset(target, offset=92){
   window.scrollTo({top:Math.max(0,y), behavior:'smooth'});
 }
 async function copyPrompt(kind, options={}){
+  if(options && options.jumpToAi) setWorkspaceMode('ai');
   const prompt = buildPrompt(kind);
   const box = $("#aiOutput");
   if(box){
@@ -4313,7 +4495,7 @@ function bindStructureNavButtons(root){
       const idx = btn.getAttribute('data-target-section');
       const row = document.getElementById(`structure-section-${idx}`);
       if(row){
-        row.scrollIntoView({behavior:'smooth', block:'start'});
+        scrollToElementWithOffset(`#structure-section-${idx}`, window.innerWidth <= 980 ? 126 : 152);
         syncStructureNavActive(idx);
       }
     });
@@ -4337,23 +4519,47 @@ function syncStructureNavActive(activeIndex){
   document.querySelectorAll('[data-target-section]').forEach(btn => {
     btn.classList.toggle('is-active', btn.getAttribute('data-target-section') === current);
   });
+  ['structureMiniNav','structureFloatingNav'].forEach(id => {
+    const root = document.getElementById(id);
+    if(!root || root.dataset.activeSection === current) return;
+    root.dataset.activeSection = current;
+    const active = root.querySelector(`[data-target-section="${current}"]`);
+    if(active && root.scrollWidth > root.clientWidth){
+      root.scrollTo({left:Math.max(0, active.offsetLeft - (root.clientWidth - active.offsetWidth) / 2), behavior:'smooth'});
+    }
+  });
 }
 function updateStructureMiniNav(sections){
   const nav = $('#structureMiniNav');
   const fnav = $('#structureFloatingNav');
   const arr = (sections || getSectionsFromUI()).map(normalizeSection);
-  let content = '';
-  if(!arr.length){
-    content = '<span class="mini-title">章节导航</span><span class="tiny">暂无章节</span>';
-  }else{
-    content = '<span class="mini-title">章节导航</span>' + arr.map((s,i)=>{
-      const role = s.role || '节';
-      const title = (s.title || `第${i+1}节`).replace(/<[^>]*>/g,'').slice(0,12);
-      return `<button type="button" data-target-section="${i+1}">${i+1}. ${role}｜${title}</button>`;
-    }).join('');
-  }
-  if(nav){ nav.innerHTML = content; bindStructureNavButtons(nav); }
-  if(fnav){ fnav.innerHTML = content; bindStructureNavButtons(fnav); }
+  const render = root => {
+    if(!root) return;
+    root.replaceChildren();
+    const heading = document.createElement('span');
+    heading.className = 'mini-title';
+    heading.textContent = '章节导航';
+    root.appendChild(heading);
+    if(!arr.length){
+      const empty = document.createElement('span');
+      empty.className = 'tiny';
+      empty.textContent = '暂无章节';
+      root.appendChild(empty);
+    }else{
+      arr.forEach((section, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.targetSection = String(index + 1);
+        const role = String(section.role || '节').replace(/<[^>]*>/g, '').trim();
+        const title = String(section.title || `第${index + 1}节`).replace(/<[^>]*>/g, '').trim().slice(0, 14);
+        button.textContent = `${index + 1}. ${role}｜${title}`;
+        root.appendChild(button);
+      });
+    }
+    bindStructureNavButtons(root);
+  };
+  render(nav);
+  render(fnav);
   syncStructureNavActive();
 }
 
@@ -4382,8 +4588,8 @@ function syncSectionsToHidden(){
 }
 function bindSectionRow(row){
   row.querySelectorAll('input,select,textarea,.richbox').forEach(el => {
-    el.addEventListener('input', () => { syncSectionsToHidden(); autoGrow(el); setStatus('有未保存修改'); scheduleAutoSave(); });
-    el.addEventListener('change', () => { syncSectionsToHidden(); setStatus('有未保存修改'); scheduleAutoSave(); });
+    el.addEventListener('input', () => { syncSectionsToHidden(); updateWorkspaceOverview(); autoGrow(el); setStatus('有未保存修改'); scheduleAutoSave(); });
+    el.addEventListener('change', () => { syncSectionsToHidden(); updateWorkspaceOverview(); setStatus('有未保存修改'); scheduleAutoSave(); });
     el.addEventListener('focus', () => rememberEditTarget(el));
   });
 }
@@ -4501,19 +4707,21 @@ function setupStructureFloatingNav(){
   const sec = $('#sec-03');
   const fnav = $('#structureFloatingNav');
   if(!sec || !fnav) return;
-  const mini = $('#structureMiniNav');
+  // A fixed element inside the glass card is positioned against that card because
+  // backdrop-filter creates a containing block. Move it to <body> so it follows
+  // the browser viewport instead of appearing at the bottom of section 03.
+  if(fnav.parentElement !== document.body) document.body.appendChild(fnav);
   let ticking = false;
   const update = () => {
     ticking = false;
     const secRect = sec.getBoundingClientRect();
-    const miniRect = mini ? mini.getBoundingClientRect() : null;
     const mobile = window.matchMedia('(max-width: 980px)').matches;
-    const topGuard = mobile ? 70 : 92;
-    const bottomGuard = mobile ? 132 : 118;
-    const inStructure = secRect.top < topGuard && secRect.bottom > bottomGuard;
-    const miniVisible = miniRect && miniRect.bottom > topGuard && miniRect.top < window.innerHeight - bottomGuard;
+    const topGuard = mobile ? 116 : 86;
+    const entryGuard = mobile ? 180 : 120;
+    const inStructure = secRect.top < window.innerHeight - entryGuard && secRect.bottom > topGuard;
     const hasTargets = fnav.querySelectorAll('[data-target-section]').length > 0;
-    fnav.classList.toggle('show', Boolean(inStructure && !miniVisible && hasTargets));
+    const workspaceVisible = document.body.dataset.workspaceMode === 'workspace';
+    fnav.classList.toggle('show', Boolean(workspaceVisible && inStructure && hasTargets));
     syncStructureNavActive();
   };
   const requestUpdate = () => {
@@ -4777,7 +4985,7 @@ function setupModuleViewToggle(){
 }
 function setupCollapsibleCards(){
   const saved = collapseState();
-  document.querySelectorAll('.card[id]').forEach(card => {
+  document.querySelectorAll('.card[id]:not(#sec-ai)').forEach(card => {
     const h2 = card.querySelector('h2');
     if(!h2) return;
     let btn = h2.querySelector('.collapse-toggle');
@@ -4819,6 +5027,10 @@ fields().forEach(el => {
 window.addEventListener("pagehide", flushAutoSave);
 loadLocal();
 if(!document.querySelector(".section-row")) setSections(defaultSections());
+let savedStudioMode = "workspace";
+try{ savedStudioMode = localStorage.getItem(WORKSPACE_MODE_KEY) || "workspace"; }catch(e){}
+setWorkspaceMode(savedStudioMode, {persist:false});
+setupStudioDropZone();
 const presetSelect = $('#structurePreset');
 if(presetSelect) presetSelect.addEventListener('change', applyStructurePresetFromSelect);
 applyFieldRoles(document);
@@ -4827,6 +5039,7 @@ setupPromptOutputSelect();
 refreshShortName();
 updateProgress();
 updateFileNamePreview();
+updateWorkspaceOverview();
 setupStructureFloatingNav();
 setupCollapsibleCards();
 </script>

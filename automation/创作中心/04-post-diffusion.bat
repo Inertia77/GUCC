@@ -13,11 +13,11 @@ echo.
 echo [04 Post-publish Diffusion]
 echo Opening image, article and social post pages...
 
-call :open "https://creator.xiaohongshu.com/publish/publish?from=menu&target=image" "Xiaohongshu - publish image/text"
-call :open "https://mp.weixin.qq.com/cgi-bin/appmsg?begin=0&count=10&type=77&action=list_card&token=1315607839&lang=zh_CN" "WeChat Official Account - image/text publish"
-call :open "https://www.weibo.com/u/6520826377" "Weibo - post/profile page"
-call :open "https://x.com/compose/post" "X - compose post"
 call :open "https://www.hoyolab.com/newArticle/1" "HoYoLab - new article"
+call :open "https://x.com/compose/post" "X - compose post"
+call :open "https://www.weibo.com/u/6520826377" "Weibo - post/profile page"
+call :open "https://mp.weixin.qq.com/cgi-bin/appmsg?begin=0&count=10&type=77&action=list_card&token=1315607839&lang=zh_CN" "WeChat Official Account - image/text publish"
+call :open "https://creator.xiaohongshu.com/publish/publish?from=menu&target=image" "Xiaohongshu - publish image/text"
 
 echo.
 echo Done.

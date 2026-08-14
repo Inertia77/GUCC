@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>小红书请看手机端</title>
+  <style>
+    :root {
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      color: #252229;
+      background: #fff7f8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 47, 78, 0.13), transparent 34%),
+        radial-gradient(circle at 84% 82%, rgba(255, 116, 137, 0.16), transparent 32%),
+        #fff7f8;
+    }
+
+    main {
+      width: min(680px, 100%);
+      padding: 54px 42px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 47, 78, 0.16);
+      border-radius: 30px;
+      box-shadow: 0 24px 70px rgba(113, 32, 48, 0.14);
+    }
+
+    .phone {
+      width: 82px;
+      height: 126px;
+      margin: 0 auto 30px;
+      padding: 10px 8px 14px;
+      border: 5px solid #ff2442;
+      border-radius: 20px;
+      position: relative;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(255, 36, 66, 0.22);
+    }
+
+    .phone::before {
+      content: "";
+      display: block;
+      width: 24px;
+      height: 4px;
+      margin: 0 auto 9px;
+      border-radius: 99px;
+      background: #ff2442;
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 5px;
+      width: 18px;
+      height: 4px;
+      transform: translateX(-50%);
+      border-radius: 99px;
+      background: #ff2442;
+    }
+
+    .screen {
+      height: 78px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff;
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(145deg, #ff2442, #ff7187);
+    }
+
+    h1 {
+      margin: 0;
+      color: #ff2442;
+      font-size: clamp(32px, 7vw, 54px);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+    }
+
+    p {
+      margin: 22px 0 0;
+      color: #666069;
+      font-size: clamp(17px, 3vw, 22px);
+      line-height: 1.7;
+    }
+
+    strong {
+      color: #302b32;
+    }
+
+    .note {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      color: #8b4855;
+      background: #fff0f2;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="phone" aria-hidden="true">
+      <div class="screen">小红书</div>
+    </div>
+    <h1>小红书请看手机端</h1>
+    <p><strong>评论、@ 与互动通知</strong><br>请打开手机上的小红书 App 处理。</p>
+    <div class="note">这是本地提醒页面，无需登录</div>
+  </main>
+</body>
+</html>

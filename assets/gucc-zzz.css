@@ -1,0 +1,967 @@
+/* GUCC ZZZ visual system: flat, editorial, functional. */
+:root {
+  color-scheme: dark;
+  --zzz-bg: #090a0c;
+  --zzz-surface: #111318;
+  --zzz-surface-2: #171a1f;
+  --zzz-field: #0c0e11;
+  --zzz-line: #2a2e34;
+  --zzz-line-strong: #464b53;
+  --zzz-text: #f2f2ed;
+  --zzz-muted: #a4a8ae;
+  --zzz-dim: #737880;
+  --zzz-accent: #f0e83f;
+  --zzz-accent-ink: #151608;
+  --zzz-danger: #e25e64;
+  --zzz-warning: #e8b85c;
+  --zzz-radius: 4px;
+
+  --gucc-bg: var(--zzz-bg);
+  --gucc-bg-2: #0d0f13;
+  --gucc-panel: var(--zzz-surface);
+  --gucc-panel-strong: var(--zzz-surface-2);
+  --gucc-line: var(--zzz-line);
+  --gucc-line-strong: var(--zzz-line-strong);
+  --gucc-text: var(--zzz-text);
+  --gucc-muted: var(--zzz-muted);
+  --gucc-dim: var(--zzz-dim);
+  --gucc-mint: var(--zzz-accent);
+  --gucc-cyan: var(--zzz-accent);
+  --gucc-violet: var(--zzz-accent);
+  --gucc-amber: var(--zzz-warning);
+  --gucc-danger: var(--zzz-danger);
+  --gucc-radius-xl: var(--zzz-radius);
+  --gucc-radius-lg: var(--zzz-radius);
+  --gucc-radius-md: 3px;
+  --gucc-shadow: none;
+  --gucc-shadow-soft: none;
+
+  --bg: var(--zzz-bg) !important;
+  --bg2: #0d0f13 !important;
+  --panel: var(--zzz-surface) !important;
+  --panel2: var(--zzz-surface-2) !important;
+  --panel3: var(--zzz-field) !important;
+  --text: var(--zzz-text) !important;
+  --ink: var(--zzz-text) !important;
+  --ink2: var(--zzz-muted) !important;
+  --muted: var(--zzz-muted) !important;
+  --dim: var(--zzz-dim) !important;
+  --line: var(--zzz-line) !important;
+  --line2: #202329 !important;
+  --line-soft: #202329 !important;
+  --accent: var(--zzz-accent) !important;
+  --accent2: var(--zzz-accent) !important;
+  --brand: var(--zzz-accent) !important;
+  --brand2: var(--zzz-accent) !important;
+  --mint: var(--zzz-accent) !important;
+  --cyan: var(--zzz-accent) !important;
+  --violet: var(--zzz-accent) !important;
+  --amber: var(--zzz-warning) !important;
+  --ok: var(--zzz-accent) !important;
+  --danger: var(--zzz-danger) !important;
+  --radius: var(--zzz-radius) !important;
+  --r: var(--zzz-radius) !important;
+  --shadow: none !important;
+  --shadow-soft: none !important;
+}
+
+html {
+  background: var(--zzz-bg) !important;
+}
+
+body.gucc-enhanced {
+  color: var(--zzz-text) !important;
+  background: var(--zzz-bg) !important;
+  padding-right: 62px;
+}
+
+body.gucc-enhanced::before,
+body.gucc-enhanced::after,
+body.gucc-enhanced :where(.hero, .topbar, .card)::before {
+  display: none !important;
+}
+
+body.gucc-enhanced :where(.hero, .topbar, .card, .panel, .toolbar, .item, .dock, .toc, .output, .toast, .callout, .library-card) {
+  border-color: var(--zzz-line) !important;
+  border-radius: var(--zzz-radius) !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.gucc-enhanced :where(h1, h2, h3) {
+  color: var(--zzz-text) !important;
+  text-shadow: none !important;
+}
+
+body.gucc-enhanced h1 {
+  letter-spacing: -.04em;
+}
+
+body.gucc-enhanced :where(p, li, .subtitle, .sub, .hint, .status, label, .tiny, .small, .muted) {
+  color: var(--zzz-muted) !important;
+}
+
+body.gucc-enhanced :where(.eyebrow, .kicker, code, a:hover) {
+  color: var(--zzz-accent) !important;
+}
+
+body.gucc-enhanced button,
+body.gucc-enhanced .copy,
+body.gucc-enhanced .primary-btn {
+  min-height: 38px;
+  padding: 7px 11px;
+  border: 1px solid transparent !important;
+  border-radius: 3px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  font-weight: 900 !important;
+  transform: none !important;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease !important;
+}
+
+body.gucc-enhanced button:hover,
+body.gucc-enhanced .copy:hover,
+body.gucc-enhanced .primary-btn:hover {
+  background: #fff85a !important;
+  transform: none !important;
+}
+
+body.gucc-enhanced :where(button.secondary, button.ghost, .back, .back-link, .portal-link, .portal-button, .link-btn, .lock-btn, .install-btn) {
+  border-color: var(--zzz-line) !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced :where(button.secondary, button.ghost, .back, .back-link, .portal-link, .portal-button, .link-btn, .lock-btn, .install-btn):hover {
+  border-color: var(--zzz-line-strong) !important;
+  color: var(--zzz-text) !important;
+  background: #1d2025 !important;
+}
+
+body.gucc-enhanced :where(button.danger, button.action-danger) {
+  border-color: transparent !important;
+  color: #fff !important;
+  background: var(--zzz-danger) !important;
+}
+
+body.gucc-enhanced :where(input, textarea, select, .richbox) {
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 3px !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-field) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced :where(input, textarea, select, .richbox):focus {
+  border-color: var(--zzz-accent) !important;
+  box-shadow: 0 0 0 2px rgba(240, 232, 63, .12) !important;
+}
+
+body.gucc-enhanced :where(input[type="range"], input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--zzz-accent);
+}
+
+body.gucc-enhanced :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--zzz-accent) !important;
+  outline-offset: 2px !important;
+}
+
+body.gucc-enhanced :where(.badge, .pill, .tag, .idx, .section-title-badge, .role-badge, .ai-mode-tag) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 2px !important;
+  color: var(--zzz-muted) !important;
+  background: var(--zzz-surface-2) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced :where(.tabs, .section-nav) {
+  padding: 4px !important;
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 3px !important;
+  background: var(--zzz-field) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.gucc-enhanced :where(.tabs button, .section-nav a) {
+  border: 0 !important;
+  border-radius: 2px !important;
+  color: var(--zzz-muted) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced :where(.tabs button.active, .section-nav a.active) {
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.gucc-enhanced :where(pre, code, kbd, .log, .output) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 3px !important;
+  color: #d5d8dc !important;
+  background: #08090c !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced table {
+  border-radius: 3px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced th {
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+}
+
+body.gucc-enhanced :where(*::-webkit-scrollbar-thumb) {
+  background: #3a3e45 !important;
+  box-shadow: none !important;
+}
+
+body.gucc-enhanced .gucc-shell-dock {
+  right: 8px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  gap: 2px !important;
+  padding: 4px !important;
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: #0d0f13 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.gucc-enhanced .gucc-shell-link {
+  min-height: 45px !important;
+  padding: 4px 2px !important;
+  border-radius: 2px !important;
+  color: var(--zzz-dim) !important;
+  font-size: 8px !important;
+  transform: none !important;
+}
+
+body.gucc-enhanced .gucc-shell-link b {
+  font-size: 12px !important;
+}
+
+body.gucc-enhanced .gucc-shell-link:hover {
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+}
+
+body.gucc-enhanced .gucc-shell-link.is-active {
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+/* Portal */
+body.portal-page {
+  padding-right: 0;
+}
+
+body.portal-page .scene-orb,
+body.portal-page .signal-strip {
+  display: none !important;
+}
+
+body.portal-page .portal {
+  width: min(1420px, calc(100% - 32px));
+  padding-top: 14px;
+}
+
+body.portal-page .topline {
+  min-height: 44px;
+  margin-bottom: 10px;
+}
+
+body.portal-page :where(.gate-panel, .hero-panel, .signal-panel, .app-card, .reference-panel, .notice) {
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: var(--zzz-radius) !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.portal-page .gate {
+  background: var(--zzz-bg) !important;
+  backdrop-filter: none !important;
+}
+
+body.portal-page .gate-panel {
+  max-width: 430px;
+  padding: 24px !important;
+}
+
+body.portal-page .gate-mark img,
+body.portal-page .brand img {
+  border-radius: 2px !important;
+}
+
+body.portal-page .hero {
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.portal-page .hero-panel,
+body.portal-page .signal-panel {
+  padding: 22px !important;
+}
+
+body.portal-page .portal-title h1 {
+  font-size: clamp(38px, 5vw, 66px) !important;
+  line-height: .96 !important;
+}
+
+body.portal-page .title-accent {
+  color: var(--zzz-accent) !important;
+}
+
+body.portal-page .hero-link {
+  min-height: 40px;
+  border: 1px solid transparent !important;
+  border-radius: 3px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.portal-page .hero-link.secondary {
+  border-color: var(--zzz-line) !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+}
+
+body.portal-page .signal-card {
+  padding: 12px 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--zzz-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+body.portal-page .signal-card:first-child {
+  border-top: 0 !important;
+}
+
+body.portal-page .signal-label {
+  color: var(--zzz-accent) !important;
+}
+
+body.portal-page .priority-grid {
+  gap: 10px;
+}
+
+body.portal-page .app-card {
+  padding: 18px !important;
+  transform: none !important;
+}
+
+body.portal-page .app-card:hover {
+  border-color: var(--zzz-accent) !important;
+  background: var(--zzz-surface-2) !important;
+  transform: none !important;
+}
+
+body.portal-page .app-card::before,
+body.portal-page .app-card::after {
+  display: none !important;
+}
+
+body.portal-page .app-glyph {
+  border: 0 !important;
+  border-radius: 2px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.portal-page .tag {
+  border-radius: 2px !important;
+}
+
+body.portal-page .reference-panel {
+  margin-top: 10px;
+}
+
+body.portal-page .reference-link {
+  border-color: var(--zzz-line) !important;
+  border-radius: 3px !important;
+  background: var(--zzz-field) !important;
+  box-shadow: none !important;
+}
+
+body.portal-page .reference-link:hover {
+  border-color: var(--zzz-line-strong) !important;
+  background: var(--zzz-surface-2) !important;
+}
+
+body.portal-page .quick-dock {
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: #0d0f13 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.portal-page .dock-link {
+  border-radius: 2px !important;
+  color: var(--zzz-dim) !important;
+  background: transparent !important;
+}
+
+body.portal-page .dock-link:hover {
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+/* Command Center */
+body.command-center-page #app {
+  width: min(1480px, calc(100% - 32px));
+}
+
+body.command-center-page .topbar {
+  padding: 16px !important;
+}
+
+body.command-center-page .topbar h1 {
+  font-size: clamp(25px, 3vw, 38px) !important;
+}
+
+body.command-center-page :where(.card, .editor, .auxiliary-card, .status-convention-note) {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+body.command-center-page .tabs {
+  top: 8px;
+  gap: 3px !important;
+}
+
+body.command-center-page .tabs button.active,
+body.command-center-page .tabs .tab-more.active {
+  border-color: transparent !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.command-center-page .toolbar {
+  padding: 8px !important;
+}
+
+body.command-center-page :where(.auxiliary-card, .result-view-buttons, .note-block) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.command-center-page .link-btn.primary-reference-link,
+body.command-center-page .link-btn.primary-reference-link:hover {
+  border-color: transparent !important;
+  border-radius: 3px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.command-center-page .editor {
+  border-color: var(--zzz-line-strong) !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.command-center-page .status-convention-note {
+  border-color: #443d22 !important;
+  background: #17150e !important;
+}
+
+body.command-center-page .notice.error {
+  border-color: #5b2e32 !important;
+  color: #ffadb1 !important;
+  background: #1b1012 !important;
+}
+
+body.command-center-page .editor-backdrop {
+  backdrop-filter: none !important;
+  background: rgba(0, 0, 0, .68) !important;
+}
+
+/* Video workspace */
+body.workspace-page {
+  --studio-bg: var(--zzz-bg) !important;
+  --studio-surface: var(--zzz-surface) !important;
+  --studio-panel: var(--zzz-surface) !important;
+  --studio-line: var(--zzz-line) !important;
+  --studio-text: var(--zzz-text) !important;
+  --studio-muted: var(--zzz-muted) !important;
+  --studio-dim: var(--zzz-dim) !important;
+  --studio-mint: var(--zzz-accent) !important;
+  --studio-cyan: var(--zzz-accent) !important;
+  --studio-violet: var(--zzz-accent) !important;
+  padding-right: 62px !important;
+}
+
+body.workspace-page .page {
+  width: min(1480px, calc(100% - 28px)) !important;
+  margin-top: 12px !important;
+}
+
+body.workspace-page :where(.studio-header, .import-gateway, .project-snapshot, .control-section, .control-title-block, .section-row, .ai-lane, .prompt-console, .ai-handoff-panel) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.workspace-page .studio-header {
+  padding: 16px 20px 0 !important;
+}
+
+body.workspace-page .studio-headline {
+  gap: 24px;
+  padding: 22px 0 18px;
+}
+
+body.workspace-page .studio-headline h1 {
+  font-size: clamp(34px, 5vw, 58px) !important;
+}
+
+body.workspace-page .studio-progress strong,
+body.workspace-page :where(.zone-kicker, .idx, .section-title-badge, .prompt-console-head) {
+  color: var(--zzz-accent) !important;
+}
+
+body.workspace-page .studio-progress .bar span {
+  background: var(--zzz-accent) !important;
+}
+
+body.workspace-page .mode-switch {
+  border-top: 1px solid var(--zzz-line);
+}
+
+body.workspace-page .page .mode-button {
+  border-color: var(--zzz-line) !important;
+  color: var(--zzz-muted) !important;
+  background: var(--zzz-field) !important;
+}
+
+body.workspace-page .page .mode-button.active {
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.workspace-page .mode-button.active :where(span, b, small) {
+  color: var(--zzz-accent-ink) !important;
+}
+
+body.workspace-page .page button {
+  border-color: var(--zzz-line) !important;
+  border-radius: 3px !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+  box-shadow: none !important;
+}
+
+body.workspace-page .page button:hover {
+  border-color: var(--zzz-line-strong) !important;
+  color: var(--zzz-text) !important;
+  background: #1d2025 !important;
+}
+
+body.workspace-page .page :where(button.action-import, button.action-ai, button.action-copy, button.action-save, button.hot-action, button.mint) {
+  border-color: transparent !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.workspace-page .page button.action-danger {
+  border-color: transparent !important;
+  color: #fff !important;
+  background: var(--zzz-danger) !important;
+}
+
+body.workspace-page .section-nav,
+body.workspace-page #structureFloatingNav,
+body.workspace-page .page > .dock {
+  border-color: var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: #0d0f13 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.workspace-page .section-nav a.active,
+body.workspace-page #structureFloatingNav button.is-active {
+  border-color: transparent !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.workspace-page .card {
+  margin-top: 10px !important;
+  padding: 16px !important;
+}
+
+body.workspace-page .card::before,
+body.workspace-page .ai-lane::after {
+  box-shadow: none !important;
+}
+
+body.workspace-page .map-node.filled {
+  border-color: var(--zzz-accent) !important;
+  background: rgba(240, 232, 63, .06) !important;
+}
+
+body.workspace-page .map-node.filled i {
+  color: var(--zzz-accent) !important;
+}
+
+body.workspace-page .map-node.filled::after {
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.workspace-page .page > .compact-dock {
+  border-radius: 4px !important;
+  background: #0d0f13 !important;
+  box-shadow: none !important;
+}
+
+/* Prompt and story references */
+body.gucc-reference .wrap {
+  padding-top: 14px !important;
+}
+
+body.gucc-reference .topline {
+  margin-bottom: 10px !important;
+}
+
+body.gucc-reference .back {
+  border-radius: 3px !important;
+}
+
+body.gucc-reference .hero {
+  gap: 16px !important;
+  margin-bottom: 10px !important;
+  padding: 20px !important;
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-reference .hero h1 {
+  font-size: clamp(36px, 4.5vw, 54px) !important;
+  line-height: 1 !important;
+}
+
+body.gucc-reference .hero :where(.panel, .signal) {
+  padding: 12px !important;
+  border-radius: 3px !important;
+  background: var(--zzz-field) !important;
+}
+
+body.gucc-reference .content,
+body.gucc-reference .layout {
+  gap: 10px !important;
+}
+
+body.gucc-reference :where(.toc, .sidebar, .reader, section.prompt-section) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-reference .toc a,
+body.gucc-reference .doc-link {
+  border-radius: 2px !important;
+}
+
+body.gucc-reference .toc a:hover,
+body.gucc-reference .doc-link:hover {
+  border-color: var(--zzz-line-strong) !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface-2) !important;
+}
+
+body.gucc-reference .doc-link.active {
+  border-color: var(--zzz-accent) !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.gucc-reference .doc-link.active :where(.doc-code, .doc-name) {
+  color: var(--zzz-accent-ink) !important;
+}
+
+body.gucc-reference.prompt-page .doc > blockquote {
+  border-left-color: var(--zzz-accent) !important;
+  border-radius: 0 !important;
+  background: #17160d !important;
+}
+
+body.gucc-reference .reader-actions :where(a, button),
+.library-nav-toggle {
+  border-radius: 3px !important;
+}
+
+/* Research atlas */
+body.resource-page {
+  --rl-bg: var(--zzz-bg);
+  --rl-surface: var(--zzz-surface);
+  --rl-surface-2: var(--zzz-surface-2);
+  --rl-surface-3: #1d2025;
+  --rl-line: var(--zzz-line);
+  --rl-line-strong: var(--zzz-line-strong);
+  --rl-text: var(--zzz-text);
+  --rl-muted: var(--zzz-muted);
+  --rl-dim: var(--zzz-dim);
+  --rl-mint: var(--zzz-accent);
+  --rl-cyan: var(--zzz-accent);
+  --rl-violet: var(--zzz-accent);
+  --rl-pink: var(--zzz-danger);
+  background: var(--zzz-bg) !important;
+}
+
+body.resource-page::before,
+body.resource-page .hero-copy::before {
+  display: none !important;
+}
+
+body.resource-page :where(.atlas-hero, .hero-console, .research-note, .method-panel, .atlas-toolbar, .intel-card, .archive-block, .official-group, .empty-state, .load-error) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.resource-page .hero-copy {
+  padding: 32px !important;
+}
+
+body.resource-page .atlas-hero h1 {
+  font-size: clamp(40px, 5vw, 60px) !important;
+}
+
+body.resource-page .live-dot {
+  background: var(--zzz-accent) !important;
+  box-shadow: none !important;
+}
+
+body.resource-page :where(.hero-actions, .console-grid, .search-box) {
+  border-color: var(--zzz-line) !important;
+  border-radius: 3px !important;
+  background: var(--zzz-field) !important;
+}
+
+body.resource-page .view-switch.is-active,
+body.resource-page .game-filter.is-active {
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.resource-page .game-filter.is-active :where(i, span) {
+  color: var(--zzz-accent-ink) !important;
+  background: transparent !important;
+}
+
+body.resource-page .intel-card::before {
+  width: 3px;
+  background: var(--zzz-accent) !important;
+}
+
+body.resource-page .intel-card:hover {
+  border-color: var(--zzz-line-strong) !important;
+  background: var(--zzz-surface-2) !important;
+  transform: none !important;
+}
+
+body.resource-page :where(.source-monogram, .official-mark, .route-index) {
+  border-radius: 2px !important;
+}
+
+body.resource-page .official-group {
+  --game-color: var(--zzz-accent) !important;
+}
+
+body.resource-page .official-routes a,
+body.resource-page .best-for span,
+body.resource-page .mini-game,
+body.resource-page .grade {
+  border-radius: 2px !important;
+}
+
+/* Documentation */
+body.docs-page .wrap {
+  max-width: 1120px;
+  padding-top: 20px;
+}
+
+body.docs-page h1 {
+  font-size: clamp(32px, 5vw, 48px) !important;
+}
+
+body.docs-page h2 {
+  margin-top: 36px;
+  padding-left: 10px;
+  border-left: 3px solid var(--zzz-accent) !important;
+}
+
+body.docs-page .card {
+  margin: 10px 0;
+  padding: 16px !important;
+}
+
+body.docs-page .step {
+  border-radius: 2px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.docs-page :where(.callout, .path, .pill) {
+  border-radius: 3px !important;
+}
+
+/* Small standalone states */
+body.offline-page,
+body.reminder-page {
+  padding: max(16px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background: var(--zzz-bg) !important;
+}
+
+body.offline-page main,
+body.reminder-page main {
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 4px !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-surface) !important;
+  box-shadow: none !important;
+}
+
+body.offline-page main {
+  padding: 24px;
+}
+
+body.offline-page button {
+  border-radius: 3px !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.reminder-page {
+  color: var(--zzz-text) !important;
+}
+
+body.reminder-page main {
+  padding: 34px 28px !important;
+}
+
+body.reminder-page .phone {
+  border-color: var(--zzz-accent) !important;
+  border-radius: 4px !important;
+  background: var(--zzz-field) !important;
+  box-shadow: none !important;
+}
+
+body.reminder-page .phone::before,
+body.reminder-page .phone::after,
+body.reminder-page .screen {
+  border-radius: 2px !important;
+  color: var(--zzz-accent-ink) !important;
+  background: var(--zzz-accent) !important;
+}
+
+body.reminder-page h1 {
+  color: var(--zzz-text) !important;
+}
+
+@media (max-width: 980px) {
+  body.gucc-enhanced {
+    padding-right: 0 !important;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-dock {
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+    width: min(560px, calc(100vw - 12px)) !important;
+    max-width: calc(100vw - 12px) !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+
+  body.workspace-page {
+    padding-bottom: calc(136px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.portal-page,
+  body.offline-page,
+  body.reminder-page {
+    padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+  }
+
+  body.portal-page .portal {
+    width: min(100% - 20px, 760px);
+  }
+}
+
+@media (max-width: 620px) {
+  body.gucc-enhanced :where(.hero, .topbar, .card, .panel, .toolbar, .item, .toc, section.prompt-section) {
+    border-radius: 3px !important;
+  }
+
+  body.gucc-enhanced :where(button, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select) {
+    min-height: 44px;
+  }
+
+  body.gucc-enhanced :where(input, textarea, select) {
+    font-size: 16px !important;
+  }
+
+  body.portal-page .hero-panel,
+  body.portal-page .signal-panel,
+  body.resource-page .hero-copy {
+    padding: 18px !important;
+  }
+
+  body.portal-page .portal-title h1 {
+    font-size: clamp(36px, 14vw, 50px) !important;
+  }
+
+  body.workspace-page .studio-header {
+    padding: 12px 12px 0 !important;
+  }
+
+  body.gucc-reference .hero {
+    padding: 16px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.gucc-enhanced *,
+  body.gucc-enhanced *::before,
+  body.gucc-enhanced *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

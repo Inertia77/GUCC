@@ -1,0 +1,273 @@
+/* Compact, readable resource atlas: larger type inside a smaller footprint. */
+body.resource-page .library-shell {
+  width: min(1380px, calc(100% - 32px)) !important;
+  padding-top: 12px !important;
+}
+
+body.resource-page .library-topbar {
+  min-height: 40px;
+  margin-bottom: 10px;
+}
+
+body.resource-page .library-brand img {
+  width: 32px;
+  height: 32px;
+}
+
+body.resource-page .atlas-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 330px);
+}
+
+body.resource-page .hero-copy {
+  padding: 22px 24px !important;
+}
+
+body.resource-page .overline,
+body.resource-page .section-kicker {
+  font-size: 10px;
+  letter-spacing: .14em;
+}
+
+body.resource-page .atlas-hero h1 {
+  margin-top: 10px;
+  font-size: clamp(34px, 4vw, 48px) !important;
+  line-height: 1.02 !important;
+}
+
+body.resource-page .hero-lede {
+  max-width: 760px;
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.resource-page .hero-actions {
+  gap: 2px;
+  margin-top: 15px;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+body.resource-page .view-switch {
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px 0 12px;
+  border-radius: 2px !important;
+  font-size: 14px;
+  font-weight: 850 !important;
+}
+
+body.resource-page .view-switch strong {
+  min-width: 24px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+body.resource-page .hero-console {
+  padding: 18px;
+}
+
+body.resource-page .console-head {
+  padding-bottom: 9px;
+  font-size: 12px;
+}
+
+body.resource-page .console-grid {
+  border-radius: 3px;
+}
+
+body.resource-page .console-grid div {
+  gap: 4px;
+  padding: 12px 9px;
+}
+
+body.resource-page .console-grid strong { font-size: 22px; }
+body.resource-page .console-grid span { font-size: 10px; }
+body.resource-page .hero-console > p { margin-top: 11px; font-size: 10px; }
+
+body.resource-page .research-note {
+  gap: 10px;
+  margin-top: 8px;
+  padding: 9px 11px;
+}
+
+body.resource-page .research-note strong { font-size: 13px; }
+body.resource-page .research-note p { font-size: 12px !important; line-height: 1.45; }
+
+body.resource-page .atlas-toolbar {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  gap: 6px;
+  margin: 14px 0 18px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+body.resource-page .game-filter {
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 9px;
+  border-radius: 2px !important;
+  font-size: 12px;
+}
+
+body.resource-page .game-filter i {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+body.resource-page .game-filter span { font-size: 10px; }
+
+body.resource-page .search-box {
+  min-height: 34px;
+  padding-inline: 10px 8px;
+  border-radius: 2px;
+}
+
+body.resource-page .search-box input {
+  min-height: 32px;
+  font-size: 12px;
+}
+
+body.resource-page .section-heading {
+  gap: 18px;
+  margin-bottom: 10px;
+}
+
+body.resource-page .section-heading h2 {
+  margin-top: 4px;
+  font-size: clamp(23px, 2.4vw, 30px);
+}
+
+body.resource-page .section-heading p:last-child {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+body.resource-page .source-summary {
+  margin-bottom: 7px;
+  font-size: 10px;
+}
+
+body.resource-page .intel-grid,
+body.resource-page .official-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.resource-page .intel-card-top {
+  gap: 9px;
+  padding: 12px 12px 0 14px;
+}
+
+body.resource-page .source-monogram {
+  width: 31px;
+  height: 31px;
+  font-size: 13px;
+}
+
+body.resource-page .source-identity { gap: 8px; }
+body.resource-page .source-identity h3 { font-size: 15px; }
+body.resource-page .source-identity a { font-size: 10px; }
+
+body.resource-page .mini-games {
+  gap: 3px;
+  padding: 8px 12px 0 14px;
+}
+
+body.resource-page .mini-game {
+  min-height: 21px;
+  padding-right: 6px;
+  font-size: 9px;
+}
+
+body.resource-page .source-types {
+  gap: 4px;
+  padding: 7px 12px 0 14px;
+}
+
+body.resource-page .source-types span { font-size: 9px; }
+
+body.resource-page .source-note {
+  min-height: 38px;
+  margin: 8px 12px 0 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  -webkit-line-clamp: 2;
+}
+
+body.resource-page .best-for {
+  margin: 9px 12px 10px 14px;
+  padding-top: 8px;
+}
+
+body.resource-page .best-for small { margin-bottom: 5px; font-size: 9px; }
+body.resource-page .best-for span { min-height: 21px; font-size: 9px; }
+
+body.resource-page .intel-card-footer {
+  padding: 8px 12px 8px 14px;
+  font-size: 9px;
+}
+
+body.resource-page .official-group > header {
+  gap: 8px;
+  padding: 10px;
+}
+
+body.resource-page .official-mark {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+body.resource-page .official-group header p { font-size: 9px !important; }
+body.resource-page .official-group header h3 { font-size: 14px; }
+body.resource-page .official-group header > strong { font-size: 17px; }
+body.resource-page .official-routes { gap: 4px; padding: 6px; }
+
+body.resource-page .official-routes a {
+  gap: 7px;
+  min-height: 42px;
+  padding: 5px 7px;
+}
+
+body.resource-page .route-index {
+  width: 25px;
+  height: 25px;
+  font-size: 9px;
+}
+
+body.resource-page .official-routes a strong { font-size: 12px; }
+body.resource-page .official-routes a small { font-size: 9px; }
+body.resource-page .official-routes em { font-size: 9px; }
+
+@media (max-width: 1120px) {
+  body.resource-page .intel-grid,
+  body.resource-page .official-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body.resource-page .atlas-hero { grid-template-columns: 1fr; }
+  body.resource-page .hero-console { border-top: 1px solid var(--rl-line); border-left: 0; }
+}
+
+@media (max-width: 820px) {
+  body.resource-page .library-shell { width: min(680px, calc(100% - 20px)) !important; }
+  body.resource-page .atlas-toolbar { grid-template-columns: 1fr; }
+  body.resource-page .intel-grid,
+  body.resource-page .official-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  body.resource-page .hero-copy { padding: 18px 16px !important; }
+  body.resource-page .atlas-hero h1 { font-size: clamp(32px, 10vw, 42px) !important; }
+  body.resource-page .hero-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  body.resource-page .view-switch { justify-content: space-between; min-width: 0; font-size: 13px; }
+  body.resource-page .atlas-toolbar { margin-top: 10px; }
+}

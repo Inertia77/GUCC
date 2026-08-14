@@ -4,15 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#070a10">
-  <meta name="description" content="GUCC 游戏官方资料、测试服数据库、数据挖掘与社区情报入口。">
+  <meta name="description" content="GUCC 游戏正式资料、测试服数据库、数据挖掘与 Leak 情报入口。">
   <meta http-equiv="Cache-Control" content="no-store">
   <title>GUCC 资料库 · Research Atlas</title>
   <link rel="icon" href="../assets/icons/gucc-icon.svg?v=5" type="image/svg+xml">
   <script src="../assets/access-guard.js" data-guard="true" data-root="../"></script>
   <link rel="stylesheet" href="../assets/gucc-theme.css?v=7">
   <link rel="stylesheet" href="../assets/resource-library-v5.css?v=2">
+  <link rel="stylesheet" href="../assets/gucc-zzz.css?v=1">
+  <link rel="stylesheet" href="../assets/resource-library-compact-v1.css">
   <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
-  <script src="./resource-library.js?v=2" defer></script>
+  <script src="./resource-library-v4.js" defer></script>
 </head>
 <body class="gucc-enhanced gucc-reference resource-page">
   <main class="library-shell">
@@ -28,13 +30,13 @@
       <div class="hero-copy">
         <p class="overline"><span class="live-dot"></span> GUCC RESOURCE LIBRARY</p>
         <h1 id="pageTitle">游戏资料导航</h1>
-        <p class="hero-lede">官方 Wiki、测试服数据库、数据挖掘与社区消息分层整理。先选游戏，再按可信度和用途找到真正需要的入口。</p>
+        <p class="hero-lede">正式资料与 Leak 资料分层整理。先确认已上线内容，再查看测试服、数据挖掘与社区线索。</p>
         <div class="hero-actions" aria-label="资料类型">
-          <button class="view-switch is-active" type="button" data-view="intel" aria-pressed="true">
-            <span>前瞻情报</span><strong id="intelCount">28</strong>
+          <button class="view-switch is-active" type="button" data-view="official" aria-pressed="true">
+            <span>正式资料</span><strong>26</strong>
           </button>
-          <button class="view-switch" type="button" data-view="official" aria-pressed="false">
-            <span>官方资料</span><strong>26</strong>
+          <button class="view-switch" type="button" data-view="intel" aria-pressed="false">
+            <span>Leak 资料</span><strong id="intelCount">28</strong>
           </button>
         </div>
       </div>
@@ -42,7 +44,7 @@
         <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/07</span></div>
         <div class="console-grid">
           <div><strong id="activeCount">24</strong><span>活跃来源</span></div>
-          <div><strong>26</strong><span>官方入口</span></div>
+          <div><strong>26</strong><span>正式入口</span></div>
           <div><strong>5</strong><span>覆盖游戏</span></div>
         </div>
         <p><span><b>A</b> 结构化数据库</span><span><b>B</b> 交叉参考</span><span><b>C</b> 仅作线索</span></p>
@@ -51,7 +53,7 @@
 
     <section class="research-note" aria-label="使用提醒">
       <span class="note-icon" aria-hidden="true">i</span>
-      <div><strong>前瞻内容不等于上线内容</strong><p>页面可能包含未公开内容与剧透。不要登录陌生站点或下载程序；转述时请同时标注来源、版本和可信度。</p></div>
+      <div><strong>Leak 内容不等于上线内容</strong><p>页面可能包含未公开内容与剧透。不要登录陌生站点或下载程序；转述时请同时标注来源、版本和可信度。</p></div>
       <button type="button" class="method-button" id="methodButton" aria-expanded="false" aria-controls="methodPanel">查看核验方法</button>
     </section>
 
@@ -70,9 +72,9 @@
       <div class="game-filters" id="gameFilters">
         <button type="button" class="game-filter is-active" data-game="all"><span>ALL</span> 全部</button>
         <button type="button" class="game-filter" data-game="崩"><i>崩</i> 星穹铁道</button>
-        <button type="button" class="game-filter" data-game="终"><i>终</i> 终末地</button>
-        <button type="button" class="game-filter" data-game="绝"><i>绝</i> 绝区零</button>
         <button type="button" class="game-filter" data-game="鸣"><i>鸣</i> 鸣潮</button>
+        <button type="button" class="game-filter" data-game="绝"><i>绝</i> 绝区零</button>
+        <button type="button" class="game-filter" data-game="终"><i>终</i> 终末地</button>
         <button type="button" class="game-filter" data-game="异"><i>异</i> 异环</button>
       </div>
       <label class="search-box">
@@ -83,9 +85,18 @@
       </label>
     </div>
 
-    <section class="view-panel" id="intelPanel" data-panel="intel" aria-labelledby="intelHeading">
+    <section class="view-panel" id="officialPanel" data-panel="official" aria-labelledby="officialHeading">
       <div class="section-heading">
-        <div><p class="section-kicker">FORWARD INTELLIGENCE</p><h2 id="intelHeading">前瞻情报源</h2><p>测试服、数据挖掘、计算站与社区消息流。默认按游戏优先级排序。</p></div>
+        <div><p class="section-kicker">CANONICAL REFERENCES</p><h2 id="officialHeading">正式资料入口</h2><p>确认术语、当前数值与已经上线的内容。</p></div>
+        <span class="official-stamp"><b>26</b> VERIFIED ROUTES</span>
+      </div>
+      <div class="official-grid" id="officialGrid"></div>
+      <div class="empty-state" id="officialEmpty" hidden><strong>没有匹配的入口</strong><span>换一个游戏，或清除搜索关键词。</span></div>
+    </section>
+
+    <section class="view-panel" id="intelPanel" data-panel="intel" aria-labelledby="intelHeading" hidden>
+      <div class="section-heading">
+        <div><p class="section-kicker">LEAK INTELLIGENCE</p><h2 id="intelHeading">Leak 资料源</h2><p>测试服、数据挖掘、计算站与社区消息流，按游戏优先级排序。</p></div>
         <div class="trust-legend" aria-label="可信度图例"><span><b class="grade grade-a">A</b> 数据库</span><span><b class="grade grade-b">B</b> 交叉参考</span><span><b class="grade grade-c">C</b> 仅作线索</span></div>
       </div>
       <div class="source-summary" id="sourceSummary" aria-live="polite"></div>
@@ -95,15 +106,6 @@
         <div class="archive-grid" id="archiveGrid"></div>
       </details>
       <div class="empty-state" id="intelEmpty" hidden><strong>没有匹配的来源</strong><span>换一个游戏，或清除搜索关键词。</span></div>
-    </section>
-
-    <section class="view-panel" id="officialPanel" data-panel="official" aria-labelledby="officialHeading" hidden>
-      <div class="section-heading">
-        <div><p class="section-kicker">CANONICAL REFERENCES</p><h2 id="officialHeading">官方资料入口</h2><p>用正式服资料确认术语、当前数值与已经上线的内容。</p></div>
-        <span class="official-stamp"><b>26</b> VERIFIED ROUTES</span>
-      </div>
-      <div class="official-grid" id="officialGrid"></div>
-      <div class="empty-state" id="officialEmpty" hidden><strong>没有匹配的入口</strong><span>换一个游戏，或清除搜索关键词。</span></div>
     </section>
 
     <footer class="library-footer">

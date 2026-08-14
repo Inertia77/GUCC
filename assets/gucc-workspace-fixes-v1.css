@@ -1,0 +1,172 @@
+/* Workspace compatibility fixes: neutralize stale light-theme field roles. */
+body.workspace-page .page .field:is(.role-user, .role-ai, .role-choice, .role-optional)
+  :is(input, select, textarea, .richbox) {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  border-left-width: 1px !important;
+  border-left-color: var(--zzz-line) !important;
+  color-scheme: dark !important;
+  color: var(--zzz-text) !important;
+  background: var(--zzz-field) !important;
+}
+
+body.workspace-page .page .field.role-auto
+  :is(input, select, textarea, .richbox) {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  border-left-width: 1px !important;
+  border-left-color: var(--zzz-line) !important;
+  color-scheme: dark !important;
+  color: var(--zzz-muted) !important;
+  background: #0c0e12 !important;
+  background-image: none !important;
+}
+
+body.workspace-page .page select option,
+body.workspace-page .page select optgroup {
+  color: var(--zzz-text);
+  background: var(--zzz-field);
+}
+
+body.workspace-page #sec-00 :is(.control-title-block, .control-section, .control-grid, .field) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 1160px) {
+  body.workspace-page #sec-00 :is(.control-grid-3, .control-grid-4, .control-grid-naming) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  body.workspace-page #sec-00 :is(.control-grid-3, .control-grid-4, .control-grid-naming) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Keep the work surface full-width. The action rail becomes one compact sticky row. */
+body.workspace-page {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: calc(148px + env(safe-area-inset-bottom)) !important;
+  overflow-x: hidden;
+}
+
+body.workspace-page .page {
+  width: min(1480px, calc(100% - 28px)) !important;
+  margin: 12px auto 40px !important;
+}
+
+body.workspace-page .page > .compact-dock {
+  position: fixed !important;
+  left: auto !important;
+  right: 14px !important;
+  top: auto !important;
+  bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+  transform: none !important;
+  width: max-content !important;
+  max-width: calc(100vw - 28px) !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 7px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  overflow: hidden !important;
+  z-index: 86 !important;
+}
+
+body.workspace-page .page > .compact-dock .btns {
+  width: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+body.workspace-page .page > .compact-dock button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-height: 34px !important;
+  padding: 6px 9px !important;
+  white-space: nowrap !important;
+}
+
+body.workspace-page .page > .compact-dock .action-divider {
+  flex: 0 0 1px !important;
+  width: 1px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  margin: 5px 2px !important;
+}
+
+/* Float global navigation in the bottom gutter; it stays reachable without squeezing the editor. */
+body.workspace-page .gucc-shell-dock {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  width: min(560px, calc(100% - 24px)) !important;
+  min-width: 0 !important;
+  max-width: 560px !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  z-index: 90 !important;
+}
+
+body.workspace-page #structureFloatingNav {
+  right: 14px !important;
+  max-width: min(760px, calc(100vw - 28px)) !important;
+}
+
+@media (max-width: 980px) {
+  body.workspace-page {
+    padding: 0 0 calc(136px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page .page {
+    width: min(760px, calc(100% - 16px)) !important;
+    margin: 8px auto 24px !important;
+  }
+
+  body.workspace-page .page > .compact-dock {
+    display: none !important;
+  }
+
+  body.workspace-page .mobile-float {
+    bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page .mobile-export-sheet {
+    bottom: calc(124px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page #structureFloatingNav {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(124px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body.workspace-page .studio-headline h1 {
+    font-size: clamp(30px, 10vw, 38px) !important;
+  }
+
+  body.workspace-page .mode-switch {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.workspace-page :is(.control-title-block, .control-section, .card, .section-row) {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}

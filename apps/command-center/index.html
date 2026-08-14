@@ -17,11 +17,14 @@
   <link rel="stylesheet" href="styles/app.css?v=5.2.3" />
   <link rel="stylesheet" href="styles/interactions-v1.css" />
   <link rel="stylesheet" href="styles/navigation-v1.css" />
-  <link rel="stylesheet" href="styles/content-v6.css" />
+  <link rel="stylesheet" href="styles/content-v6.css?v=2" />
   <link rel="stylesheet" href="../../assets/gucc-theme.css?v=7" />
+  <link rel="stylesheet" href="../../assets/gucc-zzz.css?v=1" />
+  <link rel="stylesheet" href="styles/search-filters-v5.css" />
+  <link rel="stylesheet" href="styles/editor-drawer-v1.css" />
   <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
 </head>
-<body class="gucc-enhanced">
+<body class="gucc-enhanced command-center-page">
   <button id="drawerBackdrop" class="editor-backdrop hidden" type="button" aria-label="关闭编辑面板"></button>
   <div id="app">
     <header class="topbar">
@@ -57,66 +60,129 @@
       <section id="mainView" class="hidden">
         <nav class="tabs" aria-label="主要功能" role="tablist">
           <button id="tab-characters" type="button" data-tab="characters" class="active" role="tab" aria-controls="characters" aria-selected="true">角色</button>
-          <button id="tab-parties" type="button" data-tab="parties" role="tab" aria-controls="parties" aria-selected="false">配队</button>
+          <button id="tab-parties" type="button" data-tab="parties" role="tab" aria-controls="parties" aria-selected="false">阵容</button>
           <button id="tab-versions" type="button" data-tab="versions" role="tab" aria-controls="versions" aria-selected="false">版本</button>
           <button id="tab-more" type="button" data-tab="more" class="tab-more" role="tab" aria-controls="more" aria-selected="false">更多</button>
         </nav>
 
         <section id="characters" class="tab-panel active" role="tabpanel" aria-labelledby="tab-characters">
-          <div class="toolbar card compact">
-            <input id="charKeyword" placeholder="搜索角色名 / 游戏 / 状态，例如 千咲" />
-            <input id="charGame" placeholder="游戏简称，例如 绝 / 鸣 / 崩" />
-            <button id="searchCharBtn" type="button">搜索角色</button>
-            <button id="newCharBtn" type="button" class="secondary">新增角色</button>
-            <div id="characterResultControls" class="result-view-controls" hidden>
-              <span>结果视图</span>
-              <div class="result-view-buttons" aria-label="角色结果显示方式">
-                <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
-                <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+          <div class="toolbar card compact filter-toolbar">
+            <div class="filter-grid" aria-label="角色搜索条件">
+              <input id="charKeyword" class="filter-keyword" aria-label="角色关键字" placeholder="关键字：角色名 / 游戏 / 状态" />
+              <div class="game-filter" data-game-filter>
+                <select id="charGame" aria-label="角色游戏">
+                  <option value="">全部游戏</option>
+                  <option value="崩">崩铁</option>
+                  <option value="鸣">鸣潮</option>
+                  <option value="绝">绝区零</option>
+                  <option value="终">终末地</option>
+                  <option value="异">异环</option>
+                  <option value="__custom">自定义关键字</option>
+                </select>
+                <input id="charGameCustom" aria-label="自定义游戏关键字" placeholder="输入游戏名称 / 代码" hidden disabled />
+              </div>
+              <select id="charResearchStatus" class="filter-select" aria-label="研究状态">
+                <option value="">全部研究状态</option>
+                <option value="待研究">待研究</option>
+                <option value="查攻略">查攻略</option>
+                <option value="OK">OK</option>
+              </select>
+              <select id="charBuildStatus" class="filter-select" aria-label="养成状态">
+                <option value="">全部养成状态</option>
+                <option value="待养成">待养成</option>
+                <option value="DONE">DONE</option>
+              </select>
+              <button id="searchCharBtn" type="button">搜索角色</button>
+              <button id="clearCharFilters" type="button" class="secondary filter-clear">清空筛选</button>
+              <button id="newCharBtn" type="button" class="secondary">新增角色</button>
+              <aside class="status-convention-note filter-guidance" aria-label="角色研究与养成状态记录规则">
+                <strong>状态记录规则</strong>
+                <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE」。其他信息写入「研究/养成备注」。</span>
+              </aside>
+              <div id="characterResultControls" class="result-view-controls" hidden>
+                <span>结果视图</span>
+                <div class="result-view-buttons" aria-label="角色结果显示方式">
+                  <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
+                  <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+                </div>
               </div>
             </div>
           </div>
-          <aside class="status-convention-note" aria-label="角色研究与养成状态记录规则">
-            <strong>状态记录规则</strong>
-            <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE」。状态之外的特殊信息统一写入「研究/养成备注」，不要新建或混用其他状态类型。</span>
-          </aside>
           <div id="characterResults" class="list"></div>
           <div id="characterEditor" class="card editor hidden"></div>
         </section>
 
         <section id="parties" class="tab-panel" role="tabpanel" aria-labelledby="tab-parties">
-          <div class="toolbar card compact">
-            <input id="partyKeyword" placeholder="搜索配队描述 / 成员 / 类型 / 状态 / 持有状态" />
-            <input id="partyGame" placeholder="游戏简称" />
-            <button id="searchPartyBtn" type="button">搜索配队</button>
-            <button id="newPartyBtn" type="button" class="secondary">新增配队</button>
-            <div id="partyResultControls" class="result-view-controls" hidden>
-              <span>结果视图</span>
-              <div class="result-view-buttons" aria-label="配队结果显示方式">
-                <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
-                <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+          <div class="toolbar card compact filter-toolbar">
+            <div class="filter-grid" aria-label="阵容搜索条件">
+              <input id="partyKeyword" class="filter-keyword" aria-label="阵容关键字" placeholder="关键字：描述 / 成员 / 类型 / 状态" />
+              <div class="game-filter" data-game-filter>
+                <select id="partyGame" aria-label="阵容游戏">
+                  <option value="">全部游戏</option>
+                  <option value="崩">崩铁</option>
+                  <option value="鸣">鸣潮</option>
+                  <option value="绝">绝区零</option>
+                  <option value="终">终末地</option>
+                  <option value="异">异环</option>
+                  <option value="__custom">自定义关键字</option>
+                </select>
+                <input id="partyGameCustom" aria-label="自定义游戏关键字" placeholder="输入游戏名称 / 代码" hidden disabled />
+              </div>
+              <select id="partyStatus" class="filter-select" aria-label="阵容状态">
+                <option value="">全部阵容状态</option>
+                <option value="待研究">待研究</option>
+                <option value="OK">OK</option>
+              </select>
+              <select id="partyHoldStatus" class="filter-select" aria-label="持有状态">
+                <option value="">全部持有状态</option>
+                <option value="YES">YES</option>
+                <option value="NO">NO</option>
+              </select>
+              <button id="searchPartyBtn" type="button">搜索阵容</button>
+              <button id="clearPartyFilters" type="button" class="secondary filter-clear">清空筛选</button>
+              <button id="newPartyBtn" type="button" class="secondary">新增阵容</button>
+              <aside class="status-convention-note filter-guidance" aria-label="阵容持有与研究状态记录规则">
+                <strong>状态记录规则</strong>
+                <span>持有状态只用「YES / NO」；阵容状态只用「待研究 → OK」。</span>
+              </aside>
+              <div id="partyResultControls" class="result-view-controls" hidden>
+                <span>结果视图</span>
+                <div class="result-view-buttons" aria-label="阵容结果显示方式">
+                  <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
+                  <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+                </div>
               </div>
             </div>
           </div>
-          <aside class="status-convention-note" aria-label="配队持有与研究状态记录规则">
-            <strong>状态记录规则</strong>
-            <span>持有状态只用「YES」或「NO」；配队状态只用「待研究 → OK」。不要添加或混用其他状态类型。</span>
-          </aside>
           <div id="partyResults" class="list"></div>
           <div id="partyEditor" class="card editor hidden"></div>
         </section>
 
         <section id="versions" class="tab-panel" role="tabpanel" aria-labelledby="tab-versions">
-          <div class="toolbar card compact">
-            <input id="versionKeyword" placeholder="搜索版本 / 卡池角色" />
-            <input id="versionGame" placeholder="游戏简称" />
-            <button id="searchVersionBtn" type="button">搜索版本</button>
-            <button id="newVersionBtn" type="button" class="secondary">新增版本</button>
-            <div id="versionResultControls" class="result-view-controls" hidden>
-              <span>结果视图</span>
-              <div class="result-view-buttons" aria-label="版本结果显示方式">
-                <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
-                <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+          <div class="toolbar card compact filter-toolbar">
+            <div class="filter-grid filter-grid-simple" aria-label="版本搜索条件">
+              <input id="versionKeyword" class="filter-keyword" aria-label="版本关键字" placeholder="关键字：版本 / 卡池角色" />
+              <div class="game-filter" data-game-filter>
+                <select id="versionGame" aria-label="版本游戏">
+                  <option value="">全部游戏</option>
+                  <option value="崩">崩铁</option>
+                  <option value="鸣">鸣潮</option>
+                  <option value="绝">绝区零</option>
+                  <option value="终">终末地</option>
+                  <option value="异">异环</option>
+                  <option value="__custom">自定义关键字</option>
+                </select>
+                <input id="versionGameCustom" aria-label="自定义游戏关键字" placeholder="输入游戏名称 / 代码" hidden disabled />
+              </div>
+              <button id="searchVersionBtn" type="button">搜索版本</button>
+              <button id="clearVersionFilters" type="button" class="secondary filter-clear">清空筛选</button>
+              <button id="newVersionBtn" type="button" class="secondary">新增版本</button>
+              <div id="versionResultControls" class="result-view-controls" hidden>
+                <span>结果视图</span>
+                <div class="result-view-buttons" aria-label="版本结果显示方式">
+                  <button type="button" class="secondary" data-card-action="collapse">全部收起</button>
+                  <button type="button" class="secondary" data-card-action="expand">全部展开</button>
+                </div>
               </div>
             </div>
           </div>
@@ -130,7 +196,7 @@
               <p class="kicker">SECONDARY TOOLS</p>
               <h2>辅助与维护</h2>
             </div>
-            <p>低频查询、系统状态与配置测试统一收纳在这里，不影响角色、配队和版本的日常操作。</p>
+            <p>低频查询、系统状态与配置测试统一收纳在这里，不影响角色、阵容和版本的日常操作。</p>
           </div>
 
           <div class="auxiliary-stack">
@@ -164,7 +230,7 @@
                   <ol class="steps">
                     <li>确认当前账号已登录</li>
                     <li>检查后端连接状态</li>
-                    <li>再进行角色、配队或版本的数据维护</li>
+                    <li>再进行角色、阵容或版本的数据维护</li>
                   </ol>
                 </div>
               </div>
@@ -190,7 +256,7 @@
     </main>
   </div>
 
-  <script type="module" src="src/main-v5.2.6.js"></script>
+  <script type="module" src="src/main-v5.2.8.js"></script>
   <script src="../../assets/pwa-install.js?v=2" data-root="../../"></script>
 </body>
 </html>

@@ -1,0 +1,145 @@
+/* Workspace navigation, compact editors, and stable custom controls. */
+body.workspace-page #sectionNav .nav-ai-link {
+  border-color: rgba(240, 232, 63, .32) !important;
+  color: var(--zzz-accent, #f0e83f) !important;
+}
+
+body.workspace-page #sectionNav .nav-ai-link b {
+  color: inherit !important;
+}
+
+body.workspace-page #sectionNav .nav-ai-link:hover {
+  border-color: transparent !important;
+  color: var(--zzz-accent-ink, #151608) !important;
+  background: var(--zzz-accent, #f0e83f) !important;
+}
+
+body.workspace-page[data-workspace-mode="ai"] .page > .compact-dock {
+  display: none !important;
+}
+
+body.workspace-page .ai-lane {
+  display: flex;
+  flex-direction: column;
+}
+
+body.workspace-page .ai-lane-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 11px;
+  border-top: 1px solid var(--studio-line);
+}
+
+body.workspace-page .ai-lane-links > span {
+  margin-right: auto;
+  color: var(--studio-dim);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+body.workspace-page .page .ai-lane-links button {
+  min-height: 30px !important;
+  padding: 5px 8px !important;
+  border-color: var(--studio-line) !important;
+  color: var(--studio-muted) !important;
+  background: transparent !important;
+  font-size: 10px !important;
+}
+
+body.workspace-page .page .ai-lane-links button:hover {
+  border-color: rgba(240, 232, 63, .5) !important;
+  color: var(--zzz-accent, #f0e83f) !important;
+  background: rgba(240, 232, 63, .06) !important;
+}
+
+/* AI 回填编辑器保持稳定高度；内容在框内滚动，用户仍可手动纵向拉伸。 */
+body.workspace-page [data-ai-result="true"] {
+  box-sizing: border-box;
+  max-height: none !important;
+  overflow: auto !important;
+  resize: vertical !important;
+  contain: size;
+}
+
+body.workspace-page #sec-02 [data-key="aiAnalysis"] { height: 170px; }
+body.workspace-page #sec-04 [data-key="script"] { height: 260px; }
+body.workspace-page #sec-06 [data-key="publishCN"] { height: 170px; }
+body.workspace-page #sec-06 [data-key="publishMulti"] { height: 220px; }
+body.workspace-page #sec-07 [data-key="diffusionPackage"] { height: 220px; }
+body.workspace-page #sec-08 [data-key="review"] { height: 150px; }
+
+body.workspace-page .content-type-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 178px;
+  gap: 7px;
+  align-items: stretch;
+}
+
+body.workspace-page .content-type-picker > :is(input, select) {
+  min-width: 0;
+}
+
+body.workspace-page .game-picker {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+}
+
+body.workspace-page .game-picker.is-custom {
+  grid-template-columns: minmax(150px, .75fr) minmax(0, 1.25fr);
+}
+
+body.workspace-page .game-picker > :is(input, select) {
+  min-width: 0;
+}
+
+body.workspace-page .game-picker > [hidden] {
+  display: none !important;
+}
+
+@media (min-width: 981px) {
+  body.workspace-page {
+    padding: 0 78px 72px 0 !important;
+  }
+
+  body.workspace-page .gucc-shell-dock {
+    position: fixed !important;
+    left: auto !important;
+    right: 10px !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: 64px !important;
+    min-width: 0 !important;
+    max-width: 64px !important;
+    margin: 0 !important;
+    display: flex !important;
+    grid-template-columns: none !important;
+    flex-direction: column !important;
+    z-index: 90 !important;
+  }
+
+  body.workspace-page .page > .compact-dock {
+    right: 14px !important;
+    bottom: 12px !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body.workspace-page .content-type-picker {
+    grid-template-columns: 1fr;
+  }
+
+  body.workspace-page .game-picker.is-custom {
+    grid-template-columns: 1fr;
+  }
+
+  body.workspace-page .ai-lane-links > span {
+    flex: 1 0 100%;
+    margin-right: 0;
+  }
+}

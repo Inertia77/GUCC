@@ -5,7 +5,7 @@ title 03 Publish Videos
 
 REM ==================================================
 REM 03 Publish Videos
-REM Video upload/create pages only. Non-video distribution lives in 04-post-diffusion.bat.
+REM Video upload/create pages only. Non-video distribution lives in 02-post-diffusion.bat.
 REM Generated as ASCII-safe batch. URLs with % are escaped.
 REM ==================================================
 

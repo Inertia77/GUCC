@@ -8,10 +8,10 @@
 
 | 文件 | 用途 |
 |---|---|
-| `01-analytics.bat` | 数据分析页 |
-| `02-interactions.bat` | 评论与通知；小红书位置打开本地手机端提醒页 |
-| `03-publishing.bat` | 正式视频发布页 |
-| `04-post-diffusion.bat` | 后期扩散：HoYoLab、X、微博、公众号、小红书图文 |
+| `01-publishing.bat` | 正式视频发布页 |
+| `02-post-diffusion.bat` | 后期扩散：HoYoLab、X、微博、公众号、小红书图文 |
+| `03-analytics.bat` | 数据分析页 |
+| `04-interactions.bat` | 评论与通知；小红书位置打开本地手机端提醒页 |
 | `05-homepages.bat` | 公开主页检查 |
 
 已按要求移除 `00-daily.bat` 和 `99-open-all.bat`。脚本只打开网页，不自动发送、上传或修改平台内容。

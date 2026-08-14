@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>异环暂无官方图鉴页</title>
+  <style>
+    :root {
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      color: #f5f3ff;
+      background: #0b0815;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(120, 82, 255, 0.24), transparent 34%),
+        radial-gradient(circle at 84% 78%, rgba(34, 211, 238, 0.16), transparent 32%),
+        #0b0815;
+    }
+
+    main {
+      width: min(760px, 100%);
+      padding: 52px 44px;
+      text-align: center;
+      background: rgba(20, 15, 38, 0.92);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 30px;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.42);
+    }
+
+    .mark {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 26px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #a78bfa;
+      border-radius: 28px;
+      color: #ffffff;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      background: linear-gradient(145deg, #6d4aff, #18a7c8);
+      box-shadow: 0 14px 34px rgba(109, 74, 255, 0.28);
+    }
+
+    .status {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: #d8ccff;
+      background: rgba(139, 92, 246, 0.16);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 7vw, 54px);
+      line-height: 1.18;
+    }
+
+    .lead {
+      margin: 22px auto 0;
+      max-width: 620px;
+      color: #c9c3da;
+      font-size: clamp(17px, 3vw, 21px);
+      line-height: 1.75;
+    }
+
+    .choices {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      text-align: left;
+    }
+
+    .choice {
+      padding: 22px;
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .choice strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .choice span {
+      color: #aaa3bc;
+      line-height: 1.6;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      color: #0b0815;
+      background: #b9f3ff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    a:hover,
+    a:focus-visible {
+      background: #ffffff;
+      outline: 3px solid rgba(185, 243, 255, 0.3);
+      outline-offset: 3px;
+    }
+
+    .note {
+      margin: 28px 0 0;
+      color: #817990;
+      font-size: 14px;
+    }
+
+    @media (max-width: 620px) {
+      main {
+        padding: 38px 24px;
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">NTE</div>
+    <div class="status">官方图鉴状态提醒</div>
+    <h1>异环暂无官方图鉴页</h1>
+    <p class="lead">目前没有可用的异环官方独立角色图鉴页面。你可以进入游戏内查看角色信息，或者暂时使用非官方资料站。</p>
+
+    <div class="choices">
+      <section class="choice">
+        <strong>进入游戏内查看</strong>
+        <span>以游戏内实际展示的角色资料与数值为准。</span>
+      </section>
+      <section class="choice">
+        <strong>使用非官方资料站</strong>
+        <span>资料可能包含测试服或未正式公开的内容，请自行判断。</span>
+        <a href="https://nte.nanoka.cc/character/" target="_blank" rel="noopener noreferrer">打开异环非官方角色资料页</a>
+      </section>
+    </div>
+
+    <p class="note">这是本地提示页面，不会读取账号信息。</p>
+  </main>
+</body>
+</html>

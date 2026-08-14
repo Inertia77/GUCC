@@ -194,8 +194,8 @@ for (const expected of [
   if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少关键工作流标记：${expected}`);
 }
 
-const videoPublishBatch = readFileSync(resolve(root, 'automation', 'creator-platforms', '03-publishing.bat'), 'utf8');
-const diffusionBatch = readFileSync(resolve(root, 'automation', 'creator-platforms', '04-post-diffusion.bat'), 'utf8');
+const videoPublishBatch = readFileSync(resolve(root, 'automation', '创作中心', '01-publishing.bat'), 'utf8');
+const diffusionBatch = readFileSync(resolve(root, 'automation', '创作中心', '02-post-diffusion.bat'), 'utf8');
 for (const videoHost of ['member.bilibili.com', 'studio.youtube.com', 'tiktok.com/tiktokstudio/upload']) {
   if (!videoPublishBatch.includes(videoHost)) errors.push(`正式发布脚本缺少视频入口：${videoHost}`);
 }

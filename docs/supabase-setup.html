@@ -236,7 +236,7 @@ order by email;</pre>
   <h3>5.1 安装并使用 Supabase CLI</h3>
   <div class="card">
     <p>推荐使用项目本地 CLI，不依赖全局 <code>supabase</code> 命令。</p>
-<pre>cd &quot;C:\Users\miket\Git管理下\GUCC&quot;
+<pre>cd &quot;C:\path\to\GUCC&quot;
 
 node -v
 npm -v
@@ -296,7 +296,7 @@ gameup-api gameup-api ACTIVE</pre>
   <h2 id="local">7. 本地测试</h2>
   <div class="card">
     <p>从仓库根目录启动静态服务器：</p>
-<pre>cd &quot;C:\Users\miket\Git管理下\GUCC&quot;
+<pre>cd &quot;C:\path\to\GUCC&quot;
 python -m http.server 8000</pre>
     <p>访问：</p>
 <pre>http://localhost:8000/
@@ -324,7 +324,7 @@ Select-String -Path &quot;.\.gitignore&quot; -Pattern &quot;node_modules|supabas
     <p><code>node_modules/</code> 和 <code>supabase/.temp/</code> 不应提交。</p>
 
     <h3>8.2 检查是否误写密钥</h3>
-<pre>cd &quot;C:\Users\miket\Git管理下\GUCC&quot;
+<pre>cd &quot;C:\path\to\GUCC&quot;
 
 Select-String -Path &quot;.\apps\command-center\src\config.js&quot;,&quot;.\**\*.js&quot;,&quot;.\**\*.html&quot;,&quot;.\**\*.md&quot; `
   -Pattern &quot;service_role|SERVICE_ROLE|SUPABASE_SERVICE_ROLE_KEY|password|secret|jwt&quot;</pre>

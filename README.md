@@ -7,7 +7,7 @@ GUCC 是我的 GameUp Creator Command Center：一个放在 GitHub Pages 上的�
 本地统一使用 `localhost:8000`。Command Center 的 Supabase CORS 默认允许 `http://localhost:8000`，不要用 `127.0.0.1:8000` 测后端。
 
 ```powershell
-cd C:\Users\miket\Git管理下\GUCC
+cd C:\path\to\GUCC
 python -m http.server 8000
 ```
 

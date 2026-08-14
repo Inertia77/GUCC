@@ -15,12 +15,11 @@ http://localhost:8000/reference/story-library.html
 ```text
 reference/story-library/
 ├─ README.md
-├─ 00-index.md
-├─ games/                         # 早期单文件游戏资料
-└─ story-library/                  # 拆分后的剧情资料库
+└─ story-library/                  # 当前剧情资料库
    ├─ 00-index.md
    ├─ 90-maintenance-guide.md
    ├─ 99-source-log.md
+   ├─ _archive_original_generated/ # 保留的原始资料归档
    └─ games/
 ```
 

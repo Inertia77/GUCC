@@ -284,6 +284,7 @@ export async function searchParties({ visibleCount = 0, revealId = '' } = {}) {
           </div>
         </div>
         <div class="item-content" data-card-content>
+          <div class="item-content-title">阵容详情</div>
           <div class="hint">成员：${escapeHtml((row.members || []).map((member) => member.name || member.member_name_raw).join(' / '))}</div>
           ${renderRichText(row.description || '')}
         </div>

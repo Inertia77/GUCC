@@ -1,0 +1,8 @@
+/* Mobile shell: avoid subtracting the page gutter twice. */
+@media (max-width: 980px) {
+  body.command-center-page #app {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+  }
+}

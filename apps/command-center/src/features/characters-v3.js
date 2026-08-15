@@ -278,6 +278,7 @@ export async function searchCharacters({ visibleCount = 0, revealId = '' } = {})
           </div>
         </div>
         <div class="item-content" data-card-content>
+          <div class="item-content-title">角色详情</div>
           ${renderCharacterNotes(row)}
           ${renderLinks(row.links || row.resources, { highlightRelationType: DEFAULT_LINK_RELATION_TYPE })}
         </div>

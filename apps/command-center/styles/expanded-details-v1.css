@@ -1,0 +1,63 @@
+/* Expanded cards: separate readable details from summary actions. */
+body.command-center-page .item:not(.is-collapsed) .item-content {
+  min-width: 0;
+  margin-top: 2px;
+  padding: 12px;
+  border: 1px solid var(--zzz-line, var(--line));
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .025);
+}
+
+body.command-center-page .item-content-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--zzz-accent, var(--accent));
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+body.command-center-page .item-content-title::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--zzz-line, var(--line));
+}
+
+body.command-center-page .item-content > .meta {
+  gap: 8px;
+  margin-top: 0;
+}
+
+body.command-center-page .item-content .link-btn {
+  min-height: 36px;
+  padding: 8px 10px;
+  line-height: 1.3;
+  white-space: normal;
+  text-align: left;
+}
+
+body.command-center-page .item-content > .hint {
+  margin: 0;
+  color: var(--zzz-text, var(--text)) !important;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.command-center-page .item:not(.is-collapsed) .collapse-toggle {
+  border-color: transparent !important;
+  color: var(--zzz-accent-ink, #151608) !important;
+  background: var(--zzz-accent, var(--accent)) !important;
+}
+
+@media (max-width: 640px) {
+  body.command-center-page .item:not(.is-collapsed) .item-content {
+    padding: 10px;
+  }
+
+  body.command-center-page .item-content .link-btn {
+    min-height: 38px;
+    font-size: 12px;
+  }
+}

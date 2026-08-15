@@ -325,6 +325,7 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
           </div>
         </div>
         <div class="item-content" data-card-content>
+          <div class="item-content-title">版本详情</div>
           ${renderVersionNote(row.note)}
           ${renderBannerGroups(row.banners || [])}
         </div>

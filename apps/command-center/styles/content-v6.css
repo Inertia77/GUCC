@@ -64,6 +64,46 @@
   color: var(--accent2) !important;
 }
 
+.item:focus {
+  outline: 2px solid rgba(118, 247, 255, .68);
+  outline-offset: 2px;
+}
+
+.item.is-recently-updated {
+  border-color: rgba(119, 255, 184, .64);
+}
+
+.list-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ux-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 140;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid rgba(119, 255, 184, .5);
+  border-radius: 10px;
+  background: #0b1118;
+  color: var(--text);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.ux-toast.error {
+  border-color: rgba(255, 96, 112, .56);
+}
+
 .note-block {
   display: grid;
   grid-template-columns: minmax(92px, 120px) minmax(0, 1fr);
@@ -147,6 +187,22 @@ body.gucc-enhanced .inline-link {
 }
 
 @media (max-width: 640px) {
+  .list-progress {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .list-progress button {
+    width: 100%;
+  }
+
+  .ux-toast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    max-width: none;
+  }
+
   .result-view-controls {
     align-items: stretch;
     margin-inline: 0;

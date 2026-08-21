@@ -92,7 +92,7 @@ for (const file of appScripts) {
 checkSyntax(resolve(root, 'assets', 'access-guard.js'));
 checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
 checkSyntax(resolve(root, 'sw.js'));
-checkSyntax(resolve(root, 'reference', 'resource-library.js'));
+checkSyntax(resolve(root, 'reference', 'resource-library-v4.js'));
 
 const researchSourcesPath = resolve(root, 'data', 'imports', 'gacha-leak-sources-2026-08-07.json');
 try {
@@ -261,6 +261,7 @@ for (const match of appSources[0].matchAll(/\bid=["']([^"']+)["']/g)) {
 }
 for (const source of appSources.slice(1)) {
   for (const match of source.matchAll(/\bid=["']([^"']+)["']/g)) declaredIds.add(match[1]);
+  for (const match of source.matchAll(/\.id\s*=\s*["']([A-Za-z][\w-]*)["']/g)) declaredIds.add(match[1]);
 }
 for (const id of duplicateHtmlIds) errors.push(`${appHtml}: 重复的 id="${id}"`);
 for (const source of appSources.slice(1)) {

@@ -309,6 +309,7 @@
   </style>
   <link rel="stylesheet" href="../assets/gucc-theme.css?v=7" />
   <link rel="stylesheet" href="../assets/gucc-reference-v4.css" />
+  <link rel="stylesheet" href="../assets/gucc-zzz.css?v=1" />
   <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
 </head>
 <body class="gucc-enhanced gucc-reference story-page">
@@ -506,6 +507,7 @@
     const navCurrent = document.querySelector('#libraryNavCurrent');
     const mobileLibrary = window.matchMedia('(max-width: 980px)');
     let activePath = '';
+    let loadSequence = 0;
 
     function setNavCollapsed(collapsed) {
       sidebar.classList.toggle('is-collapsed', collapsed);
@@ -630,6 +632,25 @@
       return `${base}${group.prefix || ''}${docEntry[0]}`;
     }
 
+    const allDocuments = groups.flatMap((group) => group.docs.map((entry) => ({
+      group,
+      entry,
+      relativePath: `${group.prefix || ''}${entry[0]}`,
+      fullPath: fullPath(group, entry)
+    })));
+
+    function findDocument(relativePath) {
+      return allDocuments.find((item) => item.relativePath === relativePath);
+    }
+
+    function syncSearchUrl() {
+      const url = new URL(window.location.href);
+      const query = search.value.trim();
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      history.replaceState(history.state, '', url);
+    }
+
     function renderNav(filter = '') {
       const term = filter.trim().toLowerCase();
       nav.innerHTML = groups.map((group, index) => {
@@ -672,7 +693,8 @@
       }
     }
 
-    async function loadDoc(path, title) {
+    async function loadDoc(path, title, { historyMode = 'replace', restoreScrollY = null } = {}) {
+      const sequence = ++loadSequence;
       activePath = path;
       updateNavSelection(path);
       titleEl.textContent = title;
@@ -684,11 +706,28 @@
         const response = await fetch(path, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const markdown = await response.text();
+        if (sequence !== loadSequence) return;
         doc.innerHTML = markdownToHtml(markdown);
         const url = new URL(window.location.href);
-        url.searchParams.set('doc', path.replace(base, ''));
-        history.replaceState(null, '', url);
+        const relativePath = path.replace(base, '');
+        url.searchParams.set('doc', relativePath);
+        if (historyMode === 'push') {
+          history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
+          history.pushState({ doc: relativePath, scrollY: null }, '', url);
+        } else if (historyMode === 'replace') {
+          history.replaceState({ ...(history.state || {}), doc: relativePath, scrollY: window.scrollY }, '', url);
+        }
+
+        if (Number.isFinite(restoreScrollY)) {
+          requestAnimationFrame(() => window.scrollTo(0, restoreScrollY));
+        } else if (historyMode === 'push') {
+          document.querySelector('.reader').scrollIntoView({ behavior: 'auto', block: 'start' });
+          requestAnimationFrame(() => {
+            history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
+          });
+        }
       } catch (error) {
+        if (sequence !== loadSequence) return;
         doc.innerHTML = `<h1>加载失败</h1><p>${escapeHtml(error.message)}</p>`;
       }
     }
@@ -696,28 +735,52 @@
     nav.addEventListener('click', (event) => {
       const button = event.target.closest('.doc-link');
       if (!button) return;
-      loadDoc(button.dataset.path, button.dataset.title);
+      if (button.dataset.path === activePath) return;
+      loadDoc(button.dataset.path, button.dataset.title, { historyMode: 'push' });
       if (mobileLibrary.matches) {
         setNavCollapsed(true);
-        document.querySelector('.reader').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
 
-    search.addEventListener('input', () => renderNav(search.value));
+    search.addEventListener('input', () => {
+      renderNav(search.value);
+      syncSearchUrl();
+    });
     copyButton.addEventListener('click', async () => {
       await navigator.clipboard.writeText(activePath);
       copyButton.textContent = '已复制';
       setTimeout(() => { copyButton.textContent = '复制路径'; }, 1200);
     });
 
-    renderNav();
-    const initial = new URLSearchParams(window.location.search).get('doc');
+    window.addEventListener('popstate', (event) => {
+      const relativePath = event.state?.doc || new URLSearchParams(window.location.search).get('doc');
+      const match = findDocument(relativePath);
+      if (match) {
+        loadDoc(match.fullPath, match.entry[1], {
+          historyMode: 'none',
+          restoreScrollY: Number.isFinite(event.state?.scrollY) ? event.state.scrollY : null
+        });
+      }
+    });
+
+    let scrollStateTimer = 0;
+    window.addEventListener('scroll', () => {
+      window.clearTimeout(scrollStateTimer);
+      scrollStateTimer = window.setTimeout(() => {
+        if (!activePath) return;
+        history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
+      }, 120);
+    }, { passive: true });
+
+    const params = new URLSearchParams(window.location.search);
+    search.value = params.get('q') || '';
+    renderNav(search.value);
+    const initial = params.get('doc');
     const defaultGroup = groups[1];
     const defaultDoc = defaultGroup.docs[0];
     if (initial) {
-      const match = groups.flatMap((group) => group.docs.map((entry) => ({ group, entry, path: `${group.prefix || ''}${entry[0]}` })))
-        .find((item) => item.path === initial);
-      if (match) loadDoc(fullPath(match.group, match.entry), match.entry[1]);
+      const match = findDocument(initial);
+      if (match) loadDoc(match.fullPath, match.entry[1]);
       else loadDoc(fullPath(defaultGroup, defaultDoc), defaultDoc[1]);
     } else {
       loadDoc(fullPath(defaultGroup, defaultDoc), defaultDoc[1]);

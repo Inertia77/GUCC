@@ -1,0 +1,87 @@
+/* Reachable navigation without side-rail pressure. Loaded as a unique asset to bypass stale PWA CSS. */
+body.cover-generator-page {
+  padding-right: 0 !important;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+}
+
+body.cover-generator-page .gucc-shell-dock,
+body.workspace-page .gucc-shell-dock {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  width: min(560px, calc(100% - 24px)) !important;
+  min-width: 0 !important;
+  max-width: 560px !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  z-index: 90 !important;
+}
+
+body.workspace-page {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: calc(148px + env(safe-area-inset-bottom)) !important;
+}
+
+body.workspace-page .page > .compact-dock {
+  position: fixed !important;
+  left: auto !important;
+  right: 14px !important;
+  top: auto !important;
+  bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+  transform: none !important;
+  width: max-content !important;
+  max-width: calc(100vw - 28px) !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 7px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  overflow: hidden !important;
+  z-index: 86 !important;
+}
+
+body.workspace-page .page > .compact-dock .btns {
+  width: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+@media (max-width: 980px) {
+  body.workspace-page {
+    padding: 0 0 calc(136px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page .page > .compact-dock {
+    display: none !important;
+  }
+
+  body.workspace-page .mobile-float {
+    bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page .mobile-export-sheet,
+  body.workspace-page #structureFloatingNav {
+    bottom: calc(124px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body.cover-generator-page {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.cover-generator-page .gucc-shell-dock,
+  body.workspace-page .gucc-shell-dock {
+    width: calc(100% - 12px) !important;
+  }
+}

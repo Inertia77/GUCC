@@ -1,0 +1,46 @@
+/* Workspace editor height system: compact defaults, manual vertical resizing. */
+body.workspace-page {
+  --workspace-editor-height: 84px;
+  --workspace-compact-editor-height: 48px;
+}
+
+/*
+ * These workflow modules use one default editor height.  The selector is
+ * intentionally more specific than the older per-field rules, while keeping
+ * `height` non-important so a user's manual resize can still win inline.
+ */
+body.workspace-page .page
+  :is(#sec-prestudy, #sec-01, #sec-02, #sec-05, #sec-06, #sec-08)
+  [data-key].richbox:not(.big) {
+  box-sizing: border-box;
+  height: var(--workspace-editor-height);
+  min-height: var(--workspace-editor-height);
+  max-height: none;
+  overflow: auto;
+  resize: vertical;
+}
+
+/* Project path and note are a paired row, so their controls start equally. */
+body.workspace-page .page #sec-00 .control-bottom-grid
+  :is(input[data-key="localPath"], [data-key="projectMemo"].richbox) {
+  box-sizing: border-box;
+  height: var(--workspace-compact-editor-height);
+  min-height: var(--workspace-compact-editor-height);
+}
+
+body.workspace-page .page #sec-00 .control-bottom-grid
+  [data-key="projectMemo"].richbox {
+  max-height: none;
+  overflow: auto;
+  resize: vertical;
+}
+
+@media (max-width: 980px) {
+  body.workspace-page .page
+    :is(#sec-prestudy, #sec-01, #sec-02, #sec-05, #sec-06, #sec-08)
+    [data-key].richbox:not(.big),
+  body.workspace-page .page #sec-00 .control-bottom-grid
+    [data-key="projectMemo"].richbox {
+    resize: none;
+  }
+}

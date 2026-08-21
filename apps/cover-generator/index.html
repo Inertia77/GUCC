@@ -1071,24 +1071,805 @@
       }
     }
   </style>
+  <style>
+    /* 2026 product-design pass: quieter hierarchy, flat surfaces, one accent. */
+    body.gucc-enhanced {
+      --cover-bg: #090a0c;
+      --cover-surface: #111318;
+      --cover-surface-raised: #171a1f;
+      --cover-field: #0c0e11;
+      --cover-line: #2a2e34;
+      --cover-line-strong: #454a52;
+      --cover-text: #f2f2ed;
+      --cover-muted: #a4a8ae;
+      --cover-dim: #737880;
+      --cover-accent: #f0e83f;
+      --cover-accent-ink: #151608;
+      --cover-danger: #e25e64;
+      --cover-radius: 4px;
+      padding-right: 62px;
+      padding-bottom: 28px;
+      color: var(--cover-text) !important;
+      background: var(--cover-bg) !important;
+    }
+
+    body.gucc-enhanced::before,
+    body.gucc-enhanced::after,
+    body.gucc-enhanced .hero::before {
+      display: none !important;
+    }
+
+    body.gucc-enhanced .app {
+      width: min(1680px, calc(100% - 32px)) !important;
+      margin: 0 auto;
+      padding: 12px 0 28px !important;
+    }
+
+    body.gucc-enhanced .hero,
+    body.gucc-enhanced .panel,
+    body.gucc-enhanced .toolbar,
+    body.gucc-enhanced .ratio-tab,
+    body.gucc-enhanced .mini,
+    body.gucc-enhanced .element-item,
+    body.gucc-enhanced .style-card,
+    body.gucc-enhanced .design-card,
+    body.gucc-enhanced .prompt-style-card {
+      backdrop-filter: none !important;
+      box-shadow: none !important;
+    }
+
+    body.gucc-enhanced .hero {
+      min-height: 0;
+      margin: 0 0 10px;
+      padding: 14px 16px !important;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: var(--cover-radius) !important;
+      background: var(--cover-surface) !important;
+    }
+
+    .hero-copy,
+    .hero-title {
+      min-width: 0;
+    }
+
+    .hero-title {
+      gap: 10px;
+    }
+
+    .hero-mark {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 2px;
+      color: var(--cover-accent-ink);
+      background: var(--cover-accent);
+      box-shadow: none;
+      font-size: 13px;
+      letter-spacing: -.03em;
+    }
+
+    body.gucc-enhanced .hero h1 {
+      margin: 0;
+      color: var(--cover-text) !important;
+      font-size: clamp(21px, 1.9vw, 29px) !important;
+      line-height: 1.12;
+      letter-spacing: -.035em;
+      text-shadow: none !important;
+    }
+
+    body.gucc-enhanced .hero p {
+      margin: 5px 0 0 48px;
+      max-width: 760px;
+      color: var(--cover-muted) !important;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    body.gucc-enhanced .hero .actions {
+      gap: 6px;
+    }
+
+    body.gucc-enhanced .hero .actions button {
+      min-height: 36px;
+      padding: 7px 12px;
+      font-size: 11px;
+    }
+
+    body.gucc-enhanced .grid {
+      grid-template-columns: minmax(260px, 286px) minmax(0, 1fr) minmax(270px, 300px);
+      gap: 10px;
+    }
+
+    body.gucc-enhanced .panel {
+      padding: 12px !important;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: var(--cover-radius) !important;
+      background: var(--cover-surface) !important;
+    }
+
+    body.gucc-enhanced .panel-title {
+      gap: 8px;
+      margin: 0 0 8px;
+      color: var(--cover-text) !important;
+      font-size: 14px;
+      letter-spacing: -.01em;
+    }
+
+    .panel-index {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 2px;
+      color: var(--cover-accent-ink);
+      background: var(--cover-accent);
+      font-size: 9px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body.gucc-enhanced .section {
+      margin: 0;
+      padding: 14px 0 !important;
+      border: 0 !important;
+      border-top: 1px solid var(--cover-line) !important;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    body.gucc-enhanced .section:first-of-type {
+      padding-top: 8px !important;
+      border-top: 0 !important;
+    }
+
+    body.gucc-enhanced .section h3 {
+      display: block;
+      margin: 0 0 10px;
+      color: var(--cover-text) !important;
+      font-size: 12px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    body.gucc-enhanced .section h3::before {
+      display: none;
+    }
+
+    body.gucc-enhanced .stack {
+      gap: 8px;
+    }
+
+    body.gucc-enhanced .row,
+    body.gucc-enhanced .row3 {
+      gap: 7px;
+    }
+
+    body.gucc-enhanced label {
+      margin-bottom: 5px;
+      color: var(--cover-muted) !important;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    body.gucc-enhanced .hint,
+    body.gucc-enhanced .status,
+    body.gucc-enhanced .prompt-status {
+      color: var(--cover-dim) !important;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    body.gucc-enhanced button {
+      min-height: 38px;
+      padding: 7px 10px;
+      border: 1px solid transparent !important;
+      border-radius: 3px !important;
+      color: var(--cover-accent-ink) !important;
+      background: var(--cover-accent) !important;
+      box-shadow: none !important;
+      font-size: 11px;
+      font-weight: 900 !important;
+      transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+    }
+
+    body.gucc-enhanced button:hover {
+      filter: none;
+      transform: none;
+      background: #fff85a !important;
+    }
+
+    body.gucc-enhanced button:active {
+      filter: brightness(.9);
+      transform: none;
+    }
+
+    body.gucc-enhanced button.secondary {
+      border-color: var(--cover-line) !important;
+      color: var(--cover-text) !important;
+      background: var(--cover-surface-raised) !important;
+    }
+
+    body.gucc-enhanced button.secondary:hover {
+      border-color: var(--cover-line-strong) !important;
+      background: #1d2025 !important;
+    }
+
+    body.gucc-enhanced button.danger {
+      color: #fff !important;
+      background: var(--cover-danger) !important;
+    }
+
+    body.gucc-enhanced button.danger:hover {
+      background: #ef7176 !important;
+    }
+
+    body.gucc-enhanced button.ok {
+      color: var(--cover-accent-ink) !important;
+      background: var(--cover-accent) !important;
+    }
+
+    body.gucc-enhanced input,
+    body.gucc-enhanced select,
+    body.gucc-enhanced textarea {
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 3px !important;
+      color: var(--cover-text) !important;
+      background: var(--cover-field) !important;
+      box-shadow: none !important;
+      font-size: 11px;
+    }
+
+    body.gucc-enhanced input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    body.gucc-enhanced select {
+      min-height: 38px;
+      padding: 7px 9px;
+    }
+
+    body.gucc-enhanced textarea {
+      padding: 8px 9px;
+    }
+
+    body.gucc-enhanced :is(input, select, textarea):focus {
+      border-color: var(--cover-accent) !important;
+      box-shadow: 0 0 0 2px rgba(240, 232, 63, .12) !important;
+    }
+
+    body.gucc-enhanced :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+      outline: 2px solid var(--cover-accent);
+      outline-offset: 2px;
+    }
+
+    body.gucc-enhanced input[type="range"],
+    body.gucc-enhanced input[type="checkbox"],
+    body.gucc-enhanced input[type="radio"] {
+      accent-color: var(--cover-accent);
+    }
+
+    body.gucc-enhanced .workspace {
+      min-width: 0;
+      min-height: 0;
+      padding: 10px !important;
+      border-color: var(--cover-line-strong) !important;
+      background: #0e1014 !important;
+    }
+
+    body.gucc-enhanced .ratio-tabs {
+      gap: 3px;
+      margin: 0 0 8px;
+      padding: 3px;
+      border: 1px solid var(--cover-line);
+      border-radius: 3px;
+      background: var(--cover-field);
+    }
+
+    body.gucc-enhanced .ratio-tab {
+      min-height: 44px;
+      padding: 6px;
+      border: 0 !important;
+      border-radius: 2px !important;
+      color: var(--cover-muted) !important;
+      background: transparent !important;
+      font-size: 9px;
+    }
+
+    body.gucc-enhanced .ratio-tab strong {
+      color: var(--cover-text);
+      font-size: 12px;
+    }
+
+    body.gucc-enhanced .ratio-tab.active {
+      color: var(--cover-accent-ink) !important;
+      background: var(--cover-accent) !important;
+    }
+
+    body.gucc-enhanced .ratio-tab.active strong {
+      color: var(--cover-accent-ink);
+    }
+
+    body.gucc-enhanced .toolbar {
+      margin: 0 0 8px;
+      padding: 0 0 8px !important;
+      border: 0 !important;
+      border-bottom: 1px solid var(--cover-line) !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+    }
+
+    body.gucc-enhanced .toolbar-left,
+    body.gucc-enhanced .toolbar-right {
+      gap: 6px;
+    }
+
+    body.gucc-enhanced .badge {
+      padding: 0;
+      border: 0 !important;
+      border-radius: 0 !important;
+      color: var(--cover-dim) !important;
+      background: transparent !important;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    body.gucc-enhanced #sizeBadge {
+      color: var(--cover-accent) !important;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body.gucc-enhanced .toolbar button.small {
+      min-height: 30px;
+      padding: 5px 8px;
+      font-size: 9px;
+    }
+
+    body.gucc-enhanced .stage-shell {
+      height: clamp(500px, 63vh, 720px);
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 2px !important;
+      background-color: #050608;
+      box-shadow: none;
+    }
+
+    body.gucc-enhanced .stage {
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .45) !important;
+    }
+
+    body.gucc-enhanced .cover-element.selected {
+      outline-color: var(--cover-accent);
+    }
+
+    body.gucc-enhanced .handle,
+    body.gucc-enhanced .bg-layer.editing {
+      outline-color: var(--cover-accent);
+    }
+
+    body.gucc-enhanced .handle {
+      background: var(--cover-accent);
+    }
+
+    body.gucc-enhanced .mini-previews {
+      gap: 4px;
+      margin-top: 7px;
+    }
+
+    body.gucc-enhanced .mini {
+      padding: 5px;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 2px !important;
+      color: var(--cover-muted) !important;
+      background: var(--cover-field) !important;
+    }
+
+    body.gucc-enhanced .mini.active {
+      border-color: var(--cover-accent) !important;
+      background: rgba(240, 232, 63, .06) !important;
+    }
+
+    body.gucc-enhanced .mini span {
+      color: var(--cover-dim) !important;
+      font-size: 9px;
+    }
+
+    body.gucc-enhanced .element-list,
+    body.gucc-enhanced .style-grid {
+      gap: 4px;
+      scrollbar-color: #3a3e45 transparent;
+    }
+
+    body.gucc-enhanced .materials-panel,
+    body.gucc-enhanced .inspector-panel {
+      scrollbar-color: #3a3e45 transparent;
+    }
+
+    body.gucc-enhanced .materials-panel::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .inspector-panel::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .style-grid::-webkit-scrollbar-thumb,
+    body.gucc-enhanced .element-list::-webkit-scrollbar-thumb {
+      background: #3a3e45;
+      box-shadow: none;
+    }
+
+    body.gucc-enhanced .element-item {
+      padding: 8px;
+      border: 1px solid var(--cover-line);
+      border-radius: 2px;
+      background: var(--cover-field);
+    }
+
+    body.gucc-enhanced .element-item:hover,
+    body.gucc-enhanced .element-item.active {
+      border-color: var(--cover-line-strong);
+      background: var(--cover-surface-raised);
+    }
+
+    body.gucc-enhanced .element-item.active {
+      border-left: 3px solid var(--cover-accent);
+    }
+
+    body.gucc-enhanced .style-grid {
+      max-height: 350px;
+    }
+
+    body.gucc-enhanced .style-card {
+      min-height: 42px;
+      padding: 7px 8px;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 2px !important;
+      color: var(--cover-muted) !important;
+      background: var(--cover-field) !important;
+      font-size: 10px;
+      font-weight: 750 !important;
+    }
+
+    body.gucc-enhanced .style-card:hover {
+      border-color: var(--cover-line-strong) !important;
+      color: var(--cover-text) !important;
+      background: var(--cover-surface-raised) !important;
+    }
+
+    body.gucc-enhanced .style-card.active {
+      border-color: var(--cover-accent) !important;
+      color: var(--cover-accent-ink) !important;
+      background: var(--cover-accent) !important;
+    }
+
+    body.gucc-enhanced .design-preset-grid,
+    body.gucc-enhanced .prompt-style-grid {
+      gap: 4px;
+    }
+
+    body.gucc-enhanced .design-card,
+    body.gucc-enhanced .prompt-style-card {
+      min-height: 0 !important;
+      padding: 8px !important;
+      border: 1px solid var(--cover-line) !important;
+      border-radius: 2px !important;
+      color: var(--cover-muted) !important;
+      background: var(--cover-field) !important;
+      text-align: left;
+    }
+
+    body.gucc-enhanced .design-card:hover,
+    body.gucc-enhanced .prompt-style-card:hover {
+      border-color: var(--cover-line-strong) !important;
+      background: var(--cover-surface-raised) !important;
+    }
+
+    body.gucc-enhanced .design-card.active,
+    body.gucc-enhanced .prompt-style-card.active {
+      border-color: var(--cover-accent) !important;
+      background: rgba(240, 232, 63, .07) !important;
+    }
+
+    body.gucc-enhanced .design-card .preset-swatch,
+    body.gucc-enhanced .prompt-style-card .preset-swatch {
+      display: none;
+    }
+
+    body.gucc-enhanced .design-card strong,
+    body.gucc-enhanced .prompt-style-card strong {
+      color: var(--cover-text) !important;
+      font-size: 10px;
+    }
+
+    body.gucc-enhanced .design-card.active strong,
+    body.gucc-enhanced .prompt-style-card.active strong {
+      color: var(--cover-accent) !important;
+    }
+
+    body.gucc-enhanced .design-card small,
+    body.gucc-enhanced .prompt-style-card small {
+      margin-top: 3px;
+      color: var(--cover-dim) !important;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    body.gucc-enhanced .progress {
+      height: 4px;
+      border-radius: 0;
+      background: var(--cover-line);
+    }
+
+    body.gucc-enhanced .progress div {
+      background: var(--cover-accent);
+    }
+
+    body.gucc-enhanced .ai-prompt-lab {
+      margin-top: 10px;
+      padding: 16px !important;
+      border-color: var(--cover-line) !important;
+      background: var(--cover-surface) !important;
+    }
+
+    body.gucc-enhanced .ai-prompt-head {
+      margin-bottom: 14px;
+    }
+
+    body.gucc-enhanced .ai-prompt-head h2 {
+      color: var(--cover-text) !important;
+      font-size: 18px;
+      letter-spacing: -.02em;
+    }
+
+    body.gucc-enhanced .ai-prompt-head p {
+      color: var(--cover-muted) !important;
+      font-size: 11px;
+    }
+
+    body.gucc-enhanced .prompt-actions {
+      gap: 6px;
+    }
+
+    body.gucc-enhanced .gucc-shell-dock {
+      right: 8px;
+      width: 48px;
+      min-width: 48px;
+      max-width: 48px;
+      gap: 2px;
+      padding: 4px;
+      border: 1px solid var(--cover-line);
+      border-radius: 4px;
+      background: #0d0f13;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    body.gucc-enhanced .gucc-shell-link {
+      min-height: 45px;
+      padding: 4px 2px;
+      border-radius: 2px;
+      color: var(--cover-dim);
+      font-size: 8px;
+      transition: background-color .12s ease, color .12s ease;
+    }
+
+    body.gucc-enhanced .gucc-shell-link b {
+      font-size: 12px;
+    }
+
+    body.gucc-enhanced .gucc-shell-link:hover {
+      color: var(--cover-text);
+      background: var(--cover-surface-raised);
+      transform: none;
+    }
+
+    body.gucc-enhanced .gucc-shell-link.is-active {
+      color: var(--cover-accent-ink);
+      background: var(--cover-accent);
+      box-shadow: none;
+      transform: none;
+    }
+
+    @media (min-width: 1181px) {
+      body.gucc-enhanced .materials-panel,
+      body.gucc-enhanced .workspace,
+      body.gucc-enhanced .inspector-panel {
+        top: 12px;
+      }
+
+      body.gucc-enhanced .materials-panel,
+      body.gucc-enhanced .inspector-panel {
+        max-height: calc(100vh - 24px);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      body.gucc-enhanced {
+        padding-right: 0;
+        padding-bottom: 94px;
+      }
+
+      body.gucc-enhanced .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+          "workspace workspace"
+          "materials inspector";
+      }
+
+      body.gucc-enhanced .materials-panel { grid-area: materials; }
+      body.gucc-enhanced .workspace { grid-area: workspace; }
+      body.gucc-enhanced .inspector-panel { grid-area: inspector; }
+      body.gucc-enhanced .stage-shell { height: min(64vh, 680px); }
+      body.gucc-enhanced .ai-prompt-layout { grid-template-columns: 1fr; }
+
+      body.gucc-enhanced .gucc-shell-dock {
+        left: 50%;
+        right: auto;
+        top: auto;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: min(560px, calc(100vw - 16px));
+        max-width: calc(100vw - 16px);
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      body.gucc-enhanced .app {
+        width: min(100% - 20px, 760px) !important;
+      }
+
+      body.gucc-enhanced .hero {
+        align-items: stretch;
+      }
+
+      body.gucc-enhanced .hero p {
+        margin-left: 48px;
+      }
+
+      body.gucc-enhanced .hero .actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      body.gucc-enhanced .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+          "workspace"
+          "materials"
+          "inspector";
+      }
+
+      body.gucc-enhanced .stage-shell {
+        height: min(60vh, 560px);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body.gucc-enhanced {
+        padding-bottom: calc(82px + env(safe-area-inset-bottom)) !important;
+      }
+
+      body.gucc-enhanced .app {
+        width: min(100% - 12px, 430px) !important;
+        padding: 6px 0 20px !important;
+      }
+
+      body.gucc-enhanced .hero,
+      body.gucc-enhanced .panel {
+        padding: 10px !important;
+        border-radius: 3px !important;
+      }
+
+      body.gucc-enhanced .hero {
+        gap: 10px !important;
+      }
+
+      .hero-mark {
+        width: 34px;
+        height: 34px;
+      }
+
+      body.gucc-enhanced .hero h1 {
+        font-size: clamp(21px, 7vw, 28px) !important;
+      }
+
+      body.gucc-enhanced .hero p {
+        margin-left: 44px;
+        font-size: 11px;
+      }
+
+      body.gucc-enhanced .hero .actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      body.gucc-enhanced #resetBtn {
+        grid-column: 1 / -1;
+      }
+
+      body.gucc-enhanced button,
+      body.gucc-enhanced input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+      body.gucc-enhanced select {
+        min-height: 44px;
+      }
+
+      body.gucc-enhanced input,
+      body.gucc-enhanced select,
+      body.gucc-enhanced textarea {
+        font-size: 16px;
+      }
+
+      body.gucc-enhanced .ratio-tabs {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        overflow: visible;
+        padding: 3px;
+      }
+
+      body.gucc-enhanced .ratio-tab {
+        min-width: 0;
+        min-height: 46px;
+      }
+
+      body.gucc-enhanced .toolbar {
+        display: grid !important;
+      }
+
+      body.gucc-enhanced .toolbar-left,
+      body.gucc-enhanced .toolbar-right {
+        width: 100%;
+      }
+
+      body.gucc-enhanced .toolbar-left {
+        display: grid;
+        gap: 4px;
+      }
+
+      body.gucc-enhanced .toolbar-right {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      body.gucc-enhanced .stage-shell {
+        height: min(52vh, 430px);
+        min-height: 260px;
+      }
+
+      body.gucc-enhanced .style-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      body.gucc-enhanced .ai-prompt-lab {
+        padding: 10px !important;
+      }
+
+      body.gucc-enhanced .gucc-shell-dock {
+        width: min(520px, calc(100vw - 12px)) !important;
+        max-width: calc(100vw - 12px) !important;
+        padding: 4px !important;
+        border-radius: 4px !important;
+      }
+
+      body.gucc-enhanced .gucc-shell-link {
+        min-height: 52px !important;
+        border-radius: 2px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      body.gucc-enhanced .toolbar-right,
+      body.gucc-enhanced .row3 {
+        grid-template-columns: 1fr !important;
+      }
+
+      body.gucc-enhanced .hero p {
+        margin-left: 0;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../../assets/gucc-cover-workspace-fixes-v1.css?v=2" />
+  <link rel="stylesheet" href="../../assets/gucc-floating-docks-v1.css" />
   <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
 </head>
-<body class="gucc-enhanced">
-  <a class="gucc-back-home" href="../../">← GUCC Portal</a>
+<body class="gucc-enhanced cover-generator-page">
   <div class="app">
     <header class="hero">
       <div class="hero-copy">
-        <div class="hero-eyebrow">Creative Studio · Cover System</div>
         <div class="hero-title">
           <span class="hero-mark" aria-hidden="true">CG</span>
           <h1>游戏视频封面多比例批量生成器</h1>
         </div>
         <p>一次完成素材编排、比例适配与批量导出。先搭主构图，再逐比例精修。</p>
-        <div class="hero-meta" aria-label="功能概览">
-          <span class="hero-chip">4 种常用比例</span>
-          <span class="hero-chip">10 套整体模板</span>
-          <span class="hero-chip">28 种文字样式</span>
-        </div>
       </div>
       <div class="actions">
         <button class="secondary" id="saveProjectBtn">保存项目</button>
@@ -1828,8 +2609,8 @@ ${textInstruction}
   function computePreviewScale() {
     const shell = $('stageShell');
     const r = ratio();
-    const maxW = Math.max(320, shell.clientWidth - 48);
-    const maxH = Math.max(300, shell.clientHeight - 48);
+    const maxW = Math.max(120, shell.clientWidth - 32);
+    const maxH = Math.max(180, shell.clientHeight - 32);
     previewScale = Math.min(maxW / r.w, maxH / r.h, 0.6);
   }
 

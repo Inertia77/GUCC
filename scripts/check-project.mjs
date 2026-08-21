@@ -132,13 +132,29 @@ const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');
 const workspaceHtml = resolve(root, 'apps', 'video-workspace', 'index.html');
 const workspacePrompts = resolve(root, 'apps', 'video-workspace', 'ai-prompts.js');
+const productionSystemHtml = resolve(root, 'apps', 'video-workspace', 'production-system', 'index.html');
+const productionSystemEngine = resolve(root, 'apps', 'video-workspace', 'production-system', 'engine.js');
+const productionSystemApp = resolve(root, 'apps', 'video-workspace', 'production-system', 'app.js');
 const coverGeneratorHtml = resolve(root, 'apps', 'cover-generator', 'index.html');
+const publishingConsoleHtml = resolve(root, 'apps', 'publishing-console', 'index.html');
+const publishingConsoleApp = resolve(root, 'apps', 'publishing-console', 'app.js');
+const publishingConsoleRules = resolve(root, 'apps', 'publishing-console', 'platform-rules.js');
+const publisherAssistantServer = resolve(root, 'scripts', 'publisher-assistant', 'server.cjs');
+const publisherAssistantAdapters = resolve(root, 'scripts', 'publisher-assistant', 'adapters.cjs');
 checkSyntax(workspacePrompts);
+checkSyntax(productionSystemEngine);
+checkSyntax(productionSystemApp);
+checkSyntax(publishingConsoleApp);
+checkSyntax(publishingConsoleRules);
+checkSyntax(publisherAssistantServer);
+checkSyntax(publisherAssistantAdapters);
 const htmlEntrypoints = [
   portalHtml,
   appHtml,
   workspaceHtml,
+  productionSystemHtml,
   coverGeneratorHtml,
+  publishingConsoleHtml,
   resolve(root, 'apps', 'gameup-command-center', 'index.html'),
   resolve(root, 'docs', 'supabase-setup.html'),
   resolve(root, 'reference', 'ai-prompts.html'),
@@ -161,11 +177,43 @@ if (!portalSource.includes('href="./apps/command-center/"')) {
 if (!portalSource.includes('href="./apps/cover-generator/"')) {
   errors.push('GUCC Portal 没有指向封面生成器');
 }
+if (!portalSource.includes('href="./apps/publishing-console/"')) {
+  errors.push('GUCC Portal 没有指向发布与复盘控制台');
+}
+
+const publishingConsoleSource = readFileSync(publishingConsoleHtml, 'utf8');
+for (const expected of [
+  'data-state="project.title"',
+  'id="platformForms"',
+  'id="runChecksButton"',
+  'id="executionList"',
+  'id="snapshotForm"',
+  'id="copyReviewPromptButton"',
+  'id="oneClickPrepareButton"',
+  'id="assistantState"',
+  'data-state="common.videoPath"'
+]) {
+  if (!publishingConsoleSource.includes(expected)) errors.push(`发布控制台缺少关键工作流标记：${expected}`);
+}
 for (const legacyRootFile of ['CUCC_index_v3.8.8.html', 'CUCC_index_v3.8.9.html', 'GUCC_WorkSpace_v4.0.3.html']) {
   if (existsSync(resolve(root, legacyRootFile))) errors.push(`根目录不应保留版本化工作台文件：${legacyRootFile}`);
 }
 
 const workspaceSource = readFileSync(workspaceHtml, 'utf8');
+if (!workspaceSource.includes('href="./production-system/"')) {
+  errors.push('视频工作台缺少 AI Video Production System 入口');
+}
+const productionSystemSource = readFileSync(productionSystemHtml, 'utf8');
+for (const expected of [
+  'id="nextActionCard"',
+  'id="lockGrid"',
+  'id="projectList"',
+  'data-action="sync-directory"',
+  'src="./engine.js"',
+  'src="./app.js"'
+]) {
+  if (!productionSystemSource.includes(expected)) errors.push(`AI Video Production System 缺少关键工作流标记：${expected}`);
+}
 const workspaceVersion = workspaceSource.match(/const TEMPLATE_VERSION = "([^"]+)"/)?.[1];
 if (!workspaceVersion) {
   errors.push('视频工作台缺少 TEMPLATE_VERSION');

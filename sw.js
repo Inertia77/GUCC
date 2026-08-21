@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v21";
+const CACHE_VERSION = "gucc-pwa-v24";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -37,8 +37,18 @@ const APP_SHELL = [
   "./apps/video-workspace/",
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/ai-prompts.js",
+  "./apps/video-workspace/production-system/",
+  "./apps/video-workspace/production-system/index.html",
+  "./apps/video-workspace/production-system/styles.css",
+  "./apps/video-workspace/production-system/engine.js",
+  "./apps/video-workspace/production-system/app.js",
   "./apps/cover-generator/",
   "./apps/cover-generator/index.html",
+  "./apps/publishing-console/",
+  "./apps/publishing-console/index.html",
+  "./apps/publishing-console/styles.css",
+  "./apps/publishing-console/platform-rules.js",
+  "./apps/publishing-console/app.js",
   "./reference/resource-library.html",
   "./reference/resource-library.js",
   "./data/imports/gacha-leak-sources-2026-08-07.json"

@@ -598,6 +598,12 @@
       grid-column: span 2;
     }
 
+    .app-card.publisher {
+      --card-accent: var(--amber);
+      grid-column: 1 / -1;
+      min-height: 210px;
+    }
+
     .app-top {
       display: flex;
       justify-content: space-between;
@@ -1448,6 +1454,18 @@
           <p>多比例视频封面生成器，素材统一放在 assets/creative/。</p>
         </div>
         <div class="card-foot"><span>封面工具</span><span>›</span></div>
+      </a>
+
+      <a class="app-card publisher" href="./apps/publishing-console/" aria-label="打开发布与复盘控制台">
+        <div class="app-top">
+          <div class="app-glyph">PUB</div>
+          <span class="tag">发布与复盘</span>
+        </div>
+        <div>
+          <h2>Publish Console</h2>
+          <p>导入 WorkSpace 发布包，自动拆分六个平台字段，完成发布前预检、逐平台执行记录和结构化数据复盘。</p>
+        </div>
+        <div class="card-foot"><span>一键准备 · 人工确认</span><span>›</span></div>
       </a>
     </section>
 

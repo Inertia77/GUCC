@@ -1,5 +1,13 @@
 # GUCC Studio Changelog
 
+## Production System v1
+
+- 新增独立 `production-system/`，不改变 v5.1 原工作台数据结构与兼容入口。
+- 实装 A / B / C / D 四类项目状态机、五类生产锁、门禁检查和唯一 Next Action Engine。
+- 实装标准目录、文件登记、阶段 Prompt Generator、TTS 自然分块、AV Anchor、素材索引、Timed Storyboard、Review Notes 与 Music Library。
+- 支持浏览器自动保存、单项目/全系统 JSON 备份，以及通过 File System Access API 写入和恢复真实项目目录。
+- 新增 Creator Constitution、Codex 编辑规则与 Cases A–D 自动测试。
+
 ## 5.1.0
 
 - 在正式资料整理前新增 `PS 事前学习 / Pre-study` 模块，记录学习目标、材料、关键概念、企划影响与待确认问题。

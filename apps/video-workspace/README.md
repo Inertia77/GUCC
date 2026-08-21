@@ -2,10 +2,13 @@
 
 AI-first 视频内容工作台，用来准备阶段 Prompt、导入 AI 生成的 JSON / Markdown、可视化编辑项目结构，并再次导出继续流转或归档。
 
+需要严格推进正式制作时，使用 [`production-system/`](./production-system/)：它提供 A–D 四类项目状态机、Content / Script / Music / Audio / Picture Lock、唯一下一步、阶段 Prompt、TTS 分块、AV Anchor、素材索引、Timed Storyboard、Review Notes 和真实目录同步。
+
 ## 入口
 
 ```text
 http://localhost:8000/apps/video-workspace/
+http://localhost:8000/apps/video-workspace/production-system/
 ```
 
 页面已接入 GUCC Access Key，并使用 `assets/icons/gucc-icon.svg` 作为 favicon。
@@ -35,7 +38,7 @@ http://localhost:8000/apps/video-workspace/
 1. 从 GUCC Portal 打开 Studio。
 2. 在 AI 区复制“完整策划稿”或其他阶段 Prompt，交给常用 AI 生成内容。
 3. 让 AI 收口为 Workspace JSON，并在工作区导入；也可以导入 Markdown 或打开旧项目。
-4. 在 06 为同一完整视频生成各平台发布包，并回填发布时间、平台和视频链接。
+4. 在 06 为同一完整视频生成各平台发布包，导出 WorkSpace JSON 后交给 Publish Console 预检和执行，并回填发布时间、平台和视频链接。
 5. 在 07 用发布链接和图文素材生成后期扩散包，执行图文、社交帖和社区分发。
 6. 在 08 汇总主视频与扩散结果后复盘。
 7. 阶段性导出 WIP Markdown 和 WIP JSON；完成后导出 DONE Markdown 和 DONE JSON。

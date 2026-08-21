@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071019" />
+  <title>GUCC Publish Console</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg" />
+  <link rel="stylesheet" href="./styles.css?v=1" />
+  <script src="../../assets/access-guard.js" data-root="../../" data-guard="true"></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="../../">
+      <span class="brand-mark">GU</span>
+      <span><strong>Publish Console</strong><small>发布与复盘控制台</small></span>
+    </a>
+    <div class="top-actions">
+      <span id="assistantState" class="assistant-state offline"><i></i>本机助手未连接</span>
+      <span id="saveState" class="save-state">浏览器草稿已就绪</span>
+      <button id="importWorkspaceButton" class="button subtle" type="button">导入 WorkSpace JSON</button>
+      <input id="workspaceFile" type="file" accept=".json,application/json" hidden />
+      <button id="exportProjectButton" class="button subtle" type="button">导出控制台 JSON</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ONE SOURCE · SIX PLATFORMS · TRACEABLE REVIEW</p>
+        <h1>一次准备，逐个平台准确落地。</h1>
+        <p>接收 GUCC WorkSpace 发布包，拆分字段、预检、复制执行、记录链接，再把各阶段数据整理成可直接交给 AI 的复盘包。</p>
+      </div>
+      <div class="hero-status">
+        <div><span>启用平台</span><strong id="heroPlatformCount">6</strong></div>
+        <div><span>预检状态</span><strong id="heroCheckStatus">待检查</strong></div>
+        <div><span>已发布</span><strong id="heroPublishedCount">0 / 6</strong></div>
+      </div>
+    </section>
+
+    <nav class="flow-nav" aria-label="发布流程">
+      <button class="flow-step active" type="button" data-view="prepare"><i>01</i><span>准备发布单<small>素材与平台字段</small></span></button>
+      <button class="flow-step" type="button" data-view="preflight"><i>02</i><span>发布前检查<small>错误、风险与预览</small></span></button>
+      <button class="flow-step" type="button" data-view="execute"><i>03</i><span>逐平台执行<small>复制、打开、登记</small></span></button>
+      <button class="flow-step" type="button" data-view="review"><i>04</i><span>数据复盘<small>快照与 AI 报告</small></span></button>
+    </nav>
+
+    <section id="view-prepare" class="view active">
+      <div class="section-heading">
+        <div><span>01 / Prepare</span><h2>统一发布单</h2></div>
+        <p>公共信息只填一次；真正提交给平台的内容在下方独立保存，不会被公共字段意外覆盖。</p>
+      </div>
+
+      <div class="panel project-panel">
+        <div class="panel-title"><h3>项目与母版素材</h3><span class="pill">本地保存</span></div>
+        <div class="assistant-setup">
+          <div>
+            <strong>本机发布助手</strong>
+            <span>负责真正打开已登录平台、上传视频/封面并填表；最终发布仍由你确认。</span>
+          </div>
+          <div>
+            <button id="checkAssistantButton" class="button subtle" type="button">检查连接</button>
+            <button id="openLoginButton" class="button subtle" type="button">首次登录 / 检查账号</button>
+          </div>
+        </div>
+        <div class="form-grid columns-3">
+          <label class="field span-2"><span>项目标题 <b>*</b></span><input id="projectTitle" data-state="project.title" placeholder="这期视频在项目里的完整名称" /></label>
+          <label class="field"><span>项目简称</span><input id="projectShortName" data-state="project.shortName" placeholder="例：WW资源压力" /></label>
+          <label class="field"><span>游戏 / 主题</span><input id="projectGame" data-state="project.game" placeholder="例：鸣潮" /></label>
+          <label class="field"><span>计划发布时间</span><input id="publishAt" data-state="common.publishAt" type="datetime-local" /></label>
+          <label class="field"><span>时区</span><input id="publishTimezone" data-state="common.timezone" value="Asia/Tokyo" /></label>
+          <label class="asset-drop span-2" id="videoDrop">
+            <input id="videoFile" type="file" accept="video/*,.mkv" hidden />
+            <span class="asset-icon">VID</span>
+            <span><strong>选择完整成片</strong><small id="videoMeta">支持拖放；文件只在本机检查，不会上传到 GUCC</small></span>
+          </label>
+          <label class="asset-drop">
+            <input id="coverFile" type="file" accept="image/*" hidden />
+            <span class="asset-icon cover">IMG</span>
+            <span><strong>选择母版封面</strong><small id="coverMeta">可选；各平台封面仍在发布页确认裁切</small></span>
+          </label>
+          <div class="local-paths span-3">
+            <label class="field"><span>成片本地路径 <b>*</b></span><input id="localVideoPath" data-state="common.videoPath" placeholder="由本机助手选择，供自动上传使用" /></label>
+            <button id="pickVideoPathButton" class="button subtle" type="button">选择成片</button>
+            <label class="field"><span>封面本地路径</span><input id="localCoverPath" data-state="common.coverPath" placeholder="由本机助手选择，供自动上传使用" /></label>
+            <button id="pickCoverPathButton" class="button subtle" type="button">选择封面</button>
+          </div>
+          <label class="field span-3"><span>公共备注</span><textarea id="projectNote" data-state="project.note" placeholder="版权、素材署名、AI 披露、发布日期限制等只写在这里，不会自动塞进简介。"></textarea></label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><h3>平台范围</h3><span id="platformSelectionHint">已启用 6 个平台</span></div>
+        <div id="platformToggles" class="platform-toggles"></div>
+      </div>
+
+      <div id="platformForms" class="platform-forms"></div>
+
+      <div class="sticky-actions">
+        <span>字段会自动保存到当前浏览器；实际视频文件刷新后需要重新选择。</span>
+        <button id="goPreflightButton" class="button primary" type="button">保存并开始预检 →</button>
+      </div>
+    </section>
+
+    <section id="view-preflight" class="view">
+      <div class="section-heading">
+        <div><span>02 / Preflight</span><h2>发布前检查</h2></div>
+        <p>硬错误必须修复；保守线和风险词只提醒，不冒充平台最终审核结论。</p>
+      </div>
+
+      <div class="check-overview">
+        <div class="score-card"><span>检查结果</span><strong id="checkScore">—</strong><small id="checkScoreNote">点击运行检查</small></div>
+        <div class="check-actions">
+          <button id="runChecksButton" class="button primary" type="button">运行全部检查</button>
+          <button id="downloadPackageButton" class="button subtle" type="button">下载发布包 Markdown</button>
+        </div>
+      </div>
+
+      <div id="checkResults" class="check-results empty-state">尚未运行检查。</div>
+
+      <div class="panel preview-panel">
+        <div class="panel-title"><h3>最终提交预览</h3><span>这里显示的是平台独立字段</span></div>
+        <div id="platformPreviews" class="preview-grid"></div>
+      </div>
+
+      <div class="sticky-actions">
+        <button class="button subtle" type="button" data-go="prepare">← 返回修改</button>
+        <button id="goExecuteButton" class="button primary" type="button">检查通过，生成执行队列 →</button>
+      </div>
+    </section>
+
+    <section id="view-execute" class="view">
+      <div class="section-heading">
+        <div><span>03 / Execute</span><h2>逐平台执行</h2></div>
+        <p>先复制整个平台发布包，再打开官方发布页；上传完成后登记作品链接和状态，避免重复投稿。</p>
+      </div>
+
+      <div class="one-click-panel">
+        <div>
+          <span class="eyebrow">ONE CLICK PREPARE</span>
+          <h3>自动上传并填好全部平台</h3>
+          <p>使用专用登录浏览器逐个平台选择成片、尝试上传封面、填写元数据，最后停在人工检查阶段。</p>
+        </div>
+        <button id="oneClickPrepareButton" class="button primary one-click-button" type="button">一键准备全部平台</button>
+      </div>
+      <div id="automationJob" class="automation-job empty-state">尚未启动自动准备任务。</div>
+
+      <div class="execution-banner">
+        <div><strong>安全边界</strong><span>控制台不会保存账号密码，也不会在你看不见的情况下点击公开发布。</span></div>
+        <button id="openPublishingBatchHelp" class="button subtle" type="button">批量打开方式</button>
+      </div>
+
+      <div id="executionList" class="execution-list"></div>
+
+      <div class="sticky-actions">
+        <button class="button subtle" type="button" data-go="preflight">← 返回检查</button>
+        <button class="button primary" type="button" data-go="review">进入数据复盘 →</button>
+      </div>
+    </section>
+
+    <section id="view-review" class="view">
+      <div class="section-heading">
+        <div><span>04 / Review</span><h2>数据快照与 AI 复盘</h2></div>
+        <p>按发布后 1 / 3 / 7 / 30 天记录结构化数据。不同平台保留原始指标，再计算可比较的互动率。</p>
+      </div>
+
+      <div class="review-layout">
+        <form id="snapshotForm" class="panel snapshot-form">
+          <div class="panel-title"><h3>添加数据快照</h3><span>数字字段可留空</span></div>
+          <div class="form-grid columns-2">
+            <label class="field"><span>平台</span><select id="snapshotPlatform" required></select></label>
+            <label class="field"><span>采集时间</span><input id="snapshotAt" type="datetime-local" required /></label>
+            <label class="field"><span>曝光量</span><input id="metricImpressions" type="number" min="0" step="1" /></label>
+            <label class="field"><span>播放量 <b>*</b></span><input id="metricViews" type="number" min="0" step="1" required /></label>
+            <label class="field"><span>平均观看时长（秒）</span><input id="metricAvgWatch" type="number" min="0" step="0.1" /></label>
+            <label class="field"><span>完播率（%）</span><input id="metricCompletion" type="number" min="0" max="100" step="0.01" /></label>
+            <label class="field"><span>点赞</span><input id="metricLikes" type="number" min="0" step="1" /></label>
+            <label class="field"><span>评论</span><input id="metricComments" type="number" min="0" step="1" /></label>
+            <label class="field"><span>分享</span><input id="metricShares" type="number" min="0" step="1" /></label>
+            <label class="field"><span>收藏</span><input id="metricSaves" type="number" min="0" step="1" /></label>
+            <label class="field"><span>新增关注</span><input id="metricFollowers" type="number" min="0" step="1" /></label>
+            <label class="field"><span>数据窗口</span><select id="snapshotWindow"><option>T+1 天</option><option>T+3 天</option><option>T+7 天</option><option>T+30 天</option><option>自定义</option></select></label>
+            <label class="field span-2"><span>观察备注</span><textarea id="snapshotNote" placeholder="流量来源、留存掉点、平台提示、同期事件等。"></textarea></label>
+          </div>
+          <button class="button primary full" type="submit">保存快照</button>
+        </form>
+
+        <div class="panel review-output">
+          <div class="panel-title"><h3>复盘输出</h3><span id="snapshotCount">0 条快照</span></div>
+          <div class="review-actions">
+            <button id="openAnalyticsButton" class="button subtle" type="button">打开所选平台数据页</button>
+            <button id="copyReviewPromptButton" class="button primary" type="button">复制 AI 复盘 Prompt</button>
+            <button id="downloadReviewButton" class="button subtle" type="button">下载复盘 Markdown</button>
+          </div>
+          <div class="metric-note">互动率 =（点赞 + 评论 + 分享 + 收藏）÷ 播放量。平台指标口径不同，报告会保留原始字段，不把它们伪装成完全相同。</div>
+          <div id="reviewSummary" class="review-summary empty-state">保存第一条快照后，这里会出现汇总。</div>
+        </div>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="panel-title"><h3>历史快照</h3><button id="clearSnapshotsButton" class="text-button danger" type="button">清空全部快照</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>平台 / 窗口</th><th>采集时间</th><th>曝光</th><th>播放</th><th>互动率</th><th>完播率</th><th>新增关注</th><th></th></tr></thead>
+            <tbody id="snapshotRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="./platform-rules.js?v=1"></script>
+  <script src="./app.js?v=1"></script>
+</body>
+</html>

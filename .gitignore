@@ -7,5 +7,6 @@ downloads/
 .DS_Store
 Thumbs.db
 node_modules/
+.pnpm-store/
 supabase/.temp/
 GameUp/

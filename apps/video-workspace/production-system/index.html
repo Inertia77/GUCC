@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070a10">
+  <title>AI Video Production System｜GUCC</title>
+  <link rel="stylesheet" href="../../../assets/gucc-theme.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="gucc-enhanced">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">GUCC · AUDIO-LOCKED PIPELINE</p>
+      <h1>AI Video Production System <span>v1</span></h1>
+      <p class="subtitle">状态机负责秩序，锁负责防错，Prompt Generator 负责把唯一下一步交给正确的 AI。</p>
+    </div>
+    <nav class="top-actions" aria-label="全局操作">
+      <a class="button ghost" href="../">返回 Studio</a>
+      <button class="button ghost" id="importSystemButton" type="button">导入 JSON</button>
+      <button class="button ghost" id="exportSystemButton" type="button">备份系统</button>
+      <button class="button primary" id="newProjectButton" type="button">＋ 新建项目</button>
+      <input id="systemFileInput" type="file" accept="application/json,.json" hidden>
+    </nav>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-head"><strong>项目</strong><span id="projectCount">0</span></div>
+      <div id="projectList" class="project-list"></div>
+      <div class="side-note">
+        <strong>唯一规则</strong>
+        <p>先锁音频，再做时间轴。系统不会让缺文件或未 Lock 的项目误进下一阶段。</p>
+      </div>
+    </aside>
+
+    <main id="workspace" class="workspace">
+      <section id="emptyState" class="empty-state">
+        <span class="empty-icon">▶</span>
+        <h2>建立第一个生产项目</h2>
+        <p>A / C 是口播攻略线，B 是 Suno 视频线，D 是独立音乐发行线。</p>
+        <button class="button primary" type="button" data-action="new-project">新建项目</button>
+      </section>
+
+      <div id="projectWorkspace" hidden>
+        <section class="project-hero panel">
+          <div>
+            <div class="type-row"><span id="projectTypeBadge" class="type-badge"></span><span id="saveState" class="save-state">已自动保存</span></div>
+            <h2 id="projectTitle"></h2>
+            <p id="projectMeta" class="muted"></p>
+          </div>
+          <div class="hero-actions">
+            <button class="button ghost" type="button" data-action="edit-project">编辑资料</button>
+            <button class="button ghost" type="button" data-action="export-project">导出项目</button>
+            <button class="button ghost" type="button" data-action="import-directory">读取项目目录</button>
+            <button class="button primary" type="button" data-action="sync-directory">同步到目录</button>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label"><span id="currentStateLabel"></span><strong id="progressText"></strong></div>
+            <div class="progress"><span id="progressBar"></span></div>
+            <div class="state-controls">
+              <button class="button tiny ghost" type="button" data-action="state-back">← 回退一阶段</button>
+              <button class="button tiny primary" type="button" data-action="state-next">进入下一阶段 →</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="next-action panel accent-panel" id="nextActionCard"></section>
+
+        <section class="locks panel">
+          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>Lock 不是完成按钮，是不可随意漂移的版本承诺。</p></div>
+          <div id="lockGrid" class="lock-grid"></div>
+        </section>
+
+        <nav id="tabs" class="tabs" aria-label="项目模块"></nav>
+        <div id="tabContent"></div>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="projectDialog">
+    <form id="projectForm" method="dialog" class="dialog-form">
+      <header><div><p class="eyebrow">PROJECT MANIFEST</p><h2 id="projectDialogTitle">新建项目</h2></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></header>
+      <input name="projectId" type="hidden">
+      <label>项目名称<input name="name" required placeholder="例如：芙宁娜全方位攻略"></label>
+      <div class="form-grid">
+        <label>游戏<input name="game" placeholder="Genshin Impact"></label>
+        <label>目标发布日期<input name="targetPublishDate" type="date"></label>
+      </div>
+      <label>核心主题<input name="topic" placeholder="这个视频必须解决什么问题？"></label>
+      <label>项目类型<select name="projectType" id="projectTypeSelect"></select></label>
+      <label>备注<textarea name="notes" rows="3" placeholder="观众、边界、版本等"></textarea></label>
+      <footer><button class="button ghost" value="cancel">取消</button><button class="button primary" value="default" type="submit">保存项目</button></footer>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="../../../assets/access-guard.js"></script>
+  <script src="./engine.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

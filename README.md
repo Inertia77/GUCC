@@ -52,7 +52,9 @@ Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 |---|---|---|
 | GameUp Command Center | `apps/command-center/` | 查询和维护角色、配队、版本、资源链接 |
 | GUCC WorkSpace | `apps/video-workspace/` | 视频项目模板、WIP/DONE Markdown 与 JSON |
+| AI Video Production System | `apps/video-workspace/production-system/` | Audio-Locked 状态机、阶段 Prompt、素材、Storyboard 与 Review |
 | Cover Generator | `apps/cover-generator/` | 多比例视频封面生成 |
+| Publish Console | `apps/publishing-console/` | 分平台发布单、预检、执行记录与数据复盘 |
 | AI Prompt Library | `reference/ai-prompts.html` | 公告整理、兑换码、前瞻、SQL、剧情资料维护 Prompt |
 | Story Library | `reference/story-library.html` | 网页阅读剧情资料库 Markdown |
 | Resource Library | `reference/resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
@@ -64,8 +66,9 @@ Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 GUCC/
 ├─ apps/                         # 可直接打开的应用
 │  ├─ command-center/             # Supabase 数据管理前端
-│  ├─ video-workspace/            # 视频项目工作台
-│  └─ cover-generator/            # 封面生成器
+│  ├─ video-workspace/            # 视频项目工作台（含 production-system）
+│  ├─ cover-generator/            # 封面生成器
+│  └─ publishing-console/         # 发布与复盘控制台
 ├─ assets/                        # 图标、素材、封面背景、PSD 模板、门禁脚本
 ├─ automation/                    # 本地辅助批处理和资料工作流
 ├─ data/                          # 数据库结构、导入 CSV、备份说明
@@ -97,11 +100,21 @@ EDGE_FUNCTION_NAME
 
 不要把 `service_role`、数据库密码、JWT secret 放进仓库。部署细节见 [docs/supabase-setup.html](docs/supabase-setup.html)。
 
+## 视频发布与复盘
+
+推荐流程是：WorkSpace 导出项目 JSON → Publish Console 自动拆分六个平台发布包并预检 → 本机助手一键上传视频、封面并填表 → 在各平台页面最终检查和发布 → 定时登记数据快照并导出 AI 复盘包。
+
+首次运行 `npm install`，以后双击 `scripts/start-publishing-console.bat` 即可同时启动控制台和本机发布助手。
+
+完整操作说明见 [apps/publishing-console/README.md](apps/publishing-console/README.md)。
+
 ## 常用命令
 
 ```powershell
 python -m http.server 8000
 node scripts/check-project.mjs
+npm test
+npm run publisher:assistant
 .\scripts\test-edge-function.ps1
 ```
 

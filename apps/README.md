@@ -6,7 +6,9 @@
 |---|---|---|
 | `command-center/` | `index.html` | Supabase 数据管理前端 |
 | `video-workspace/` | `index.html` | 视频项目工作台 |
+| `video-workspace/production-system/` | `index.html` | Audio-Locked AI 视频生产状态机、素材与复盘工作台 |
 | `cover-generator/` | `index.html` | 多比例封面生成器 |
+| `publishing-console/` | `index.html` | 六平台一键上传填表、最终检查、执行记录与数据复盘 |
 | `gameup-command-center/` | `index.html` | 旧入口兼容跳转到 `command-center/` |
 
 本地打开：

@@ -7,7 +7,8 @@
   },
   "scripts": {
     "check": "node scripts/check-project.mjs",
-    "test": "node scripts/check-project.mjs"
+    "test": "node scripts/check-project.mjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs",
+    "publisher:assistant": "node scripts/publisher-assistant/server.cjs"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/Inertia77/GUCC#readme",
   "devDependencies": {
+    "playwright-core": "1.62.1",
     "supabase": "^2.108.0"
   }
 }

@@ -23,6 +23,7 @@ import {
   withBusy
 } from '../ui-v3.js';
 import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
+import { renderFixedFieldOptions } from '../fixed-field-options-v1.js';
 import {
   bindClearFilters,
   bindGameFilter,
@@ -159,8 +160,12 @@ function openEditor(data = {}) {
         <label>职业 <input name="profession" value="${escapeHtml(data.profession || '')}" /></label>
         <label>性别 <input name="sex" value="${escapeHtml(data.sex || '')}" /></label>
         <label>稀有度 <input name="rarity" value="${escapeHtml(data.rarity || '')}" /></label>
-        <label>研究状态 <input name="research_status" value="${escapeHtml(data.research_status || '')}" /></label>
-        <label>养成状态 <input name="build_status" value="${escapeHtml(data.build_status || '')}" /></label>
+        <label>研究状态
+          <select name="research_status" required>${renderFixedFieldOptions('characterResearchStatus', data.research_status)}</select>
+        </label>
+        <label>养成状态
+          <select name="build_status" required>${renderFixedFieldOptions('characterBuildStatus', data.build_status)}</select>
+        </label>
         <label>LIKE 度 <input name="like_level" value="${escapeHtml(data.like_level || '')}" /></label>
         <label>定位 <input name="role_type" value="${escapeHtml(data.role_type || '')}" /></label>
         <label>战力度 <input name="power_rank" value="${escapeHtml(data.power_rank || '')}" /></label>

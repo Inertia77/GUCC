@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v47";
+const CACHE_VERSION = "gucc-pwa-v49";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -49,6 +49,7 @@ const APP_SHELL = [
   "./apps/command-center/src/ux-state.js",
   "./apps/command-center/src/ux-state-v1.js",
   "./apps/command-center/src/search-filters-v3.js",
+  "./apps/command-center/src/fixed-field-options-v1.js",
   "./apps/command-center/src/features/characters.js",
   "./apps/command-center/src/features/characters-v2.js",
   "./apps/command-center/src/features/characters-v3.js",
@@ -112,6 +113,11 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (url.pathname.includes("/apps/command-center/src/")) {
     event.respondWith(networkFirst(request));
     return;
   }

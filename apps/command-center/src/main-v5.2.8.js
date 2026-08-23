@@ -7,6 +7,7 @@ import { initResources } from './features/resources-v2.js';
 import { initVersions, searchVersions } from './features/versions-v3.js';
 import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui-v3.js';
 import { getSavedTab, saveTab } from './ux-state-v1.js';
+import { hydrateFixedFieldFilters } from './fixed-field-options-v1.js';
 
 const loadedTabs = new Set();
 let featuresReady = false;
@@ -144,6 +145,7 @@ function initDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  hydrateFixedFieldFilters();
   $('#drawerBackdrop')?.addEventListener('click', closeActiveDrawer);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeActiveDrawer();

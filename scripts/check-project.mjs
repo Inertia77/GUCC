@@ -253,6 +253,21 @@ for (const nonVideoHost of ['mp.weixin.qq.com', 'weibo.com', 'x.com/compose/post
 }
 
 const appSources = [readFileSync(appHtml, 'utf8'), ...appScripts.map((file) => readFileSync(file, 'utf8'))];
+const characterFeatureSource = readFileSync(resolve(appSource, 'features', 'characters-v3.js'), 'utf8');
+const partyFeatureSource = readFileSync(resolve(appSource, 'features', 'parties-v3.js'), 'utf8');
+for (const [source, field] of [
+  [characterFeatureSource, 'research_status'],
+  [characterFeatureSource, 'build_status'],
+  [partyFeatureSource, 'status'],
+  [partyFeatureSource, 'hold_status']
+]) {
+  if (!source.includes(`<select name="${field}" required>`)) {
+    errors.push(`固定状态字段 ${field} 必须在编辑器中使用必选下拉框`);
+  }
+  if (source.includes(`<input name="${field}"`)) {
+    errors.push(`固定状态字段 ${field} 不应在编辑器中使用自由输入框`);
+  }
+}
 const declaredIds = new Set();
 const duplicateHtmlIds = new Set();
 for (const match of appSources[0].matchAll(/\bid=["']([^"']+)["']/g)) {

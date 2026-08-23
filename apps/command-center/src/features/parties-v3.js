@@ -23,6 +23,7 @@ import {
   withBusy
 } from '../ui-v3.js';
 import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
+import { renderFixedFieldOptions } from '../fixed-field-options-v1.js';
 import {
   bindClearFilters,
   bindGameFilter,
@@ -173,8 +174,12 @@ function openEditor(data = {}) {
         <label>游戏 code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" /></label>
         <label class="wide">简要描述 <input name="summary" required value="${escapeHtml(data.summary || '')}" /></label>
         <label>类型 <input name="party_type" value="${escapeHtml(data.party_type || '')}" /></label>
-        <label>状态 <input name="status" value="${escapeHtml(data.status || '')}" /></label>
-        <label>持有状态 <input name="hold_status" value="${escapeHtml(data.hold_status || '')}" /></label>
+        <label>状态
+          <select name="status" required>${renderFixedFieldOptions('partyStatus', data.status)}</select>
+        </label>
+        <label>持有状态
+          <select name="hold_status" required>${renderFixedFieldOptions('partyHoldStatus', data.hold_status)}</select>
+        </label>
         ${[0, 1, 2, 3].map((index) => `<label>成员 ${index + 1} <input name="m${index + 1}" value="${escapeHtml(members[index]?.name || members[index]?.member_name_raw || '')}" /></label>`).join('')}
         <label class="wide">
           说明正文

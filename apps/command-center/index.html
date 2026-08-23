@@ -84,23 +84,14 @@
                 </select>
                 <input id="charGameCustom" aria-label="自定义游戏关键字" placeholder="输入游戏名称 / 代码" hidden disabled />
               </div>
-              <select id="charResearchStatus" class="filter-select" aria-label="研究状态">
-                <option value="">全部研究状态</option>
-                <option value="待研究">待研究</option>
-                <option value="查攻略">查攻略</option>
-                <option value="OK">OK</option>
-              </select>
-              <select id="charBuildStatus" class="filter-select" aria-label="养成状态">
-                <option value="">全部养成状态</option>
-                <option value="待养成">待养成</option>
-                <option value="DONE">DONE</option>
-              </select>
+              <select id="charResearchStatus" class="filter-select" aria-label="研究状态" data-fixed-field="characterResearchStatus" data-empty-label="全部研究状态"></select>
+              <select id="charBuildStatus" class="filter-select" aria-label="养成状态" data-fixed-field="characterBuildStatus" data-empty-label="全部养成状态"></select>
               <button id="searchCharBtn" type="button">搜索角色</button>
               <button id="clearCharFilters" type="button" class="secondary filter-clear">清空筛选</button>
               <button id="newCharBtn" type="button" class="secondary">新增角色</button>
               <aside class="status-convention-note filter-guidance" aria-label="角色研究与养成状态记录规则">
                 <strong>状态记录规则</strong>
-                <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE」。其他信息写入「研究/养成备注」。</span>
+                <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE / NOT」，其中「NOT」表示不养成。其他信息写入「研究/养成备注」。</span>
               </aside>
               <div id="characterResultControls" class="result-view-controls" hidden>
                 <span>结果视图</span>
@@ -131,16 +122,8 @@
                 </select>
                 <input id="partyGameCustom" aria-label="自定义游戏关键字" placeholder="输入游戏名称 / 代码" hidden disabled />
               </div>
-              <select id="partyStatus" class="filter-select" aria-label="阵容状态">
-                <option value="">全部阵容状态</option>
-                <option value="待研究">待研究</option>
-                <option value="OK">OK</option>
-              </select>
-              <select id="partyHoldStatus" class="filter-select" aria-label="持有状态">
-                <option value="">全部持有状态</option>
-                <option value="YES">YES</option>
-                <option value="NO">NO</option>
-              </select>
+              <select id="partyStatus" class="filter-select" aria-label="阵容状态" data-fixed-field="partyStatus" data-empty-label="全部阵容状态"></select>
+              <select id="partyHoldStatus" class="filter-select" aria-label="持有状态" data-fixed-field="partyHoldStatus" data-empty-label="全部持有状态"></select>
               <button id="searchPartyBtn" type="button">搜索阵容</button>
               <button id="clearPartyFilters" type="button" class="secondary filter-clear">清空筛选</button>
               <button id="newPartyBtn" type="button" class="secondary">新增阵容</button>

@@ -27,14 +27,14 @@ const APP_SHELL = [
   "./apps/command-center/",
   "./apps/command-center/index.html",
   "./apps/command-center/styles/app.css",
-  "./apps/command-center/styles/interactions-v1.css",
-  "./apps/command-center/styles/navigation-v1.css",
-  "./apps/command-center/styles/content-v6.css",
-  "./apps/command-center/styles/search-filters-v5.css",
-  "./apps/command-center/styles/editor-drawer-v1.css",
-  "./apps/command-center/styles/mobile-layout-v1.css",
-  "./apps/command-center/styles/expanded-details-v1.css",
-  "./apps/command-center/styles/interaction-contrast-v1.css",
+  "./apps/command-center/styles/interactions.css",
+  "./apps/command-center/styles/navigation.css",
+  "./apps/command-center/styles/content.css",
+  "./apps/command-center/styles/search-filters.css",
+  "./apps/command-center/styles/editor-drawer.css",
+  "./apps/command-center/styles/mobile-layout.css",
+  "./apps/command-center/styles/expanded-details.css",
+  "./apps/command-center/styles/interaction-contrast.css",
   "./apps/command-center/src/main.js",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
@@ -65,7 +65,7 @@ const APP_SHELL = [
   "./apps/publishing-console/platform-rules.js",
   "./apps/publishing-console/app.js",
   "./reference/resource-library.html",
-  "./reference/resource-library-v5.js"
+  "./reference/resource-library.js"
 ];
 
 self.addEventListener("install", (event) => {

@@ -1,6 +1,5 @@
-const CACHE_VERSION = "gucc-pwa-v50";
-const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const STATIC_CACHE = "gucc-static";
+const RUNTIME_CACHE = "gucc-runtime";
 
 const APP_SHELL = [
   "./",
@@ -36,31 +35,20 @@ const APP_SHELL = [
   "./apps/command-center/styles/mobile-layout-v1.css",
   "./apps/command-center/styles/expanded-details-v1.css",
   "./apps/command-center/styles/interaction-contrast-v1.css",
-  "./apps/command-center/src/main-v5.2.6.js",
-  "./apps/command-center/src/main-v5.2.7.js",
-  "./apps/command-center/src/main-v5.2.8.js",
+  "./apps/command-center/src/main.js",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
   "./apps/command-center/src/config-state.js",
   "./apps/command-center/src/config.js",
   "./apps/command-center/src/ui.js",
-  "./apps/command-center/src/ui-v2.js",
-  "./apps/command-center/src/ui-v3.js",
   "./apps/command-center/src/ux-state.js",
-  "./apps/command-center/src/ux-state-v1.js",
-  "./apps/command-center/src/search-filters-v3.js",
-  "./apps/command-center/src/fixed-field-options-v1.js",
+  "./apps/command-center/src/search-filters.js",
+  "./apps/command-center/src/fixed-field-options.js",
+  "./apps/command-center/src/record-guards.mjs",
   "./apps/command-center/src/features/characters.js",
-  "./apps/command-center/src/features/characters-v2.js",
-  "./apps/command-center/src/features/characters-v3.js",
   "./apps/command-center/src/features/parties.js",
-  "./apps/command-center/src/features/parties-v2.js",
-  "./apps/command-center/src/features/parties-v3.js",
   "./apps/command-center/src/features/resources.js",
-  "./apps/command-center/src/features/resources-v2.js",
   "./apps/command-center/src/features/versions.js",
-  "./apps/command-center/src/features/versions-v2.js",
-  "./apps/command-center/src/features/versions-v3.js",
   "./apps/video-workspace/",
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/ai-prompts.js",
@@ -77,8 +65,7 @@ const APP_SHELL = [
   "./apps/publishing-console/platform-rules.js",
   "./apps/publishing-console/app.js",
   "./reference/resource-library.html",
-  "./reference/resource-library-v5.js",
-  "./data/imports/gacha-leak-sources-2026-08-07.json"
+  "./reference/resource-library-v5.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -94,7 +81,10 @@ self.addEventListener("activate", (event) => {
     caches.keys()
       .then((keys) => Promise.all(
         keys
-          .filter((key) => key.startsWith("gucc-pwa-") && ![STATIC_CACHE, RUNTIME_CACHE].includes(key))
+          .filter((key) => (
+            (key.startsWith("gucc-pwa-") || key.startsWith("gucc-"))
+            && ![STATIC_CACHE, RUNTIME_CACHE].includes(key)
+          ))
           .map((key) => caches.delete(key))
       ))
       .then(() => self.clients.claim())
@@ -117,17 +107,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.pathname.includes("/apps/command-center/src/")) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-
-  if (
-    url.pathname.includes("/reference/resource-library")
-    || url.pathname.endsWith("/assets/resource-library-v5.css")
-    || url.pathname.endsWith("/assets/resource-library-compact-v1.css")
-    || url.pathname.endsWith("/data/imports/gacha-leak-sources-2026-08-07.json")
-  ) {
+  if (["script", "style"].includes(request.destination) || url.pathname.endsWith(".json")) {
     event.respondWith(networkFirst(request));
     return;
   }
@@ -143,15 +123,16 @@ async function networkFirst(request) {
     return response;
   } catch {
     return (
-      await cache.match(request, { ignoreSearch: true })
-      || await caches.match(request, { ignoreSearch: true })
-      || await caches.match("./offline.html")
+      await cache.match(request)
+      || await caches.match(request)
+      || (request.mode === "navigate" ? await caches.match("./offline.html") : null)
+      || new Response("", { status: 503, statusText: "Offline" })
     );
   }
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request, { ignoreSearch: true });
+  const cached = await caches.match(request);
   if (cached) return cached;
 
   try {

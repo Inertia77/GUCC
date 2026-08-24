@@ -1,41 +1,41 @@
-# 鸣潮剧情资料库
+# 鸣潮｜剧情资料库
 
-> 英文名：Wuthering Waves  
-> 用途：今州、黑海岸、黎那汐塔、角色线、版本剧情和视频选题参考  
-> 整理日期：2026-06-27
+> 校对日期：2026-08-24  
+> 当前剧情状态：3.6「蜃云灯影，凡尘剑心」已于2026-08-20实装  
+> 当前叙事位置：第四章梦州/玄方主线进行中；机关失灵、高阶存在限制与景燃幕间后的新风波尚待后续版本。
 
-这个分册用于整理《鸣潮》的剧情与世界观资料。重点放在灾后世界、残象、今州线、黑海岸线、黎那汐塔线，以及适合视频化的角色动机与伏笔。
+## 这套资料怎么读
 
-## 快速入口
+- `00-overview.md`：先建立世界规则、主角身份和全局主冲突。
+- `01-timeline.md`：把“世界历史”与“玩家经历”分开，避免把回忆场景误当现在线。
+- `02-factions.md`：看组织目标、资源、盟敌与版本变化。
+- `03-characters.md`：看人物欲望、关键选择、关系与当前状态。
+- `04-mysteries.md`：专门维护未解问题、证据与反证。
+- `05-video-hooks.md`：把资料库转成可做视频的研究问题。
+- `versions/`：逐版本主线，尽量按事件因果详细记录。
 
-| 文件 | 内容 |
-|---|---|
-| `00-overview.md` | 世界观总览、核心概念和阅读顺序 |
-| `01-timeline.md` | 主线时间线与版本事件节点 |
-| `02-factions.md` | 阵营、组织、地区势力和关系 |
-| `03-characters.md` | 角色关系、动机与剧情功能 |
-| `04-mysteries.md` | 伏笔、谜团和后续预测点 |
-| `05-video-hooks.md` | 视频标题、脚本角度和短视频钩子 |
+## 版本章节
 
-## 版本文档
+- `1.0-jinzhou-awakening.md`
+- `1.1-mt-firmament.md`
+- `1.2-festival-and-afterglow.md`
+- `1.3-black-shores.md`
+- `1.4-somnoire-and-transition.md`
+- `2.0-rinascita-opening.md`
+- `2.1-2.3-rinascita-middle.md`
+- `2.4-2.6-rinascita-climax.md`
+- `2.7-rinascita-finale.md`
+- `2.8-city-set-in-amber.md`
+- `3.0-we-who-see-the-stars.md`
+- `3.1-for-you-who-walk-in-snow.md`
+- `3.2-resolution-to-illuminate-the-shadows.md`
+- `3.3-echoes-from-stars-end.md`
+- `3.4-the-dream-not-dreamed.md`
+- `3.5-blade-of-past-resounds.md`
+- `3.6-lamplight-in-mirage-swords-resolve.md`
 
-| 文件 | 主题 |
-|---|---|
-| `versions/1.0-jinzhou-awakening.md` | 1.0 今州开篇与漂泊者苏醒 |
-| `versions/1.1-mt-firmament.md` | 1.1 乘霄山与今汐线 |
-| `versions/1.2-festival-and-afterglow.md` | 1.2 追月节与今州日常过渡 |
-| `versions/1.3-black-shores.md` | 1.3 黑海岸与守岸人相关线索 |
-| `versions/1.4-somnoire-and-transition.md` | 1.4 梦境与版本过渡 |
-| `versions/2.0-rinascita-opening.md` | 2.0 黎那汐塔开篇 |
-| `versions/2.1-2.3-rinascita-middle.md` | 2.1-2.3 黎那汐塔中段 |
-| `versions/2.4-2.6-rinascita-climax.md` | 2.4-2.6 黎那汐塔高潮段 |
-| `versions/2.7-rinascita-finale.md` | 2.7 黎那汐塔收束 |
-| `versions/2.8-city-set-in-amber.md` | 2.8 后续资料占位 |
+## 资料可信度
 
-## 使用建议
+一手优先：游戏内潮汐任务、库洛官方版本说明；版本/任务Wiki用于确认任务顺序和英文名。当前3.6刚实装，社区理论只可用于提出问题，不直接作为结论。
 
-做主线梳理时从 `01-timeline.md` 和 `versions/` 进入；做人物或阵营分析时看 `02-factions.md` 与 `03-characters.md`；做预测向内容时把 `04-mysteries.md` 中的线索拆成可验证问题。
-
-## 维护规则
-
-版本文档记录当期事件，长期伏笔沉淀到 `04-mysteries.md`。视频标题和脚本灵感集中放到 `05-video-hooks.md`，避免散落在版本笔记里找不到。
+任何“角色自己说的话”都不自动等于客观事实；任何“预告里出现的画面”也不自动等于已经发生的剧情。资料库优先保留不确定性。

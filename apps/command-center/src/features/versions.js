@@ -19,14 +19,15 @@ import {
   restoreListContext,
   showToast,
   withBusy
-} from '../ui-v3.js';
-import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
+} from '../ui.js';
+import { bindPersistentFilters, persistFilters } from '../ux-state.js';
+import { assertNewVersionUnique } from '../record-guards.mjs';
 import {
   bindClearFilters,
   bindGameFilter,
   bindSelectAutoSearch,
   readGameFilter
-} from '../search-filters-v3.js';
+} from '../search-filters.js';
 
 let versionRows = new Map();
 const FILTERS = {
@@ -268,7 +269,7 @@ function openEditor(data = {}) {
       try {
         const listContext = captureListContext($('#versionResults'));
         const form = readForm(event.currentTarget);
-        const result = await API.saveVersion({
+        const payload = {
           id: form.id || null,
           game_code: form.game_code,
           version_no: form.version_no,
@@ -276,7 +277,18 @@ function openEditor(data = {}) {
           start_date: form.start_date,
           note: form.note,
           banners: collectBanners(event.currentTarget)
-        });
+        };
+
+        if (!payload.id) {
+          const existing = await API.searchVersions({
+            keyword: payload.version_no,
+            game_code: payload.game_code,
+            limit: 200
+          });
+          assertNewVersionUnique(normalizeRows(existing), payload);
+        }
+
+        const result = await API.saveVersion(payload);
         await searchVersions({ visibleCount: listContext.visibleCount, revealId: result.id });
         closeDrawer(editor, { restoreFocus: false });
         restoreListContext($('#versionResults'), listContext, { focusId: result.id, highlight: true });

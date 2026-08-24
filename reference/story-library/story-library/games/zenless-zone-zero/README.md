@@ -1,39 +1,47 @@
-# 绝区零剧情资料库
+# 绝区零｜剧情资料库
 
-> 英文名：Zenless Zone Zero  
-> 用途：新艾利都、空洞灾害、阵营关系、角色线与视频选题参考  
-> 整理日期：2026-06-27
+> 校对日期：2026-08-25  
+> 当前剧情状态：3.1「漫长的告别」已实装；3.2截至2026-08-25尚未实装  
+> 当前叙事位置：第三季罗斯凯利法 / 天之算枢线进行中；罗塞塔数据、虚狩遗产、法厄同旧身份继续推进。
 
-这个分册用于整理《绝区零》的主线与角色资料。重点放在新艾利都、空洞机制、法厄同身份、各阵营行动线，以及适合游戏 UP 选题的剧情切入点。
+## 这套资料怎么读
 
-## 快速入口
+- `00-overview.md`：先建立世界规则、主角身份和全局主冲突。
+- `01-timeline.md`：把“世界历史”与“玩家经历”分开，避免把回忆场景误当现在线。
+- `02-factions.md`：看组织目标、资源、盟敌与版本变化。
+- `03-characters.md`：看人物欲望、关键选择、关系与当前状态。
+- `04-mysteries.md`：专门维护未解问题、证据与反证。
+- `05-video-hooks.md`：把资料库转成可做视频的研究问题。
+- `versions/`：逐版本主线，尽量按事件因果详细记录。
 
-| 文件 | 内容 |
-|---|---|
-| `00-overview.md` | 世界观总览、核心概念和阅读顺序 |
-| `01-timeline.md` | 版本时间线与主线推进 |
-| `02-factions.md` | 阵营、公司、治安体系与民间组织 |
-| `03-characters.md` | 角色关系、人物动机和剧情功能 |
-| `04-mysteries.md` | 伏笔、未解问题和后续猜想 |
-| `05-video-hooks.md` | 视频标题、脚本角度和短视频钩子 |
+## 版本章节
 
-## 版本文档
+- `0-prologue-phaethon.md`
+- `1.0-prologue-business-strangeness-justice.md`
+- `1.0-ch1-cats-lost-and-found.md`
+- `1.0-ch2-belobog-call-from-hollow.md`
+- `1.0-ch3-victoria-midnight-pursuit.md`
+- `1.1-undercover-rnb.md`
+- `1.2-tour-de-inferno.md`
+- `1.3-virtual-revenge.md`
+- `1.4-starfall-scattered.md`
+- `1.5-astra-nomical-moment.md`
+- `1.6-bury-tears-past-upper.md`
+- `1.7-bury-tears-past-lower.md`
+- `2.0-clouds-return-janus-quarter.md`
+- `2.1-delayed-wave.md`
+- `2.2-do-not-go-gentle.md`
+- `2.3-can-you-remember-dream.md`
+- `2.4-approaching-abyss.md`
+- `2.5-faint-light-guides-lamp.md`
+- `2.6-old-dream-encore.md`
+- `2.7-new-eridu-sunset-upper.md`
+- `2.8-new-eridu-sunset-lower.md`
+- `3.0-roscaelifer-confession-of-a-sleepwalker.md`
+- `3.1-long-goodbye.md`
 
-| 文件 | 主题 |
-|---|---|
-| `versions/0-prologue-phaethon.md` | 序章，法厄同身份与空洞事件开场 |
-| `versions/1.0-cunning-hares-belobog-victoria.md` | 1.0，狡兔屋、白祇重工与维多利亚家政 |
-| `versions/1.1-public-security-jane.md` | 1.1，治安局与简相关剧情 |
-| `versions/1.2-sons-of-calydon.md` | 1.2，卡吕冬之子与外环叙事 |
-| `versions/1.3-1.4-section6-and-finale.md` | 1.3-1.4，对空六课与第一季收束 |
-| `versions/2.0-clouds-return-janus-quarter.md` | 2.0，第二季开篇与新区域线索 |
-| `versions/2.x-season-2-middle.md` | 2.x，第二季中段剧情占位 |
-| `versions/3.0-roscaelifer-confession-of-a-sleepwalker.md` | 3.0，后续版本资料占位 |
+## 资料可信度
 
-## 使用建议
+一手优先：游戏内主线与独家视界、绝区零官网版本公告；完整剧情录屏用于核对章节顺序和过场。预告包装明确标注“与原作无关”的内容不得当剧情事实。
 
-做阵营介绍时先看 `02-factions.md`，再补 `versions/` 中对应章节。做角色视频时优先看 `03-characters.md`，再把 `04-mysteries.md` 里的伏笔拆成可追踪问题。
-
-## 维护规则
-
-把官方剧情事实、玩家推测和视频观点分开记录。版本文档只放该版本相关信息，跨版本长期线索统一沉淀到 `04-mysteries.md`，方便后续复用。
+任何“角色自己说的话”都不自动等于客观事实；任何“预告里出现的画面”也不自动等于已经发生的剧情。资料库优先保留不确定性。

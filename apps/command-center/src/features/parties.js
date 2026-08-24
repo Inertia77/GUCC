@@ -21,16 +21,16 @@ import {
   safeExternalUrl,
   showToast,
   withBusy
-} from '../ui-v3.js';
-import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
-import { renderFixedFieldOptions } from '../fixed-field-options-v1.js';
+} from '../ui.js';
+import { bindPersistentFilters, persistFilters } from '../ux-state.js';
+import { renderFixedFieldOptions } from '../fixed-field-options.js';
 import {
   bindClearFilters,
   bindGameFilter,
   bindSelectAutoSearch,
   matchesStatus,
   readGameFilter
-} from '../search-filters-v3.js';
+} from '../search-filters.js';
 
 let partyRows = new Map();
 const PARTY_MARKDOWN_LINK = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/gi;

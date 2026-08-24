@@ -1,13 +1,13 @@
 import { API } from './api.js';
 import { isLoggedIn, signIn, signOut, signUp } from './auth.js';
 import { getConfigState } from './config-state.js';
-import { initCharacters, searchCharacters } from './features/characters-v3.js';
-import { initParties, searchParties } from './features/parties-v3.js';
-import { initResources } from './features/resources-v2.js';
-import { initVersions, searchVersions } from './features/versions-v3.js';
-import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui-v3.js';
-import { getSavedTab, saveTab } from './ux-state-v1.js';
-import { hydrateFixedFieldFilters } from './fixed-field-options-v1.js';
+import { initCharacters, searchCharacters } from './features/characters.js';
+import { initParties, searchParties } from './features/parties.js';
+import { initResources } from './features/resources.js';
+import { initVersions, searchVersions } from './features/versions.js';
+import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
+import { getSavedTab, saveTab } from './ux-state.js';
+import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 
 const loadedTabs = new Set();
 let featuresReady = false;

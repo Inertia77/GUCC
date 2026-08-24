@@ -1,7 +1,0 @@
-@media (max-width: 900px) {
-  body.gucc-enhanced .topbar .back-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-}

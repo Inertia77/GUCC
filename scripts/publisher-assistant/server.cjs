@@ -16,8 +16,7 @@ const PICKER_SCRIPT = path.resolve(__dirname, "windows-file-picker.ps1");
 const PROFILE_DIR = process.env.GUCC_PUBLISHER_PROFILE || path.join(process.env.LOCALAPPDATA || os.homedir(), "GUCC", "publisher-profile");
 const ALLOWED_ORIGINS = new Set([
   "http://localhost:8000",
-  "http://127.0.0.1:8000",
-  "https://inertia77.github.io"
+  "http://127.0.0.1:8000"
 ]);
 const PLATFORM_URLS = {
   bilibili: "https://member.bilibili.com/platform/upload/video/frame/",
@@ -33,20 +32,22 @@ let browserContext = null;
 let launchPromise = null;
 const pages = new Map();
 
-function allowedOrigin(request) {
+function allowedRequest(request, pathname) {
   const origin = request.headers.origin;
-  return !origin || ALLOWED_ORIGINS.has(origin);
+  if (origin) return ALLOWED_ORIGINS.has(origin);
+  return request.method === "GET" && pathname === "/api/health";
 }
 
 function corsHeaders(request) {
   const origin = request.headers.origin;
-  return {
-    "Access-Control-Allow-Origin": origin && ALLOWED_ORIGINS.has(origin) ? origin : "http://localhost:8000",
+  const headers = {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "600",
     "Vary": "Origin"
   };
+  if (origin && ALLOWED_ORIGINS.has(origin)) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
 }
 
 function sendJson(request, response, status, data) {
@@ -207,9 +208,12 @@ function selectFile(kind) {
 }
 
 const server = http.createServer(async (request, response) => {
-  if (!allowedOrigin(request)) { sendJson(request, response, 403, { ok: false, error: "Origin 不在允许列表" }); return; }
-  if (request.method === "OPTIONS") { response.writeHead(204, corsHeaders(request)); response.end(); return; }
   const url = new URL(request.url, `http://${HOST}:${PORT}`);
+  if (!allowedRequest(request, url.pathname)) {
+    sendJson(request, response, 403, { ok: false, error: "仅允许本机 GUCC Publishing Console 调用" });
+    return;
+  }
+  if (request.method === "OPTIONS") { response.writeHead(204, corsHeaders(request)); response.end(); return; }
 
   try {
     if (request.method === "GET" && url.pathname === "/api/health") {

@@ -1,0 +1,239 @@
+.toolbar.filter-toolbar {
+  display: block;
+}
+
+.filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.filter-grid > input,
+.filter-grid > select,
+.filter-grid > button,
+.game-filter,
+.game-filter > input,
+.game-filter > select {
+  min-width: 0;
+  margin: 0;
+}
+
+.filter-grid .filter-keyword {
+  flex: 2 1 280px;
+}
+
+.game-filter {
+  flex: 1 1 200px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.game-filter.is-custom {
+  flex-basis: 320px;
+  grid-template-columns: minmax(130px, 0.75fr) minmax(170px, 1.25fr);
+}
+
+.filter-grid .filter-select {
+  flex: 0 1 148px;
+}
+
+.filter-grid > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.filter-grid .filter-clear {
+  color: var(--muted);
+}
+
+.filter-grid .filter-guidance {
+  flex: 1 1 520px;
+  min-height: 40px;
+  align-items: center;
+  margin: 0;
+  padding: 7px 10px;
+  line-height: 1.35;
+}
+
+.filter-toolbar .result-view-controls {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+}
+
+.filter-toolbar .result-view-controls > span {
+  display: none;
+}
+
+.filter-toolbar .result-view-buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.filter-toolbar .result-view-buttons button {
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: var(--radius) !important;
+}
+
+.item-summary {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+body.command-center-page .item.is-collapsed {
+  padding: 9px 12px !important;
+}
+
+body.command-center-page .item.is-collapsed .item-head,
+body.command-center-page .item.is-collapsed .item-head.version-head {
+  min-height: 40px;
+  align-items: center;
+}
+
+.item.is-collapsed .item-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item.is-collapsed .item-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.item.is-collapsed .version-title {
+  flex-wrap: nowrap;
+}
+
+.item.is-collapsed .version-no {
+  font-size: 20px;
+}
+
+.item.is-collapsed .meta {
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0;
+}
+
+.item.is-collapsed .badge {
+  min-height: 25px;
+  padding-inline: 8px;
+}
+
+.item.is-collapsed .collapsible-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.item.is-collapsed .collapsible-actions button {
+  min-height: 36px;
+  padding-inline: 10px;
+}
+
+body.command-center-page .item:is([data-game-code="绝"], [data-game-code="ZZZ"], [data-game-code="绝区零"]) {
+  border-left-color: rgba(105, 190, 235, 0.72) !important;
+  background: linear-gradient(100deg, rgba(88, 168, 218, 0.15), rgba(13, 17, 25, 0.97) 58%) !important;
+}
+
+body.command-center-page .item:is([data-game-code="鸣"], [data-game-code="WW"], [data-game-code="鸣潮"]) {
+  border-left-color: rgba(224, 119, 126, 0.66) !important;
+  background: linear-gradient(100deg, rgba(202, 92, 100, 0.13), rgba(13, 17, 25, 0.97) 58%) !important;
+}
+
+body.command-center-page .item:is([data-game-code="终"], [data-game-code="ENF"], [data-game-code="终末地"], [data-game-code="明日方舟终末地"]) {
+  border-left-color: rgba(125, 194, 132, 0.68) !important;
+  background: linear-gradient(100deg, rgba(100, 166, 108, 0.14), rgba(13, 17, 25, 0.97) 58%) !important;
+}
+
+body.command-center-page .item:is([data-game-code="崩"], [data-game-code="HSR"], [data-game-code="崩铁"], [data-game-code="崩坏星穹铁道"]) {
+  border-left-color: rgba(169, 137, 220, 0.72) !important;
+  background: linear-gradient(100deg, rgba(145, 111, 197, 0.15), rgba(13, 17, 25, 0.97) 58%) !important;
+}
+
+body.command-center-page .item:is([data-game-code="异"], [data-game-code="NTE"], [data-game-code="异环"]) {
+  border-left-color: rgba(174, 181, 194, 0.58) !important;
+  background: linear-gradient(100deg, rgba(165, 171, 184, 0.09), rgba(13, 17, 25, 0.97) 58%) !important;
+}
+
+body.command-center-page .badge.status-highlight {
+  border-width: 1px;
+  font-weight: 850;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+body.command-center-page .badge.status-progress {
+  border-color: rgba(245, 234, 55, 0.55) !important;
+  color: #fff27a !important;
+  background: rgba(245, 234, 55, 0.13) !important;
+}
+
+body.command-center-page .badge.status-state {
+  border-color: rgba(94, 211, 199, 0.48) !important;
+  color: #95eadf !important;
+  background: rgba(94, 211, 199, 0.12) !important;
+}
+
+@media (max-width: 760px) {
+  .filter-grid .filter-keyword,
+  .filter-grid .filter-select,
+  .game-filter,
+  .game-filter.is-custom {
+    flex: 1 1 100%;
+  }
+
+  .game-filter.is-custom {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-toolbar .result-view-controls {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+
+  .filter-grid .filter-guidance {
+    flex-basis: 100%;
+    align-items: flex-start;
+  }
+
+  .filter-toolbar .result-view-buttons,
+  .filter-toolbar .result-view-buttons button {
+    flex: 1 1 0;
+  }
+
+  body.command-center-page .item.is-collapsed .item-head {
+    align-items: stretch;
+  }
+
+  .item.is-collapsed .item-summary {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .item.is-collapsed .item-title {
+    max-width: 100%;
+  }
+
+  .item.is-collapsed .collapsible-actions {
+    width: 100%;
+  }
+}

@@ -10,11 +10,11 @@
   <link rel="icon" href="../assets/icons/gucc-icon.svg?v=5" type="image/svg+xml">
   <script src="../assets/access-guard.js" data-guard="true" data-root="../"></script>
   <link rel="stylesheet" href="../assets/gucc-theme.css?v=7">
-  <link rel="stylesheet" href="../assets/resource-library-v5.css?v=2">
+  <link rel="stylesheet" href="../assets/resource-library-v5.css?v=3">
   <link rel="stylesheet" href="../assets/gucc-zzz.css?v=1">
-  <link rel="stylesheet" href="../assets/resource-library-compact-v1.css">
+  <link rel="stylesheet" href="../assets/resource-library-compact-v1.css?v=2">
   <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
-  <script src="./resource-library-v4.js" defer></script>
+  <script src="./resource-library-v5.js" defer></script>
 </head>
 <body class="gucc-enhanced gucc-reference resource-page">
   <main class="library-shell">
@@ -30,7 +30,7 @@
       <div class="hero-copy">
         <p class="overline"><span class="live-dot"></span> GUCC RESOURCE LIBRARY</p>
         <h1 id="pageTitle">游戏资料导航</h1>
-        <p class="hero-lede">正式资料与 Leak 资料分层整理。先确认已上线内容，再查看测试服、数据挖掘与社区线索。</p>
+        <p class="hero-lede">正式资料、Leak 资料与角色研究项目分层整理。先确认已上线内容，再查看测试服、数据挖掘、社区线索与内部分析工作区。</p>
         <div class="hero-actions" aria-label="资料类型">
           <button class="view-switch is-active" type="button" data-view="official" aria-pressed="true">
             <span>正式资料</span><strong>26</strong>
@@ -38,10 +38,13 @@
           <button class="view-switch" type="button" data-view="intel" aria-pressed="false">
             <span>Leak 资料</span><strong id="intelCount">28</strong>
           </button>
+          <button class="view-switch" type="button" data-view="projects" aria-pressed="false">
+            <span>角色研究</span><strong>10</strong>
+          </button>
         </div>
       </div>
       <aside class="hero-console" aria-label="资料库状态">
-        <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/07</span></div>
+        <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/24</span></div>
         <div class="console-grid">
           <div><strong id="activeCount">24</strong><span>活跃来源</span></div>
           <div><strong>26</strong><span>正式入口</span></div>
@@ -106,6 +109,15 @@
         <div class="archive-grid" id="archiveGrid"></div>
       </details>
       <div class="empty-state" id="intelEmpty" hidden><strong>没有匹配的来源</strong><span>换一个游戏，或清除搜索关键词。</span></div>
+    </section>
+
+    <section class="view-panel" id="projectsPanel" data-panel="projects" aria-labelledby="projectsHeading" hidden>
+      <div class="section-heading">
+        <div><p class="section-kicker">CHARACTER RESEARCH WORKSPACES</p><h2 id="projectsHeading">角色研究项目</h2><p>从 2026-08-24 截图整理的 ChatGPT 项目入口；包含养成分析与角色解析两类工作区，访问时需要对应账号权限。</p></div>
+        <span class="official-stamp"><b>10</b> PROJECT ROUTES</span>
+      </div>
+      <div class="official-grid" id="projectsGrid"></div>
+      <div class="empty-state" id="projectsEmpty" hidden><strong>没有匹配的研究项目</strong><span>换一个游戏，或清除搜索关键词。</span></div>
     </section>
 
     <footer class="library-footer">

@@ -93,6 +93,7 @@ checkSyntax(resolve(root, 'assets', 'access-guard.js'));
 checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
 checkSyntax(resolve(root, 'sw.js'));
 checkSyntax(resolve(root, 'reference', 'resource-library-v4.js'));
+checkSyntax(resolve(root, 'reference', 'resource-library-v5.js'));
 
 const researchSourcesPath = resolve(root, 'data', 'imports', 'gacha-leak-sources-2026-08-07.json');
 try {

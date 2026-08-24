@@ -1,4 +1,4 @@
-const CACHE_VERSION = "gucc-pwa-v49";
+const CACHE_VERSION = "gucc-pwa-v50";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -16,8 +16,8 @@ const APP_SHELL = [
   "./assets/gucc-workspace-right-dock-v6.css",
   "./assets/gucc-workspace-field-heights-v1.css",
   "./assets/gucc-reference-v4.css",
-  "./assets/resource-library-v5.css",
-  "./assets/resource-library-compact-v1.css",
+  "./assets/resource-library-v5.css?v=3",
+  "./assets/resource-library-compact-v1.css?v=2",
   "./assets/gucc-shell.js",
   "./assets/pwa-install.css",
   "./assets/pwa-install.js",
@@ -77,7 +77,7 @@ const APP_SHELL = [
   "./apps/publishing-console/platform-rules.js",
   "./apps/publishing-console/app.js",
   "./reference/resource-library.html",
-  "./reference/resource-library-v4.js",
+  "./reference/resource-library-v5.js",
   "./data/imports/gacha-leak-sources-2026-08-07.json"
 ];
 
@@ -118,6 +118,16 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (url.pathname.includes("/apps/command-center/src/")) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (
+    url.pathname.includes("/reference/resource-library")
+    || url.pathname.endsWith("/assets/resource-library-v5.css")
+    || url.pathname.endsWith("/assets/resource-library-compact-v1.css")
+    || url.pathname.endsWith("/data/imports/gacha-leak-sources-2026-08-07.json")
+  ) {
     event.respondWith(networkFirst(request));
     return;
   }

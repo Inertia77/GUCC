@@ -267,7 +267,7 @@ body.resource-page .official-routes em { font-size: 9px; }
 @media (max-width: 560px) {
   body.resource-page .hero-copy { padding: 18px 16px !important; }
   body.resource-page .atlas-hero h1 { font-size: clamp(32px, 10vw, 42px) !important; }
-  body.resource-page .hero-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  body.resource-page .hero-actions { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
   body.resource-page .view-switch { justify-content: space-between; min-width: 0; font-size: 13px; }
   body.resource-page .atlas-toolbar { margin-top: 10px; }
 }

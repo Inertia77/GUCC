@@ -21,16 +21,17 @@ import {
   restoreListContext,
   showToast,
   withBusy
-} from '../ui-v3.js';
-import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
-import { renderFixedFieldOptions } from '../fixed-field-options-v1.js';
+} from '../ui.js';
+import { bindPersistentFilters, persistFilters } from '../ux-state.js';
+import { renderFixedFieldOptions } from '../fixed-field-options.js';
+import { assertNewCharacterUnique } from '../record-guards.mjs';
 import {
   bindClearFilters,
   bindGameFilter,
   bindSelectAutoSearch,
   matchesStatus,
   readGameFilter
-} from '../search-filters-v3.js';
+} from '../search-filters.js';
 
 const DEFAULT_LINK_RELATION_TYPE = 'official_profile';
 const FILTERS = {
@@ -208,7 +209,7 @@ function openEditor(data = {}) {
       try {
         const listContext = captureListContext($('#characterResults'));
         const form = readForm(event.currentTarget);
-        const result = await API.saveCharacter({
+        const payload = {
           id: form.id || null,
           game_code: form.game_code,
           name: form.name,
@@ -226,7 +227,18 @@ function openEditor(data = {}) {
           evaluation_note: form.evaluation_note,
           names: { jp: form.jp_name, en: form.en_name, kr: form.kr_name },
           links: collectLinks(event.currentTarget)
-        });
+        };
+
+        if (!payload.id) {
+          const existing = await API.searchCharacters({
+            keyword: payload.name,
+            game_code: payload.game_code,
+            limit: 200
+          });
+          assertNewCharacterUnique(normalizeRows(existing), payload);
+        }
+
+        const result = await API.saveCharacter(payload);
         await searchCharacters({ visibleCount: listContext.visibleCount, revealId: result.id });
         closeDrawer(editor, { restoreFocus: false });
         restoreListContext($('#characterResults'), listContext, { focusId: result.id, highlight: true });

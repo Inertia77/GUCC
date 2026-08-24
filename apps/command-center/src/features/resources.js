@@ -9,8 +9,8 @@ import {
   renderMeta,
   renderProgressiveList,
   withBusy
-} from '../ui-v2.js';
-import { bindPersistentFilters, persistFilters } from '../ux-state-v1.js';
+} from '../ui.js';
+import { bindPersistentFilters, persistFilters } from '../ux-state.js';
 
 const FILTERS = { '#resourceKeyword': 'rq' };
 

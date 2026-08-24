@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { dirname, extname, resolve } from 'node:path';
+import { basename, dirname, extname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
@@ -88,11 +88,13 @@ const appScripts = walk(appSource, new Set(['.js', '.mjs']));
 for (const file of appScripts) {
   checkSyntax(file);
   checkImports(file);
+  if (/-v\d+(?:[._-]|$)/i.test(basename(file))) {
+    errors.push(`Command Center 源码不应使用手工版本文件名：${basename(file)}；请使用 Git 历史管理版本`);
+  }
 }
 checkSyntax(resolve(root, 'assets', 'access-guard.js'));
 checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
 checkSyntax(resolve(root, 'sw.js'));
-checkSyntax(resolve(root, 'reference', 'resource-library-v4.js'));
 checkSyntax(resolve(root, 'reference', 'resource-library-v5.js'));
 
 const researchSourcesPath = resolve(root, 'data', 'imports', 'gacha-leak-sources-2026-08-07.json');
@@ -254,8 +256,8 @@ for (const nonVideoHost of ['mp.weixin.qq.com', 'weibo.com', 'x.com/compose/post
 }
 
 const appSources = [readFileSync(appHtml, 'utf8'), ...appScripts.map((file) => readFileSync(file, 'utf8'))];
-const characterFeatureSource = readFileSync(resolve(appSource, 'features', 'characters-v3.js'), 'utf8');
-const partyFeatureSource = readFileSync(resolve(appSource, 'features', 'parties-v3.js'), 'utf8');
+const characterFeatureSource = readFileSync(resolve(appSource, 'features', 'characters.js'), 'utf8');
+const partyFeatureSource = readFileSync(resolve(appSource, 'features', 'parties.js'), 'utf8');
 for (const [source, field] of [
   [characterFeatureSource, 'research_status'],
   [characterFeatureSource, 'build_status'],
@@ -337,4 +339,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`项目检查通过：${checkedFiles} 个脚本，应用入口、工作台版本与 SQL 回归检查正常。`);
+console.log(`项目检查通过：${checkedFiles} 个脚本，应用入口、稳定模块名、工作台版本与 SQL 回归检查正常。`);

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "check": "node scripts/check-project.mjs",
-    "test": "node scripts/check-project.mjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs",
+    "test": "node scripts/check-project.mjs && node scripts/test-command-center.cjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs",
     "publisher:assistant": "node scripts/publisher-assistant/server.cjs"
   },
   "repository": {

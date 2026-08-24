@@ -54,14 +54,20 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   const indexSource = read("apps/command-center/index.html");
   assert.match(indexSource, /src="src\/main\.js"/);
   assert.doesNotMatch(indexSource, /main-v\d/i);
+  assert.doesNotMatch(indexSource, /styles\/[^"']+-v\d/i);
 
   const mainSource = read("apps/command-center/src/main.js");
   assert.doesNotMatch(mainSource, /-v\d/i);
+
+  const styleDir = path.join(ROOT, "apps/command-center/styles");
+  const versionedStyles = fs.readdirSync(styleDir).filter((name) => /-v\d+(?:[._-]|$)/i.test(name));
+  assert.deepEqual(versionedStyles, [], `Command Center 不应保留手工版本 CSS：${versionedStyles.join(", ")}`);
 
   const serviceWorker = read("sw.js");
   assert.doesNotMatch(serviceWorker, /ignoreSearch\s*:\s*true/);
   assert.doesNotMatch(serviceWorker, /CACHE_VERSION/);
   assert.match(serviceWorker, /apps\/command-center\/src\/main\.js/);
+  assert.doesNotMatch(serviceWorker, /apps\/command-center\/styles\/[^"']+-v\d/i);
 
   const publisherServer = read("scripts/publisher-assistant/server.cjs");
   assert.doesNotMatch(publisherServer, /https:\/\/inertia77\.github\.io/);

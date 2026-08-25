@@ -109,7 +109,7 @@
   function bootstrapGlobalShell() {
     if (document.querySelector('script[data-gucc-shell-bootstrap]')) return;
     const shell = document.createElement('script');
-    shell.src = new URL('assets/gucc-shell.js?v=9', rootHref).href;
+    shell.src = new URL('assets/gucc-shell.js?v=10', rootHref).href;
     shell.dataset.root = rootHref;
     shell.dataset.guccShellBootstrap = 'true';
     document.head.appendChild(shell);

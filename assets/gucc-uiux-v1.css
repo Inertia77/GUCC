@@ -18,6 +18,11 @@ body.gucc-enhanced :where([id]) {
     opacity: 0 !important;
     pointer-events: none !important;
   }
+
+  body.gucc-shell-keyboard .gucc-creator-bridge {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 }
 
 /* Command Center / DB: keep results close to the thumb instead of making filters consume a screen. */
@@ -116,6 +121,220 @@ body.gucc-enhanced :where([id]) {
   body.command-center-page .topbar .subtitle {
     margin-top: 4px;
     font-size: 12px;
+  }
+}
+
+/* Unified creator pipeline: fallback positioning before the inline UX helper attaches. */
+body.gucc-enhanced .gucc-creator-bridge:not(.gcb-inline) {
+  right: 86px !important;
+  bottom: 14px !important;
+  z-index: 970 !important;
+}
+
+@media (max-width: 900px) {
+  body.gucc-enhanced .gucc-creator-bridge:not(.gcb-inline) {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  body.gucc-enhanced .gucc-creator-bridge:not(.gcb-inline) .gcb-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.gucc-enhanced .gucc-creator-bridge:not(.gcb-inline) .gcb-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.gucc-enhanced .gucc-creator-bridge:not(.gcb-inline) .gcb-row > :is(button, a) {
+    flex: 0 0 auto;
+    min-height: 42px;
+    white-space: nowrap;
+  }
+}
+
+/* Production System: this is now the formal state machine, so the next action gets the screen, not chrome. */
+@media (min-width: 1001px) {
+  body.production-system-page .topbar {
+    min-height: 96px !important;
+    padding: 18px clamp(22px, 3vw, 46px) !important;
+  }
+
+  body.production-system-page .topbar h1 {
+    font-size: clamp(28px, 2.7vw, 40px) !important;
+  }
+
+  body.production-system-page .app-shell {
+    min-height: calc(100vh - 96px) !important;
+  }
+
+  body.production-system-page .workspace {
+    padding-top: 20px !important;
+  }
+
+  body.production-system-page .sidebar {
+    padding-top: 16px !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  body.production-system-page .topbar {
+    min-height: 0 !important;
+    padding: 16px 14px !important;
+  }
+
+  body.production-system-page .top-actions {
+    margin-top: 12px !important;
+  }
+
+  body.production-system-page .sidebar {
+    padding: 11px 12px !important;
+  }
+
+  body.production-system-page .sidebar-head {
+    padding: 0 4px 8px !important;
+  }
+
+  body.production-system-page .project-list {
+    gap: 6px !important;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.production-system-page .project-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.production-system-page .project-item {
+    min-width: 170px !important;
+    padding: 10px !important;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 700px) {
+  body.production-system-page .topbar {
+    padding: 13px 11px !important;
+  }
+
+  body.production-system-page .topbar .eyebrow {
+    font-size: 9px !important;
+  }
+
+  body.production-system-page .topbar h1 {
+    margin: 4px 0 0 !important;
+    font-size: clamp(24px, 7.5vw, 31px) !important;
+    line-height: 1.04;
+  }
+
+  body.production-system-page .topbar .subtitle {
+    display: none !important;
+  }
+
+  body.production-system-page .top-actions {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px !important;
+  }
+
+  body.production-system-page .top-actions .button {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px !important;
+    text-align: center;
+  }
+
+  body.production-system-page .project-item {
+    min-width: 148px !important;
+  }
+
+  body.production-system-page .workspace {
+    padding: 11px 9px calc(112px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.production-system-page .panel {
+    margin-bottom: 10px !important;
+    padding: 15px !important;
+    border-radius: 16px !important;
+  }
+
+  body.production-system-page .project-hero h2 {
+    font-size: clamp(24px, 8vw, 31px) !important;
+  }
+
+  body.production-system-page .hero-actions,
+  body.production-system-page .state-controls {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  body.production-system-page .hero-actions .button,
+  body.production-system-page .state-controls .button {
+    width: 100%;
+    min-height: 44px;
+    padding-inline: 7px;
+  }
+
+  body.production-system-page .next-action h3 {
+    font-size: 21px !important;
+  }
+
+  body.production-system-page .lock-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  body.production-system-page .lock-card {
+    padding: 11px !important;
+  }
+
+  body.production-system-page .tabs {
+    top: max(5px, env(safe-area-inset-top)) !important;
+    margin: 12px 0 9px !important;
+    padding: 5px !important;
+    border-radius: 13px !important;
+  }
+
+  body.production-system-page .tab {
+    min-height: 42px;
+    padding: 8px 10px !important;
+  }
+
+  body.production-system-page :where(input, select, textarea, .editor) {
+    font-size: 16px !important;
+  }
+
+  body.production-system-page .toast {
+    right: 10px !important;
+    left: 10px !important;
+    bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+    max-width: none !important;
+  }
+
+  body.production-system-page dialog {
+    width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 28px);
+    overflow: auto;
+    border-radius: 18px !important;
+  }
+
+  body.production-system-page .dialog-form {
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  body.production-system-page .lock-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -226,6 +445,10 @@ body.gucc-reference section.prompt-section {
   scroll-margin-top: 76px;
 }
 
+body.gucc-reference.story-page .doc > :where(p, ul, ol, blockquote) {
+  max-width: 86ch;
+}
+
 @media (max-width: 980px) {
   body.gucc-reference .topline .back {
     display: none !important;
@@ -241,6 +464,10 @@ body.gucc-reference section.prompt-section {
 }
 
 @media (max-width: 700px) {
+  body.gucc-reference.story-page .doc > :where(p, ul, ol, blockquote) {
+    max-width: none;
+  }
+
   body.gucc-reference.story-page .doc table {
     display: block;
     width: 100%;
@@ -331,7 +558,8 @@ body.gucc-reference section.prompt-section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.gucc-enhanced .gucc-shell-dock {
+  body.gucc-enhanced .gucc-shell-dock,
+  body.gucc-enhanced .gucc-creator-bridge {
     transition: none !important;
   }
 }

@@ -2,18 +2,19 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070a10">
   <title>AI Video Production System｜GUCC</title>
+  <script src="../../../assets/access-guard.js" data-root="../../../" data-guard="true"></script>
   <link rel="stylesheet" href="../../../assets/gucc-theme.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body class="gucc-enhanced">
+<body class="gucc-enhanced production-system-page">
   <header class="topbar">
     <div>
       <p class="eyebrow">GUCC · AUDIO-LOCKED PIPELINE</p>
       <h1>AI Video Production System <span>v1</span></h1>
-      <p class="subtitle">状态机负责秩序，锁负责防错，Prompt Generator 负责把唯一下一步交给正确的 AI。</p>
+      <p class="subtitle">正式制作唯一状态机：看“下一步”，按锁推进；Studio 负责想清楚，这里负责把成片做出来。</p>
     </div>
     <nav class="top-actions" aria-label="全局操作">
       <a class="button ghost" href="../">返回 Studio</a>
@@ -29,8 +30,8 @@
       <div class="sidebar-head"><strong>项目</strong><span id="projectCount">0</span></div>
       <div id="projectList" class="project-list"></div>
       <div class="side-note">
-        <strong>唯一规则</strong>
-        <p>先锁音频，再做时间轴。系统不会让缺文件或未 Lock 的项目误进下一阶段。</p>
+        <strong>推进原则</strong>
+        <p>优先处理“唯一下一步”。Lock 是版本承诺，不是普通完成勾选；音频锁定后再生成时间轴。</p>
       </div>
     </aside>
 
@@ -38,7 +39,7 @@
       <section id="emptyState" class="empty-state">
         <span class="empty-icon">▶</span>
         <h2>建立第一个生产项目</h2>
-        <p>A / C 是口播攻略线，B 是 Suno 视频线，D 是独立音乐发行线。</p>
+        <p>从 Studio 转入的项目会自动出现在这里；也可以直接新建正式制作项目。</p>
         <button class="button primary" type="button" data-action="new-project">新建项目</button>
       </section>
 
@@ -68,7 +69,7 @@
         <section class="next-action panel accent-panel" id="nextActionCard"></section>
 
         <section class="locks panel">
-          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>Lock 不是完成按钮，是不可随意漂移的版本承诺。</p></div>
+          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。锁定后，后续阶段才把它视为可靠输入。</p></div>
           <div id="lockGrid" class="lock-grid"></div>
         </section>
 
@@ -95,7 +96,6 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="../../../assets/access-guard.js"></script>
   <script src="./engine.js"></script>
   <script src="./app.js"></script>
 </body>

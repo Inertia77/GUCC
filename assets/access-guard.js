@@ -115,6 +115,17 @@
     document.head.appendChild(shell);
   }
 
+  function bootstrapCreatorPipeline() {
+    const pathname = window.location.pathname;
+    const eligible = pathname.includes('/apps/video-workspace/') || pathname.includes('/apps/publishing-console/');
+    if (!eligible || document.querySelector('script[data-gucc-creator-pipeline]')) return;
+    const bridge = document.createElement('script');
+    bridge.type = 'module';
+    bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=1', rootHref).href;
+    bridge.dataset.guccCreatorPipeline = 'true';
+    document.head.appendChild(bridge);
+  }
+
   window.GuccAccess = {
     hasAccess,
     verifyAndStore,
@@ -125,5 +136,8 @@
 
   const guardEnabled = script?.dataset.guard === 'true';
   const mayRender = guardEnabled ? guardPage() : true;
-  if (mayRender) bootstrapGlobalShell();
+  if (mayRender) {
+    bootstrapGlobalShell();
+    bootstrapCreatorPipeline();
+  }
 })();

@@ -1,3 +1,13 @@
 # Supabase migrations
 
-Versioned production database changes for GUCC live here. New schema/RPC changes should be committed here before or together with the corresponding Supabase production migration.
+这里保存已经进入生产或准备进入生产的版本化数据库变更。
+
+规则：
+
+1. 数据库结构、RPC、权限、索引等变更必须有 migration 文件。
+2. 与 Command Center 有关的 RPC 名称、JSON payload、返回结构属于稳定契约；兼容性变化必须同步前端与测试。
+3. 先备份/验证，再应用生产；应用后跑 Supabase Advisor、数据完整性查询和 `npm test`。
+4. 不把个人偏好、强度评价、喜欢度等主观数据混进结构迁移。
+5. 客观数据修正必须能说明依据，并尽量与结构修复分开记录。
+
+2026-08-25 起，生产库不再依赖“只在 SQL Editor 手工改、仓库无记录”的维护方式。

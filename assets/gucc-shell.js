@@ -6,13 +6,46 @@
   const path = window.location.pathname.replace(/\/index\.html$/, '/');
   const isActive = (needle) => path.includes(needle);
 
-  const ensureStyles = () => {
-    if (document.querySelector('link[data-gucc-shell-nav-v2]')) return;
+  const ensureStylesheet = (selector, href, dataKey) => {
+    const desiredHref = new URL(href, normalizedRoot).href;
+    const existing = document.querySelector(selector);
+    if (existing) {
+      if (existing.href !== desiredHref) existing.href = desiredHref;
+      return existing;
+    }
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `${normalizedRoot}assets/gucc-shell-nav-v2.css?v=1`;
-    link.dataset.guccShellNavV2 = 'true';
+    link.href = desiredHref;
+    if (dataKey) link.dataset[dataKey] = 'true';
     document.head.appendChild(link);
+    return link;
+  };
+
+  const ensureStyles = () => {
+    ensureStylesheet(
+      'link[data-gucc-shell-nav-v2]',
+      'assets/gucc-shell-nav-v2.css?v=2',
+      'guccShellNavV2'
+    );
+    ensureStylesheet(
+      'link[data-gucc-uiux-v1]',
+      'assets/gucc-uiux-v1.css?v=1',
+      'guccUiuxV1'
+    );
+  };
+
+  const ensureViewportFit = () => {
+    let meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+      document.head.appendChild(meta);
+      return;
+    }
+    if (!/viewport-fit\s*=/.test(meta.content || '')) {
+      meta.content = `${meta.content || 'width=device-width, initial-scale=1'}, viewport-fit=cover`;
+    }
   };
 
   const childRoutes = {
@@ -105,6 +138,18 @@
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 
+  const applyPageClasses = () => {
+    const body = document.body;
+    if (!body) return;
+    if (dbActive) body.classList.add('command-center-page');
+    if (isActive('/apps/video-workspace/')) body.classList.add('workspace-page');
+    if (isActive('/apps/cover-generator/')) body.classList.add('cover-generator-page');
+    if (isActive('/apps/publishing-console/')) body.classList.add('publishing-console-page');
+    if (isActive('/reference/ai-prompts')) body.classList.add('gucc-reference', 'prompt-page');
+    if (isActive('/reference/story-library')) body.classList.add('gucc-reference', 'story-page');
+    if (isActive('/reference/resource-library')) body.classList.add('gucc-reference', 'resource-page');
+  };
+
   const normalizeDbPresentation = () => {
     if (!dbActive) return;
     document.title = 'GUCC DB';
@@ -113,19 +158,104 @@
     });
   };
 
+  const enhanceCommandCenterFilters = () => {
+    if (!dbActive) return;
+    document.querySelectorAll('.filter-grid').forEach((grid, index) => {
+      if (grid.classList.contains('filters-mobile-ready')) return;
+      grid.classList.add('filters-mobile-ready');
+      if (!grid.id) grid.id = `guccFilterGrid${index + 1}`;
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'secondary filter-mobile-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-controls', grid.id);
+
+      const keyword = grid.querySelector('.filter-keyword');
+      if (keyword) keyword.insertAdjacentElement('afterend', toggle);
+      else grid.prepend(toggle);
+
+      const activeFilterCount = () => {
+        let count = 0;
+        grid.querySelectorAll('.game-filter select, .filter-select').forEach((field) => {
+          if (field.value && field.value !== '__custom') count += 1;
+        });
+        const custom = grid.querySelector('.game-filter input:not([disabled])');
+        if (custom?.value?.trim()) count += 1;
+        return count;
+      };
+
+      const sync = () => {
+        const expanded = grid.classList.contains('filters-expanded');
+        const count = activeFilterCount();
+        toggle.textContent = `${expanded ? '收起筛选' : '筛选'}${count ? ` · ${count}` : ''}`;
+        toggle.setAttribute('aria-expanded', String(expanded));
+      };
+
+      toggle.addEventListener('click', () => {
+        grid.classList.toggle('filters-expanded');
+        sync();
+      });
+
+      grid.addEventListener('input', sync);
+      grid.addEventListener('change', sync);
+      grid.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button || button === toggle) return;
+        if (button.classList.contains('filter-clear')) window.setTimeout(sync, 0);
+        if (/^search/i.test(button.id || '') && window.matchMedia('(max-width: 760px)').matches) {
+          grid.classList.remove('filters-expanded');
+          window.setTimeout(sync, 0);
+        }
+      });
+      sync();
+    });
+  };
+
+  const isTextEntry = (target) => {
+    if (!(target instanceof Element)) return false;
+    if (target.matches('textarea, [contenteditable="true"]')) return true;
+    if (!target.matches('input')) return false;
+    const type = String(target.getAttribute('type') || 'text').toLowerCase();
+    return !['button', 'checkbox', 'radio', 'range', 'file', 'color', 'submit', 'reset', 'image', 'hidden'].includes(type);
+  };
+
+  const bindKeyboardAwareNav = (closeMenu) => {
+    if (document.documentElement.dataset.guccShellKeyboardBound === 'true') return;
+    document.documentElement.dataset.guccShellKeyboardBound = 'true';
+
+    const sync = () => {
+      const mobile = window.matchMedia('(max-width: 900px)').matches;
+      document.body?.classList.toggle('gucc-shell-keyboard', mobile && isTextEntry(document.activeElement));
+    };
+
+    document.addEventListener('focusin', (event) => {
+      if (window.matchMedia('(max-width: 900px)').matches && isTextEntry(event.target)) {
+        document.body?.classList.add('gucc-shell-keyboard');
+        closeMenu();
+      }
+    });
+    document.addEventListener('focusout', () => window.setTimeout(sync, 0));
+    window.addEventListener('resize', sync, { passive: true });
+    window.visualViewport?.addEventListener('resize', sync, { passive: true });
+  };
+
   const enhance = () => {
     if (!document.body) return;
     ensureStyles();
+    ensureViewportFit();
     document.body.classList.add('gucc-enhanced');
+    applyPageClasses();
     normalizeDbPresentation();
+    enhanceCommandCenterFilters();
 
     const existingDock = document.querySelector('.gucc-shell-dock');
-    if (existingDock?.dataset.shellVersion === '2') return;
+    if (existingDock?.dataset.shellVersion === '3') return;
     if (existingDock) existingDock.remove();
 
     const dock = document.createElement('nav');
     dock.className = 'gucc-shell-dock';
-    dock.dataset.shellVersion = '2';
+    dock.dataset.shellVersion = '3';
     dock.setAttribute('aria-label', 'GUCC 全局导航');
 
     dock.innerHTML = navItems.map((item) => {
@@ -196,9 +326,11 @@
     });
 
     window.addEventListener('resize', closeMenu, { passive: true });
+    bindKeyboardAwareNav(closeMenu);
   };
 
   ensureStyles();
+  ensureViewportFit();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', enhance, { once: true });
   } else {

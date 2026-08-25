@@ -132,9 +132,9 @@
           </a>`;
       }
       return `
-        <button class="gucc-shell-trigger${item.active ? ' is-active' : ''}" type="button" data-shell-menu="${item.key}" aria-haspopup="true" aria-expanded="false" aria-controls="guccShellMenu">
+        <a class="gucc-shell-trigger${item.active ? ' is-active' : ''}" href="#guccShellMenu" role="button" data-shell-menu="${item.key}" aria-haspopup="true" aria-expanded="false" aria-controls="guccShellMenu">
           <b aria-hidden="true">${escapeHtml(item.icon)}</b><span>${escapeHtml(item.label)}</span>
-        </button>`;
+        </a>`;
     }).join('');
 
     const menu = document.createElement('div');
@@ -173,12 +173,13 @@
             </a>`).join('')}
         </div>`;
       menu.hidden = false;
-      dock.querySelectorAll('.gucc-shell-trigger').forEach((button) => button.setAttribute('aria-expanded', String(button === trigger)));
+      dock.querySelectorAll('.gucc-shell-trigger').forEach((item) => item.setAttribute('aria-expanded', String(item === trigger)));
     };
 
     dock.addEventListener('click', (event) => {
       const trigger = event.target.closest('.gucc-shell-trigger');
       if (!trigger) return;
+      event.preventDefault();
       openMenu(trigger.dataset.shellMenu, trigger);
     });
 

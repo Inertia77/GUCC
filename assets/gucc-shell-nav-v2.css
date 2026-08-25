@@ -1,0 +1,229 @@
+/* GUCC global navigation v2: five stable destinations, grouped popover menus. */
+.gucc-shell-dock[hidden],
+.gucc-shell-menu[hidden],
+.is-locked .gucc-shell-dock {
+  display: none !important;
+}
+
+body.gucc-enhanced {
+  padding-bottom: calc(86px + env(safe-area-inset-bottom)) !important;
+}
+
+body.gucc-enhanced .gucc-shell-dock {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: calc(7px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  width: min(560px, calc(100vw - 14px)) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 14px) !important;
+  z-index: 1000 !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin: 0 !important;
+  padding: 5px !important;
+  border: 1px solid rgba(255, 255, 255, .14) !important;
+  border-radius: 18px !important;
+  background: rgba(7, 10, 16, .90) !important;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .46) !important;
+  backdrop-filter: blur(24px) saturate(1.15) !important;
+  overflow: visible !important;
+}
+
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) {
+  appearance: none !important;
+  min-width: 0 !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  padding: 5px 2px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  border: 1px solid rgba(255, 255, 255, .065) !important;
+  border-radius: 13px !important;
+  background: rgba(255, 255, 255, .035) !important;
+  box-shadow: none !important;
+  color: #a8b6c8 !important;
+  text-decoration: none !important;
+  font: inherit !important;
+  font-size: 9px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: background .14s ease, border-color .14s ease, color .14s ease, transform .14s ease !important;
+}
+
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) b {
+  color: #f3f7ff !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  letter-spacing: -.02em !important;
+}
+
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) span {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: nowrap !important;
+}
+
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):hover,
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger).is-active,
+body.gucc-enhanced .gucc-shell-trigger[aria-expanded="true"] {
+  border-color: rgba(116, 243, 255, .34) !important;
+  background: linear-gradient(135deg, #78ffba, #74f3ff) !important;
+  color: #06110f !important;
+  transform: translateY(-1px) !important;
+}
+
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):hover b,
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger).is-active b,
+body.gucc-enhanced .gucc-shell-trigger[aria-expanded="true"] b {
+  color: #06110f !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(100% + 9px) !important;
+  width: auto !important;
+  padding: 11px !important;
+  border: 1px solid rgba(255, 255, 255, .15) !important;
+  border-radius: 18px !important;
+  background: rgba(9, 13, 22, .97) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .52) !important;
+  backdrop-filter: blur(26px) saturate(1.15) !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 2px 3px 10px !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-head strong {
+  color: #f3f7ff !important;
+  font-size: 13px !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-head span {
+  color: #708197 !important;
+  font-size: 10px !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-item {
+  min-width: 0 !important;
+  min-height: 74px !important;
+  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 7px !important;
+  border: 1px solid rgba(255, 255, 255, .08) !important;
+  border-radius: 13px !important;
+  background: rgba(255, 255, 255, .04) !important;
+  color: #f3f7ff !important;
+  text-decoration: none !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-item:hover,
+body.gucc-enhanced .gucc-shell-menu-item.is-active {
+  border-color: rgba(116, 243, 255, .34) !important;
+  background: rgba(116, 243, 255, .10) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-item b {
+  color: #74f3ff !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-item strong {
+  color: #f3f7ff !important;
+  font-size: 12px !important;
+  line-height: 1.15 !important;
+}
+
+body.gucc-enhanced .gucc-shell-menu-item small {
+  display: block !important;
+  color: #8796aa !important;
+  font-size: 9px !important;
+  line-height: 1.25 !important;
+}
+
+@media (max-width: 380px) {
+  body.gucc-enhanced .gucc-shell-dock {
+    width: calc(100vw - 8px) !important;
+    max-width: calc(100vw - 8px) !important;
+    gap: 2px !important;
+    padding: 4px !important;
+  }
+
+  body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) {
+    min-height: 52px !important;
+    font-size: 8px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-menu {
+    padding: 8px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  body.gucc-enhanced {
+    padding-right: 82px !important;
+    padding-bottom: 32px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-dock {
+    left: auto !important;
+    right: 10px !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: 64px !important;
+    max-width: 64px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    padding: 6px !important;
+  }
+
+  body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) {
+    min-height: 50px !important;
+    font-size: 8px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-menu {
+    left: auto !important;
+    right: calc(100% + 10px) !important;
+    top: 0 !important;
+    bottom: auto !important;
+    width: 360px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger, .gucc-shell-menu-item) {
+    transition: none !important;
+  }
+}

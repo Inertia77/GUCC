@@ -5,6 +5,8 @@
   const normalizedRoot = rootUrl.href.endsWith('/') ? rootUrl.href : `${rootUrl.href}/`;
   const path = window.location.pathname.replace(/\/index\.html$/, '/');
   const isActive = (needle) => path.includes(needle);
+  const productionActive = isActive('/apps/video-workspace/production-system/');
+  const workspaceActive = isActive('/apps/video-workspace/') && !productionActive;
 
   const ensureStylesheet = (selector, href, dataKey) => {
     const desiredHref = new URL(href, normalizedRoot).href;
@@ -27,12 +29,12 @@
   const ensureStyles = () => {
     ensureStylesheet(
       'link[data-gucc-shell-nav-v2]',
-      'assets/gucc-shell-nav-v2.css?v=2',
+      'assets/gucc-shell-nav-v2.css?v=3',
       'guccShellNavV2'
     );
     ensureStylesheet(
       'link[data-gucc-uiux-v1]',
-      'assets/gucc-uiux-v1.css?v=1',
+      'assets/gucc-uiux-v1.css?v=2',
       'guccUiuxV1'
     );
   };
@@ -53,9 +55,14 @@
 
   const childRoutes = {
     workspace: {
-      icon: 'WS', label: 'WorkSpace', note: '视频项目与策划',
+      icon: 'WS', label: 'Studio', note: '策划、研究与内容草稿',
       href: `${normalizedRoot}apps/video-workspace/`,
-      active: isActive('/apps/video-workspace/')
+      active: workspaceActive
+    },
+    production: {
+      icon: 'PRD', label: 'Production', note: '正式制作、状态机与 Lock',
+      href: `${normalizedRoot}apps/video-workspace/production-system/`,
+      active: productionActive
     },
     cover: {
       icon: 'CG', label: '封面', note: 'Cover Generator',
@@ -101,9 +108,9 @@
 
   const groups = {
     create: {
-      title: '创作工具',
-      hint: '写 · 做 · 发',
-      items: [childRoutes.workspace, childRoutes.cover, childRoutes.publish]
+      title: '创作流程',
+      hint: '策划 · 制作 · 封面 · 发布',
+      items: [childRoutes.workspace, childRoutes.production, childRoutes.cover, childRoutes.publish]
     },
     library: {
       title: '资料与研究',
@@ -145,7 +152,8 @@
     const body = document.body;
     if (!body) return;
     if (dbActive) body.classList.add('command-center-page');
-    if (isActive('/apps/video-workspace/')) body.classList.add('workspace-page');
+    if (workspaceActive) body.classList.add('workspace-page');
+    if (productionActive) body.classList.add('production-system-page');
     if (isActive('/apps/cover-generator/')) body.classList.add('cover-generator-page');
     if (isActive('/apps/publishing-console/')) body.classList.add('publishing-console-page');
     if (isActive('/reference/ai-prompts')) body.classList.add('gucc-reference', 'prompt-page');
@@ -158,6 +166,39 @@
     document.title = 'GUCC DB';
     document.querySelectorAll('.topbar h1').forEach((heading) => {
       if (heading.textContent.trim() === 'GameUp Command Center') heading.textContent = 'GUCC DB';
+    });
+  };
+
+  const enhancePortalLaunch = () => {
+    if (!document.body?.classList.contains('portal-page')) return;
+    const grid = document.querySelector('.launch-grid');
+    if (!grid) return;
+
+    let productionCard = grid.querySelector('[data-gucc-production-entry]');
+    if (!productionCard) {
+      productionCard = document.createElement('a');
+      productionCard.className = 'launch-card';
+      productionCard.dataset.guccProductionEntry = 'true';
+      productionCard.href = `${normalizedRoot}apps/video-workspace/production-system/`;
+      productionCard.style.setProperty('--accent', 'var(--violet)');
+      productionCard.innerHTML = `
+        <span class="launch-code">PRD</span>
+        <span><strong>Production</strong><small>正式制作 · 状态机 · Lock</small></span>
+        <span class="launch-arrow">›</span>`;
+      const studioCard = [...grid.querySelectorAll('.launch-card')]
+        .find((card) => card.getAttribute('href')?.includes('/apps/video-workspace/'));
+      if (studioCard?.nextSibling) grid.insertBefore(productionCard, studioCard.nextSibling);
+      else if (studioCard) studioCard.insertAdjacentElement('afterend', productionCard);
+      else grid.prepend(productionCard);
+    }
+
+    const countLabel = document.querySelector('.section-head span');
+    if (countLabel && /核心区域/.test(countLabel.textContent || '')) {
+      countLabel.textContent = '8 个核心区域 · 直接进入';
+    }
+
+    document.querySelectorAll('.system-panel .system-link').forEach((link) => {
+      if (link.getAttribute('href')?.includes('/production-system/')) link.remove();
     });
   };
 
@@ -250,15 +291,16 @@
     document.body.classList.add('gucc-enhanced');
     applyPageClasses();
     normalizeDbPresentation();
+    enhancePortalLaunch();
     enhanceCommandCenterFilters();
 
     const existingDock = document.querySelector('.gucc-shell-dock');
-    if (existingDock?.dataset.shellVersion === '3') return;
+    if (existingDock?.dataset.shellVersion === '4') return;
     if (existingDock) existingDock.remove();
 
     const dock = document.createElement('nav');
     dock.className = 'gucc-shell-dock';
-    dock.dataset.shellVersion = '3';
+    dock.dataset.shellVersion = '4';
     dock.setAttribute('aria-label', 'GUCC 全局导航');
 
     dock.innerHTML = navItems.map((item) => {
@@ -286,6 +328,7 @@
     const closeMenu = () => {
       openKey = '';
       menu.hidden = true;
+      delete menu.dataset.group;
       dock.querySelectorAll('.gucc-shell-trigger').forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
     };
 
@@ -297,6 +340,7 @@
         return;
       }
       openKey = key;
+      menu.dataset.group = key;
       menu.innerHTML = `
         <div class="gucc-shell-menu-head">
           <strong>${escapeHtml(group.title)}</strong>

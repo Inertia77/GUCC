@@ -1,4 +1,4 @@
-/* Reachable navigation without side-rail pressure. Loaded as a unique asset to bypass stale PWA CSS. */
+/* Reachable navigation without side-rail pressure on phones; desktop Cover follows the shared right rail. */
 body.cover-generator-page {
   padding-right: 0 !important;
   padding-bottom: calc(78px + env(safe-area-inset-bottom)) !important;
@@ -54,6 +54,26 @@ body.workspace-page .page > .compact-dock .btns {
   gap: 4px !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
+}
+
+@media (min-width: 1024px) {
+  body.cover-generator-page {
+    padding-right: 82px !important;
+    padding-bottom: 32px !important;
+  }
+
+  body.cover-generator-page .gucc-shell-dock {
+    left: auto !important;
+    right: 10px !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: 64px !important;
+    max-width: 64px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+  }
 }
 
 @media (max-width: 980px) {

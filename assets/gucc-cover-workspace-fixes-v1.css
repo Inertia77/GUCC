@@ -60,7 +60,7 @@ body.cover-generator-page .gucc-shell-dock {
   max-width: 560px !important;
   margin: 0 !important;
   display: grid !important;
-  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   z-index: 90 !important;
 }
 
@@ -97,22 +97,33 @@ body.cover-generator-page .gucc-shell-dock {
     width: min(760px, calc(100% - 16px)) !important;
   }
 
+  /* On phones, inspect the selected object immediately after the canvas.
+     Materials remain one scroll farther down because they are used less often once editing starts. */
   body.cover-generator-page .grid {
     grid-template-columns: minmax(0, 1fr) !important;
     grid-template-areas:
       "workspace"
-      "materials"
-      "inspector" !important;
+      "inspector"
+      "materials" !important;
   }
 
   body.cover-generator-page .style-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+
+  body.cover-generator-page .inspector-panel {
+    scroll-margin-top: 10px;
+  }
+
+  /* Prevent iOS focus zoom and make touch editing consistent with the rest of GUCC. */
+  body.cover-generator-page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea) {
+    font-size: 16px !important;
+  }
 }
 
 @media (max-width: 620px) {
   body.cover-generator-page {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
   }
 
   body.cover-generator-page .app {

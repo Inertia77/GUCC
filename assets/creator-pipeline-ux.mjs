@@ -14,6 +14,10 @@ function injectStyles() {
       min-width: 0;
     }
 
+    .gcb-integrated-host:empty {
+      display: none !important;
+    }
+
     .gcb-integrated-host .gucc-creator-bridge.gcb-inline {
       position: relative !important;
       inset: auto !important;
@@ -166,6 +170,7 @@ function ensureHost(anchor, className) {
   const host = document.createElement('section');
   host.className = `gcb-integrated-host ${className}`;
   host.setAttribute('aria-label', 'GUCC 创作流程状态');
+  host.setAttribute('aria-live', 'polite');
   anchor.insertAdjacentElement('afterend', host);
   return host;
 }
@@ -200,6 +205,8 @@ function integratePanel() {
   if (!host) return false;
 
   panel.classList.add('gcb-inline');
+  const close = panel.querySelector('.gcb-close');
+  if (close) close.title = '隐藏流程状态条，刷新页面后恢复';
   host.appendChild(panel);
   return true;
 }

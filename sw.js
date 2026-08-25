@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v3";
-const RUNTIME_CACHE = "gucc-runtime-v3";
+const STATIC_CACHE = "gucc-static-v4";
+const RUNTIME_CACHE = "gucc-runtime-v4";
 
 const APP_SHELL = [
   "./",

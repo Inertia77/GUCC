@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v4";
-const RUNTIME_CACHE = "gucc-runtime-v4";
+const STATIC_CACHE = "gucc-static-v5";
+const RUNTIME_CACHE = "gucc-runtime-v5";
 
 const APP_SHELL = [
   "./",
@@ -109,7 +109,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (["script", "style"].includes(request.destination) || url.pathname.endsWith(".json")) {
+  // Story Library Markdown is living source data. Never let an old runtime
+  // cache permanently win over a freshly merged document or FILE_MANIFEST.
+  if (
+    ["script", "style"].includes(request.destination)
+    || url.pathname.endsWith(".json")
+    || url.pathname.endsWith(".md")
+  ) {
     event.respondWith(networkFirst(request));
     return;
   }

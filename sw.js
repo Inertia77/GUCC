@@ -123,16 +123,29 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(cacheFirst(request));
 });
 
+function runtimeCacheKey(request) {
+  const url = new URL(request.url);
+  if (!url.pathname.endsWith(".md")) return request;
+
+  // The Story Library adds cache-busting query parameters so clients still
+  // controlled by an older worker cannot reuse a stale Markdown response.
+  // Store the fresh response under the canonical URL to avoid unbounded keys.
+  url.searchParams.delete("_storyv");
+  url.searchParams.delete("catalog");
+  return url.toString();
+}
+
 async function networkFirst(request) {
   const cache = await caches.open(RUNTIME_CACHE);
+  const cacheKey = runtimeCacheKey(request);
   try {
     const response = await fetch(request);
-    if (response.ok) await cache.put(request, response.clone());
+    if (response.ok) await cache.put(cacheKey, response.clone());
     return response;
   } catch {
     return (
-      await cache.match(request)
-      || await caches.match(request)
+      await cache.match(cacheKey)
+      || await caches.match(cacheKey)
       || (request.mode === "navigate" ? await caches.match("./offline.html") : null)
       || new Response("", { status: 503, statusText: "Offline" })
     );

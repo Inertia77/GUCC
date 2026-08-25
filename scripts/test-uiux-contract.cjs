@@ -32,6 +32,7 @@ assert.match(workspaceFixes, /font-size:\s*16px !important/, 'Workspace phone ed
 assert.match(workspaceFixes, /:has\(#structureFloatingNav\.show\)/, 'Workspace must reserve extra bottom space when structure navigation is visible.');
 assert.match(coverFixes, /"workspace"\s*\n\s*"inspector"\s*\n\s*"materials"/, 'Cover mobile flow must put the inspector immediately after the canvas.');
 assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors must avoid iOS focus zoom.');
+assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
 
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');

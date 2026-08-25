@@ -20,18 +20,11 @@ where g.id = p.game_id
   and p.summary = '叶琉千'
   and p.hold_status = 'あり';
 
+-- Owner confirmed that every HSR party is held.
 update public.parties p
 set hold_status = 'YES',
     updated_at = now()
 from public.games g
 where g.id = p.game_id
   and g.code = 'HSR'
-  and p.summary in (
-    'Archer+远坂凛（Fate联动）',
-    'Saber+吉尔伽美什（Fate联动）',
-    '姬子・启行阵容',
-    '欢愉阵容',
-    '白厄阵容',
-    '记忆阵容'
-  )
   and p.hold_status is distinct from 'YES';

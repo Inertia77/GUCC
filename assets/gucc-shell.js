@@ -118,10 +118,14 @@
     ensureStyles();
     document.body.classList.add('gucc-enhanced');
     normalizeDbPresentation();
-    if (document.querySelector('.gucc-shell-dock')) return;
+
+    const existingDock = document.querySelector('.gucc-shell-dock');
+    if (existingDock?.dataset.shellVersion === '2') return;
+    if (existingDock) existingDock.remove();
 
     const dock = document.createElement('nav');
     dock.className = 'gucc-shell-dock';
+    dock.dataset.shellVersion = '2';
     dock.setAttribute('aria-label', 'GUCC 全局导航');
 
     dock.innerHTML = navItems.map((item) => {

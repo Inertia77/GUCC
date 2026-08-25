@@ -11,6 +11,9 @@
     const existing = document.querySelector(selector);
     if (existing) {
       if (existing.href !== desiredHref) existing.href = desiredHref;
+      if (document.readyState !== 'loading' && document.head.lastElementChild !== existing) {
+        document.head.appendChild(existing);
+      }
       return existing;
     }
     const link = document.createElement('link');

@@ -116,7 +116,7 @@ body.workspace-page .gucc-shell-dock {
   max-width: 560px !important;
   margin: 0 !important;
   display: grid !important;
-  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   z-index: 90 !important;
 }
 
@@ -127,7 +127,11 @@ body.workspace-page #structureFloatingNav {
 
 @media (max-width: 980px) {
   body.workspace-page {
-    padding: 0 0 calc(136px + env(safe-area-inset-bottom)) !important;
+    padding: 0 0 calc(144px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.workspace-page:has(#structureFloatingNav.show) {
+    padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
   }
 
   body.workspace-page .page {
@@ -153,6 +157,11 @@ body.workspace-page #structureFloatingNav {
     bottom: calc(124px + env(safe-area-inset-bottom)) !important;
     width: auto !important;
     max-width: none !important;
+  }
+
+  /* Prevent focus zoom on iOS and keep touch editing predictable. */
+  body.workspace-page .page :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea, .richbox) {
+    font-size: 16px !important;
   }
 }
 

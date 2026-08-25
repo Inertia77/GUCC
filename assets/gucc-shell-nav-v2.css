@@ -76,15 +76,18 @@ body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger) span {
 }
 
 body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):hover,
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):focus-visible,
 body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger).is-active,
 body.gucc-enhanced .gucc-shell-trigger[aria-expanded="true"] {
   border-color: rgba(116, 243, 255, .34) !important;
   background: linear-gradient(135deg, #78ffba, #74f3ff) !important;
   color: #06110f !important;
   transform: translateY(-1px) !important;
+  outline: none !important;
 }
 
 body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):hover b,
+body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger):focus-visible b,
 body.gucc-enhanced :where(.gucc-shell-link, .gucc-shell-trigger).is-active b,
 body.gucc-enhanced .gucc-shell-trigger[aria-expanded="true"] b {
   color: #06110f !important;
@@ -96,6 +99,9 @@ body.gucc-enhanced .gucc-shell-menu {
   right: 0 !important;
   bottom: calc(100% + 9px) !important;
   width: auto !important;
+  max-height: min(70dvh, 470px) !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
   padding: 11px !important;
   border: 1px solid rgba(255, 255, 255, .15) !important;
   border-radius: 18px !important;
@@ -128,6 +134,10 @@ body.gucc-enhanced .gucc-shell-menu-grid {
   gap: 7px !important;
 }
 
+body.gucc-enhanced .gucc-shell-menu[data-group="create"] .gucc-shell-menu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
 body.gucc-enhanced .gucc-shell-menu-item {
   min-width: 0 !important;
   min-height: 74px !important;
@@ -145,10 +155,12 @@ body.gucc-enhanced .gucc-shell-menu-item {
 }
 
 body.gucc-enhanced .gucc-shell-menu-item:hover,
+body.gucc-enhanced .gucc-shell-menu-item:focus-visible,
 body.gucc-enhanced .gucc-shell-menu-item.is-active {
   border-color: rgba(116, 243, 255, .34) !important;
   background: rgba(116, 243, 255, .10) !important;
   transform: translateY(-1px) !important;
+  outline: none !important;
 }
 
 body.gucc-enhanced .gucc-shell-menu-item b {
@@ -184,6 +196,11 @@ body.gucc-enhanced .gucc-shell-menu-item small {
   }
 
   body.gucc-enhanced .gucc-shell-menu {
+    padding: 8px !important;
+  }
+
+  body.gucc-enhanced .gucc-shell-menu-item {
+    min-height: 68px !important;
     padding: 8px !important;
   }
 }

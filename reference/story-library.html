@@ -9,303 +9,24 @@
   <script src="../assets/access-guard.js" data-root="../" data-guard="true"></script>
   <style>
     :root {
-      --bg: #070a10;
-      --panel: rgba(14, 18, 27, .92);
-      --panel2: rgba(18, 24, 35, .96);
-      --line: #293446;
-      --line-soft: rgba(255, 255, 255, .08);
-      --text: #eef5ff;
-      --muted: #9aaabd;
-      --dim: #66758a;
-      --mint: #77ffb8;
-      --cyan: #76f7ff;
-      --pink: #ff5da8;
-      --amber: #ffd166;
-      --violet: #8ea7ff;
-      --radius: 8px;
+      --bg:#070a10; --panel:rgba(14,18,27,.92); --panel2:rgba(18,24,35,.96);
+      --line:#293446; --line-soft:rgba(255,255,255,.08); --text:#eef5ff;
+      --muted:#9aaabd; --dim:#66758a; --mint:#77ffb8; --cyan:#76f7ff;
+      --pink:#ff5da8; --amber:#ffd166; --violet:#8ea7ff; --radius:8px;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: "Segoe UI", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
-      background:
-        repeating-linear-gradient(90deg, rgba(118, 247, 255, .045) 0, rgba(118, 247, 255, .045) 1px, transparent 1px, transparent 88px),
-        repeating-linear-gradient(0deg, rgba(255, 93, 168, .032) 0, rgba(255, 93, 168, .032) 1px, transparent 1px, transparent 88px),
-        linear-gradient(135deg, #070a10, #091016 48%, #0c121d);
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(108deg, transparent 0 14%, rgba(118, 247, 255, .08) 14.05% 14.2%, transparent 14.3%),
-        linear-gradient(132deg, transparent 0 78%, rgba(119, 255, 184, .07) 78.05% 78.2%, transparent 78.3%);
-    }
-    a { color: inherit; }
-    .wrap {
-      width: min(1380px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0 52px;
-      position: relative;
-      z-index: 1;
-    }
-    .topline {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 34px;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-    .brand img { width: 38px; height: 38px; }
-    .brand strong { display: block; font-size: 15px; line-height: 1; }
-    .brand span span { display: block; margin-top: 4px; color: var(--dim); font-size: 12px; }
-    .back {
-      display: inline-flex;
-      align-items: center;
-      min-height: 40px;
-      padding: 0 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.035);
-      text-decoration: none;
-      font-weight: 800;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr);
-      gap: 22px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--cyan);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(38px, 7vw, 76px);
-      line-height: .95;
-      letter-spacing: 0;
-    }
-    .subtitle {
-      margin: 18px 0 0;
-      color: var(--muted);
-      line-height: 1.85;
-      max-width: 780px;
-    }
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(10, 14, 22, .74);
-      padding: 16px;
-    }
-    .panel-row {
-      display: grid;
-      grid-template-columns: 82px minmax(0,1fr);
-      gap: 12px;
-      padding: 10px 0;
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-    .panel-row:first-child { border-top: 0; padding-top: 0; }
-    .label {
-      color: var(--dim);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-    .value { color: var(--text); line-height: 1.55; }
-    .layout {
-      display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-    .sidebar {
-      position: sticky;
-      top: 16px;
-      max-height: calc(100vh - 32px);
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(10, 14, 22, .78);
-      padding: 12px;
-    }
-    .search {
-      width: 100%;
-      margin-bottom: 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #070a10;
-      color: var(--text);
-      padding: 11px 12px;
-      outline: none;
-    }
-    .search:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 3px rgba(118,247,255,.1);
-    }
-    details {
-      border-top: 1px solid rgba(255,255,255,.06);
-      padding: 8px 0;
-    }
-    details:first-of-type { border-top: 0; }
-    summary {
-      cursor: pointer;
-      color: var(--text);
-      font-weight: 900;
-      padding: 8px 6px;
-    }
-    .doc-link {
-      display: grid;
-      grid-template-columns: 30px minmax(0, 1fr);
-      gap: 8px;
-      width: 100%;
-      border: 1px solid transparent;
-      border-radius: var(--radius);
-      background: transparent;
-      color: var(--muted);
-      text-align: left;
-      padding: 8px;
-      cursor: pointer;
-      font: inherit;
-    }
-    .doc-link:hover,
-    .doc-link.active {
-      color: var(--text);
-      border-color: rgba(118,247,255,.22);
-      background: rgba(118,247,255,.055);
-    }
-    .doc-code {
-      color: var(--cyan);
-      font-weight: 900;
-      font-size: 12px;
-    }
-    .doc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .reader {
-      min-height: 70vh;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, var(--panel), rgba(9,13,20,.96));
-      overflow: hidden;
-    }
-    .reader-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(11, 15, 23, .94);
-    }
-    .reader-title {
-      min-width: 0;
-    }
-    .reader-title strong {
-      display: block;
-      font-size: 18px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .reader-title span {
-      display: block;
-      margin-top: 4px;
-      color: var(--dim);
-      font-size: 12px;
-    }
-    .reader-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .reader-actions a,
-    .reader-actions button {
-      min-height: 34px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      color: var(--text);
-      background: rgba(255,255,255,.035);
-      text-decoration: none;
-      padding: 7px 10px;
-      cursor: pointer;
-      font: inherit;
-      font-weight: 800;
-      font-size: 12px;
-    }
-    .doc {
-      padding: 18px 22px 30px;
-    }
-    .doc h1,
-    .doc h2,
-    .doc h3 {
-      line-height: 1.25;
-      letter-spacing: 0;
-    }
-    .doc h1 { font-size: 34px; margin: 0 0 16px; }
-    .doc h2 { font-size: 24px; margin: 26px 0 10px; color: var(--cyan); }
-    .doc h3 { font-size: 18px; margin: 22px 0 8px; color: var(--mint); }
-    .doc p,
-    .doc li {
-      color: var(--muted);
-      line-height: 1.8;
-    }
-    .doc ul,
-    .doc ol {
-      padding-left: 22px;
-    }
-    .doc blockquote {
-      margin: 14px 0;
-      padding: 12px 14px;
-      border-left: 3px solid var(--cyan);
-      background: rgba(118,247,255,.055);
-      color: var(--text);
-    }
-    .doc pre {
-      margin: 14px 0;
-      padding: 14px;
-      border: 1px solid rgba(118,247,255,.2);
-      border-radius: var(--radius);
-      background: #070a10;
-      overflow: auto;
-      white-space: pre-wrap;
-      color: #dbe5ff;
-    }
-    .doc code {
-      color: var(--cyan);
-      font-family: "Cascadia Code", "Consolas", monospace;
-      font-size: 13px;
-    }
-    .doc table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 14px 0;
-      overflow: hidden;
-      border-radius: var(--radius);
-    }
-    .doc th,
-    .doc td {
-      border: 1px solid var(--line);
-      padding: 9px 10px;
-      color: var(--muted);
-      vertical-align: top;
-    }
-    .doc th {
-      color: var(--text);
-      background: rgba(255,255,255,.05);
-    }
-    @media (max-width: 980px) {
-      .hero, .layout { grid-template-columns: 1fr; }
-      .sidebar { position: static; max-height: none; }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--text);font-family:"Segoe UI","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;background:repeating-linear-gradient(90deg,rgba(118,247,255,.045) 0,rgba(118,247,255,.045) 1px,transparent 1px,transparent 88px),repeating-linear-gradient(0deg,rgba(255,93,168,.032) 0,rgba(255,93,168,.032) 1px,transparent 1px,transparent 88px),linear-gradient(135deg,#070a10,#091016 48%,#0c121d)}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(108deg,transparent 0 14%,rgba(118,247,255,.08) 14.05% 14.2%,transparent 14.3%),linear-gradient(132deg,transparent 0 78%,rgba(119,255,184,.07) 78.05% 78.2%,transparent 78.3%)}
+    a{color:inherit}.wrap{width:min(1380px,calc(100% - 40px));margin:0 auto;padding:28px 0 52px;position:relative;z-index:1}
+    .topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:34px}.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none}.brand img{width:38px;height:38px}.brand strong{display:block;font-size:15px;line-height:1}.brand span span{display:block;margin-top:4px;color:var(--dim);font-size:12px}.back{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(255,255,255,.035);text-decoration:none;font-weight:800}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.72fr);gap:22px;align-items:end;margin-bottom:18px}.eyebrow{margin:0 0 8px;color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}h1{margin:0;font-size:clamp(38px,7vw,76px);line-height:.95;letter-spacing:0}.subtitle{margin:18px 0 0;color:var(--muted);line-height:1.85;max-width:780px}
+    .panel{border:1px solid var(--line);border-radius:var(--radius);background:rgba(10,14,22,.74);padding:16px}.panel-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)}.panel-row:first-child{border-top:0;padding-top:0}.label{color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.1em}.value{color:var(--text);line-height:1.55}
+    .layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}.sidebar{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:rgba(10,14,22,.78);padding:12px}.search{width:100%;margin-bottom:12px;border:1px solid var(--line);border-radius:var(--radius);background:#070a10;color:var(--text);padding:11px 12px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(118,247,255,.1)}details{border-top:1px solid rgba(255,255,255,.06);padding:8px 0}details:first-of-type{border-top:0}summary{cursor:pointer;color:var(--text);font-weight:900;padding:8px 6px}
+    .doc-link{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;width:100%;border:1px solid transparent;border-radius:var(--radius);background:transparent;color:var(--muted);text-align:left;padding:8px;cursor:pointer;font:inherit}.doc-link:hover,.doc-link.active{color:var(--text);border-color:rgba(118,247,255,.22);background:rgba(118,247,255,.055)}.doc-code{color:var(--cyan);font-weight:900;font-size:12px}.doc-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .reader{min-height:70vh;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel),rgba(9,13,20,.96));overflow:hidden}.reader-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:rgba(11,15,23,.94)}.reader-title{min-width:0}.reader-title strong{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.reader-title span{display:block;margin-top:4px;color:var(--dim);font-size:12px}.reader-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.reader-actions a,.reader-actions button{min-height:34px;border:1px solid var(--line);border-radius:var(--radius);color:var(--text);background:rgba(255,255,255,.035);text-decoration:none;padding:7px 10px;cursor:pointer;font:inherit;font-weight:800;font-size:12px}
+    .doc{padding:18px 22px 30px}.doc h1,.doc h2,.doc h3{line-height:1.25;letter-spacing:0}.doc h1{font-size:34px;margin:0 0 16px}.doc h2{font-size:24px;margin:26px 0 10px;color:var(--cyan)}.doc h3{font-size:18px;margin:22px 0 8px;color:var(--mint)}.doc p,.doc li{color:var(--muted);line-height:1.8}.doc ul,.doc ol{padding-left:22px}.doc blockquote{margin:14px 0;padding:12px 14px;border-left:3px solid var(--cyan);background:rgba(118,247,255,.055);color:var(--text)}.doc pre{margin:14px 0;padding:14px;border:1px solid rgba(118,247,255,.2);border-radius:var(--radius);background:#070a10;overflow:auto;white-space:pre-wrap;color:#dbe5ff}.doc code{color:var(--cyan);font-family:"Cascadia Code","Consolas",monospace;font-size:13px}.doc table{width:100%;border-collapse:collapse;margin:14px 0;overflow:hidden;border-radius:var(--radius)}.doc th,.doc td{border:1px solid var(--line);padding:9px 10px;color:var(--muted);vertical-align:top}.doc th{color:var(--text);background:rgba(255,255,255,.05)}
+    .catalog-note{margin:0 0 10px;padding:8px 10px;border:1px solid rgba(119,255,184,.15);border-radius:var(--radius);background:rgba(119,255,184,.04);color:var(--dim);font-size:11px;line-height:1.5}.catalog-note strong{color:var(--mint)}
+    @media(max-width:980px){.hero,.layout{grid-template-columns:1fr}.sidebar{position:static;max-height:none}}
   </style>
   <link rel="stylesheet" href="../assets/gucc-theme.css?v=7" />
   <link rel="stylesheet" href="../assets/gucc-reference-v4.css" />
@@ -315,476 +36,80 @@
 <body class="gucc-enhanced gucc-reference story-page">
   <main class="wrap">
     <div class="topline">
-      <a class="brand" href="../">
-        <img src="../assets/icons/gucc-icon.svg?v=5" alt="" />
-        <span><strong>GUCC Story Library</strong><span>versioned lore notes</span></span>
-      </a>
+      <a class="brand" href="../"><img src="../assets/icons/gucc-icon.svg?v=5" alt="" /><span><strong>GUCC Story Library</strong><span>versioned lore notes</span></span></a>
       <a class="back" href="../">返回 Portal</a>
     </div>
-
     <section class="hero">
-      <div>
-        <p class="eyebrow">GameUp Command Center</p>
-        <h1>Story Library</h1>
-        <p class="subtitle">给游戏剧情、版本线索、阵营关系、角色动机和视频选题留一个可以直接阅读的入口。右侧内容从 Markdown 文件实时读取，后面慢慢维护原文件就行。</p>
-      </div>
+      <div><p class="eyebrow">GameUp Command Center</p><h1>Story Library</h1><p class="subtitle">给游戏剧情、版本线索、阵营关系、角色动机和视频选题留一个可以直接阅读的入口。目录自动读取文件清单，Markdown 更新后无需再手改网页入口。</p></div>
       <aside class="panel">
         <div class="panel-row"><div class="label">Source</div><div class="value"><code>reference/story-library/story-library/</code></div></div>
         <div class="panel-row"><div class="label">Games</div><div class="value">崩坏：星穹铁道 / 绝区零 / 鸣潮 / 终末地 / 异环 / ANANTA</div></div>
-        <div class="panel-row"><div class="label">Mode</div><div class="value">左侧选择文件，右侧阅读；改 Markdown 即更新网页内容。</div></div>
+        <div class="panel-row"><div class="label">Mode</div><div class="value">目录从 <code>FILE_MANIFEST.md</code> 自动同步；正文网络优先读取。</div></div>
       </aside>
     </section>
-
     <section class="layout">
       <aside class="sidebar">
-        <button class="library-nav-toggle" id="libraryNavToggle" type="button" aria-expanded="false">
-          <span>浏览资料目录</span>
-          <span id="libraryNavCurrent">当前：分册说明</span>
-        </button>
+        <button class="library-nav-toggle" id="libraryNavToggle" type="button" aria-expanded="false"><span>浏览资料目录</span><span id="libraryNavCurrent">当前：分册说明</span></button>
+        <p class="catalog-note" id="catalogNote"><strong>LIVE</strong> 正在同步 Story Library 文件清单…</p>
         <input id="search" class="search" placeholder="搜索游戏 / 文件名 / 版本" />
         <div id="nav"></div>
       </aside>
       <article class="reader">
-        <div class="reader-head">
-          <div class="reader-title">
-            <strong id="readerTitle">请选择文档</strong>
-            <span id="readerPath">Markdown viewer ready</span>
-          </div>
-          <div class="reader-actions">
-            <a id="openSource" href="#" target="_blank" rel="noopener noreferrer">打开源文件</a>
-            <button id="copyPath" type="button">复制路径</button>
-          </div>
-        </div>
+        <div class="reader-head"><div class="reader-title"><strong id="readerTitle">请选择文档</strong><span id="readerPath">Markdown viewer ready</span></div><div class="reader-actions"><a id="openSource" href="#" target="_blank" rel="noopener noreferrer">打开源文件</a><button id="copyPath" type="button">复制路径</button></div></div>
         <div class="doc" id="doc">从左侧选择一个剧情资料文件。</div>
       </article>
     </section>
   </main>
+<script>
+const base='./story-library/story-library/';
+const groups=[
+ {title:'总览与维护',code:'SYS',docs:[['00-index.md','资料库总览'],['90-maintenance-guide.md','维护指南'],['99-source-log.md','来源记录'],['FILE_MANIFEST.md','文件清单']]},
+ {title:'崩坏：星穹铁道',code:'HSR',prefix:'games/honkai-star-rail/',docs:[
+  ['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],
+  ['versions/1.0-herta-space-station.md','1.0 黑塔空间站'],['versions/1.0-jarilo-vi.md','1.0 雅利洛-VI'],['versions/1.0-1.3-xianzhou-luofu.md','1.0-1.3 仙舟罗浮'],['versions/1.4-1.6-interlude.md','1.4-1.6 幕间'],['versions/2.0-2.3-penacony.md','2.0-2.3 匹诺康尼'],['versions/2.4-2.7-xianzhou-wardance.md','2.4-2.7 仙舟后续'],['versions/3.0-3.7-amphoreus.md','3.0-3.7 翁法罗斯'],['versions/4.x-duoxiangleyuan.md','4.x 二相乐园总览'],['versions/4.0-planarcadia-no-aha-at-full-moon.md','4.0 二相乐园'],['versions/4.1-planarcadia-unraveled-for-daybreak.md','4.1 二相乐园'],['versions/4.2-planarcadia-so-laughed-the-masses.md','4.2 二相乐园'],['versions/4.3-planarcadia-lethe-below-the-living.md','4.3 二相乐园'],['versions/4.4-planarcadia-in-ravages-whistle.md','4.4 二相乐园']]},
+ {title:'绝区零',code:'ZZZ',prefix:'games/zenless-zone-zero/',docs:[
+  ['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],
+  ['versions/1.0-prologue-business-strangeness-justice.md','1.0 序章'],['versions/1.0-ch1-cats-lost-and-found.md','1.0 第一章 猫的失物'],['versions/1.0-ch2-belobog-call-from-hollow.md','1.0 第二章 白祇重工'],['versions/1.0-ch3-victoria-midnight-pursuit.md','1.0 第三章 维多利亚'],['versions/1.1-undercover-rnb.md','1.1 卧底 R&B'],['versions/1.2-tour-de-inferno.md','1.2 火狱骑行'],['versions/1.3-virtual-revenge.md','1.3 虚拟杀机'],['versions/1.4-starfall-scattered.md','1.4 第一季高潮'],['versions/1.5-astra-nomical-moment.md','1.5 第一季后续'],['versions/1.6-bury-tears-past-upper.md','1.6 第一季尾声·上'],['versions/1.7-bury-tears-past-lower.md','1.7 第一季尾声·下'],['versions/2.0-clouds-return-janus-quarter.md','2.0 卫非地开篇'],['versions/2.1-delayed-wave.md','2.1 第二季'],['versions/2.2-do-not-go-gentle.md','2.2 第二季'],['versions/2.3-can-you-remember-dream.md','2.3 可曾记得梦'],['versions/2.4-approaching-abyss.md','2.4 将临未抵的深渊'],['versions/2.5-faint-light-guides-lamp.md','2.5 微光引灯时'],['versions/2.6-old-dream-encore.md','2.6 旧梦的安可曲'],['versions/2.7-new-eridu-sunset-upper.md','2.7 新·艾利都日落时·上'],['versions/2.8-new-eridu-sunset-lower.md','2.8 新·艾利都日落时·下'],['versions/3.0-roscaelifer-confession-of-a-sleepwalker.md','3.0 罗斯凯利法'],['versions/3.1-long-goodbye.md','3.1 漫长的告别']]},
+ {title:'鸣潮',code:'WW',prefix:'games/wuthering-waves/',docs:[
+  ['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],
+  ['versions/1.0-jinzhou-awakening.md','1.0 今州开篇'],['versions/1.1-mt-firmament.md','1.1 乘霄山'],['versions/1.2-festival-and-afterglow.md','1.2 追月节'],['versions/1.3-black-shores.md','1.3 黑海岸'],['versions/1.4-somnoire-and-transition.md','1.4 过渡'],['versions/2.0-rinascita-opening.md','2.0 黎那汐塔开篇'],['versions/2.1-2.3-rinascita-middle.md','2.1-2.3 黎那汐塔中段'],['versions/2.4-2.6-rinascita-climax.md','2.4-2.6 黎那汐塔高潮'],['versions/2.7-rinascita-finale.md','2.7 黎那汐塔收束'],['versions/2.8-city-set-in-amber.md','2.8 琥珀之城'],['versions/3.0-we-who-see-the-stars.md','3.0 第三章开篇'],['versions/3.1-for-you-who-walk-in-snow.md','3.1 第三章'],['versions/3.2-resolution-to-illuminate-the-shadows.md','3.2 第三章'],['versions/3.3-echoes-from-stars-end.md','3.3 第三章'],['versions/3.4-the-dream-not-dreamed.md','3.4 梦境篇'],['versions/3.5-blade-of-past-resounds.md','3.5 第四章开篇'],['versions/3.6-lamplight-in-mirage-swords-resolve.md','3.6 蜃云灯影，凡尘剑心']]},
+ {title:'明日方舟：终末地',code:'ENF',prefix:'games/arknights-endfield/',docs:[
+  ['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],['versions/0-world-primer.md','世界观入门'],['versions/1.0-prologue-cold-start.md','1.0 冷启动 / 复苏'],['versions/1.0-valley-iv-shattered-earth.md','1.0 四号谷地'],['versions/1.0-wuling-opening.md','1.0 武陵开篇'],['versions/1.1-new-tide-old-abyss.md','1.1 新潮起，故渊离'],['versions/1.2-spring-dawn.md','1.2 春晓时'],['versions/1.3-seeking-relic-notes.md','1.3 寻遗散记'],['versions/1.4-into-the-abyss.md','1.4 向渊行']]},
+ {title:'异环 / Neverness to Everness',code:'NTE',prefix:'games/neverness-to-everness/',docs:[
+  ['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],['versions/0-world-primer-hethereau.md','海特洛入门'],['versions/1.0-prologue-ebon.md','1.0 伊波恩开篇'],['versions/1.0-fabricated-love-operation.md','1.0 捏造恋爱大作战'],['versions/1.0-deal-deal-auction.md','1.0 第一枝拍卖会'],['versions/1.0-debt-collector-red-letter.md','1.0 讨债人 / 红字'],['versions/1.0-side-stories.md','1.0 番外档案'],['versions/1.1-dream-corridor.md','1.1 游梦洄廊'],['versions/1.2-999-nights-dragon.md','1.2 九百九十九夜'],['versions/1.3-mist-nest-game.md','1.3 雾巢游戏']]},
+ {title:'ANANTA / 无限大',code:'ANA',prefix:'games/ananta/',docs:[['README.md','分册说明'],['00-overview.md','世界观总览'],['01-timeline.md','时间线'],['02-factions.md','阵营'],['03-characters.md','角色'],['04-mysteries.md','谜团'],['05-video-hooks.md','视频钩子'],['versions/0-world-primer-nova-city.md','Nova City 入门'],['versions/0-trailer-and-demo-notes.md','PV/实机笔记'],['versions/future-version-template.md','未来版本模板']]}
+];
 
-  <script>
-    const base = './story-library/story-library/';
-    const groups = [
-      {
-        title: '总览与维护',
-        code: 'SYS',
-        docs: [
-          ['00-index.md', '资料库总览'],
-          ['90-maintenance-guide.md', '维护指南'],
-          ['99-source-log.md', '来源记录'],
-          ['FILE_MANIFEST.md', '文件清单']
-        ]
-      },
-      {
-        title: '崩坏：星穹铁道',
-        code: 'HSR',
-        prefix: 'games/honkai-star-rail/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/1.0-herta-space-station.md', '1.0 黑塔空间站'],
-          ['versions/1.0-jarilo-vi.md', '1.0 雅利洛-VI'],
-          ['versions/1.0-1.3-xianzhou-luofu.md', '1.0-1.3 仙舟罗浮'],
-          ['versions/1.4-1.6-interlude.md', '1.4-1.6 幕间'],
-          ['versions/2.0-2.3-penacony.md', '2.0-2.3 匹诺康尼'],
-          ['versions/2.4-2.7-xianzhou-wardance.md', '2.4-2.7 仙舟后续'],
-          ['versions/3.0-3.7-amphoreus.md', '3.0-3.7 翁法罗斯'],
-          ['versions/4.x-duoxiangleyuan.md', '4.x 占位']
-        ]
-      },
-      {
-        title: '绝区零',
-        code: 'ZZZ',
-        prefix: 'games/zenless-zone-zero/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/0-prologue-phaethon.md', '序章 法厄同'],
-          ['versions/1.0-cunning-hares-belobog-victoria.md', '1.0 狡兔屋/白祇/维多利亚'],
-          ['versions/1.1-public-security-jane.md', '1.1 治安局/简'],
-          ['versions/1.2-sons-of-calydon.md', '1.2 卡吕冬之子'],
-          ['versions/1.3-1.4-section6-and-finale.md', '1.3-1.4 对空六课'],
-          ['versions/2.0-clouds-return-janus-quarter.md', '2.0 新篇章'],
-          ['versions/2.x-season-2-middle.md', '2.x 中段'],
-          ['versions/3.0-roscaelifer-confession-of-a-sleepwalker.md', '3.0 占位']
-        ]
-      },
-      {
-        title: '鸣潮',
-        code: 'WW',
-        prefix: 'games/wuthering-waves/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/1.0-jinzhou-awakening.md', '1.0 今州开篇'],
-          ['versions/1.1-mt-firmament.md', '1.1 乘霄山'],
-          ['versions/1.2-festival-and-afterglow.md', '1.2 追月节'],
-          ['versions/1.3-black-shores.md', '1.3 黑海岸'],
-          ['versions/1.4-somnoire-and-transition.md', '1.4 过渡'],
-          ['versions/2.0-rinascita-opening.md', '2.0 黎那汐塔开篇'],
-          ['versions/2.1-2.3-rinascita-middle.md', '2.1-2.3 中段'],
-          ['versions/2.4-2.6-rinascita-climax.md', '2.4-2.6 高潮'],
-          ['versions/2.7-rinascita-finale.md', '2.7 收束'],
-          ['versions/2.8-city-set-in-amber.md', '2.8 占位']
-        ]
-      },
-      {
-        title: '明日方舟：终末地',
-        code: 'ENF',
-        prefix: 'games/arknights-endfield/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/0-world-primer.md', '世界观入门'],
-          ['versions/1.0-talos-ii-opening.md', '1.0 塔卫二开篇'],
-          ['versions/1.x-operator-and-region-notes.md', '1.x 干员/地区']
-        ]
-      },
-      {
-        title: '异环 / Neverness to Everness',
-        code: 'NTE',
-        prefix: 'games/neverness-to-everness/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/0-world-primer-hethereau.md', '海特洛入门'],
-          ['versions/1.0-hethereau-opening.md', '1.0 开篇'],
-          ['versions/1.1-urban-anomaly-cases.md', '1.1 城市异象'],
-          ['versions/1.2-watchlist.md', '1.2 观察清单']
-        ]
-      },
-      {
-        title: 'ANANTA / 无限大',
-        code: 'ANA',
-        prefix: 'games/ananta/',
-        docs: [
-          ['README.md', '分册说明'],
-          ['00-overview.md', '世界观总览'],
-          ['01-timeline.md', '时间线'],
-          ['02-factions.md', '阵营'],
-          ['03-characters.md', '角色'],
-          ['04-mysteries.md', '谜团'],
-          ['05-video-hooks.md', '视频钩子'],
-          ['versions/0-world-primer-nova-city.md', 'Nova City 入门'],
-          ['versions/0-trailer-and-demo-notes.md', 'PV/实机笔记'],
-          ['versions/future-version-template.md', '未来版本模板']
-        ]
-      }
-    ];
+const hiddenLegacyDocs=new Set([
+ 'games/zenless-zone-zero/versions/0-prologue-phaethon.md','games/zenless-zone-zero/versions/1.0-cunning-hares-belobog-victoria.md','games/zenless-zone-zero/versions/1.1-public-security-jane.md','games/zenless-zone-zero/versions/1.2-sons-of-calydon.md','games/zenless-zone-zero/versions/1.3-1.4-section6-and-finale.md','games/zenless-zone-zero/versions/2.x-season-2-middle.md',
+ 'games/arknights-endfield/versions/1.0-talos-ii-opening.md','games/arknights-endfield/versions/1.x-operator-and-region-notes.md',
+ 'games/neverness-to-everness/versions/1.0-hethereau-opening.md','games/neverness-to-everness/versions/1.1-urban-anomaly-cases.md','games/neverness-to-everness/versions/1.2-watchlist.md'
+]);
+const nav=document.querySelector('#nav'),doc=document.querySelector('#doc'),titleEl=document.querySelector('#readerTitle'),pathEl=document.querySelector('#readerPath'),sourceLink=document.querySelector('#openSource'),copyButton=document.querySelector('#copyPath'),search=document.querySelector('#search'),sidebar=document.querySelector('.sidebar'),navToggle=document.querySelector('#libraryNavToggle'),navCurrent=document.querySelector('#libraryNavCurrent'),catalogNote=document.querySelector('#catalogNote');
+const mobileLibrary=window.matchMedia('(max-width: 980px)');
+let activePath='',loadSequence=0,allDocuments=[];
 
-    const nav = document.querySelector('#nav');
-    const doc = document.querySelector('#doc');
-    const titleEl = document.querySelector('#readerTitle');
-    const pathEl = document.querySelector('#readerPath');
-    const sourceLink = document.querySelector('#openSource');
-    const copyButton = document.querySelector('#copyPath');
-    const search = document.querySelector('#search');
-    const sidebar = document.querySelector('.sidebar');
-    const navToggle = document.querySelector('#libraryNavToggle');
-    const navCurrent = document.querySelector('#libraryNavCurrent');
-    const mobileLibrary = window.matchMedia('(max-width: 980px)');
-    let activePath = '';
-    let loadSequence = 0;
-
-    function setNavCollapsed(collapsed) {
-      sidebar.classList.toggle('is-collapsed', collapsed);
-      navToggle.setAttribute('aria-expanded', String(!collapsed));
-      navToggle.querySelector('span:first-child').textContent = collapsed ? '浏览资料目录' : '收起资料目录';
-    }
-
-    setNavCollapsed(mobileLibrary.matches);
-    navToggle.addEventListener('click', () => {
-      setNavCollapsed(!sidebar.classList.contains('is-collapsed'));
-    });
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    function inlineMarkdown(value) {
-      return escapeHtml(value)
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-    }
-
-    function renderTable(rows) {
-      return `<table>${rows.map((row, index) => {
-        if (index === 1 && row.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) return '';
-        const tag = index === 0 ? 'th' : 'td';
-        return `<tr>${row.map((cell) => `<${tag}>${inlineMarkdown(cell.trim())}</${tag}>`).join('')}</tr>`;
-      }).join('')}</table>`;
-    }
-
-    function markdownToHtml(markdown) {
-      const lines = markdown.split(/\r?\n/);
-      const html = [];
-      let inCode = false;
-      let code = [];
-      let inList = false;
-      let tableRows = [];
-
-      const closeList = () => {
-        if (inList) {
-          html.push('</ul>');
-          inList = false;
-        }
-      };
-      const closeTable = () => {
-        if (tableRows.length) {
-          html.push(renderTable(tableRows));
-          tableRows = [];
-        }
-      };
-
-      for (const line of lines) {
-        if (line.startsWith('```')) {
-          closeList();
-          closeTable();
-          if (inCode) {
-            html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);
-            code = [];
-            inCode = false;
-          } else {
-            inCode = true;
-          }
-          continue;
-        }
-        if (inCode) {
-          code.push(line);
-          continue;
-        }
-        if (/^\|.+\|$/.test(line.trim())) {
-          closeList();
-          tableRows.push(line.trim().slice(1, -1).split('|'));
-          continue;
-        }
-        closeTable();
-        if (line.startsWith('# ')) {
-          closeList();
-          html.push(`<h1>${inlineMarkdown(line.slice(2).trim())}</h1>`);
-          continue;
-        }
-        if (line.startsWith('## ')) {
-          closeList();
-          html.push(`<h2>${inlineMarkdown(line.slice(3).trim())}</h2>`);
-          continue;
-        }
-        if (line.startsWith('### ')) {
-          closeList();
-          html.push(`<h3>${inlineMarkdown(line.slice(4).trim())}</h3>`);
-          continue;
-        }
-        if (line.startsWith('> ')) {
-          closeList();
-          html.push(`<blockquote>${inlineMarkdown(line.slice(2).trim())}</blockquote>`);
-          continue;
-        }
-        if (/^- /.test(line)) {
-          if (!inList) {
-            html.push('<ul>');
-            inList = true;
-          }
-          html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
-          continue;
-        }
-        if (!line.trim()) {
-          closeList();
-          continue;
-        }
-        closeList();
-        html.push(`<p>${inlineMarkdown(line)}</p>`);
-      }
-      closeList();
-      closeTable();
-      return html.join('\n');
-    }
-
-    function fullPath(group, docEntry) {
-      return `${base}${group.prefix || ''}${docEntry[0]}`;
-    }
-
-    const allDocuments = groups.flatMap((group) => group.docs.map((entry) => ({
-      group,
-      entry,
-      relativePath: `${group.prefix || ''}${entry[0]}`,
-      fullPath: fullPath(group, entry)
-    })));
-
-    function findDocument(relativePath) {
-      return allDocuments.find((item) => item.relativePath === relativePath);
-    }
-
-    function syncSearchUrl() {
-      const url = new URL(window.location.href);
-      const query = search.value.trim();
-      if (query) url.searchParams.set('q', query);
-      else url.searchParams.delete('q');
-      history.replaceState(history.state, '', url);
-    }
-
-    function renderNav(filter = '') {
-      const term = filter.trim().toLowerCase();
-      nav.innerHTML = groups.map((group, index) => {
-        const docs = group.docs.filter((entry) => {
-          const text = `${group.title} ${group.code} ${entry[0]} ${entry[1]}`.toLowerCase();
-          return !term || text.includes(term);
-        });
-        if (!docs.length) return '';
-        return `
-          <details ${index < 3 || term || docs.some((entry) => fullPath(group, entry) === activePath) ? 'open' : ''}>
-            <summary>${escapeHtml(group.title)}</summary>
-            ${docs.map((entry) => {
-              const path = fullPath(group, entry);
-              return `<button class="doc-link${path === activePath ? ' active' : ''}" type="button" data-path="${escapeHtml(path)}" data-title="${escapeHtml(entry[1])}">
-                <span class="doc-code">${escapeHtml(group.code)}</span>
-                <span class="doc-name">${escapeHtml(entry[1])}</span>
-              </button>`;
-            }).join('')}
-          </details>`;
-      }).join('');
-    }
-
-    function updateNavSelection(path) {
-      nav.querySelectorAll('.doc-link').forEach((button) => {
-        button.classList.toggle('active', button.dataset.path === path);
-      });
-
-      const activeButton = [...nav.querySelectorAll('.doc-link')]
-        .find((button) => button.dataset.path === path);
-      if (activeButton) {
-        const group = activeButton.closest('details');
-        if (group) group.open = true;
-        const sidebarRect = sidebar.getBoundingClientRect();
-        const buttonRect = activeButton.getBoundingClientRect();
-        if (buttonRect.top < sidebarRect.top) {
-          sidebar.scrollTop -= sidebarRect.top - buttonRect.top + 12;
-        } else if (buttonRect.bottom > sidebarRect.bottom) {
-          sidebar.scrollTop += buttonRect.bottom - sidebarRect.bottom + 12;
-        }
-      }
-    }
-
-    async function loadDoc(path, title, { historyMode = 'replace', restoreScrollY = null } = {}) {
-      const sequence = ++loadSequence;
-      activePath = path;
-      updateNavSelection(path);
-      titleEl.textContent = title;
-      navCurrent.textContent = `当前：${title}`;
-      pathEl.textContent = path;
-      sourceLink.href = path;
-      doc.textContent = 'Loading...';
-      try {
-        const response = await fetch(path, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const markdown = await response.text();
-        if (sequence !== loadSequence) return;
-        doc.innerHTML = markdownToHtml(markdown);
-        const url = new URL(window.location.href);
-        const relativePath = path.replace(base, '');
-        url.searchParams.set('doc', relativePath);
-        if (historyMode === 'push') {
-          history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
-          history.pushState({ doc: relativePath, scrollY: null }, '', url);
-        } else if (historyMode === 'replace') {
-          history.replaceState({ ...(history.state || {}), doc: relativePath, scrollY: window.scrollY }, '', url);
-        }
-
-        if (Number.isFinite(restoreScrollY)) {
-          requestAnimationFrame(() => window.scrollTo(0, restoreScrollY));
-        } else if (historyMode === 'push') {
-          document.querySelector('.reader').scrollIntoView({ behavior: 'auto', block: 'start' });
-          requestAnimationFrame(() => {
-            history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
-          });
-        }
-      } catch (error) {
-        if (sequence !== loadSequence) return;
-        doc.innerHTML = `<h1>加载失败</h1><p>${escapeHtml(error.message)}</p>`;
-      }
-    }
-
-    nav.addEventListener('click', (event) => {
-      const button = event.target.closest('.doc-link');
-      if (!button) return;
-      if (button.dataset.path === activePath) return;
-      loadDoc(button.dataset.path, button.dataset.title, { historyMode: 'push' });
-      if (mobileLibrary.matches) {
-        setNavCollapsed(true);
-      }
-    });
-
-    search.addEventListener('input', () => {
-      renderNav(search.value);
-      syncSearchUrl();
-    });
-    copyButton.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(activePath);
-      copyButton.textContent = '已复制';
-      setTimeout(() => { copyButton.textContent = '复制路径'; }, 1200);
-    });
-
-    window.addEventListener('popstate', (event) => {
-      const relativePath = event.state?.doc || new URLSearchParams(window.location.search).get('doc');
-      const match = findDocument(relativePath);
-      if (match) {
-        loadDoc(match.fullPath, match.entry[1], {
-          historyMode: 'none',
-          restoreScrollY: Number.isFinite(event.state?.scrollY) ? event.state.scrollY : null
-        });
-      }
-    });
-
-    let scrollStateTimer = 0;
-    window.addEventListener('scroll', () => {
-      window.clearTimeout(scrollStateTimer);
-      scrollStateTimer = window.setTimeout(() => {
-        if (!activePath) return;
-        history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', window.location.href);
-      }, 120);
-    }, { passive: true });
-
-    const params = new URLSearchParams(window.location.search);
-    search.value = params.get('q') || '';
-    renderNav(search.value);
-    const initial = params.get('doc');
-    const defaultGroup = groups[1];
-    const defaultDoc = defaultGroup.docs[0];
-    if (initial) {
-      const match = findDocument(initial);
-      if (match) loadDoc(match.fullPath, match.entry[1]);
-      else loadDoc(fullPath(defaultGroup, defaultDoc), defaultDoc[1]);
-    } else {
-      loadDoc(fullPath(defaultGroup, defaultDoc), defaultDoc[1]);
-    }
-  </script>
+function setNavCollapsed(collapsed){sidebar.classList.toggle('is-collapsed',collapsed);navToggle.setAttribute('aria-expanded',String(!collapsed));navToggle.querySelector('span:first-child').textContent=collapsed?'浏览资料目录':'收起资料目录'}
+setNavCollapsed(mobileLibrary.matches);navToggle.addEventListener('click',()=>setNavCollapsed(!sidebar.classList.contains('is-collapsed')));
+function escapeHtml(value){return String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+function inlineMarkdown(value){return escapeHtml(value).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')}
+function renderTable(rows){return `<table>${rows.map((row,index)=>{if(index===1&&row.every(cell=>/^:?-{3,}:?$/.test(cell.trim())))return'';const tag=index===0?'th':'td';return `<tr>${row.map(cell=>`<${tag}>${inlineMarkdown(cell.trim())}</${tag}>`).join('')}</tr>`}).join('')}</table>`}
+function markdownToHtml(markdown){const lines=markdown.split(/\r?\n/),html=[];let inCode=false,code=[],inList=false,tableRows=[];const closeList=()=>{if(inList){html.push('</ul>');inList=false}},closeTable=()=>{if(tableRows.length){html.push(renderTable(tableRows));tableRows=[]}};for(const line of lines){if(line.startsWith('```')){closeList();closeTable();if(inCode){html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);code=[];inCode=false}else inCode=true;continue}if(inCode){code.push(line);continue}if(/^\|.+\|$/.test(line.trim())){closeList();tableRows.push(line.trim().slice(1,-1).split('|'));continue}closeTable();if(line.startsWith('# ')){closeList();html.push(`<h1>${inlineMarkdown(line.slice(2).trim())}</h1>`);continue}if(line.startsWith('## ')){closeList();html.push(`<h2>${inlineMarkdown(line.slice(3).trim())}</h2>`);continue}if(line.startsWith('### ')){closeList();html.push(`<h3>${inlineMarkdown(line.slice(4).trim())}</h3>`);continue}if(line.startsWith('> ')){closeList();html.push(`<blockquote>${inlineMarkdown(line.slice(2).trim())}</blockquote>`);continue}if(/^- /.test(line)){if(!inList){html.push('<ul>');inList=true}html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);continue}if(!line.trim()){closeList();continue}closeList();html.push(`<p>${inlineMarkdown(line)}</p>`)}closeList();closeTable();return html.join('\n')}
+function fullPath(group,entry){return `${base}${group.prefix||''}${entry[0]}`}
+function rebuildDocumentIndex(){allDocuments=groups.flatMap(group=>group.docs.map(entry=>({group,entry,relativePath:`${group.prefix||''}${entry[0]}`,fullPath:fullPath(group,entry)})))}
+function findDocument(relativePath){return allDocuments.find(item=>item.relativePath===relativePath)}
+function fallbackLabel(path){const name=path.split('/').pop().replace(/\.md$/,'');if(name==='README')return'分册说明';if(name==='00-overview')return'世界观总览';if(name==='01-timeline')return'时间线';if(name==='02-factions')return'阵营';if(name==='03-characters')return'角色';if(name==='04-mysteries')return'谜团';if(name==='05-video-hooks')return'视频钩子';return name.replace(/-/g,' ').replace(/^([0-9]+(?:\.[0-9x]+)?(?:-[0-9.]+)?)\s*/i,'$1 · ')}
+function rankDoc(path){const core=['README.md','00-overview.md','01-timeline.md','02-factions.md','03-characters.md','04-mysteries.md','05-video-hooks.md'];const coreIndex=core.indexOf(path);if(coreIndex>=0)return coreIndex;if(path.startsWith('versions/'))return 100;return 50}
+async function syncCatalogFromManifest(){try{const response=await fetch(`${base}FILE_MANIFEST.md?catalog=${Date.now()}`,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);const text=await response.text();const manifestPaths=[...text.matchAll(/`story-library\/([^`]+\.md)`/g)].map(match=>match[1]);for(const group of groups){if(!group.prefix)continue;const existing=new Map(group.docs);const rels=manifestPaths.filter(path=>path.startsWith(group.prefix)).map(path=>path.slice(group.prefix.length)).filter(rel=>!hiddenLegacyDocs.has(`${group.prefix}${rel}`));const unique=[...new Set(rels)];unique.sort((a,b)=>{const ra=rankDoc(a),rb=rankDoc(b);if(ra!==rb)return ra-rb;return a.localeCompare(b,'zh-CN',{numeric:true,sensitivity:'base'})});group.docs=unique.map(rel=>[rel,existing.get(rel)||fallbackLabel(rel)])}catalogNote.innerHTML='<strong>LIVE</strong> 已从 FILE_MANIFEST.md 同步当前目录';}catch(error){catalogNote.innerHTML=`<strong>FALLBACK</strong> 文件清单同步失败，使用内置目录：${escapeHtml(error.message)}`}}
+function syncSearchUrl(){const url=new URL(window.location.href),query=search.value.trim();if(query)url.searchParams.set('q',query);else url.searchParams.delete('q');history.replaceState(history.state,'',url)}
+function renderNav(filter=''){const term=filter.trim().toLowerCase();nav.innerHTML=groups.map((group,index)=>{const docs=group.docs.filter(entry=>{const text=`${group.title} ${group.code} ${entry[0]} ${entry[1]}`.toLowerCase();return !term||text.includes(term)});if(!docs.length)return'';return `<details ${index<3||term||docs.some(entry=>fullPath(group,entry)===activePath)?'open':''}><summary>${escapeHtml(group.title)}</summary>${docs.map(entry=>{const path=fullPath(group,entry);return `<button class="doc-link${path===activePath?' active':''}" type="button" data-path="${escapeHtml(path)}" data-title="${escapeHtml(entry[1])}"><span class="doc-code">${escapeHtml(group.code)}</span><span class="doc-name">${escapeHtml(entry[1])}</span></button>`}).join('')}</details>`}).join('')}
+function updateNavSelection(path){nav.querySelectorAll('.doc-link').forEach(button=>button.classList.toggle('active',button.dataset.path===path));const activeButton=[...nav.querySelectorAll('.doc-link')].find(button=>button.dataset.path===path);if(activeButton){const group=activeButton.closest('details');if(group)group.open=true;const sidebarRect=sidebar.getBoundingClientRect(),buttonRect=activeButton.getBoundingClientRect();if(buttonRect.top<sidebarRect.top)sidebar.scrollTop-=sidebarRect.top-buttonRect.top+12;else if(buttonRect.bottom>sidebarRect.bottom)sidebar.scrollTop+=buttonRect.bottom-sidebarRect.bottom+12}}
+async function loadDoc(path,title,{historyMode='replace',restoreScrollY=null}={}){const sequence=++loadSequence;activePath=path;updateNavSelection(path);titleEl.textContent=title;navCurrent.textContent=`当前：${title}`;pathEl.textContent=path;sourceLink.href=path;doc.textContent='Loading...';try{const requestUrl=new URL(path,window.location.href);requestUrl.searchParams.set('_storyv',Date.now());const response=await fetch(requestUrl,{cache:'no-store'});if(!response.ok)throw new Error(`HTTP ${response.status}`);const markdown=await response.text();if(sequence!==loadSequence)return;doc.innerHTML=markdownToHtml(markdown);const url=new URL(window.location.href),relativePath=path.replace(base,'');url.searchParams.set('doc',relativePath);if(historyMode==='push'){history.replaceState({...history.state,scrollY:window.scrollY},'',window.location.href);history.pushState({doc:relativePath,scrollY:null},'',url)}else if(historyMode==='replace')history.replaceState({...history.state,doc:relativePath,scrollY:window.scrollY},'',url);if(Number.isFinite(restoreScrollY))requestAnimationFrame(()=>window.scrollTo(0,restoreScrollY));else if(historyMode==='push'){document.querySelector('.reader').scrollIntoView({behavior:'auto',block:'start'});requestAnimationFrame(()=>history.replaceState({...history.state,scrollY:window.scrollY},'',window.location.href))}}catch(error){if(sequence!==loadSequence)return;doc.innerHTML=`<h1>加载失败</h1><p>${escapeHtml(error.message)}</p>`}}
+nav.addEventListener('click',event=>{const button=event.target.closest('.doc-link');if(!button||button.dataset.path===activePath)return;loadDoc(button.dataset.path,button.dataset.title,{historyMode:'push'});if(mobileLibrary.matches)setNavCollapsed(true)});
+search.addEventListener('input',()=>{renderNav(search.value);syncSearchUrl()});copyButton.addEventListener('click',async()=>{await navigator.clipboard.writeText(activePath);copyButton.textContent='已复制';setTimeout(()=>copyButton.textContent='复制路径',1200)});
+window.addEventListener('popstate',event=>{const relativePath=event.state?.doc||new URLSearchParams(window.location.search).get('doc'),match=findDocument(relativePath);if(match)loadDoc(match.fullPath,match.entry[1],{historyMode:'none',restoreScrollY:Number.isFinite(event.state?.scrollY)?event.state.scrollY:null})});let scrollStateTimer=0;window.addEventListener('scroll',()=>{window.clearTimeout(scrollStateTimer);scrollStateTimer=window.setTimeout(()=>{if(activePath)history.replaceState({...history.state,scrollY:window.scrollY},'',window.location.href)},120)},{passive:true});
+async function init(){await syncCatalogFromManifest();rebuildDocumentIndex();const params=new URLSearchParams(window.location.search);search.value=params.get('q')||'';renderNav(search.value);const initial=params.get('doc'),defaultGroup=groups[1],defaultDoc=defaultGroup.docs[0];if(initial){const match=findDocument(initial);if(match)loadDoc(match.fullPath,match.entry[1]);else loadDoc(fullPath(defaultGroup,defaultDoc),defaultDoc[1])}else loadDoc(fullPath(defaultGroup,defaultDoc),defaultDoc[1])}
+init();
+</script>
 </body>
 </html>

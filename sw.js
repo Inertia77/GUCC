@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v5";
-const RUNTIME_CACHE = "gucc-runtime-v5";
+const STATIC_CACHE = "gucc-static-v6";
+const RUNTIME_CACHE = "gucc-runtime-v6";
 
 const APP_SHELL = [
   "./",
@@ -7,6 +7,9 @@ const APP_SHELL = [
   "./offline.html",
   "./manifest.webmanifest",
   "./assets/access-guard.js",
+  "./assets/creator-pipeline-core.mjs",
+  "./assets/creator-pipeline-bridge.mjs",
+  "./assets/creator-pipeline-ux.mjs",
   "./assets/gucc-theme.css",
   "./assets/gucc-zzz.css",
   "./assets/gucc-shell-nav-v2.css",

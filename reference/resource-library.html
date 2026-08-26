@@ -30,7 +30,7 @@
       <div class="hero-copy">
         <p class="overline"><span class="live-dot"></span> GUCC RESOURCE LIBRARY</p>
         <h1 id="pageTitle">游戏资料导航</h1>
-        <p class="hero-lede">正式资料、Leak 资料与角色研究项目分层整理。先确认已上线内容，再查看测试服、数据挖掘、社区线索与内部分析工作区。</p>
+        <p class="hero-lede">正式资料、Leak 资料与二游角色总控分层整理。先确认已上线内容，再查看测试服、数据挖掘、社区线索；角色解析、人物与个人养成统一进入一个 ChatGPT Project。</p>
         <div class="hero-actions" aria-label="资料类型">
           <button class="view-switch is-active" type="button" data-view="official" aria-pressed="true">
             <span>正式资料</span><strong>26</strong>
@@ -39,12 +39,12 @@
             <span>Leak 资料</span><strong id="intelCount">28</strong>
           </button>
           <button class="view-switch" type="button" data-view="projects" aria-pressed="false">
-            <span>角色研究</span><strong>10</strong>
+            <span>角色总控</span><strong>1</strong>
           </button>
         </div>
       </div>
       <aside class="hero-console" aria-label="资料库状态">
-        <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/24</span></div>
+        <div class="console-head"><span>资料概览</span><span class="console-status">更新于 08/26</span></div>
         <div class="console-grid">
           <div><strong id="activeCount">24</strong><span>活跃来源</span></div>
           <div><strong>26</strong><span>正式入口</span></div>
@@ -113,11 +113,32 @@
 
     <section class="view-panel" id="projectsPanel" data-panel="projects" aria-labelledby="projectsHeading" hidden>
       <div class="section-heading">
-        <div><p class="section-kicker">CHARACTER RESEARCH WORKSPACES</p><h2 id="projectsHeading">角色研究项目</h2><p>从 2026-08-24 截图整理的 ChatGPT 项目入口；包含养成分析与角色解析两类工作区，访问时需要对应账号权限。</p></div>
-        <span class="official-stamp"><b>10</b> PROJECT ROUTES</span>
+        <div><p class="section-kicker">CHARACTER MASTER CONTROL</p><h2 id="projectsHeading">二游角色总控</h2><p>五款游戏共用一个 ChatGPT Project。输入「游戏 + 角色 + 解析 / 人物 / 养成」即可进入对应流程；解析、人物与个人养成不再拆成多个 Project。</p></div>
+        <span class="official-stamp"><b>1</b> PROJECT ROUTE</span>
       </div>
-      <div class="official-grid" id="projectsGrid"></div>
-      <div class="empty-state" id="projectsEmpty" hidden><strong>没有匹配的研究项目</strong><span>换一个游戏，或清除搜索关键词。</span></div>
+
+      <div class="official-grid" aria-label="二游角色总控入口">
+        <article class="official-group game-all">
+          <header>
+            <span class="official-mark">总</span>
+            <div><p>ChatGPT · 统一角色工作区</p><h3>【总控】二游角色</h3></div>
+            <strong>01</strong>
+          </header>
+          <div class="official-routes">
+            <a href="https://chatgpt.com/g/g-p-6a8ec96a3bb4819196b66af85cbc9695/project" target="_blank" rel="noopener noreferrer">
+              <span class="route-index">01</span>
+              <span><strong>打开二游角色总控</strong><small>⚔️ 解析 · 📖 人物 · 🛠️ 养成｜覆盖崩铁、鸣潮、绝区零、终末地、异环</small></span>
+              <em>唯一入口</em>
+              <b aria-hidden="true">↗</b>
+            </a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Legacy project routes are still rendered by the old data script for compatibility,
+           but remain hidden: all five games now use the single controller above. -->
+      <div class="official-grid" id="projectsGrid" hidden></div>
+      <div class="empty-state" id="projectsEmpty" hidden style="display:none"><strong>统一入口始终可用</strong></div>
     </section>
 
     <footer class="library-footer">

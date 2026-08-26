@@ -123,7 +123,7 @@
     if (!document.querySelector('script[data-gucc-creator-pipeline]')) {
       const bridge = document.createElement('script');
       bridge.type = 'module';
-      bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=2', rootHref).href;
+      bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=3', rootHref).href;
       bridge.dataset.guccCreatorPipeline = 'true';
       document.head.appendChild(bridge);
     }
@@ -134,6 +134,15 @@
       ux.src = new URL('assets/creator-pipeline-ux.mjs?v=1', rootHref).href;
       ux.dataset.guccCreatorPipelineUx = 'true';
       document.head.appendChild(ux);
+    }
+
+    const isStudio = pathname.includes('/apps/video-workspace/') && !pathname.includes('/production-system/');
+    if (isStudio && !document.querySelector('script[data-gucc-studio-workspace-identity]')) {
+      const identity = document.createElement('script');
+      identity.type = 'module';
+      identity.src = new URL('assets/studio-workspace-identity.mjs?v=1', rootHref).href;
+      identity.dataset.guccStudioWorkspaceIdentity = 'true';
+      document.head.appendChild(identity);
     }
   }
 

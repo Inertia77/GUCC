@@ -4,7 +4,8 @@ export const PRODUCTION_STORAGE_KEY = "gucc_ai_video_production_v1";
 export const PUBLISH_STORAGE_KEY = "gucc_publish_console_v1";
 export const STUDIO_HANDOFF_KEY = "gucc_creator_studio_handoff_v1";
 export const PUBLISH_HANDOFF_KEY = "gucc_creator_publish_handoff_v1";
-export const STUDIO_CREATOR_PROJECT_ID_KEY = "gucc_creator_studio_project_id_v1";
+export const STUDIO_CREATOR_PROJECT_ID_KEY = "gucc_creator_studio_project_id_v1"; // legacy fallback only
+export const STUDIO_WORKSPACE_IDENTITY_KEY = "gucc_creator_studio_workspace_identity_v2";
 export const DRIVE_ROOT = Object.freeze({
   id: "1wVMD-nIk6ArtGDi5gyOCmhW1pY-iRM9L",
   url: "https://drive.google.com/drive/folders/1wVMD-nIk6ArtGDi5gyOCmhW1pY-iRM9L",
@@ -16,10 +17,36 @@ function newCanonicalProjectId() {
   return `project_${Date.now().toString(36)}_${random}`;
 }
 
+function newWorkspaceInstanceId() {
+  const random = Math.random().toString(36).slice(2, 8);
+  return `workspace_${Date.now().toString(36)}_${random}`;
+}
+
 export function resolveStudioProjectId(existingId = "", forceNew = false, idFactory = newCanonicalProjectId) {
   const current = String(existingId || "").trim();
   if (!forceNew && current) return current;
   return idFactory();
+}
+
+export function resolveStudioWorkspaceIdentity(existing = {}, options = {}) {
+  const forceNewWorkspace = Boolean(options.forceNewWorkspace);
+  const forceNewProject = Boolean(options.forceNewProject);
+  const idFactory = options.idFactory || newCanonicalProjectId;
+  const workspaceIdFactory = options.workspaceIdFactory || newWorkspaceInstanceId;
+  const legacyProjectId = String(options.legacyProjectId || "").trim();
+  const currentWorkspaceId = String(existing?.workspaceInstanceId || "").trim();
+  const currentProjectId = String(existing?.creatorProjectId || "").trim();
+  const workspaceInstanceId = forceNewWorkspace || !currentWorkspaceId ? workspaceIdFactory() : currentWorkspaceId;
+  let creatorProjectId = currentProjectId;
+  if (forceNewWorkspace || forceNewProject || !creatorProjectId) {
+    creatorProjectId = (!forceNewWorkspace && !forceNewProject && legacyProjectId) ? legacyProjectId : idFactory();
+  }
+  return {
+    workspaceInstanceId,
+    creatorProjectId,
+    updatedAt: new Date().toISOString(),
+    migratedFromLegacy: Boolean(!currentProjectId && legacyProjectId && creatorProjectId === legacyProjectId),
+  };
 }
 
 function isStudioBrowser() {
@@ -28,29 +55,50 @@ function isStudioBrowser() {
   return path.includes("/apps/video-workspace/") && !path.includes("/production-system/");
 }
 
-function readStudioProjectId() {
+function readStudioIdentity() {
+  if (!isStudioBrowser()) return {};
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STUDIO_WORKSPACE_IDENTITY_KEY) || "null");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch { return {}; }
+}
+
+function readLegacyStudioProjectId() {
   if (!isStudioBrowser()) return "";
   try { return localStorage.getItem(STUDIO_CREATOR_PROJECT_ID_KEY) || ""; }
   catch { return ""; }
 }
 
-function persistStudioProjectId(projectId) {
-  if (!isStudioBrowser()) return;
-  try { localStorage.setItem(STUDIO_CREATOR_PROJECT_ID_KEY, projectId); }
-  catch { /* local-only convenience; handoff itself still works */ }
+function persistStudioIdentity(identity) {
+  if (!isStudioBrowser()) return identity;
+  try {
+    localStorage.setItem(STUDIO_WORKSPACE_IDENTITY_KEY, JSON.stringify(identity));
+    // Keep the old scalar key as a compatibility mirror, never as the source of truth.
+    localStorage.setItem(STUDIO_CREATOR_PROJECT_ID_KEY, identity.creatorProjectId || "");
+  } catch { /* local identity convenience only */ }
+  return identity;
+}
+
+function currentStudioIdentity() {
+  const existing = readStudioIdentity();
+  const identity = resolveStudioWorkspaceIdentity(existing, { legacyProjectId: readLegacyStudioProjectId() });
+  return persistStudioIdentity(identity);
 }
 
 export function createCanonicalProjectId() {
   if (!isStudioBrowser()) return newCanonicalProjectId();
-  const projectId = resolveStudioProjectId(readStudioProjectId(), false, newCanonicalProjectId);
-  persistStudioProjectId(projectId);
-  return projectId;
+  return currentStudioIdentity().creatorProjectId;
 }
 
 export function createNewStudioProjectId() {
-  const projectId = resolveStudioProjectId(readStudioProjectId(), true, newCanonicalProjectId);
-  persistStudioProjectId(projectId);
-  return projectId;
+  if (!isStudioBrowser()) return newCanonicalProjectId();
+  const identity = resolveStudioWorkspaceIdentity(readStudioIdentity(), { forceNewProject: true });
+  return persistStudioIdentity(identity).creatorProjectId;
+}
+
+export function createNewStudioWorkspaceIdentity() {
+  if (!isStudioBrowser()) return resolveStudioWorkspaceIdentity({}, { forceNewWorkspace: true });
+  return persistStudioIdentity(resolveStudioWorkspaceIdentity(readStudioIdentity(), { forceNewWorkspace: true }));
 }
 
 function installStudioProjectIdentityControl() {
@@ -61,35 +109,34 @@ function installStudioProjectIdentityControl() {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.gcbSaveAsNew = "true";
-    button.textContent = "另存为新项目";
-    button.title = "明确创建新的 Project ID；普通“转入正式制作”会继续使用当前 Project ID";
+    button.textContent = "复制为新项目";
+    button.title = "复制当前 Workspace 的内容，但明确创建新的 Creator Project ID";
     button.addEventListener("click", () => {
       const projectId = createNewStudioProjectId();
-      button.textContent = `新项目已准备 · ${projectId.slice(-6)}`;
-      window.setTimeout(() => { if (button.isConnected) button.textContent = "另存为新项目"; }, 1800);
+      button.textContent = `新 Project · ${projectId.slice(-6)}`;
+      window.setTimeout(() => { if (button.isConnected) button.textContent = "复制为新项目"; }, 1800);
     });
     const firstLink = actions.querySelector("a");
     actions.insertBefore(button, firstLink || null);
   };
+
   const start = () => {
+    currentStudioIdentity();
     inject();
-    const observer = new MutationObserver(inject);
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-    window.setTimeout(() => observer.disconnect(), 15000);
+    let lastStatus = String(document.querySelector("#statusText")?.textContent || "");
+    const observer = new MutationObserver(() => {
+      inject();
+      const status = String(document.querySelector("#statusText")?.textContent || "");
+      if (status !== lastStatus && status.includes("已清空")) createNewStudioWorkspaceIdentity();
+      lastStatus = status;
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
   else start();
 }
 
 installStudioProjectIdentityControl();
-
-export function projectTypeFromWorkspace(value = "") {
-  const text = String(value).toLowerCase();
-  if (/独立音乐|单曲|发行|music library/.test(text)) return "D_MUSIC_RELEASE";
-  if (/suno|歌曲|音乐视频|mv/.test(text)) return "B_SUNO_VIDEO";
-  if (/底层|机制|system|原理|公式/.test(text)) return "C_GAME_SYSTEM";
-  return "A_FULL_GUIDE";
-}
 
 function text(value) {
   return String(value == null ? "" : value).trim();
@@ -115,10 +162,13 @@ export function studioSnapshotToProduction(engine, snapshot = {}) {
     projectId,
     name: text(snapshot.projectTitle) || text(snapshot.projectShortTitle) || "未命名创作项目",
     game: text(snapshot.game),
-    topic: text(snapshot.coreQuestion) || text(snapshot.projectShortTitle) || text(snapshot.type),
-    projectType: projectTypeFromWorkspace(snapshot.type),
+    topic: text(snapshot.coreQuestion) || text(snapshot.projectShortTitle),
     targetPublishDate: /^\d{4}-\d{2}-\d{2}$/.test(text(snapshot.ddl)) ? text(snapshot.ddl) : "",
-    notes: [text(snapshot.version) && `版本：${text(snapshot.version)}`, text(snapshot.priority) && `优先级：${text(snapshot.priority)}`].filter(Boolean).join("\n"),
+    notes: [
+      text(snapshot.version) && `版本：${text(snapshot.version)}`,
+      text(snapshot.priority) && `优先级：${text(snapshot.priority)}`,
+      text(snapshot.type) && `Studio 内容标签：${text(snapshot.type)}`,
+    ].filter(Boolean).join("\n"),
   });
 
   const research = [
@@ -164,6 +214,7 @@ export function studioSnapshotToProduction(engine, snapshot = {}) {
     ...(project.integration || {}),
     workspace: {
       version: text(snapshot.__workspaceVersion) || "studio-v5",
+      instanceId: text(snapshot.__creatorWorkspaceInstanceId),
       importedAt: new Date().toISOString(),
       snapshot,
     },
@@ -182,7 +233,7 @@ export function studioSnapshotToProduction(engine, snapshot = {}) {
     at: new Date().toISOString(),
     action: "STUDIO_HANDOFF_IMPORTED",
     state: project.currentState,
-    note: "Imported from GUCC Studio. Locks remain intentionally open for human confirmation.",
+    note: "Imported from GUCC Studio into the unified Creator Project. Locks remain intentionally open for human confirmation.",
   });
   engine.refreshGeneratedFiles?.(project);
   return project;

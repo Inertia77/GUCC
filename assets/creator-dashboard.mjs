@@ -74,7 +74,7 @@ function renderProject(project) {
   return `<a class="creator-project-card health-${escapeHtml(project.health.code)}" href="${projectHref(project.projectId)}">
     <div class="creator-project-top"><span class="creator-health">${project.health.icon} ${escapeHtml(project.health.label)}</span><span class="creator-revision">r${project.revision || 0}</span></div>
     <h3>${escapeHtml(project.name)}</h3>
-    <p>${escapeHtml(project.game)} · ${escapeHtml(project.projectTypeLabel)}</p>
+    <p>${escapeHtml(project.game)}</p>
     <p class="creator-topic">${escapeHtml(project.topic)}</p>
     <div class="creator-stage"><strong>${escapeHtml(project.currentState)}</strong><span>${project.progress}%</span></div>
     <div class="creator-progress"><span style="width:${project.progress}%"></span></div>
@@ -96,7 +96,7 @@ function renderDashboard(dashboard) {
       <div><p class="eyebrow">MY CREATIONS</p><h2>我的创作 <span>${projects.length}</span></h2></div>
       <a href="./apps/video-workspace/production-system/">打开 Production</a>
     </div>
-    <div class="creator-project-grid">${projects.length ? projects.map(renderProject).join("") : `<div class="creator-empty">还没有 Active Project。先在 WorkSpace 想清楚，再转入正式制作。</div>`}</div>`;
+    <div class="creator-project-grid">${projects.length ? projects.map(renderProject).join("") : `<div class="creator-empty">还没有 Active Project。先在 Studio 想清楚，再转入正式制作。</div>`}</div>`;
   document.getElementById("creatorDashboardRefresh")?.addEventListener("click", loadDashboard);
 }
 

@@ -1,33 +1,19 @@
-const VIDEO_FLOW = [
+export const PRODUCTION_FLOW = Object.freeze([
   "IDEA", "PLANNING", "RESEARCHING", "RESEARCH_LOCKED", "CONTENT_LOCKED", "SCRIPTING", "SCRIPT_LOCKED",
   "PRE_ASSET_PREPARATION", "AUDIO_PRODUCTION", "AUDIO_LOCKED", "TIMELINE_GENERATION", "TIMELINE_LOCKED",
   "STORYBOARDING", "ASSET_COMPLETION", "PRODUCTION_READY", "CODEX_BUILD", "REVIEW", "REVISION", "FINE_EDIT",
   "PICTURE_LOCKED", "RELEASE_READY", "PUBLISHED", "ARCHIVED",
-];
-
-const B_FLOW = (() => {
-  const flow = [...VIDEO_FLOW];
-  flow.splice(flow.indexOf("PRE_ASSET_PREPARATION") + 1, 0, "MUSIC_DRAFT", "MUSIC_LOCKED");
-  return flow;
-})();
-
-const D_FLOW = ["IDEA", "PLANNING", "MUSIC_DRAFT", "MUSIC_LOCKED", "RELEASE_READY", "PUBLISHED", "ARCHIVED"];
+]);
 
 export const STATE_LABELS = Object.freeze({
   IDEA: "选题", PLANNING: "立案规划", RESEARCHING: "资料研究", RESEARCH_LOCKED: "研究锁定",
   CONTENT_LOCKED: "Content Lock", SCRIPTING: "脚本制作", SCRIPT_LOCKED: "Script Lock",
-  PRE_ASSET_PREPARATION: "前置素材规划", MUSIC_DRAFT: "音乐生成", MUSIC_LOCKED: "Music Lock",
-  AUDIO_PRODUCTION: "音频制作", AUDIO_LOCKED: "Audio Lock", TIMELINE_GENERATION: "字幕对齐",
-  TIMELINE_LOCKED: "Timeline Lock", STORYBOARDING: "Timed Storyboard", ASSET_COMPLETION: "素材补全",
-  PRODUCTION_READY: "Production Ready", CODEX_BUILD: "Codex Build", REVIEW: "Review", REVISION: "Revision",
-  FINE_EDIT: "Fine Edit", PICTURE_LOCKED: "Picture Lock", RELEASE_READY: "发布准备", PUBLISHED: "已发布", ARCHIVED: "已归档",
-});
-
-export const PROJECT_TYPE_LABELS = Object.freeze({
-  A_FULL_GUIDE: "角色全方位攻略",
-  B_SUNO_VIDEO: "Suno 歌曲 / 音乐视频",
-  C_GAME_SYSTEM: "游戏底层机制系列",
-  D_MUSIC_RELEASE: "音乐发行",
+  PRE_ASSET_PREPARATION: "前置素材规划", AUDIO_PRODUCTION: "音频制作", AUDIO_LOCKED: "Audio Lock",
+  TIMELINE_GENERATION: "字幕对齐", TIMELINE_LOCKED: "Timeline Lock", STORYBOARDING: "Timed Storyboard",
+  ASSET_COMPLETION: "素材补全", PRODUCTION_READY: "Production Ready", CODEX_BUILD: "Codex Build",
+  REVIEW: "Review", REVISION: "Revision", FINE_EDIT: "Fine Edit", PICTURE_LOCKED: "Picture Lock",
+  RELEASE_READY: "发布准备", PUBLISHED: "已发布", ARCHIVED: "已归档",
+  MUSIC_DRAFT: "Legacy Music Draft", MUSIC_LOCKED: "Legacy Music Lock",
 });
 
 const FILE_LABELS = Object.freeze({
@@ -50,10 +36,8 @@ const ACTIONS = Object.freeze({
   CONTENT_LOCKED: ["撰写 VOICE_MASTER", ["VOICE_MASTER"], "完成正式口播"],
   SCRIPTING: ["完成脚本并生成 TTS Chunks", ["VOICE_MASTER", "TTS_MANIFEST"], "确认完整口播与语音分块"],
   SCRIPT_LOCKED: ["生成 PRE_ASSET_GUIDE", ["PRE_ASSET_GUIDE", "ASSET_INDEX"], "规划确定需要的真实素材"],
-  PRE_ASSET_PREPARATION: ["准备音频制作", ["AUDIO_MASTER"], "用锁定脚本制作最终音频"],
-  MUSIC_DRAFT: ["生成并筛选音乐版本", ["MUSIC_MASTER"], "完成音乐候选与版本记录"],
-  MUSIC_LOCKED: ["制作最终 AUDIO_MASTER", ["AUDIO_MASTER"], "根据锁定音乐完成混音"],
-  AUDIO_PRODUCTION: ["完成最终音频并确认 Audio Lock", ["AUDIO_MASTER"], "导出真实最终音频"],
+  PRE_ASSET_PREPARATION: ["进入音频制作", [], "准备 Voice；Music / SFX 按需启用"],
+  AUDIO_PRODUCTION: ["完成最终音频并确认 Audio Lock", ["AUDIO_MASTER"], "Voice + 可选 Music / SFX 汇合为 AUDIO_MASTER"],
   AUDIO_LOCKED: ["按真实音频生成字幕时间轴", ["SUBTITLE_MASTER", "TIMELINE_SENTENCE", "TRANSCRIPT_ALIGNED", "ALIGNMENT_REPORT"], "实际音频是唯一时间源"],
   TIMELINE_GENERATION: ["完成音频转写与对齐", ["SUBTITLE_MASTER", "TIMELINE_SENTENCE", "TRANSCRIPT_ALIGNED", "ALIGNMENT_REPORT"], "记录实际朗读与原稿差异"],
   TIMELINE_LOCKED: ["生成 Timed Storyboard", ["EDIT_BLUEPRINT"], "把真实字幕时间绑定到素材"],
@@ -71,17 +55,18 @@ const ACTIONS = Object.freeze({
 });
 
 const TOP_LEVEL_MERGE_KEYS = [
-  "name", "game", "topic", "projectType", "targetPublishDate", "currentState", "locks", "masters", "notes",
+  "name", "game", "topic", "projectType", "legacyProjectType", "targetPublishDate", "currentState", "locks", "masters", "notes",
   "files", "assets", "reviews", "blueprint", "ttsChunks", "avAnchors", "voiceMaster", "preAssetGuide",
-  "visualStyle", "exportSpec", "releasePack", "linkedMusicIds", "integration",
+  "visualStyle", "exportSpec", "releasePack", "linkedMusicIds", "audioProduction", "integration",
 ];
 
 const DIFF_LABELS = Object.freeze({
-  name: "项目名称", game: "游戏", topic: "主题", projectType: "项目类型", targetPublishDate: "目标发布日期",
-  currentState: "当前阶段", locks: "Locks", masters: "母版", notes: "备注", files: "项目文件",
-  assets: "素材", reviews: "Review Notes", blueprint: "Storyboard", ttsChunks: "TTS Chunks", avAnchors: "AV Anchors",
-  voiceMaster: "口播", preAssetGuide: "素材指南", visualStyle: "视觉规范", exportSpec: "导出规范",
-  releasePack: "发布包", linkedMusicIds: "音乐关联", integration: "外部关联",
+  name: "项目名称", game: "游戏", topic: "主题", projectType: "Legacy 类型元数据", legacyProjectType: "Legacy 类型元数据",
+  targetPublishDate: "目标发布日期", currentState: "当前阶段", locks: "Locks", masters: "母版", notes: "备注",
+  files: "项目文件", assets: "素材", reviews: "Review Notes", blueprint: "Storyboard", ttsChunks: "TTS Chunks",
+  avAnchors: "AV Anchors", voiceMaster: "口播", preAssetGuide: "素材指南", visualStyle: "视觉规范",
+  exportSpec: "导出规范", releasePack: "发布包", linkedMusicIds: "音乐关联", audioProduction: "音频制作",
+  integration: "外部关联",
 });
 
 function clone(value) {
@@ -121,23 +106,26 @@ export function deepEqual(a, b) {
   catch { return false; }
 }
 
-function flowFor(type) {
-  return type === "B_SUNO_VIDEO" ? B_FLOW : type === "D_MUSIC_RELEASE" ? D_FLOW : VIDEO_FLOW;
+function flowFor() {
+  return PRODUCTION_FLOW;
 }
 
 function projectFromRow(row) {
   const raw = row?.project_data && typeof row.project_data === "object" ? clone(row.project_data) : {};
+  const storedType = raw.projectType || row?.project_type || "STANDARD_VIDEO";
   return {
     ...raw,
     projectId: raw.projectId || row?.project_id || "",
     name: raw.name || row?.name || "未命名项目",
     game: raw.game || row?.game || "",
     topic: raw.topic || row?.topic || "",
-    projectType: raw.projectType || row?.project_type || "A_FULL_GUIDE",
+    projectType: storedType,
+    legacyProjectType: raw.legacyProjectType || (["A_FULL_GUIDE", "B_SUNO_VIDEO", "C_GAME_SYSTEM", "D_MUSIC_RELEASE"].includes(storedType) ? storedType : ""),
     currentState: raw.currentState || row?.current_state || "IDEA",
     targetPublishDate: raw.targetPublishDate || row?.target_publish_date || "",
     locks: { ...(row?.locks || {}), ...(raw.locks || {}) },
     files: raw.files && typeof raw.files === "object" ? raw.files : {},
+    audioProduction: raw.audioProduction && typeof raw.audioProduction === "object" ? raw.audioProduction : {},
   };
 }
 
@@ -147,13 +135,16 @@ function fileReady(project, fileRows, key) {
   return local?.status === "Ready" || Boolean(local?.content) || remote?.status === "Ready";
 }
 
+function normalizedLegacyState(project, fileRows) {
+  const state = String(project.currentState || "IDEA");
+  if (state === "MUSIC_DRAFT") return "AUDIO_PRODUCTION";
+  if (state === "MUSIC_LOCKED") {
+    return project.locks?.audioLock && fileReady(project, fileRows, "AUDIO_MASTER") ? "AUDIO_LOCKED" : "AUDIO_PRODUCTION";
+  }
+  return PRODUCTION_FLOW.includes(state) ? state : state;
+}
+
 function actionFor(project) {
-  if (project.projectType === "B_SUNO_VIDEO" && project.currentState === "SCRIPT_LOCKED") {
-    return ["设计歌词与 Suno Prompt", ["LYRICS", "SUNO_PROMPT", "PRE_ASSET_GUIDE"], "先完成歌词、发音与音乐结构"];
-  }
-  if (project.projectType === "D_MUSIC_RELEASE" && ["IDEA", "PLANNING"].includes(project.currentState)) {
-    return ["设计音乐发行项目", ["LYRICS", "SUNO_PROMPT"], "确定曲目、歌词、风格和发行 metadata"];
-  }
   return ACTIONS[project.currentState] || ACTIONS.IDEA;
 }
 
@@ -280,9 +271,11 @@ export function mergeProjectVersions(baseProject, localProject, remoteProject) {
 export function analyzeCreatorProject(row, fileRows = [], releases = [], options = {}) {
   const now = options.now instanceof Date ? options.now : new Date(options.now || Date.now());
   const serverProject = projectFromRow(row);
-  const local = options.localProject?.projectId === serverProject.projectId ? options.localProject : null;
+  serverProject.currentState = normalizedLegacyState(serverProject, fileRows);
+  const local = options.localProject?.projectId === serverProject.projectId ? clone(options.localProject) : null;
+  if (local) local.currentState = normalizedLegacyState(local, fileRows);
   const project = local && (Date.parse(local.updatedAt || 0) > Date.parse(row?.updated_at || 0)) ? clone(local) : serverProject;
-  const flow = flowFor(project.projectType);
+  const flow = flowFor();
   const stateIndex = flow.indexOf(project.currentState);
   const [actionTitle, outputKeys, actionReason] = actionFor(project);
 
@@ -330,8 +323,6 @@ export function analyzeCreatorProject(row, fileRows = [], releases = [], options
     name: project.name || "未命名项目",
     game: project.game || "未指定游戏",
     topic: project.topic || "未填写 Topic",
-    projectType: project.projectType,
-    projectTypeLabel: PROJECT_TYPE_LABELS[project.projectType] || project.projectType,
     currentState: project.currentState,
     currentStateLabel: STATE_LABELS[project.currentState] || project.currentState,
     progress: percent,
@@ -379,11 +370,13 @@ export function buildCreatorDashboard(data = {}, options = {}) {
   const releasesByProject = new Map();
   for (const file of data.files || []) {
     const items = filesByProject.get(file.project_id) || [];
-    items.push(file); filesByProject.set(file.project_id, items);
+    items.push(file);
+    filesByProject.set(file.project_id, items);
   }
   for (const release of data.releases || []) {
     const items = releasesByProject.get(release.project_id) || [];
-    items.push(release); releasesByProject.set(release.project_id, items);
+    items.push(release);
+    releasesByProject.set(release.project_id, items);
   }
   const localById = new Map((options.localProjects || []).map((project) => [project.projectId, project]));
   const projects = (data.projects || []).map((row) => analyzeCreatorProject(

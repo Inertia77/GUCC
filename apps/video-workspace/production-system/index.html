@@ -12,9 +12,9 @@
 <body class="gucc-enhanced production-system-page">
   <header class="topbar">
     <div>
-      <p class="eyebrow">GUCC · AUDIO-LOCKED PIPELINE</p>
-      <h1>AI Video Production System <span>v1</span></h1>
-      <p class="subtitle">正式制作唯一状态机：看“下一步”，按锁推进；Studio 负责想清楚，这里负责把成片做出来。</p>
+      <p class="eyebrow">GUCC · CREATOR PRODUCTION</p>
+      <h1>AI Video Production System <span>v1.2</span></h1>
+      <p class="subtitle">所有视频共用一条正式制作流程：看“下一步”，按人工 Lock 推进；内容类型不再决定工作流。</p>
     </div>
     <nav class="top-actions" aria-label="全局操作">
       <a class="button ghost" href="../">返回 Studio</a>
@@ -31,7 +31,7 @@
       <div id="projectList" class="project-list"></div>
       <div class="side-note">
         <strong>推进原则</strong>
-        <p>优先处理“唯一下一步”。Lock 是版本承诺，不是普通完成勾选；音频锁定后再生成时间轴。</p>
+        <p>优先处理“唯一下一步”。Content / Script / Audio / Picture Lock 是人工确认；音乐只是 Audio Production 的可选组成。</p>
       </div>
     </aside>
 
@@ -39,14 +39,14 @@
       <section id="emptyState" class="empty-state">
         <span class="empty-icon">▶</span>
         <h2>建立第一个生产项目</h2>
-        <p>从 Studio 转入的项目会自动出现在这里；也可以直接新建正式制作项目。</p>
+        <p>从 Studio 转入的项目会自动出现在这里；也可以直接新建正式制作项目，不需要先选择内容类型。</p>
         <button class="button primary" type="button" data-action="new-project">新建项目</button>
       </section>
 
       <div id="projectWorkspace" hidden>
         <section class="project-hero panel">
           <div>
-            <div class="type-row"><span id="projectTypeBadge" class="type-badge"></span><span id="saveState" class="save-state">已自动保存</span></div>
+            <div class="type-row"><span class="type-badge">CREATOR PROJECT</span><span id="saveState" class="save-state">已自动保存</span></div>
             <h2 id="projectTitle"></h2>
             <p id="projectMeta" class="muted"></p>
           </div>
@@ -69,7 +69,7 @@
         <section class="next-action panel accent-panel" id="nextActionCard"></section>
 
         <section class="locks panel">
-          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。锁定后，后续阶段才把它视为可靠输入。</p></div>
+          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。Music 不单独锁定，最终音频以 Audio Lock 为确认点。</p></div>
           <div id="lockGrid" class="lock-grid"></div>
         </section>
 
@@ -83,13 +83,12 @@
     <form id="projectForm" method="dialog" class="dialog-form">
       <header><div><p class="eyebrow">PROJECT MANIFEST</p><h2 id="projectDialogTitle">新建项目</h2></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></header>
       <input name="projectId" type="hidden">
-      <label>项目名称<input name="name" required placeholder="例如：芙宁娜全方位攻略"></label>
+      <label>项目名称<input name="name" required placeholder="例如：清宵完整攻略"></label>
       <div class="form-grid">
-        <label>游戏<input name="game" placeholder="Genshin Impact"></label>
+        <label>游戏<input name="game" placeholder="鸣潮"></label>
         <label>目标发布日期<input name="targetPublishDate" type="date"></label>
       </div>
       <label>核心主题<input name="topic" placeholder="这个视频必须解决什么问题？"></label>
-      <label>项目类型<select name="projectType" id="projectTypeSelect"></select></label>
       <label>备注<textarea name="notes" rows="3" placeholder="观众、边界、版本等"></textarea></label>
       <footer><button class="button ghost" value="cancel">取消</button><button class="button primary" value="default" type="submit">保存项目</button></footer>
     </form>

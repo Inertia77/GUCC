@@ -1,4 +1,5 @@
 const assert = require('assert');
+const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
@@ -27,6 +28,8 @@ const { pathToFileURL } = require('url');
   const project = Core.studioSnapshotToProduction(Engine, snapshot);
   assert.equal(project.projectId, snapshot.projectId, 'Studio -> Production must preserve canonical project_id');
   assert.equal(project.name, snapshot.projectTitle);
+  assert.equal(project.projectType, 'STANDARD_VIDEO', 'Studio must no longer guess A/B/C/D');
+  assert.equal(project.legacyProjectType, '');
   assert.equal(project.currentState, 'RESEARCHING', 'handoff must not auto-cross human locks');
   assert.equal(project.locks.contentLock, false);
   assert.equal(project.files.RESEARCH.status, 'Ready');
@@ -34,12 +37,43 @@ const { pathToFileURL } = require('url');
   assert.equal(project.integration.drive.rootId, Core.DRIVE_ROOT.id);
 
   let generatedIds = 0;
+  let generatedWorkspaceIds = 0;
   const idFactory = () => `project_studio_${++generatedIds}`;
+  const workspaceIdFactory = () => `workspace_studio_${++generatedWorkspaceIds}`;
+  const firstIdentity = Core.resolveStudioWorkspaceIdentity({}, { idFactory, workspaceIdFactory });
+  const repeatedIdentity = Core.resolveStudioWorkspaceIdentity(firstIdentity, { idFactory, workspaceIdFactory });
+  assert.equal(repeatedIdentity.creatorProjectId, firstIdentity.creatorProjectId, 'same Studio Draft must reuse creatorProjectId');
+  assert.equal(repeatedIdentity.workspaceInstanceId, firstIdentity.workspaceInstanceId, 'same Studio Draft must retain workspace identity');
+
+  const copiedIdentity = Core.resolveStudioWorkspaceIdentity(repeatedIdentity, { forceNewProject: true, idFactory, workspaceIdFactory });
+  assert.notEqual(copiedIdentity.creatorProjectId, firstIdentity.creatorProjectId, 'explicit copy/save-as-new must create another Project ID');
+  assert.equal(copiedIdentity.workspaceInstanceId, firstIdentity.workspaceInstanceId, 'copying a project does not create a different Studio Draft instance');
+
+  const freshWorkspace = Core.resolveStudioWorkspaceIdentity(repeatedIdentity, { forceNewWorkspace: true, idFactory, workspaceIdFactory });
+  assert.notEqual(freshWorkspace.workspaceInstanceId, firstIdentity.workspaceInstanceId, 'a genuinely new Studio Workspace must get a new draft identity');
+  assert.notEqual(freshWorkspace.creatorProjectId, firstIdentity.creatorProjectId, 'a genuinely new Studio Workspace must automatically get a new Creator Project ID');
+
+  const migratedLegacyIdentity = Core.resolveStudioWorkspaceIdentity({}, {
+    legacyProjectId: 'project_legacy_browser_key', idFactory, workspaceIdFactory,
+  });
+  assert.equal(migratedLegacyIdentity.creatorProjectId, 'project_legacy_browser_key', 'legacy scalar localStorage identity must migrate without breaking an existing project');
+  assert.equal(migratedLegacyIdentity.migratedFromLegacy, true);
+
+  // Runtime wiring: exports persist workspace identity; blank/import paths rotate or restore it.
+  const identityRuntime = fs.readFileSync(path.join(__dirname, '..', 'assets', 'studio-workspace-identity.mjs'), 'utf8');
+  const accessGuard = fs.readFileSync(path.join(__dirname, '..', 'assets', 'access-guard.js'), 'utf8');
+  assert.match(identityRuntime, /__creatorWorkspaceInstanceId/);
+  assert.match(identityRuntime, /__creatorProjectId/);
+  assert.match(identityRuntime, /window\.collect = collectWithIdentity/);
+  assert.match(identityRuntime, /window\.fill = fillWithIdentity/);
+  assert.match(identityRuntime, /window\.openBlankWorkspace = openBlankWorkspaceWithIdentity/);
+  assert.match(identityRuntime, /createNewStudioWorkspaceIdentity\(\)/);
+  assert.match(accessGuard, /studio-workspace-identity\.mjs\?v=1/);
+
+  // Phase 1.1 idempotency primitive remains compatible.
   const firstStudioId = Core.resolveStudioProjectId('', false, idFactory);
   const repeatedStudioId = Core.resolveStudioProjectId(firstStudioId, false, idFactory);
-  const saveAsNewId = Core.resolveStudioProjectId(repeatedStudioId, true, idFactory);
-  assert.equal(repeatedStudioId, firstStudioId, 'repeated Studio handoff must reuse the existing creatorProjectId');
-  assert.notEqual(saveAsNewId, firstStudioId, 'only explicit Save As New may create another project_id');
+  assert.equal(repeatedStudioId, firstStudioId);
 
   project.releasePack = `## B站\n### 最终标题\n【绝区零】洛克茜前瞻机制解析\n### 最终简介\n看懂资源循环和队伍价值。\n### 普通标签\n绝区零,洛克茜,攻略\n### 置顶评论\n你最关心哪一段？\n\n## 抖音\n### 最终发布文案\n洛克茜机制先看资源循环 #绝区零\n### 置顶评论\n完整机制见正片\n\n## 小红书视频\n### 最终标题\n洛克茜机制速懂\n### 最终正文\n先看资源，再看队伍。\n### 话题\n绝区零,洛克茜\n### 置顶评论\n欢迎补充问题\n\n## 微信视频号\n### 最终完整描述\n洛克茜前瞻机制解析\n### 话题\n绝区零,洛克茜\n### 置顶评论\n欢迎讨论\n\n## YouTube 简体中文\n### 最终标题\nZenless Zone Zero 洛克茜机制解析\n### 最终简介\nResource loop and team value explained.\n### Hashtags\n#绝区零,#洛克茜\n### 后台 Tags\n绝区零,洛克茜,ZZZ\n\n## TikTok 简体中文\n### 最终 Caption\n洛克茜机制解析 #绝区零\n### 置顶评论\n完整分析见视频`;
   project.files.RELEASE_PACK.content = project.releasePack;
@@ -114,7 +148,7 @@ const { pathToFileURL } = require('url');
   assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.kind, 'bootstrap');
   assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.currentRevision, 5);
 
-  console.log('creator pipeline tests passed');
+  console.log('creator pipeline Phase 1.2 tests passed');
 })().catch((error) => {
   console.error(error);
   process.exit(1);

@@ -25,6 +25,10 @@ const creatorLocalFirstMigration = fs.readFileSync(
   path.join(ROOT, "supabase/migrations/20260827050000_creator_local_first_foundation.sql"),
   "utf8"
 );
+const creatorLocalFirstIndexes = fs.readFileSync(
+  path.join(ROOT, "supabase/migrations/20260827051000_creator_local_first_fk_indexes.sql"),
+  "utf8"
+);
 const creatorEdge = fs.readFileSync(
   path.join(ROOT, "supabase/functions/creator-project-api/index.ts"),
   "utf8"
@@ -101,6 +105,12 @@ assert.match(creatorLocalFirstMigration, /physical\/provider observations belong
 // physical file location from the 48 legacy/template logical artifact rows.
 assert.match(creatorLocalFirstMigration, /insert into public\.creator_devices/i);
 assert.doesNotMatch(creatorLocalFirstMigration, /insert into public\.creator_file_locations/i);
+
+// Composite foreign keys must have matching left-prefix covering indexes. This
+// keeps the production advisor clean as the location registry grows.
+assert.match(creatorLocalFirstIndexes, /creator_file_locations_logical_owner_fk_idx[\s\S]*\(logical_file_id, project_id, owner_user_id\)/i);
+assert.match(creatorLocalFirstIndexes, /creator_file_locations_project_owner_fk_idx[\s\S]*\(project_id, owner_user_id\)/i);
+assert.doesNotMatch(creatorLocalFirstIndexes, /delete\s+from|update\s+public\.|insert\s+into|drop\s+table/i);
 
 // The Creator API exposes the local-first contract without accepting media bytes.
 assert.match(creatorEdge, /function normalizeRelativePath\(/);

@@ -9,7 +9,6 @@ on:
   pull_request:
     branches:
       - main
-  deployment_status:
 
 permissions:
   contents: read

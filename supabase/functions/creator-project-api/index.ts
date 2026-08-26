@@ -121,8 +121,19 @@ function dateOrNull(value: unknown) {
   return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null;
 }
 
+function canonicalJson(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map((item) => canonicalJson(item));
+  if (value && typeof value === "object") {
+    const source = value as JsonMap;
+    const result: JsonMap = {};
+    for (const key of Object.keys(source).sort()) result[key] = canonicalJson(source[key]);
+    return result;
+  }
+  return value;
+}
+
 function sameJson(a: unknown, b: unknown) {
-  try { return JSON.stringify(a ?? null) === JSON.stringify(b ?? null); }
+  try { return JSON.stringify(canonicalJson(a ?? null)) === JSON.stringify(canonicalJson(b ?? null)); }
   catch { return false; }
 }
 

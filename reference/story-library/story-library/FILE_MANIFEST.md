@@ -1,6 +1,6 @@
 # Story Library File Manifest
 
-> 更新：2026-08-25  
+> 更新：2026-08-26  
 > 说明：按当前 Story Library 实际目录维护；新增剧情文件必须同步登记，供 Story Library 前端自动发现。
 
 ## 根文件
@@ -130,7 +130,13 @@
 - `story-library/games/wuthering-waves/versions/1.4-somnoire-and-transition.md`
 - `story-library/games/wuthering-waves/versions/2.0-rinascita-opening.md`
 - `story-library/games/wuthering-waves/versions/2.1-2.3-rinascita-middle.md`
+- `story-library/games/wuthering-waves/versions/2.1-old-man-and-the-whale.md`
+- `story-library/games/wuthering-waves/versions/2.2-maiden-defier-death-crier.md`
+- `story-library/games/wuthering-waves/versions/2.3-summer-reunion-hidden-history.md`
 - `story-library/games/wuthering-waves/versions/2.4-2.6-rinascita-climax.md`
+- `story-library/games/wuthering-waves/versions/2.4-shadow-of-glory-flames-of-heart.md`
+- `story-library/games/wuthering-waves/versions/2.5-dreamcatchers-secret-gardens.md`
+- `story-library/games/wuthering-waves/versions/2.6-sun-burning-moon-fated.md`
 - `story-library/games/wuthering-waves/versions/2.7-rinascita-finale.md`
 - `story-library/games/wuthering-waves/versions/2.8-city-set-in-amber.md`
 - `story-library/games/wuthering-waves/versions/3.0-we-who-see-the-stars.md`

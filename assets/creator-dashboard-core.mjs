@@ -88,8 +88,36 @@ function clone(value) {
   return value == null ? value : structuredClone(value);
 }
 
-function same(a, b) {
-  try { return JSON.stringify(a ?? null) === JSON.stringify(b ?? null); }
+function canonicalizeJson(value, seen = new WeakSet()) {
+  if (value === null || typeof value !== "object") return value;
+  if (typeof value.toJSON === "function") return canonicalizeJson(value.toJSON(), seen);
+  if (seen.has(value)) throw new TypeError("Circular JSON value");
+  seen.add(value);
+  if (Array.isArray(value)) {
+    const out = value.map((item) => {
+      const normalized = canonicalizeJson(item, seen);
+      return normalized === undefined ? null : normalized;
+    });
+    seen.delete(value);
+    return out;
+  }
+  const out = {};
+  for (const key of Object.keys(value).sort()) {
+    const normalized = canonicalizeJson(value[key], seen);
+    if (normalized !== undefined && typeof normalized !== "function" && typeof normalized !== "symbol") out[key] = normalized;
+  }
+  seen.delete(value);
+  return out;
+}
+
+export function stableStringify(value) {
+  const normalized = canonicalizeJson(value);
+  const serialized = JSON.stringify(normalized);
+  return serialized === undefined ? "undefined" : serialized;
+}
+
+export function deepEqual(a, b) {
+  try { return stableStringify(a ?? null) === stableStringify(b ?? null); }
   catch { return false; }
 }
 
@@ -136,6 +164,28 @@ function requiredInputs(project) {
   if (["PRODUCTION_READY", "CODEX_BUILD"].includes(state)) return ["AUDIO_MASTER", "SUBTITLE_MASTER", "EDIT_BLUEPRINT", "ASSET_INDEX", "VISUAL_STYLE", "EXPORT_SPEC"];
   if (state === "REVISION") return ["VIDEO_V0_REVIEW", "REVIEW_NOTES"];
   return [];
+}
+
+function passedStageRequirements(project, flow) {
+  const index = flow.indexOf(project.currentState);
+  if (index < 0) return [];
+  const milestones = [
+    ["RESEARCH_LOCKED", ["RESEARCH"]],
+    ["CONTENT_LOCKED", ["CONTENT_LOCK"]],
+    ["SCRIPT_LOCKED", ["VOICE_MASTER"]],
+    ["AUDIO_LOCKED", ["AUDIO_MASTER"]],
+    ["TIMELINE_LOCKED", ["SUBTITLE_MASTER", "TRANSCRIPT_ALIGNED"]],
+    ["PRODUCTION_READY", ["EDIT_BLUEPRINT", "ASSET_INDEX", "VISUAL_STYLE", "EXPORT_SPEC"]],
+    ["REVIEW", ["VIDEO_V0_REVIEW", "BUILD_REPORT"]],
+    ["PICTURE_LOCKED", ["VIDEO_V1", "QC_REPORT"]],
+    ["RELEASE_READY", ["RELEASE_PACK"]],
+  ];
+  const required = [];
+  for (const [state, keys] of milestones) {
+    const milestoneIndex = flow.indexOf(state);
+    if (milestoneIndex >= 0 && index >= milestoneIndex) required.push(...keys);
+  }
+  return [...new Set(required)];
 }
 
 function checkpointFromWindow(value) {
@@ -205,7 +255,7 @@ export function attachCloudMetadata(project, row) {
 export function summarizeProjectDiff(localProject, remoteProject) {
   const local = stripCloudMetadata(localProject);
   const remote = stripCloudMetadata(remoteProject);
-  return TOP_LEVEL_MERGE_KEYS.filter((key) => !same(local?.[key], remote?.[key])).map((key) => ({ key, label: DIFF_LABELS[key] || key }));
+  return TOP_LEVEL_MERGE_KEYS.filter((key) => !deepEqual(local?.[key], remote?.[key])).map((key) => ({ key, label: DIFF_LABELS[key] || key }));
 }
 
 export function mergeProjectVersions(baseProject, localProject, remoteProject) {
@@ -218,8 +268,8 @@ export function mergeProjectVersions(baseProject, localProject, remoteProject) {
     const baseValue = base?.[key];
     const localValue = local?.[key];
     const remoteValue = remote?.[key];
-    if (same(localValue, remoteValue) || same(remoteValue, baseValue)) merged[key] = clone(localValue);
-    else if (same(localValue, baseValue)) merged[key] = clone(remoteValue);
+    if (deepEqual(localValue, remoteValue) || deepEqual(remoteValue, baseValue)) merged[key] = clone(localValue);
+    else if (deepEqual(localValue, baseValue)) merged[key] = clone(remoteValue);
     else conflicts.push({ key, label: DIFF_LABELS[key] || key });
   }
   merged.projectId = local.projectId || remote.projectId;
@@ -235,16 +285,34 @@ export function analyzeCreatorProject(row, fileRows = [], releases = [], options
   const flow = flowFor(project.projectType);
   const stateIndex = flow.indexOf(project.currentState);
   const [actionTitle, outputKeys, actionReason] = actionFor(project);
-  const missingKeys = [...new Set([...requiredInputs(project), ...outputKeys])].filter((key) => key !== "PROJECT_MANIFEST" && !fileReady(project, fileRows, key));
+
+  const nextRequirementKeys = [...new Set(outputKeys)]
+    .filter((key) => key !== "PROJECT_MANIFEST" && !fileReady(project, fileRows, key));
+  const currentInputKeys = [...new Set(requiredInputs(project))]
+    .filter((key) => !fileReady(project, fileRows, key));
+  const overdueArtifactKeys = passedStageRequirements(project, flow)
+    .filter((key) => !fileReady(project, fileRows, key));
+  const attentionKeys = [...new Set([...currentInputKeys, ...overdueArtifactKeys])];
+
   const problems = stateIndex < 0 ? [`非法状态：${project.currentState}`] : lockProblems(project, flow);
   const cloudConflict = local?.integration?.cloud?.conflict;
   if (cloudConflict) problems.push("本机与云端存在未解决冲突");
   const releaseIssues = releaseProblems(project, releases);
   const reviewState = project.currentState === "REVIEW";
-  let health = { code: "ready", label: "Ready", icon: "🟢", reasons: [] };
-  if (problems.length) health = { code: "blocked", label: "Blocked", icon: "🔴", reasons: problems };
-  else if (reviewState) health = { code: "review", label: "Awaiting Review", icon: "🟣", reasons: ["等待人工审片"] };
-  else if (missingKeys.length || releaseIssues.length) health = { code: "missing", label: "Missing File", icon: "🟡", reasons: [...missingKeys.map((key) => `缺少 ${FILE_LABELS[key] || key}`), ...releaseIssues] };
+
+  let health = { code: "normal", label: "Normal", icon: "🟢", reasons: [] };
+  if (problems.length) {
+    health = { code: "blocked", label: "Blocked", icon: "🔴", reasons: problems };
+  } else if (attentionKeys.length || releaseIssues.length) {
+    health = {
+      code: "attention",
+      label: "Attention",
+      icon: "🟡",
+      reasons: [...attentionKeys.map((key) => `缺少当前阶段必要文件 ${FILE_LABELS[key] || key}`), ...releaseIssues],
+    };
+  } else if (reviewState) {
+    health = { code: "review", label: "Awaiting Review", icon: "🟣", reasons: ["等待人工审片"] };
+  }
 
   const due = dueAnalytics(releases, now);
   const targetDays = daysUntil(project.targetPublishDate, now);
@@ -274,7 +342,9 @@ export function analyzeCreatorProject(row, fileRows = [], releases = [], options
     lastDeviceId: row?.last_device_id || "",
     nextAction: actionTitle,
     actionReason,
-    missingFiles: missingKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
+    nextRequirements: nextRequirementKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
+    missingInputs: currentInputKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
+    missingFiles: attentionKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
     health,
     warnings,
     analyticsDue: due,
@@ -289,15 +359,17 @@ function queueItem(project) {
   if (project.analyticsDue.length) return { projectId: project.projectId, kind: "review", icon: "📊", label: "待复盘", score: 900 + Math.max(...project.analyticsDue), title: `补录 ${project.analyticsDue.map((day) => `T+${day}`).join(" / ")} 数据`, reason: "发布复盘节点已到", route: "publish" };
   if (project.health.code === "review") return { projectId: project.projectId, kind: "review", icon: "🟣", label: "待确认", score: 850, title: project.nextAction, reason: project.health.reasons[0], route: "production" };
   const urgent = project.targetDays != null && project.targetDays <= 2;
-  const missingBoost = project.missingFiles.length ? 80 : 0;
+  const attentionBoost = project.health.code === "attention" ? 100 : 0;
   return {
     projectId: project.projectId,
     kind: urgent ? "urgent" : "next",
     icon: urgent ? "🔥" : "→",
     label: urgent ? "优先" : "下一步",
-    score: (urgent ? 700 - Math.min(project.targetDays, 2) * 20 : 400) + missingBoost + project.progress,
+    score: (urgent ? 700 - Math.min(project.targetDays, 2) * 20 : 400) + attentionBoost + project.progress,
     title: project.nextAction,
-    reason: urgent ? (project.targetDays < 0 ? "目标发布日期已过" : `目标发布日期还有 ${project.targetDays} 天`) : project.actionReason,
+    reason: project.health.code === "attention"
+      ? project.health.reasons[0]
+      : urgent ? (project.targetDays < 0 ? "目标发布日期已过" : `目标发布日期还有 ${project.targetDays} 天`) : project.actionReason,
     route: "production",
   };
 }
@@ -328,4 +400,3 @@ export function buildCreatorDashboard(data = {}, options = {}) {
   const actions = projects.map(queueItem).filter(Boolean).map((item) => ({ ...item, project: projects.find((project) => project.projectId === item.projectId) })).sort((a, b) => b.score - a.score);
   return { projects, activeProjects, actions, generatedAt: data.serverTime || new Date().toISOString() };
 }
-

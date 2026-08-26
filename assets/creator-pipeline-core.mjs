@@ -1,19 +1,87 @@
-import { attachCloudMetadata } from "./creator-dashboard-core.mjs";
+import { attachCloudMetadata, summarizeProjectDiff } from "./creator-dashboard-core.mjs";
 
 export const PRODUCTION_STORAGE_KEY = "gucc_ai_video_production_v1";
 export const PUBLISH_STORAGE_KEY = "gucc_publish_console_v1";
 export const STUDIO_HANDOFF_KEY = "gucc_creator_studio_handoff_v1";
 export const PUBLISH_HANDOFF_KEY = "gucc_creator_publish_handoff_v1";
+export const STUDIO_CREATOR_PROJECT_ID_KEY = "gucc_creator_studio_project_id_v1";
 export const DRIVE_ROOT = Object.freeze({
   id: "1wVMD-nIk6ArtGDi5gyOCmhW1pY-iRM9L",
   url: "https://drive.google.com/drive/folders/1wVMD-nIk6ArtGDi5gyOCmhW1pY-iRM9L",
   name: "GUCC Creator Projects",
 });
 
-export function createCanonicalProjectId() {
+function newCanonicalProjectId() {
   const random = Math.random().toString(36).slice(2, 8);
   return `project_${Date.now().toString(36)}_${random}`;
 }
+
+export function resolveStudioProjectId(existingId = "", forceNew = false, idFactory = newCanonicalProjectId) {
+  const current = String(existingId || "").trim();
+  if (!forceNew && current) return current;
+  return idFactory();
+}
+
+function isStudioBrowser() {
+  if (typeof window === "undefined" || typeof localStorage === "undefined") return false;
+  const path = String(window.location?.pathname || "");
+  return path.includes("/apps/video-workspace/") && !path.includes("/production-system/");
+}
+
+function readStudioProjectId() {
+  if (!isStudioBrowser()) return "";
+  try { return localStorage.getItem(STUDIO_CREATOR_PROJECT_ID_KEY) || ""; }
+  catch { return ""; }
+}
+
+function persistStudioProjectId(projectId) {
+  if (!isStudioBrowser()) return;
+  try { localStorage.setItem(STUDIO_CREATOR_PROJECT_ID_KEY, projectId); }
+  catch { /* local-only convenience; handoff itself still works */ }
+}
+
+export function createCanonicalProjectId() {
+  if (!isStudioBrowser()) return newCanonicalProjectId();
+  const projectId = resolveStudioProjectId(readStudioProjectId(), false, newCanonicalProjectId);
+  persistStudioProjectId(projectId);
+  return projectId;
+}
+
+export function createNewStudioProjectId() {
+  const projectId = resolveStudioProjectId(readStudioProjectId(), true, newCanonicalProjectId);
+  persistStudioProjectId(projectId);
+  return projectId;
+}
+
+function installStudioProjectIdentityControl() {
+  if (!isStudioBrowser() || typeof MutationObserver === "undefined" || typeof document === "undefined") return;
+  const inject = () => {
+    const actions = document.querySelector("#guccCreatorBridge [data-gcb-actions]");
+    if (!actions || actions.querySelector("[data-gcb-save-as-new]")) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.gcbSaveAsNew = "true";
+    button.textContent = "另存为新项目";
+    button.title = "明确创建新的 Project ID；普通“转入正式制作”会继续使用当前 Project ID";
+    button.addEventListener("click", () => {
+      const projectId = createNewStudioProjectId();
+      button.textContent = `新项目已准备 · ${projectId.slice(-6)}`;
+      window.setTimeout(() => { if (button.isConnected) button.textContent = "另存为新项目"; }, 1800);
+    });
+    const firstLink = actions.querySelector("a");
+    actions.insertBefore(button, firstLink || null);
+  };
+  const start = () => {
+    inject();
+    const observer = new MutationObserver(inject);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    window.setTimeout(() => observer.disconnect(), 15000);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+  else start();
+}
+
+installStudioProjectIdentityControl();
 
 export function projectTypeFromWorkspace(value = "") {
   const text = String(value).toLowerCase();
@@ -209,12 +277,38 @@ export function mergeCloudProjects(localStore, remoteRows, engine, preferredProj
     const remoteRevision = Number(row.revision || 0);
     const baseCloudTime = Date.parse(localCloud.updatedAt || 0) || 0;
     const localDirty = localRevision > 0 && localTime > baseCloudTime;
+
+    if (localRevision === 0 && remoteRevision >= 1) {
+      const differences = summarizeProjectDiff(localProject, remote);
+      if (differences.length) {
+        const conflicted = structuredClone(localProject);
+        conflicted.integration ||= {};
+        conflicted.integration.cloud = {
+          ...localCloud,
+          revision: 0,
+          conflict: {
+            kind: "bootstrap",
+            currentRevision: remoteRevision,
+            project: row,
+            differences: differences.map((item) => item.key),
+            detectedAt: new Date().toISOString(),
+          },
+        };
+        store.projects[index] = conflicted;
+      } else {
+        store.projects[index] = attachCloudMetadata(localProject, row);
+      }
+      changed = true;
+      continue;
+    }
+
     if (remoteRevision > localRevision && localRevision > 0 && localDirty) {
       const conflicted = structuredClone(localProject);
       conflicted.integration ||= {};
       conflicted.integration.cloud = {
         ...localCloud,
         conflict: {
+          kind: "concurrent",
           currentRevision: remoteRevision,
           project: row,
           detectedAt: new Date().toISOString(),
@@ -222,15 +316,13 @@ export function mergeCloudProjects(localStore, remoteRows, engine, preferredProj
       };
       store.projects[index] = conflicted;
       changed = true;
-    } else if (remoteRevision > localRevision && localRevision > 0 || remoteTime > localTime) {
+    } else if ((remoteRevision > localRevision && localRevision > 0) || remoteTime > localTime) {
       store.projects[index] = remote;
       changed = true;
-    } else {
-      if (Number(localCloud.revision || 0) !== Number(row.revision || 0)
-        || localCloud.updatedAt !== (row.updated_at || "")) {
-        store.projects[index] = attachCloudMetadata(localProject, row);
-        changed = true;
-      }
+    } else if (Number(localCloud.revision || 0) !== Number(row.revision || 0)
+      || localCloud.updatedAt !== (row.updated_at || "")) {
+      store.projects[index] = attachCloudMetadata(localProject, row);
+      changed = true;
     }
   }
   if (preferredProjectId && store.projects.some((project) => project.projectId === preferredProjectId)

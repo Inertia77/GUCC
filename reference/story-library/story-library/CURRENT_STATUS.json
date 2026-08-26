@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-26",
+  "timezone": "Asia/Tokyo",
+  "games": {
+    "honkai-star-rail": {
+      "name": "崩坏：星穹铁道",
+      "maintenance": true,
+      "library_version": "v3.1",
+      "current_version": "4.5",
+      "coverage": "已实装至4.5；1.x拆章；2.0–2.7、3.0–3.8逐版本；4.x持续深写",
+      "verified_at": "2026-08-26",
+      "review_by": "2026-09-02",
+      "current_doc": "versions/4.5-astropolis-roll-the-stars.md"
+    },
+    "wuthering-waves": {
+      "name": "鸣潮",
+      "maintenance": true,
+      "library_version": "v3",
+      "current_version": "3.6",
+      "coverage": "已实装至3.6；1.0–3.6逐版本，2.1–2.6独立拆章",
+      "verified_at": "2026-08-26",
+      "review_by": "2026-09-02",
+      "current_doc": "versions/3.6-lamplight-in-mirage-swords-resolve.md"
+    },
+    "zenless-zone-zero": {
+      "name": "绝区零",
+      "maintenance": true,
+      "library_version": "v3",
+      "current_version": "3.1",
+      "coverage": "已实装至3.1；1.0–1.7、2.0–2.8、3.0–3.1按版本深写",
+      "verified_at": "2026-08-26",
+      "review_by": "2026-09-02",
+      "current_doc": "versions/3.1-long-goodbye.md"
+    },
+    "arknights-endfield": {
+      "name": "明日方舟：终末地",
+      "maintenance": true,
+      "library_version": "v3",
+      "current_version": "1.4",
+      "coverage": "已实装至1.4；冷启动→四号谷地→武陵→向渊行",
+      "verified_at": "2026-08-26",
+      "review_by": "2026-09-02",
+      "current_doc": "versions/1.4-into-the-abyss.md"
+    },
+    "neverness-to-everness": {
+      "name": "异环 / NTE",
+      "maintenance": true,
+      "library_version": "v3",
+      "current_version": "1.3",
+      "coverage": "已实装至1.3；世界时间1.0→1.1→1.3→数周后1.2",
+      "verified_at": "2026-08-26",
+      "review_by": "2026-09-02",
+      "current_doc": "versions/1.3-mist-nest-game.md"
+    },
+    "ananta": {
+      "name": "无限大 / ANANTA",
+      "maintenance": false,
+      "library_version": "legacy",
+      "current_version": null,
+      "coverage": "原有预研资料保持原样",
+      "verified_at": "2026-08-26",
+      "review_by": null,
+      "current_doc": null
+    }
+  }
+}

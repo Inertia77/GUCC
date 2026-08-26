@@ -6,8 +6,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "check": "node scripts/check-project.mjs",
-    "test": "node scripts/check-project.mjs && node scripts/test-command-center.cjs && node scripts/test-supabase-contract.cjs && node scripts/test-migration-discipline.cjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs && node scripts/test-creator-pipeline.cjs && node scripts/test-uiux-contract.cjs",
+    "check:story": "node scripts/check-story-library.mjs",
+    "check": "node scripts/check-project.mjs && node scripts/check-story-library.mjs",
+    "test": "node scripts/check-project.mjs && node scripts/check-story-library.mjs && node scripts/test-command-center.cjs && node scripts/test-supabase-contract.cjs && node scripts/test-migration-discipline.cjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs && node scripts/test-creator-pipeline.cjs && node scripts/test-uiux-contract.cjs",
     "publisher:assistant": "node scripts/publisher-assistant/server.cjs"
   },
   "repository": {

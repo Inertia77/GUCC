@@ -1,7 +1,8 @@
 # Story Library File Manifest
 
 > 更新：2026-08-26  
-> 说明：按当前 Story Library 实际目录维护；新增剧情文件必须同步登记，供 Story Library 前端自动发现。
+> 说明：按当前 Story Library 实际 Markdown 目录维护；新增/删除剧情 Markdown 必须同步登记，供前端 LIVE 目录与自动检查使用。  
+> 非 Markdown 状态源：`CURRENT_STATUS.json`（不参与前端Markdown目录解析）。
 
 ## 根文件
 
@@ -61,9 +62,16 @@
 - `story-library/games/honkai-star-rail/04-mysteries.md`
 - `story-library/games/honkai-star-rail/05-video-hooks.md`
 - `story-library/games/honkai-star-rail/README.md`
-- `story-library/games/honkai-star-rail/versions/1.0-1.3-xianzhou-luofu.md`
 - `story-library/games/honkai-star-rail/versions/1.0-herta-space-station.md`
 - `story-library/games/honkai-star-rail/versions/1.0-jarilo-vi.md`
+- `story-library/games/honkai-star-rail/versions/1.0-xianzhou-windswept-wanderlust.md`
+- `story-library/games/honkai-star-rail/versions/1.1-xianzhou-companion-interlude.md`
+- `story-library/games/honkai-star-rail/versions/1.2-xianzhou-topclouded-towerthrust.md`
+- `story-library/games/honkai-star-rail/versions/1.3-xianzhou-karmic-clouds.md`
+- `story-library/games/honkai-star-rail/versions/1.0-1.3-xianzhou-luofu.md`
+- `story-library/games/honkai-star-rail/versions/1.4-future-market.md`
+- `story-library/games/honkai-star-rail/versions/1.5-foxian-tale-haunted.md`
+- `story-library/games/honkai-star-rail/versions/1.6-crown-mundane-divine.md`
 - `story-library/games/honkai-star-rail/versions/1.4-1.6-interlude.md`
 - `story-library/games/honkai-star-rail/versions/2.0-2.3-penacony.md`
 - `story-library/games/honkai-star-rail/versions/2.0-if-one-dreams-at-midnight.md`
@@ -90,6 +98,7 @@
 - `story-library/games/honkai-star-rail/versions/4.2-planarcadia-so-laughed-the-masses.md`
 - `story-library/games/honkai-star-rail/versions/4.3-planarcadia-lethe-below-the-living.md`
 - `story-library/games/honkai-star-rail/versions/4.4-planarcadia-in-ravages-whistle.md`
+- `story-library/games/honkai-star-rail/versions/4.5-astropolis-roll-the-stars.md`
 - `story-library/games/honkai-star-rail/versions/4.x-duoxiangleyuan.md`
 
 ## 异环 / Neverness to Everness

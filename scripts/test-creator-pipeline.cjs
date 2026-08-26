@@ -1,4 +1,5 @@
 const assert = require('assert');
+const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
@@ -57,6 +58,17 @@ const { pathToFileURL } = require('url');
   });
   assert.equal(migratedLegacyIdentity.creatorProjectId, 'project_legacy_browser_key', 'legacy scalar localStorage identity must migrate without breaking an existing project');
   assert.equal(migratedLegacyIdentity.migratedFromLegacy, true);
+
+  // Runtime wiring: exports persist workspace identity; blank/import paths rotate or restore it.
+  const identityRuntime = fs.readFileSync(path.join(__dirname, '..', 'assets', 'studio-workspace-identity.mjs'), 'utf8');
+  const accessGuard = fs.readFileSync(path.join(__dirname, '..', 'assets', 'access-guard.js'), 'utf8');
+  assert.match(identityRuntime, /__creatorWorkspaceInstanceId/);
+  assert.match(identityRuntime, /__creatorProjectId/);
+  assert.match(identityRuntime, /window\.collect = collectWithIdentity/);
+  assert.match(identityRuntime, /window\.fill = fillWithIdentity/);
+  assert.match(identityRuntime, /window\.openBlankWorkspace = openBlankWorkspaceWithIdentity/);
+  assert.match(identityRuntime, /createNewStudioWorkspaceIdentity\(\)/);
+  assert.match(accessGuard, /studio-workspace-identity\.mjs\?v=1/);
 
   // Phase 1.1 idempotency primitive remains compatible.
   const firstStudioId = Core.resolveStudioProjectId('', false, idFactory);

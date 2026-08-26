@@ -23,37 +23,55 @@ body.command-center-page .item:not(.is-collapsed) button.collapse-toggle:is(:hov
   background: #fff85a !important;
 }
 
-/* Character resource colors: official stays green in app.css; AI research/build use separate accents. */
+/* Character resource colors: official stays green in app.css.
+   AI analysis = blue/cyan, persona = purple/pink, build = amber/orange. */
 body.command-center-page .link-btn.chatgpt-research-link,
-body.command-center-page .link-btn[data-relation-type="notion_research"] {
-  color: #eef0ff !important;
-  border-color: rgba(142, 167, 255, .76) !important;
-  background: linear-gradient(135deg, rgba(142, 167, 255, .23), rgba(118, 247, 255, .10)) !important;
-  box-shadow: 0 0 0 1px rgba(142, 167, 255, .10) inset, 0 0 16px rgba(142, 167, 255, .15) !important;
+body.command-center-page .link-btn[data-relation-type="notion_research"],
+body.command-center-page .link-btn[data-relation-type="notion_analysis"] {
+  color: #eef7ff !important;
+  border-color: rgba(103, 191, 255, .82) !important;
+  background: linear-gradient(135deg, rgba(70, 139, 255, .27), rgba(74, 232, 255, .12)) !important;
+  box-shadow: 0 0 0 1px rgba(103, 191, 255, .11) inset, 0 0 17px rgba(70, 139, 255, .18) !important;
   font-weight: 800;
 }
 
 body.command-center-page .link-btn.chatgpt-research-link:is(:hover, :focus, :focus-visible, :active),
-body.command-center-page .link-btn[data-relation-type="notion_research"]:is(:hover, :focus, :focus-visible, :active) {
+body.command-center-page .link-btn[data-relation-type="notion_research"]:is(:hover, :focus, :focus-visible, :active),
+body.command-center-page .link-btn[data-relation-type="notion_analysis"]:is(:hover, :focus, :focus-visible, :active) {
   color: #ffffff !important;
-  border-color: #a8baff !important;
-  background: linear-gradient(135deg, rgba(142, 167, 255, .34), rgba(118, 247, 255, .16)) !important;
-  box-shadow: 0 0 0 1px rgba(142, 167, 255, .14) inset, 0 0 21px rgba(142, 167, 255, .24) !important;
+  border-color: #8fd2ff !important;
+  background: linear-gradient(135deg, rgba(70, 139, 255, .39), rgba(74, 232, 255, .19)) !important;
+  box-shadow: 0 0 0 1px rgba(103, 191, 255, .16) inset, 0 0 23px rgba(70, 139, 255, .28) !important;
+}
+
+body.command-center-page .link-btn[data-relation-type="notion_persona"] {
+  color: #fff0ff !important;
+  border-color: rgba(205, 132, 255, .82) !important;
+  background: linear-gradient(135deg, rgba(165, 93, 255, .27), rgba(255, 104, 196, .12)) !important;
+  box-shadow: 0 0 0 1px rgba(205, 132, 255, .11) inset, 0 0 17px rgba(165, 93, 255, .18) !important;
+  font-weight: 800;
+}
+
+body.command-center-page .link-btn[data-relation-type="notion_persona"]:is(:hover, :focus, :focus-visible, :active) {
+  color: #ffffff !important;
+  border-color: #dfadff !important;
+  background: linear-gradient(135deg, rgba(165, 93, 255, .39), rgba(255, 104, 196, .19)) !important;
+  box-shadow: 0 0 0 1px rgba(205, 132, 255, .16) inset, 0 0 23px rgba(165, 93, 255, .28) !important;
 }
 
 body.command-center-page .link-btn.chatgpt-build-link,
 body.command-center-page .link-btn[data-relation-type="notion_build"] {
   color: #fff7dc !important;
-  border-color: rgba(255, 209, 102, .78) !important;
-  background: linear-gradient(135deg, rgba(255, 209, 102, .22), rgba(255, 93, 168, .10)) !important;
-  box-shadow: 0 0 0 1px rgba(255, 209, 102, .10) inset, 0 0 16px rgba(255, 209, 102, .14) !important;
+  border-color: rgba(255, 194, 77, .84) !important;
+  background: linear-gradient(135deg, rgba(255, 174, 51, .26), rgba(255, 103, 77, .12)) !important;
+  box-shadow: 0 0 0 1px rgba(255, 194, 77, .11) inset, 0 0 17px rgba(255, 174, 51, .17) !important;
   font-weight: 800;
 }
 
 body.command-center-page .link-btn.chatgpt-build-link:is(:hover, :focus, :focus-visible, :active),
 body.command-center-page .link-btn[data-relation-type="notion_build"]:is(:hover, :focus, :focus-visible, :active) {
   color: #ffffff !important;
-  border-color: #ffe29a !important;
-  background: linear-gradient(135deg, rgba(255, 209, 102, .34), rgba(255, 93, 168, .16)) !important;
-  box-shadow: 0 0 0 1px rgba(255, 209, 102, .14) inset, 0 0 21px rgba(255, 209, 102, .23) !important;
+  border-color: #ffd87f !important;
+  background: linear-gradient(135deg, rgba(255, 174, 51, .39), rgba(255, 103, 77, .19)) !important;
+  box-shadow: 0 0 0 1px rgba(255, 194, 77, .16) inset, 0 0 23px rgba(255, 174, 51, .27) !important;
 }

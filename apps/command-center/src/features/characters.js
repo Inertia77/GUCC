@@ -124,8 +124,7 @@ function collectLinks(form) {
 function renderCharacterTitle(row) {
   const names = row.names || row.localized_names || {};
   const primaryName = String(row.character_name || row.name || '').trim();
-  const fullName = String(row.full_name || row.character_full_name || primaryName).trim();
-  const showFullName = fullName && fullName !== primaryName;
+  const fullName = String(row.full_name || row.character_full_name || primaryName).trim() || primaryName;
   const localizedNames = [
     { label: 'EN', lang: 'en', value: names.en || row.en_name },
     { label: 'JP', lang: 'ja', value: names.jp || names.ja || row.jp_name || row.ja_name },
@@ -145,11 +144,10 @@ function renderCharacterTitle(row) {
               </span>`).join('')}
           </span>` : ''}
       </div>
-      ${showFullName ? `
-        <span class="character-title-full" aria-label="中文全名">
-          <span class="character-full-name-label">全名</span>
-          <span>${escapeHtml(fullName)}</span>
-        </span>` : ''}
+      <span class="character-title-full" aria-label="中文全名">
+        <span class="character-full-name-label">全名</span>
+        <span>${escapeHtml(fullName)}</span>
+      </span>
     </div>`;
 }
 
@@ -188,8 +186,8 @@ function openEditor(data = {}) {
       <div class="editor-body form-grid">
         <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
         <label>游戏 code / short_code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩" /></label>
-        <label>中文简称 / 主显示名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" placeholder="例：洛克茜" /></label>
-        <label>中文全名 <input name="full_name" value="${escapeHtml(data.full_name || data.character_full_name || data.name || data.character_name || '')}" placeholder="例：洛克茜·伊芙莉塔·普莱斯" /></label>
+        <label>中文主名 / 游戏常用名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" placeholder="例：庄方宜 / 洛克茜" /></label>
+        <label>中文全名 <input name="full_name" value="${escapeHtml(data.full_name || data.character_full_name || data.name || data.character_name || '')}" placeholder="可与主名一致；例：庄方宜 / 洛克茜·伊芙莉塔·普莱斯" /></label>
         <label>属性 <input name="element" value="${escapeHtml(data.element || '')}" /></label>
         <label>职业 <input name="profession" value="${escapeHtml(data.profession || '')}" /></label>
         <label>性别 <input name="sex" value="${escapeHtml(data.sex || '')}" /></label>

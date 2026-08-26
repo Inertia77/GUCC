@@ -33,6 +33,7 @@ for (const required of [
   '20260826085937_gucc_schema_guardrails_resources_creator_20260826.sql',
   '20260826090148_gucc_core_game_mechanisms_seed_20260826.sql',
   '20260826090225_gucc_creator_project_sync_triggers_20260826.sql',
+  '20260826090950_gucc_creator_owner_fk_indexes_20260826.sql',
 ]) {
   assert(sqlFiles.includes(required), `Missing production-synced migration: ${required}`);
 }

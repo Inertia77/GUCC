@@ -1,6 +1,6 @@
 name: GUCC CI
 
-# Keep CI deterministic: code changes only. Pages deployment status must not retrigger npm test.
+# Keep CI deterministic: code changes only. Pages deployment_status events must never retrigger the full npm test suite.
 on:
   push:
     branches:

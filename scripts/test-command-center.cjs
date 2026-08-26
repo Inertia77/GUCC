@@ -45,6 +45,18 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.match(characterSource, /assertNewCharacterUnique/);
   assert.match(characterSource, /if \(!payload\.id\)/);
   assert.match(characterSource, /API\.searchCharacters/);
+  assert.match(characterSource, /function renderCharacterTitle\(row\)/);
+  assert.match(characterSource, /character-title-localized/);
+  assert.match(characterSource, /label: 'EN'[\s\S]*label: 'JP'[\s\S]*label: 'KR'/);
+
+  const contentStyles = read("apps/command-center/styles/content.css");
+  assert.match(contentStyles, /\.character-title-localized/);
+  assert.match(contentStyles, /@media \(max-width: 640px\)[\s\S]*\.character-title-localized[\s\S]*flex-basis: 100%/);
+
+  const localizedNamesMigration = read("supabase/migrations/20260826_character_card_localized_names.sql");
+  assert.match(localizedNamesMigration, /jsonb_object_agg\(cn\.lang, cn\.name/);
+  assert.match(localizedNamesMigration, /cn\.lang in \('en', 'jp', 'kr'\)/);
+  assert.match(localizedNamesMigration, /cn_search\.name ilike/);
 
   const versionSource = read("apps/command-center/src/features/versions.js");
   assert.match(versionSource, /assertNewVersionUnique/);

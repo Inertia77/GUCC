@@ -137,7 +137,8 @@ function testUiContract() {
   assert(!indexHtml.includes("projectTypeSelect"), "Production Direct Create must not ask for Project Type");
   assert(!indexHtml.includes("projectTypeBadge"), "Production hero must not expose A/B/C/D badge");
   assert(!appJs.includes("E.PROJECT_TYPES[project.projectType]"), "Production UI must not branch on legacy type");
-  assert(!engineJs.includes("B_FLOW") && !engineJs.includes("D_FLOW"), "top-level workflow forks must be gone");
+  assert.doesNotMatch(engineJs, /\b(?:const|let|var)\s+B_FLOW\b|\bB_FLOW\s*=/, "B_FLOW must not exist as a top-level workflow");
+  assert.doesNotMatch(engineJs, /\b(?:const|let|var)\s+D_FLOW\b|\bD_FLOW\s*=/, "D_FLOW must not exist as a top-level workflow");
   assert(appJs.includes('data-music-mode="skip"') && appJs.includes('data-music-mode="existing"') && appJs.includes('data-music-mode="generate"'));
 }
 

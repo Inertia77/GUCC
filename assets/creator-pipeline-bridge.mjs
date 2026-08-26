@@ -13,6 +13,12 @@ import {
   productionToPublishState,
   mergeCloudProjects,
 } from "./creator-pipeline-core.mjs";
+import {
+  attachCloudMetadata,
+  mergeProjectVersions,
+  stripCloudMetadata,
+  summarizeProjectDiff,
+} from "./creator-dashboard-core.mjs";
 
 const CREATOR_API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
 const PRODUCTION_PATH = "/apps/video-workspace/production-system/";
@@ -27,6 +33,8 @@ const FIELD_IDS = [
   "gameFootage", "visualPlan", "publishCN", "publishMulti", "publishLog", "diffusionGoal", "diffusionAssets",
   "diffusionPackage", "diffusionLog", "progressLog", "review",
 ];
+const DEVICE_ID_KEY = "gucc_creator_device_id_v1";
+const SYNC_BASES_KEY = "gucc_creator_sync_bases_v1";
 
 const page = (() => {
   const path = window.location.pathname;
@@ -58,6 +66,37 @@ function readJson(key, fallback = null) {
 
 function writeJson(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+function h(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function deviceId() {
+  let value = localStorage.getItem(DEVICE_ID_KEY) || "";
+  if (!value) {
+    value = `web_${crypto.randomUUID?.() || `${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`}`;
+    localStorage.setItem(DEVICE_ID_KEY, value);
+  }
+  return value;
+}
+
+function requestedProjectId() {
+  return new URLSearchParams(window.location.search).get("project") || "";
+}
+
+function syncBase(projectId) {
+  return readJson(SYNC_BASES_KEY, {})?.[projectId] || null;
+}
+
+function rememberSyncBase(projectId, project) {
+  const bases = readJson(SYNC_BASES_KEY, {}) || {};
+  bases[projectId] = stripCloudMetadata(project);
+  const keys = Object.keys(bases);
+  if (keys.length > 30) keys.slice(0, keys.length - 30).forEach((key) => delete bases[key]);
+  writeJson(SYNC_BASES_KEY, bases);
 }
 
 function readField(id) {
@@ -107,7 +146,12 @@ async function creatorApi(action, payload = {}) {
     body: JSON.stringify({ action, ...payload }),
   });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || `Creator API ${response.status}`);
+  if (!response.ok) {
+    const error = new Error(result.error || `Creator API ${response.status}`);
+    error.status = response.status;
+    error.payload = result;
+    throw error;
+  }
   return result;
 }
 
@@ -123,7 +167,8 @@ function injectStyles() {
   style.textContent = `
     .gucc-creator-bridge{position:fixed;right:16px;bottom:16px;z-index:2147482800;width:min(360px,calc(100vw - 24px));padding:12px;border:1px solid rgba(142,164,255,.28);border-radius:16px;background:rgba(15,18,27,.94);backdrop-filter:blur(18px);box-shadow:0 18px 55px rgba(0,0,0,.35);color:#f6f7fb;font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
     .gucc-creator-bridge strong{font-size:14px}.gucc-creator-bridge p{margin:5px 0;color:#aeb6c7}.gucc-creator-bridge .gcb-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.gucc-creator-bridge button,.gucc-creator-bridge a{appearance:none;border:1px solid rgba(142,164,255,.32);border-radius:10px;background:#22283a;color:#f6f7fb;padding:7px 10px;text-decoration:none;cursor:pointer;font:inherit}.gucc-creator-bridge button.gcb-primary{background:#5166f5;border-color:#6d7efa}.gucc-creator-bridge button:disabled{opacity:.45;cursor:not-allowed}.gucc-creator-bridge .gcb-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#bac3d6}.gucc-creator-bridge .gcb-dot{width:8px;height:8px;border-radius:99px;background:#8a93a8}.gucc-creator-bridge[data-cloud="ok"] .gcb-dot{background:#58d68d}.gucc-creator-bridge[data-cloud="busy"] .gcb-dot{background:#f5c15d}.gucc-creator-bridge[data-cloud="error"] .gcb-dot{background:#ff6b78}.gucc-creator-bridge .gcb-close{float:right;padding:2px 7px;background:transparent}
-    @media(max-width:680px){.gucc-creator-bridge{right:8px;bottom:8px;width:calc(100vw - 16px);border-radius:14px}.gucc-creator-bridge p{display:none}}
+    .gcb-conflict-dialog{width:min(640px,calc(100vw - 24px));border:1px solid rgba(255,107,120,.35);border-radius:18px;background:#101522;color:#f6f7fb;padding:0;box-shadow:0 25px 90px rgba(0,0,0,.55)}.gcb-conflict-dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}.gcb-conflict-inner{padding:20px}.gcb-conflict-inner h2{margin:0 0 6px}.gcb-conflict-inner p{color:#aeb6c7}.gcb-conflict-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:14px 0}.gcb-conflict-list span{padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.06);font-size:12px}.gcb-conflict-actions{display:flex;gap:8px;flex-wrap:wrap}.gcb-conflict-actions button{border:1px solid rgba(142,164,255,.32);border-radius:10px;background:#22283a;color:#f6f7fb;padding:9px 12px;cursor:pointer}.gcb-conflict-actions .danger{border-color:rgba(255,107,120,.5)}
+    @media(max-width:680px){.gucc-creator-bridge{right:8px;bottom:8px;width:calc(100vw - 16px);border-radius:14px}.gucc-creator-bridge p{display:none}.gcb-conflict-list{grid-template-columns:1fr}}
   `;
   document.head.appendChild(style);
 }
@@ -146,6 +191,57 @@ function setPanelStatus(panel, mode, text) {
   panel.dataset.cloud = mode;
   const el = panel.querySelector("[data-gcb-status]");
   if (el) el.textContent = text;
+}
+
+function replaceLocalProject(project) {
+  const store = currentProductionStore();
+  const index = store.projects.findIndex((item) => item.projectId === project.projectId);
+  if (index >= 0) store.projects[index] = project;
+  else store.projects.push(project);
+  store.selectedProjectId = project.projectId;
+  writeJson(PRODUCTION_STORAGE_KEY, store);
+}
+
+function showConflictDialog(panel, engine, localProject, conflict) {
+  document.querySelector(".gcb-conflict-dialog")?.remove();
+  const remoteRow = conflict?.project || {};
+  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data || {}), remoteRow);
+  const differences = summarizeProjectDiff(localProject, remote);
+  const dialog = document.createElement("dialog");
+  dialog.className = "gcb-conflict-dialog";
+  dialog.innerHTML = `<div class="gcb-conflict-inner"><p class="eyebrow">REVISION CONFLICT · r${h(conflict.currentRevision || remoteRow.revision || 0)}</p><h2>云端已有更新版本</h2><p>后台自动同步已经停止。下面列出本机与云端不同的区域；任何选择都必须由你明确点击。</p><div class="gcb-conflict-list">${differences.length ? differences.map((item) => `<span>${h(item.label)}</span>`).join("") : "<span>仅同步元数据不同</span>"}</div><div class="gcb-conflict-actions"><button type="button" data-choice="remote">保留云端</button><button class="danger" type="button" data-choice="local">保留本地</button><button type="button" data-choice="merge">尝试合并</button><button type="button" data-choice="cancel">暂不处理</button></div></div>`;
+  document.body.appendChild(dialog);
+
+  const close = () => { dialog.close(); dialog.remove(); };
+  dialog.addEventListener("click", async (event) => {
+    const choice = event.target.closest("[data-choice]")?.dataset.choice;
+    if (!choice) return;
+    if (choice === "cancel") return close();
+    if (choice === "remote") {
+      replaceLocalProject(remote);
+      rememberSyncBase(remote.projectId, remote);
+      close();
+      window.location.reload();
+      return;
+    }
+    const currentRevision = Number(conflict.currentRevision || remoteRow.revision || 0);
+    if (choice === "local") {
+      replaceLocalProject(attachCloudMetadata(stripCloudMetadata(localProject), remoteRow));
+      close();
+      await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
+      return;
+    }
+    const result = mergeProjectVersions(syncBase(localProject.projectId), localProject, remote);
+    if (result.conflicts.length) {
+      window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
+      return;
+    }
+    replaceLocalProject(attachCloudMetadata(engine.normalizeProject(result.merged), remoteRow));
+    close();
+    await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
+  });
+  dialog.addEventListener("cancel", close, { once: true });
+  dialog.showModal();
 }
 
 function actionButton(label, primary = false) {
@@ -195,7 +291,7 @@ async function importStudioHandoff(engine) {
   return true;
 }
 
-async function pushCurrentProject(panel, reason = "auto") {
+async function pushCurrentProject(panel, reason = "auto", engine = window.GuccProductionEngine, options = {}) {
   if (!loggedIn()) {
     setPanelStatus(panel, "local", "本地模式 · Command Center 登录后自动上云");
     return false;
@@ -203,13 +299,34 @@ async function pushCurrentProject(panel, reason = "auto") {
   const store = currentProductionStore();
   const project = store.projects.find((item) => item.projectId === store.selectedProjectId);
   if (!project) return false;
+  const existingConflict = project.integration?.cloud?.conflict;
+  if (existingConflict && !options.bypassConflict) {
+    setPanelStatus(panel, "error", "云端冲突待处理 · 自动同步已停止");
+    if (reason === "manual" && engine) showConflictDialog(panel, engine, project, existingConflict);
+    return false;
+  }
   if (ensureDriveRoot(project)) writeJson(PRODUCTION_STORAGE_KEY, store);
   setPanelStatus(panel, "busy", "同步中…");
   try {
-    await creatorApi("saveProject", { projectData: project, reason });
-    setPanelStatus(panel, "ok", `云端已同步 · ${project.currentState}`);
+    const baseRevision = options.baseRevision ?? project.integration?.cloud?.revision ?? 0;
+    const result = await creatorApi("saveProject", { projectData: project, reason, baseRevision, deviceId: deviceId() });
+    const row = { ...(result.project || {}), revision: result.revision || result.project?.revision };
+    const synced = attachCloudMetadata(project, row);
+    replaceLocalProject(synced);
+    rememberSyncBase(project.projectId, synced);
+    setPanelStatus(panel, "ok", `云端已同步 · r${result.revision} · ${project.currentState}`);
     return true;
   } catch (error) {
+    if (error.status === 409 && error.payload?.error === "REVISION_CONFLICT") {
+      const conflict = { ...(error.payload.conflict || {}), detectedAt: new Date().toISOString() };
+      project.integration ||= {};
+      project.integration.cloud ||= {};
+      project.integration.cloud.conflict = conflict;
+      writeJson(PRODUCTION_STORAGE_KEY, store);
+      setPanelStatus(panel, "error", "云端已有新版本 · 自动同步已停止");
+      if (reason === "manual" && engine) showConflictDialog(panel, engine, project, conflict);
+      return false;
+    }
     setPanelStatus(panel, loggedIn() ? "error" : "local", error.message || "云同步失败");
     return false;
   }
@@ -223,7 +340,9 @@ async function pullCloudProjects(panel, engine, reloadOnChange = true) {
   setPanelStatus(panel, "busy", "读取云端项目…");
   try {
     const response = await creatorApi("listProjects");
-    const merged = mergeCloudProjects(currentProductionStore(), response.projects || [], engine);
+    const rows = response.projects || [];
+    const merged = mergeCloudProjects(currentProductionStore(), rows, engine, requestedProjectId());
+    rows.forEach((row) => row?.project_data?.projectId && rememberSyncBase(row.project_data.projectId, row.project_data));
     if (merged.changed) {
       writeJson(PRODUCTION_STORAGE_KEY, merged.store);
       setPanelStatus(panel, "ok", "已合并云端最新状态");
@@ -260,7 +379,7 @@ async function runProduction() {
   const drive = actionLink("Drive 项目库", DRIVE_ROOT.url);
   actions.append(sync, pull, releasePrompt, publish, drive);
 
-  sync.addEventListener("click", () => pushCurrentProject(panel, "manual"));
+  sync.addEventListener("click", () => pushCurrentProject(panel, "manual", engine));
   pull.addEventListener("click", () => pullCloudProjects(panel, engine, true));
   releasePrompt.addEventListener("click", async () => {
     const project = currentProductionProject();
@@ -272,20 +391,20 @@ async function runProduction() {
   publish.addEventListener("click", async () => {
     const project = currentProductionProject();
     if (!project) return;
-    await pushCurrentProject(panel, "manual");
+    await pushCurrentProject(panel, "manual", engine);
     writeJson(PUBLISH_HANDOFF_KEY, { project, releasePackage: releasePackageFromProject(project), createdAt: new Date().toISOString() });
     window.location.href = publishConsoleUrl();
   });
 
   await pullCloudProjects(panel, engine, true);
-  let lastSynced = "";
+  let lastSynced = JSON.stringify(currentProductionProject() || null);
   setInterval(async () => {
     const project = currentProductionProject();
     if (!project) return;
     const serialized = JSON.stringify(project);
     if (serialized === lastSynced) return;
-    const ok = await pushCurrentProject(panel, "auto");
-    if (ok) lastSynced = serialized;
+    const ok = await pushCurrentProject(panel, "auto", engine);
+    if (ok) lastSynced = JSON.stringify(currentProductionProject() || null);
   }, 5000);
 }
 
@@ -301,13 +420,50 @@ async function consumePublishHandoff(rules) {
   writeJson(PUBLISH_STORAGE_KEY, next);
   if (loggedIn()) {
     try {
-      await creatorApi("saveProject", { projectData: handoff.project, reason: "manual" });
+      await creatorApi("saveProject", {
+        projectData: handoff.project,
+        reason: "manual",
+        baseRevision: handoff.project.integration?.cloud?.revision ?? 0,
+        deviceId: deviceId(),
+      });
       await creatorApi("saveRelease", { projectId: handoff.project.projectId, publishState: next });
     } catch (error) {
       console.warn("GUCC publish handoff cloud sync", error);
     }
   }
   localStorage.removeItem(PUBLISH_HANDOFF_KEY);
+  return true;
+}
+
+function hydratePublishReleases(state, releases) {
+  const snapshots = [];
+  for (const release of releases || []) {
+    if (!release?.platform) continue;
+    state.execution[release.platform] = {
+      ...(state.execution[release.platform] || {}),
+      status: release.status || "未开始",
+      postUrl: release.post_url || "",
+      postId: release.post_id || "",
+      publishedAt: release.published_at || "",
+    };
+    const metrics = Array.isArray(release.snapshot?.metrics) ? release.snapshot.metrics : [];
+    snapshots.push(...metrics);
+  }
+  if (snapshots.length) state.snapshots = snapshots;
+  return state;
+}
+
+async function loadPublishProjectFromQuery(rules) {
+  const projectId = requestedProjectId();
+  if (!projectId || !loggedIn()) return false;
+  const response = await creatorApi("getProject", { projectId });
+  const raw = response.project?.project_data;
+  if (!raw?.projectId) return false;
+  const existing = readJson(PUBLISH_STORAGE_KEY);
+  const next = hydratePublishReleases(productionToPublishState(existing, raw, rules), response.releases || []);
+  next.source = { ...(next.source || {}), cloudRevision: Number(response.project.revision || 0) };
+  if (JSON.stringify(existing) === JSON.stringify(next)) return false;
+  writeJson(PUBLISH_STORAGE_KEY, next);
   return true;
 }
 
@@ -332,6 +488,14 @@ async function syncPublishState(panel) {
 async function runPublish() {
   const rules = await waitFor(() => window.GuccPublishingRules);
   if (!rules) return;
+  const loadedFromCloud = await loadPublishProjectFromQuery(rules).catch((error) => {
+    console.warn("GUCC publish deep link", error);
+    return false;
+  });
+  if (loadedFromCloud) {
+    window.location.reload();
+    return;
+  }
   const imported = await consumePublishHandoff(rules);
   if (imported) {
     window.location.reload();

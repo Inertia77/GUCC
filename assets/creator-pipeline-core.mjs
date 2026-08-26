@@ -1,3 +1,5 @@
+import { attachCloudMetadata } from "./creator-dashboard-core.mjs";
+
 export const PRODUCTION_STORAGE_KEY = "gucc_ai_video_production_v1";
 export const PUBLISH_STORAGE_KEY = "gucc_publish_console_v1";
 export const STUDIO_HANDOFF_KEY = "gucc_creator_studio_handoff_v1";
@@ -182,7 +184,7 @@ export function productionToPublishState(existingState, project, rules) {
   return state;
 }
 
-export function mergeCloudProjects(localStore, remoteRows, engine) {
+export function mergeCloudProjects(localStore, remoteRows, engine, preferredProjectId = "") {
   const store = localStore && Array.isArray(localStore.projects)
     ? { ...localStore, projects: [...localStore.projects] }
     : { schemaVersion: engine.SCHEMA_VERSION, projects: [], musicLibrary: [], selectedProjectId: "" };
@@ -191,19 +193,50 @@ export function mergeCloudProjects(localStore, remoteRows, engine) {
   for (const row of remoteRows || []) {
     const raw = row?.project_data;
     if (!raw?.projectId) continue;
-    const remote = engine.normalizeProject(raw);
+    const remote = attachCloudMetadata(engine.normalizeProject(raw), row);
     const index = store.projects.findIndex((item) => item.projectId === remote.projectId);
     if (index < 0) {
       store.projects.push(remote);
       changed = true;
       continue;
     }
-    const localTime = Date.parse(store.projects[index].updatedAt || 0) || 0;
+    const localProject = store.projects[index];
+    const localCloud = localProject?.integration?.cloud || {};
+    if (localCloud.conflict) continue;
+    const localTime = Date.parse(localProject.updatedAt || 0) || 0;
     const remoteTime = Date.parse(remote.updatedAt || row.updated_at || 0) || 0;
-    if (remoteTime > localTime) {
+    const localRevision = Number(localCloud.revision || 0);
+    const remoteRevision = Number(row.revision || 0);
+    const baseCloudTime = Date.parse(localCloud.updatedAt || 0) || 0;
+    const localDirty = localRevision > 0 && localTime > baseCloudTime;
+    if (remoteRevision > localRevision && localRevision > 0 && localDirty) {
+      const conflicted = structuredClone(localProject);
+      conflicted.integration ||= {};
+      conflicted.integration.cloud = {
+        ...localCloud,
+        conflict: {
+          currentRevision: remoteRevision,
+          project: row,
+          detectedAt: new Date().toISOString(),
+        },
+      };
+      store.projects[index] = conflicted;
+      changed = true;
+    } else if (remoteRevision > localRevision && localRevision > 0 || remoteTime > localTime) {
       store.projects[index] = remote;
       changed = true;
+    } else {
+      if (Number(localCloud.revision || 0) !== Number(row.revision || 0)
+        || localCloud.updatedAt !== (row.updated_at || "")) {
+        store.projects[index] = attachCloudMetadata(localProject, row);
+        changed = true;
+      }
     }
+  }
+  if (preferredProjectId && store.projects.some((project) => project.projectId === preferredProjectId)
+    && store.selectedProjectId !== preferredProjectId) {
+    store.selectedProjectId = preferredProjectId;
+    changed = true;
   }
   if (!store.selectedProjectId && store.projects[0]) store.selectedProjectId = store.projects[0].projectId;
   return { store, changed };

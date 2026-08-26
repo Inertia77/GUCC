@@ -12,6 +12,8 @@ const floatingDocks = read('assets/gucc-floating-docks-v1.css');
 const coverFixes = read('assets/gucc-cover-workspace-fixes-v1.css');
 const productionHtml = read('apps/video-workspace/production-system/index.html');
 const accessGuard = read('assets/access-guard.js');
+const portal = read('index.html');
+const dashboard = read('assets/creator-dashboard.mjs');
 
 assert.match(shell, /production:\s*\{/m, 'Global shell must expose Production as a creator destination.');
 assert.match(shell, /items:\s*\[childRoutes\.workspace, childRoutes\.production, childRoutes\.cover, childRoutes\.publish\]/, 'Creator menu must follow Studio → Production → Cover → Publish.');
@@ -37,5 +39,9 @@ assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-gene
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
 assert.match(accessGuard, /creator-pipeline-ux\.mjs/, 'Creator pipeline UX integration must be bootstrapped on eligible pages.');
+assert.match(portal, /id="creatorDashboard"/, 'Portal must include the integrated Creator Dashboard.');
+assert.match(portal, /creator-dashboard\.mjs/, 'Portal must load the Creator Dashboard module.');
+assert.match(dashboard, /buildCreatorDashboard/, 'Creator Dashboard must use the shared health and action queue core.');
+assert.match(dashboard, /\?project=/, 'Creator Dashboard project links must deep-link to the selected project.');
 
 console.log('UIUX contract checks passed.');

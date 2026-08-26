@@ -1,6 +1,6 @@
 type JsonMap = Record<string, unknown>;
 
-type HttpError = Error & { status?: number };
+type HttpError = Error & { status?: number; payload?: JsonMap };
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || "";
@@ -41,6 +41,13 @@ function json(req: Request, data: unknown, status = 200) {
 function fail(message: string, status = 400): never {
   const error = new Error(message) as HttpError;
   error.status = status;
+  throw error;
+}
+
+function failWithPayload(message: string, status: number, payload: JsonMap): never {
+  const error = new Error(message) as HttpError;
+  error.status = status;
+  error.payload = payload;
   throw error;
 }
 
@@ -146,6 +153,34 @@ function fileRows(project: JsonMap, ownerUserId: string, now: string) {
   });
 }
 
+function cloudRevision(project: JsonMap) {
+  const integration = asObject(project.integration);
+  const cloud = asObject(integration.cloud);
+  const revision = Number(cloud.revision);
+  return Number.isInteger(revision) && revision >= 0 ? revision : null;
+}
+
+function projectWithoutCloudMetadata(project: JsonMap) {
+  const clean = structuredClone(project);
+  const integration = asObject(clean.integration);
+  if (Object.prototype.hasOwnProperty.call(integration, "cloud")) {
+    const nextIntegration = { ...integration };
+    delete nextIntegration.cloud;
+    clean.integration = nextIntegration;
+  }
+  return clean;
+}
+
+function revisionConflict(project: JsonMap | null, currentRevision: number) {
+  failWithPayload("Cloud project has a newer revision", 409, {
+    error: "REVISION_CONFLICT",
+    conflict: {
+      currentRevision,
+      project,
+    },
+  });
+}
+
 async function writeEvent(projectId: string, ownerUserId: string, eventType: string, state: string, detail: JsonMap = {}) {
   await serviceRest("creator_project_events", {
     method: "POST",
@@ -169,6 +204,14 @@ async function saveProject(userId: string, body: JsonMap) {
   const existing = await rawProject(projectId);
   if (existing && existing.owner_user_id !== userId) fail("Project id collision", 409);
 
+  const requestedRevision = body.baseRevision == null ? cloudRevision(project) : Number(body.baseRevision);
+  if (existing && (!Number.isInteger(requestedRevision) || Number(requestedRevision) < 1)) {
+    revisionConflict(existing, Number(existing.revision || 1));
+  }
+  if (!existing && requestedRevision != null && requestedRevision !== 0) {
+    revisionConflict(null, 0);
+  }
+
   const now = new Date().toISOString();
   const integration = asObject(project.integration);
   const drive = asObject(integration.drive);
@@ -176,9 +219,8 @@ async function saveProject(userId: string, body: JsonMap) {
   const currentState = String(project.currentState || "IDEA");
   const locks = asObject(project.locks);
 
+  const projectData = projectWithoutCloudMetadata(project);
   const row = {
-    project_id: projectId,
-    owner_user_id: userId,
     name: String(project.name || ""),
     game: String(project.game || ""),
     topic: String(project.topic || ""),
@@ -191,28 +233,37 @@ async function saveProject(userId: string, body: JsonMap) {
     drive_folder_id: drive.folderId || null,
     drive_folder_url: drive.folderUrl || null,
     source_workspace_version: workspace.version || project.sourceWorkspaceVersion || null,
-    project_data: project,
-    archived_at: currentState === "ARCHIVED" ? now : null,
-    updated_at: now,
+    project_data: projectData,
   };
 
-  const saved = await serviceRest("creator_projects?on_conflict=project_id", {
+  const files = fileRows(projectData, userId, now);
+  const deviceId = String(body.deviceId || "").trim().slice(0, 160);
+  const result = asObject(await serviceRest("rpc/save_creator_project_revision", {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
-    body: JSON.stringify(row),
-  });
-
-  const files = fileRows(project, userId, now);
-  if (files.length) {
-    await serviceRest("creator_project_files?on_conflict=project_id,file_key", {
-      method: "POST",
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify(files),
-    });
+    body: JSON.stringify({
+      p_owner_user_id: userId,
+      p_project_id: projectId,
+      p_base_revision: existing ? requestedRevision : 0,
+      p_device_id: deviceId || null,
+      p_project_row: row,
+      p_files: files,
+    }),
+  }));
+  if (result.status === "conflict") {
+    revisionConflict(asObject(result.project), Number(result.current_revision || 0));
   }
+  if (result.status === "forbidden") fail("Creator project belongs to another account", 403);
+  if (result.status !== "saved") fail(String(result.message || "Creator project save failed"), 400);
+
+  const saved = asObject(result.project);
+  const savedRevision = Number(result.revision || saved.revision || 0);
 
   if (!existing) {
-    await writeEvent(projectId, userId, "PROJECT_CREATED", currentState, { source: workspace.version || "production-system" });
+    await writeEvent(projectId, userId, "PROJECT_CREATED", currentState, {
+      source: workspace.version || "production-system",
+      revision: savedRevision,
+      deviceId,
+    });
   } else {
     if (existing.current_state !== currentState) {
       await writeEvent(projectId, userId, "STATE_CHANGED", currentState, { from: existing.current_state, to: currentState });
@@ -223,16 +274,26 @@ async function saveProject(userId: string, body: JsonMap) {
   }
 
   if (body.reason === "manual") {
-    await writeEvent(projectId, userId, "MANUAL_SYNC", currentState, {});
+    await writeEvent(projectId, userId, "MANUAL_SYNC", currentState, { revision: savedRevision, deviceId });
   }
 
-  return { project: Array.isArray(saved) ? saved[0] : saved, fileCount: files.length };
+  return { project: saved, revision: savedRevision, fileCount: files.length };
 }
 
 async function listProjects(userId: string) {
   return await serviceRest(
     `creator_projects?owner_user_id=eq.${encodeURIComponent(userId)}&select=*&order=updated_at.desc`,
   );
+}
+
+async function dashboard(userId: string) {
+  const owner = encodeURIComponent(userId);
+  const [projects, files, releases] = await Promise.all([
+    serviceRest(`creator_projects?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
+    serviceRest(`creator_project_files?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
+    serviceRest(`creator_project_releases?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
+  ]);
+  return { projects, files, releases, serverTime: new Date().toISOString() };
 }
 
 async function getProject(userId: string, body: JsonMap) {
@@ -301,6 +362,7 @@ Deno.serve(async (req: Request) => {
     const action = String(body.action || "ping");
 
     if (action === "ping") return json(req, { ok: true, user: { id: user.id, email: user.email }, role: appUser.role });
+    if (action === "dashboard") return json(req, await dashboard(user.id));
     if (action === "listProjects") return json(req, { projects: await listProjects(user.id) });
     if (action === "getProject") return json(req, await getProject(user.id, body));
     if (action === "saveProject") return json(req, await saveProject(user.id, body));
@@ -309,6 +371,6 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     const problem = error as HttpError;
     console.error("creator-project-api", problem.message);
-    return json(req, { error: problem.message || "Unexpected error" }, problem.status || 500);
+    return json(req, problem.payload || { error: problem.message || "Unexpected error" }, problem.status || 500);
   }
 });

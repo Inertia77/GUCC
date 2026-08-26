@@ -13,6 +13,14 @@ const edge = fs.readFileSync(
   path.join(ROOT, "supabase/functions/gameup-api/index.ts"),
   "utf8"
 );
+const creatorMigration = fs.readFileSync(
+  path.join(ROOT, "supabase/migrations/20260826230000_gucc_creator_phase1_revision_conflict_protection.sql"),
+  "utf8"
+);
+const creatorEdge = fs.readFileSync(
+  path.join(ROOT, "supabase/functions/creator-project-api/index.ts"),
+  "utf8"
+);
 
 // Public API contract must remain stable for the existing frontend.
 for (const pair of [
@@ -45,5 +53,15 @@ assert.match(sql, /app_resolve_character_id/);
 
 // Privileged event-trigger helper must not be callable from client roles.
 assert.match(sql, /revoke execute on function public\.rls_auto_enable\(\) from public, anon, authenticated/i);
+
+// Creator project saves must use server-side optimistic concurrency.
+assert.match(creatorMigration, /revision bigint not null default 1/i);
+assert.match(creatorMigration, /for update/i);
+assert.match(creatorMigration, /p_base_revision <> v_current\.revision/i);
+assert.match(creatorMigration, /security invoker/i);
+assert.match(creatorMigration, /revoke all on function public\.save_creator_project_revision[\s\S]*from public, anon, authenticated/i);
+assert.match(creatorEdge, /rpc\/save_creator_project_revision/);
+assert.match(creatorEdge, /REVISION_CONFLICT/);
+assert.doesNotMatch(creatorEdge, /creator_projects\?on_conflict=project_id/);
 
 console.log("Supabase contract regression tests passed.");

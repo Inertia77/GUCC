@@ -59,6 +59,29 @@ const { pathToFileURL } = require('url');
   const merged = Core.mergeCloudProjects(local, [{ project_data: remoteProject, updated_at: '2026-08-25T01:00:01.000Z' }], Engine);
   assert.equal(merged.changed, true);
   assert.equal(merged.store.projects[0].topic, 'remote-newer');
+  assert.equal(merged.store.projects[0].integration.cloud.revision, 0);
+
+  const preferred = Core.mergeCloudProjects({ ...local, projects: [project, { ...project, projectId: 'project_second' }] }, [
+    { project_id: project.projectId, project_data: project, revision: 3, updated_at: project.updatedAt },
+    { project_id: 'project_second', project_data: { ...project, projectId: 'project_second' }, revision: 4, updated_at: project.updatedAt },
+  ], Engine, 'project_second');
+  assert.equal(preferred.store.selectedProjectId, 'project_second');
+
+  const dirtyLocal = {
+    ...project,
+    topic: 'local-unsynced',
+    updatedAt: '2026-08-25T02:00:00.000Z',
+    integration: { ...(project.integration || {}), cloud: { revision: 7, updatedAt: '2026-08-25T01:00:00.000Z' } },
+  };
+  const concurrentRemote = { ...project, topic: 'remote-concurrent', updatedAt: '2026-08-25T01:30:00.000Z' };
+  const protectedMerge = Core.mergeCloudProjects({ ...local, projects: [dirtyLocal] }, [{
+    project_id: project.projectId,
+    project_data: concurrentRemote,
+    revision: 8,
+    updated_at: '2026-08-25T01:30:01.000Z',
+  }], Engine);
+  assert.equal(protectedMerge.store.projects[0].topic, 'local-unsynced');
+  assert.equal(protectedMerge.store.projects[0].integration.cloud.conflict.currentRevision, 8);
 
   console.log('creator pipeline tests passed');
 })().catch((error) => {

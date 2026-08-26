@@ -93,6 +93,10 @@ for (const file of appScripts) {
   }
 }
 checkSyntax(resolve(root, 'assets', 'access-guard.js'));
+checkSyntax(resolve(root, 'assets', 'creator-dashboard-core.mjs'));
+checkSyntax(resolve(root, 'assets', 'creator-dashboard.mjs'));
+checkSyntax(resolve(root, 'assets', 'creator-pipeline-core.mjs'));
+checkSyntax(resolve(root, 'assets', 'creator-pipeline-bridge.mjs'));
 checkSyntax(resolve(root, 'assets', 'pwa-install.js'));
 checkSyntax(resolve(root, 'sw.js'));
 checkSyntax(resolve(root, 'reference', 'resource-library-v5.js'));
@@ -117,6 +121,7 @@ try {
 }
 
 checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'gameup-api', 'index.ts'));
+checkTypeScriptModule(resolve(root, 'supabase', 'functions', 'creator-project-api', 'index.ts'));
 
 const manifestPath = resolve(root, 'manifest.webmanifest');
 try {

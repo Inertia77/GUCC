@@ -121,6 +121,28 @@ function collectLinks(form) {
   }).filter(Boolean);
 }
 
+function renderCharacterTitle(row) {
+  const names = row.names || row.localized_names || {};
+  const localizedNames = [
+    { label: 'EN', lang: 'en', value: names.en || row.en_name },
+    { label: 'JP', lang: 'ja', value: names.jp || names.ja || row.jp_name || row.ja_name },
+    { label: 'KR', lang: 'ko', value: names.kr || names.ko || row.kr_name || row.ko_name }
+  ].filter((item) => String(item.value || '').trim());
+
+  return `
+    <div class="item-title character-title">
+      <span class="character-title-primary">${escapeHtml(row.character_name || row.name)}</span>
+      ${localizedNames.length ? `
+        <span class="character-title-localized" aria-label="英文、日文、韩文角色名">
+          ${localizedNames.map((item) => `
+            <span class="character-localized-name">
+              <span class="character-localized-label">${item.label}</span>
+              <span lang="${item.lang}">${escapeHtml(String(item.value).trim())}</span>
+            </span>`).join('')}
+        </span>` : ''}
+    </div>`;
+}
+
 function renderCharacterNotes(row) {
   const notes = [
     { label: '角色备注', value: row.note || row.character_note },
@@ -276,7 +298,7 @@ export async function searchCharacters({ visibleCount = 0, revealId = '' } = {})
       <article class="item" data-item-id="${escapeHtml(row.id)}" data-game-code="${escapeHtml(row.game_code || '')}" tabindex="-1">
         <div class="item-head">
           <div class="item-summary">
-            <div class="item-title">${escapeHtml(row.character_name || row.name)}</div>
+            ${renderCharacterTitle(row)}
             ${renderMeta([
               row.game_code || row.game_title,
               row.element,

@@ -345,9 +345,15 @@ export function renderLinks(links, { highlightRelationType = '' } = {}) {
     const url = safeExternalUrl(link.url || link.resource_url);
     if (!url) return '';
     const title = link.title || link.resource_title || url;
-    const isHighlighted = highlightRelationType && link.relation_type === highlightRelationType;
-    const className = `link-btn${isHighlighted ? ' primary-reference-link' : ''}`;
-    return `<a class="${className}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">↗ ${escapeHtml(title)}</a>`;
+    const relationType = String(link.relation_type || '');
+    const relationClass = relationType === 'chatgpt_research'
+      ? 'chatgpt-research-link'
+      : relationType === 'chatgpt_build'
+        ? 'chatgpt-build-link'
+        : '';
+    const isHighlighted = highlightRelationType && relationType === highlightRelationType;
+    const className = `link-btn${relationClass ? ` ${relationClass}` : isHighlighted ? ' primary-reference-link' : ''}`;
+    return `<a class="${className}" data-relation-type="${escapeHtml(relationType)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">↗ ${escapeHtml(title)}</a>`;
   }).join('')}</div>`;
 }
 

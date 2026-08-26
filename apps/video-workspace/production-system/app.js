@@ -5,12 +5,11 @@
   const STORAGE_KEY = "gucc_ai_video_production_v1";
   const TABS = [
     ["control", "控制台"], ["files", "文件"], ["assets", "素材"], ["script", "脚本 / TTS"],
-    ["storyboard", "Storyboard"], ["review", "Review"], ["music", "Music Library"], ["prompt", "Prompt"]
+    ["audio", "音频"], ["storyboard", "Storyboard"], ["review", "Review"], ["prompt", "Prompt"]
   ];
   const LOCKS = [
     ["contentLock", "Content Lock", "结论、结构与范围不再漂移"],
     ["scriptLock", "Script Lock", "VOICE_MASTER 已确认"],
-    ["musicLock", "Music Lock", "B / D 项目使用的音乐版本已确认"],
     ["audioLock", "Audio Lock", "真实 AUDIO_MASTER 成为绝对时间轴"],
     ["pictureLock", "Picture Lock", "VIDEO_V1 画面不再修改"]
   ];
@@ -27,7 +26,12 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (raw && Array.isArray(raw.projects)) {
-        return { schemaVersion: E.SCHEMA_VERSION, projects: raw.projects.map(E.normalizeProject), musicLibrary: Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [], selectedProjectId: raw.selectedProjectId || raw.projects[0]?.projectId || "" };
+        return {
+          schemaVersion: E.SCHEMA_VERSION,
+          projects: raw.projects.map(E.normalizeProject),
+          musicLibrary: Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [],
+          selectedProjectId: raw.selectedProjectId || raw.projects[0]?.projectId || ""
+        };
       }
     } catch (error) { console.warn("Production System store reset", error); }
     return { schemaVersion: E.SCHEMA_VERSION, projects: [], musicLibrary: [], selectedProjectId: "" };
@@ -51,7 +55,9 @@
   function download(name, content, type = "application/json") {
     const url = URL.createObjectURL(new Blob([content], { type }));
     const anchor = document.createElement("a");
-    anchor.href = url; anchor.download = name; anchor.click();
+    anchor.href = url;
+    anchor.download = name;
+    anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
@@ -62,9 +68,7 @@
     $("#projectWorkspace").hidden = !project;
     if (!project) return;
     E.refreshGeneratedFiles(project);
-    const type = E.PROJECT_TYPES[project.projectType];
     const progress = E.progress(project);
-    $("#projectTypeBadge").textContent = `${type.short} · ${type.label}`;
     $("#projectTitle").textContent = project.name;
     $("#projectMeta").textContent = [project.game, project.topic, project.targetPublishDate && `目标 ${project.targetPublishDate}`].filter(Boolean).join(" · ") || "尚未补充项目资料";
     $("#currentStateLabel").textContent = `${project.currentState} · ${E.STATE_LABELS[project.currentState]}`;
@@ -78,7 +82,7 @@
 
   function renderProjectList() {
     $("#projectCount").textContent = state.projects.length;
-    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.PROJECT_TYPES[project.projectType]?.short)} · ${h(E.STATE_LABELS[project.currentState])}</span></button>`).join("");
+    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
   }
 
   function renderNextAction(project) {
@@ -88,11 +92,7 @@
   }
 
   function renderLocks(project) {
-    const isMusic = E.PROJECT_TYPES[project.projectType].music;
-    $("#lockGrid").innerHTML = LOCKS.map(([key, label, help]) => {
-      const irrelevant = (key === "musicLock" && !isMusic) || (project.projectType === "D_MUSIC_RELEASE" && key !== "musicLock");
-      return `<div class="lock-card ${project.locks[key] ? "locked" : ""}"><label><span>${h(label)}</span><input type="checkbox" data-lock="${key}" ${project.locks[key] ? "checked" : ""} ${irrelevant ? "disabled" : ""}></label><small>${irrelevant ? "此项目类型不需要 Music Lock" : h(help)}</small></div>`;
-    }).join("");
+    $("#lockGrid").innerHTML = LOCKS.map(([key, label, help]) => `<div class="lock-card ${project.locks[key] ? "locked" : ""}"><label><span>${h(label)}</span><input type="checkbox" data-lock="${key}" ${project.locks[key] ? "checked" : ""}></label><small>${h(help)}</small></div>`).join("");
   }
 
   function renderTabs() {
@@ -100,20 +100,26 @@
   }
 
   function renderTab(project) {
-    const views = { control: controlView, files: filesView, assets: assetsView, script: scriptView, storyboard: storyboardView, review: reviewView, music: musicView, prompt: promptView };
+    const views = { control: controlView, files: filesView, assets: assetsView, script: scriptView, audio: audioView, storyboard: storyboardView, review: reviewView, prompt: promptView };
     $("#tabContent").innerHTML = views[activeTab](project);
   }
 
   function controlView(project) {
     const progress = E.progress(project);
-    return `<section class="panel"><div class="section-title"><div><p class="eyebrow">STATE MACHINE</p><h3>生产管线</h3></div><p>蓝色是当前状态，绿色是已通过状态。回退会保留文件和历史，但重新打开相应决策。</p></div><div class="pipeline">${progress.flow.map((key, index) => `<div class="stage ${index < progress.index ? "past" : index === progress.index ? "current" : ""}">${String(index + 1).padStart(2, "0")}<b>${h(E.STATE_LABELS[key])}</b></div>`).join("")}</div></section>
-      <section class="grid-3"><div class="metric"><span>登记文件</span><strong>${Object.values(project.files).filter((file) => file.status === "Ready").length}/${Object.keys(project.files).length}</strong></div><div class="metric"><span>Must 素材缺口</span><strong>${project.assets.filter((asset) => asset.priority === "Must" && !["Ready", "Used"].includes(asset.status)).length}</strong></div><div class="metric"><span>Review Open</span><strong>${project.reviews.filter((review) => review.status !== "Done").length}</strong></div></section>
+    const visibleKeys = E.visibleFileKeys(project);
+    return `<section class="panel"><div class="section-title"><div><p class="eyebrow">STATE MACHINE</p><h3>统一生产管线</h3></div><p>所有 Creator Project 使用同一条状态机。回退保留文件和历史，但重新打开相应决策。</p></div><div class="pipeline">${progress.flow.map((key, index) => `<div class="stage ${index < progress.index ? "past" : index === progress.index ? "current" : ""}">${String(index + 1).padStart(2, "0")}<b>${h(E.STATE_LABELS[key])}</b></div>`).join("")}</div></section>
+      <section class="grid-3"><div class="metric"><span>当前可用文件</span><strong>${visibleKeys.filter((key) => project.files[key]?.status === "Ready").length}/${visibleKeys.length}</strong></div><div class="metric"><span>Must 素材缺口</span><strong>${project.assets.filter((asset) => asset.priority === "Must" && !["Ready", "Used"].includes(asset.status)).length}</strong></div><div class="metric"><span>Review Open</span><strong>${project.reviews.filter((review) => review.status !== "Done").length}</strong></div></section>
       <section class="panel"><div class="section-title"><div><p class="eyebrow">PROJECT CONTEXT</p><h3>阶段上下文</h3></div><p>这些内容会写入项目标准文件，并参与下一步判断。</p></div><div class="grid-2"><label class="field">前置素材指南<textarea class="editor small" data-project-field="preAssetGuide">${h(project.preAssetGuide)}</textarea></label><label class="field">视觉规范<textarea class="editor small" data-project-field="visualStyle">${h(project.visualStyle)}</textarea></label><label class="field">导出规范<textarea class="editor small" data-project-field="exportSpec">${h(project.exportSpec)}</textarea></label><label class="field">发布包<textarea class="editor small" data-project-field="releasePack">${h(project.releasePack)}</textarea></label></div></section>
       <section class="panel danger-zone"><div class="toolbar"><div><p class="eyebrow">PROJECT MAINTENANCE</p><strong>项目操作</strong></div><button class="button danger" data-action="delete-project">删除当前项目</button></div><p class="muted">删除只影响本浏览器内的项目记录；已经同步到磁盘的目录不会被删除。</p></section>`;
   }
 
   function filesView(project) {
-    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">STANDARD FILE CONTRACT</p><h3>项目文件登记</h3></div><span class="muted">文本会保存在项目 JSON；音视频只登记文件名与大小</span></div><div class="file-list">${Object.entries(project.files).map(([key, file]) => `<div class="file-row"><div><strong>${h(E.FILE_DEFINITIONS[key]?.label || key)}</strong><br><code>${h(file.relativePath)}</code></div><div><span class="status-pill ${String(file.status).toLowerCase()}">${h(file.status)}</span>${file.filename && file.filename !== E.FILE_DEFINITIONS[key]?.path.split("/").pop() ? ` <small class="muted">${h(file.filename)}</small>` : ""}</div><div class="file-actions"><button class="button tiny ghost" data-upload-file="${key}">${file.status === "Ready" ? "替换" : "登记"}</button>${file.content ? `<button class="button tiny ghost" data-download-file="${key}">下载</button>` : ""}</div></div>`).join("")}</div></section>`;
+    const keys = E.visibleFileKeys(project);
+    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">ARTIFACT CONTRACT</p><h3>项目文件登记</h3></div><span class="muted">文本保存在项目 JSON；大音视频只登记文件信息。Music 文件随 Music Mode 显示。</span></div><div class="file-list">${keys.map((key) => {
+      const file = project.files[key];
+      const contract = E.fileContract(project, key);
+      return `<div class="file-row"><div><strong>${h(E.FILE_DEFINITIONS[key]?.label || key)}</strong>${contract === "optional" ? ` <small class="muted">Optional</small>` : ""}<br><code>${h(file.relativePath)}</code></div><div><span class="status-pill ${String(file.status).toLowerCase()}">${h(file.status)}</span>${file.filename && file.filename !== E.FILE_DEFINITIONS[key]?.filename ? ` <small class="muted">${h(file.filename)}</small>` : ""}</div><div class="file-actions"><button class="button tiny ghost" data-upload-file="${key}">${file.status === "Ready" ? "替换" : "登记"}</button>${file.content ? `<button class="button tiny ghost" data-download-file="${key}">下载</button>` : ""}</div></div>`;
+    }).join("")}</div></section>`;
   }
 
   function assetsView(project) {
@@ -121,8 +127,20 @@
   }
 
   function scriptView(project) {
-    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">VOICE MASTER</p><h3>口播与 AV Anchor</h3></div><div class="inline-actions"><button class="button ghost" data-action="scan-anchors">扫描 AV Anchor</button><button class="button primary" data-action="generate-tts">生成 TTS Chunks</button></div></div><div class="notice">在强音画绑定处写 <code>[AV:ACTION]</code>、<code>[AV:UI]</code>、<code>[AV:NUMBER]</code>、<code>[AV:COMPARE]</code>、<code>[AV:CAUSE_EFFECT]</code> 等标记。TTS 会按自然语义切成约 350–450 中文字。</div><textarea class="editor" data-project-field="voiceMaster" placeholder="# 第一章\n完整口播……[AV:UI]">${h(project.voiceMaster)}</textarea></section>
+    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">VOICE MASTER</p><h3>口播与 AV Anchor</h3></div><div class="inline-actions"><button class="button ghost" data-action="scan-anchors">扫描 AV Anchor</button><button class="button primary" data-action="generate-tts">生成 TTS Chunks</button></div></div><div class="notice">在强音画绑定处写 <code>[AV:ACTION]</code>、<code>[AV:UI]</code>、<code>[AV:NUMBER]</code>、<code>[AV:COMPARE]</code>、<code>[AV:CAUSE_EFFECT]</code> 等标记。</div><textarea class="editor" data-project-field="voiceMaster" placeholder="# 第一章\n完整口播……[AV:UI]">${h(project.voiceMaster)}</textarea></section>
       <section class="grid-2"><div class="panel"><div class="toolbar"><strong>TTS Chunks</strong><span class="muted">${project.ttsChunks.length} 段</span></div><div class="card-list">${project.ttsChunks.map((chunk) => `<article class="item-card"><h4>${h(chunk.id)} · ${h(chunk.chapter)}</h4><p>${chunk.wordCount} 字 · ${h(chunk.startText)} … ${h(chunk.endText)}</p></article>`).join("") || `<p class="muted">保存脚本后生成。</p>`}</div></div><div class="panel"><div class="toolbar"><strong>AV Anchors</strong><span class="muted">${project.avAnchors.length} 个</span></div><div class="card-list">${project.avAnchors.map((anchor) => `<article class="item-card"><h4>${h(anchor.id)} · ${h(anchor.type)}</h4><p>${h(anchor.cue || "等待补充语义提示")}</p></article>`).join("") || `<p class="muted">脚本中的标记会在这里形成强制画面锚点。</p>`}</div></div></section>`;
+  }
+
+  function audioView(project) {
+    const audio = project.audioProduction || E.defaultAudioProduction();
+    const mode = E.musicMode(project);
+    const musicFields = mode === "skip" ? `<div class="notice">本项目不使用音乐。LYRICS / SUNO_PROMPT / MUSIC_MASTER / INSTRUMENTAL 不参与缺失判断，也不会阻塞流程。</div>`
+      : mode === "existing" ? `<section class="panel"><div class="section-title"><div><p class="eyebrow">EXISTING MUSIC</p><h3>使用已有音乐</h3></div><p>音乐文件仍是本地 Production Asset；可在“文件”页登记 MUSIC_MASTER。</p></div><div class="grid-2"><label class="field">曲名<input data-audio-field="trackName" value="${h(audio.trackName)}"></label><label class="field">来源<input data-audio-field="source" value="${h(audio.source)}" placeholder="已有文件 / 来源说明"></label><label class="field">Music Notes<textarea class="editor small" data-audio-field="musicNotes">${h(audio.musicNotes)}</textarea></label><div class="metric"><span>MUSIC_MASTER</span><strong>${project.files.MUSIC_MASTER?.status || "Missing"}</strong></div></div></section>`
+      : `<section class="panel"><div class="section-title"><div><p class="eyebrow">GENERATE MUSIC</p><h3>Suno / 音乐生成</h3></div><p>这是 Audio Production 的子流程，不会创建独立 Music State 或 Music Lock。</p></div><div class="grid-2"><label class="field">Suno Prompt<textarea class="editor small" data-audio-field="sunoPrompt">${h(audio.sunoPrompt)}</textarea></label><label class="field">Lyrics（如需要）<textarea class="editor small" data-audio-field="lyrics">${h(audio.lyrics)}</textarea></label><label class="field">候选版本（每行一个）<textarea class="editor small" data-audio-array="candidateVersions">${h((audio.candidateVersions || []).join("\n"))}</textarea></label><label class="field">Selected Version<input data-audio-field="selectedVersion" value="${h(audio.selectedVersion)}"></label><label class="field">Music Notes<textarea class="editor small" data-audio-field="musicNotes">${h(audio.musicNotes)}</textarea></label><div class="metric"><span>MUSIC_MASTER</span><strong>${project.files.MUSIC_MASTER?.status || "Missing"}</strong></div></div></section>`;
+
+    const linked = new Set(project.linkedMusicIds || []);
+    return `<section class="panel"><div class="section-title"><div><p class="eyebrow">AUDIO PRODUCTION</p><h3>Voice + Optional Music + Optional SFX</h3></div><p>真正进入 Timeline 前只认最终 AUDIO_MASTER 与人工 Audio Lock。</p></div><div class="grid-3"><div class="metric"><span>Voice</span><strong>${h(audio.voiceStatus || "draft")}</strong></div><div class="metric"><span>最终 AUDIO_MASTER</span><strong>${project.files.AUDIO_MASTER?.status || "Missing"}</strong></div><div class="metric"><span>Audio Lock</span><strong>${project.locks.audioLock ? "LOCKED" : "OPEN"}</strong></div></div><div class="panel"><div class="toolbar"><strong>Music</strong><span class="muted">按项目需要选择，不影响顶级状态机</span></div><div class="inline-actions"><label><input type="radio" name="musicMode" data-music-mode="skip" ${mode === "skip" ? "checked" : ""}> 不使用</label><label><input type="radio" name="musicMode" data-music-mode="existing" ${mode === "existing" ? "checked" : ""}> 使用已有音乐</label><label><input type="radio" name="musicMode" data-music-mode="generate" ${mode === "generate" ? "checked" : ""}> 生成音乐</label></div></div><div class="grid-2"><label class="field">SFX 状态<select data-audio-field="sfxStatus"><option value="optional" ${audio.sfxStatus === "optional" ? "selected" : ""}>可选</option><option value="planned" ${audio.sfxStatus === "planned" ? "selected" : ""}>计划使用</option><option value="ready" ${audio.sfxStatus === "ready" ? "selected" : ""}>已准备</option><option value="skip" ${audio.sfxStatus === "skip" ? "selected" : ""}>不使用</option></select></label><label class="field">SFX Notes<input data-audio-field="sfxNotes" value="${h(audio.sfxNotes)}"></label></div></section>${musicFields}
+      <section class="panel"><div class="section-title"><div><p class="eyebrow">REUSABLE MUSIC ASSETS</p><h3>Music Library</h3></div><p>可选的音乐资产登记区。它不决定项目工作流，也不产生 Music Lock。</p></div><form id="musicForm" class="grid-3"><label class="field">曲名<input name="title" required></label><label class="field">游戏<input name="game" value="${h(project.game)}"></label><label class="field">角色<input name="character"></label><label class="field">类型<input name="type" placeholder="Character Song / BGM"></label><label class="field">Suno 版本<input name="sunoVersion"></label><label class="field">状态<select name="releaseStatus"><option>Draft</option><option>Selected</option><option>Ready</option><option>Released</option></select></label><div><button class="button primary" type="submit">保存音乐资产</button></div></form></section><section class="panel card-list">${state.musicLibrary.length ? state.musicLibrary.map((music) => `<article class="item-card"><div class="toolbar"><div><h4>${h(music.title)}</h4><p>${h(music.game)} ${music.character ? `· ${h(music.character)}` : ""} · ${h(music.releaseStatus)}</p></div><div class="inline-actions"><button class="button tiny ${linked.has(music.musicId) ? "primary" : "ghost"}" data-link-music="${h(music.musicId)}">${linked.has(music.musicId) ? "已关联" : "关联当前项目"}</button><button class="button tiny danger" data-remove-music="${h(music.musicId)}">删除</button></div></div></article>`).join("") : `<p class="muted">还没有音乐资产。</p>`}</section>`;
   }
 
   function storyboardView(project) {
@@ -131,11 +149,6 @@
 
   function reviewView(project) {
     return `<section class="panel"><div class="section-title"><div><p class="eyebrow">TIMECODE REVIEW</p><h3>复盘记录</h3></div><p>按时间码和问题类型记录，Revision 只处理这里的明确事项。</p></div><form id="reviewForm" class="grid-3"><label class="field">时间码<input name="timestamp" value="00:00.000"></label><label class="field">类型<select name="type">${E.REVIEW_TYPES.map((v) => `<option>${v}</option>`).join("")}</select></label><label class="field">问题<input name="comment" required placeholder="具体哪里不对，期望如何"></label><div><button class="button primary" type="submit">添加 Review Note</button></div></form></section><section class="panel card-list">${project.reviews.length ? project.reviews.map((review) => `<article class="item-card"><div class="toolbar"><h4>${h(review.timestamp)} · ${h(review.type)}</h4><div class="inline-actions"><select data-review-status="${h(review.id)}"><option ${review.status === "Open" ? "selected" : ""}>Open</option><option ${review.status === "Done" ? "selected" : ""}>Done</option></select><button class="button tiny danger" data-remove-review="${h(review.id)}">删除</button></div></div><p>${h(review.comment)}</p></article>`).join("") : `<p class="muted">暂无复盘项。</p>`}</section>`;
-  }
-
-  function musicView(project) {
-    const linked = new Set(project.linkedMusicIds || []);
-    return `<section class="panel"><div class="section-title"><div><p class="eyebrow">REUSABLE MUSIC ASSETS</p><h3>Music Library</h3></div><p>B 项目可关联曲目；D 项目本身就是发行资产。这里记录 metadata，不上传云端。</p></div><form id="musicForm" class="grid-3"><label class="field">曲名<input name="title" required></label><label class="field">游戏<input name="game" value="${h(project.game)}"></label><label class="field">角色<input name="character"></label><label class="field">类型<input name="type" placeholder="Character Song / BGM"></label><label class="field">Suno 版本<input name="sunoVersion"></label><label class="field">状态<select name="releaseStatus"><option>Draft</option><option>Locked</option><option>Released</option></select></label><div><button class="button primary" type="submit">保存音乐资产</button></div></form></section><section class="panel card-list">${state.musicLibrary.length ? state.musicLibrary.map((music) => `<article class="item-card"><div class="toolbar"><div><h4>${h(music.title)}</h4><p>${h(music.game)} ${music.character ? `· ${h(music.character)}` : ""} · ${h(music.releaseStatus)}</p></div><div class="inline-actions"><button class="button tiny ${linked.has(music.musicId) ? "primary" : "ghost"}" data-link-music="${h(music.musicId)}">${linked.has(music.musicId) ? "已关联" : "关联当前项目"}</button><button class="button tiny danger" data-remove-music="${h(music.musicId)}">删除</button></div></div></article>`).join("") : `<p class="muted">还没有音乐资产。</p>`}</section>`;
   }
 
   function promptView(project) {
@@ -147,7 +160,7 @@
     form.reset();
     $("#projectDialogTitle").textContent = project ? "编辑项目" : "新建项目";
     form.elements.projectId.value = project?.projectId || "";
-    ["name", "game", "topic", "projectType", "targetPublishDate", "notes"].forEach((key) => { if (project) form.elements[key].value = project[key] || ""; });
+    ["name", "game", "topic", "targetPublishDate", "notes"].forEach((key) => { if (project) form.elements[key].value = project[key] || ""; });
     $("#projectDialog").showModal();
   }
 
@@ -159,11 +172,14 @@
     const kind = E.FILE_DEFINITIONS[key]?.kind;
     input.accept = kind === "audio" ? "audio/*" : kind === "video" ? "video/*" : `.${kind || "*"}`;
     input.onchange = async () => {
-      const file = input.files[0]; if (!file) return;
+      const file = input.files[0];
+      if (!file) return;
       const textKinds = ["md", "json", "csv", "srt"];
       const content = textKinds.includes(kind) ? await file.text() : "";
       E.registerFile(project, key, { name: file.name, size: file.size, content, status: "Ready" });
-      save(); render(); notify(`${file.name} 已登记`);
+      save();
+      render();
+      notify(`${file.name} 已登记`);
     };
     input.click();
   }
@@ -183,15 +199,18 @@
 
   async function ensureDirectory(root, path) {
     let dir = root;
-    for (const part of path.split("/")) dir = await dir.getDirectoryHandle(part, { create: true });
+    for (const part of path.split("/").filter(Boolean)) dir = await dir.getDirectoryHandle(part, { create: true });
     return dir;
   }
 
   async function writeText(root, path, content) {
-    const parts = path.split("/"); const filename = parts.pop();
+    const parts = path.split("/");
+    const filename = parts.pop();
     const dir = await ensureDirectory(root, parts.join("/"));
     const handle = await dir.getFileHandle(filename, { create: true });
-    const writable = await handle.createWritable(); await writable.write(content); await writable.close();
+    const writable = await handle.createWritable();
+    await writable.write(content);
+    await writable.close();
   }
 
   async function importDirectory() {
@@ -205,19 +224,24 @@
         const entries = [];
         for await (const entry of root.values()) if (entry.kind === "directory") entries.push(entry);
         if (entries.length !== 1) throw new Error("请选择项目根目录，或只包含一个项目目录的父目录");
-        projectRoot = entries[0]; control = await projectRoot.getDirectoryHandle("00_CONTROL");
+        projectRoot = entries[0];
+        control = await projectRoot.getDirectoryHandle("00_CONTROL");
       }
       const handle = await control.getFileHandle("PROJECT_DATA.json");
       const raw = JSON.parse(await (await handle.getFile()).text());
-      importProject(raw); notify(`已从 ${projectRoot.name} 读取项目`);
+      importProject(raw);
+      notify(`已从 ${projectRoot.name} 读取项目`);
     } catch (error) { if (error.name !== "AbortError") notify(`读取失败：${error.message}`, true); }
   }
 
   function importProject(raw) {
     const project = E.normalizeProject(raw);
     const index = state.projects.findIndex((item) => item.projectId === project.projectId);
-    if (index >= 0) state.projects[index] = project; else state.projects.push(project);
-    state.selectedProjectId = project.projectId; save(); render();
+    if (index >= 0) state.projects[index] = project;
+    else state.projects.push(project);
+    state.selectedProjectId = project.projectId;
+    save();
+    render();
   }
 
   function runAction(action) {
@@ -238,9 +262,11 @@
       if (action === "download-prompt") return download(`${E.safeName(project.name)}_${project.currentState}_HANDOFF.md`, E.generatePrompt(project), "text/markdown");
       if (action === "delete-project") {
         if (!confirm(`只删除浏览器内的“${project.name}”？磁盘目录不会受影响。`)) return;
-        state.projects = state.projects.filter((item) => item.projectId !== project.projectId); state.selectedProjectId = state.projects[0]?.projectId || "";
+        state.projects = state.projects.filter((item) => item.projectId !== project.projectId);
+        state.selectedProjectId = state.projects[0]?.projectId || "";
       }
-      save(); render();
+      save();
+      render();
     } catch (error) { notify(error.message, true); render(); }
   }
 
@@ -251,7 +277,8 @@
     if (select) { state.selectedProjectId = select.dataset.selectProject; save(); render(); return; }
     const tab = event.target.closest("[data-tab]");
     if (tab) { activeTab = tab.dataset.tab; render(); return; }
-    const upload = event.target.closest("[data-upload-file]"); if (upload) return chooseFile(upload.dataset.uploadFile);
+    const upload = event.target.closest("[data-upload-file]");
+    if (upload) return chooseFile(upload.dataset.uploadFile);
     const dl = event.target.closest("[data-download-file]");
     if (dl) { const file = currentProject().files[dl.dataset.downloadFile]; return download(file.filename, file.content, "text/plain"); }
     const asset = event.target.closest("[data-remove-asset]");
@@ -267,42 +294,99 @@
   });
 
   document.addEventListener("change", (event) => {
-    const project = currentProject(); if (!project) return;
+    const project = currentProject();
+    if (!project) return;
     if (event.target.matches("[data-lock]")) {
       try { E.setLock(project, event.target.dataset.lock, event.target.checked); save(); render(); }
       catch (error) { notify(error.message, true); render(); }
+      return;
+    }
+    if (event.target.matches("[data-music-mode]")) {
+      try { E.setMusicMode(project, event.target.dataset.musicMode); save(); render(); notify("Music 模式已更新"); }
+      catch (error) { notify(error.message, true); render(); }
+      return;
+    }
+    if (event.target.matches("[data-audio-field]")) {
+      project.audioProduction ||= E.defaultAudioProduction();
+      project.audioProduction[event.target.dataset.audioField] = event.target.value;
+      project.updatedAt = new Date().toISOString();
+      E.refreshGeneratedFiles(project);
+      save();
+      return;
     }
     if (event.target.matches("[data-asset-status]")) { const item = project.assets.find((asset) => asset.assetId === event.target.dataset.assetStatus); if (item) item.status = event.target.value; E.refreshGeneratedFiles(project); save(); render(); }
     if (event.target.matches("[data-review-status]")) { const item = project.reviews.find((review) => review.id === event.target.dataset.reviewStatus); if (item) item.status = event.target.value; E.refreshGeneratedFiles(project); save(); render(); }
   });
 
   document.addEventListener("focusout", (event) => {
-    const key = event.target.dataset.projectField; if (!key) return;
-    const project = currentProject(); project[key] = event.target.value;
-    if (key === "voiceMaster") { E.registerFile(project, "VOICE_MASTER", { name: "VOICE_MASTER.md", content: event.target.value, status: event.target.value.trim() ? "Ready" : "Missing" }); }
-    else E.refreshGeneratedFiles(project);
-    save(); render();
+    const project = currentProject();
+    if (!project) return;
+    const key = event.target.dataset.projectField;
+    if (key) {
+      project[key] = event.target.value;
+      if (key === "voiceMaster") E.registerFile(project, "VOICE_MASTER", { name: "VOICE_MASTER.md", content: event.target.value, status: event.target.value.trim() ? "Ready" : "Missing" });
+      else E.refreshGeneratedFiles(project);
+      save();
+      render();
+      return;
+    }
+    const audioKey = event.target.dataset.audioField;
+    if (audioKey) {
+      project.audioProduction ||= E.defaultAudioProduction();
+      project.audioProduction[audioKey] = event.target.value;
+      if (E.musicMode(project) === "generate") {
+        if (audioKey === "sunoPrompt") E.registerFile(project, "SUNO_PROMPT", { name: "SUNO_PROMPT.md", content: event.target.value, status: event.target.value.trim() ? "Ready" : "Missing" });
+        if (audioKey === "lyrics") E.registerFile(project, "LYRICS", { name: "LYRICS.md", content: event.target.value, status: event.target.value.trim() ? "Ready" : "Missing" });
+      }
+      project.updatedAt = new Date().toISOString();
+      E.refreshGeneratedFiles(project);
+      save();
+      return;
+    }
+    const audioArray = event.target.dataset.audioArray;
+    if (audioArray) {
+      project.audioProduction ||= E.defaultAudioProduction();
+      project.audioProduction[audioArray] = event.target.value.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+      project.updatedAt = new Date().toISOString();
+      E.refreshGeneratedFiles(project);
+      save();
+    }
   });
 
   document.addEventListener("submit", (event) => {
     if (!["assetForm", "storyboardForm", "reviewForm", "musicForm"].includes(event.target.id)) return;
-    event.preventDefault(); const project = currentProject(); const data = Object.fromEntries(new FormData(event.target));
+    event.preventDefault();
+    const project = currentProject();
+    const data = Object.fromEntries(new FormData(event.target));
     if (event.target.id === "assetForm") E.createAsset(project, data);
     if (event.target.id === "storyboardForm") E.createBlueprintRow(project, data);
     if (event.target.id === "reviewForm") E.createReview(project, data);
-    if (event.target.id === "musicForm") { const music = E.createMusicAsset({ ...data, projectId: project.projectType === "D_MUSIC_RELEASE" ? project.projectId : "" }); state.musicLibrary.push(music); project.linkedMusicIds.push(music.musicId); }
-    save(); render();
+    if (event.target.id === "musicForm") {
+      const music = E.createMusicAsset({ ...data, projectId: project.projectId });
+      state.musicLibrary.push(music);
+      project.linkedMusicIds.push(music.musicId);
+    }
+    save();
+    render();
   });
 
   $("#projectForm").addEventListener("submit", (event) => {
-    event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget));
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
     let project = state.projects.find((item) => item.projectId === data.projectId);
     if (project) {
-      if (project.projectType !== data.projectType && project.currentState !== "IDEA") return notify("项目离开 IDEA 后不能更改类型。", true);
-      Object.assign(project, { name: data.name, game: data.game, topic: data.topic, projectType: data.projectType, targetPublishDate: data.targetPublishDate, notes: data.notes });
-      project = E.normalizeProject(project); state.projects[state.projects.findIndex((item) => item.projectId === project.projectId)] = project;
-    } else { project = E.createProject(data); state.projects.unshift(project); }
-    state.selectedProjectId = project.projectId; $("#projectDialog").close(); save(); render(); notify("项目 Manifest 已保存");
+      Object.assign(project, { name: data.name, game: data.game, topic: data.topic, targetPublishDate: data.targetPublishDate, notes: data.notes });
+      project = E.normalizeProject(project);
+      state.projects[state.projects.findIndex((item) => item.projectId === project.projectId)] = project;
+    } else {
+      project = E.createProject(data);
+      state.projects.unshift(project);
+    }
+    state.selectedProjectId = project.projectId;
+    $("#projectDialog").close();
+    save();
+    render();
+    notify("项目 Manifest 已保存");
   });
 
   $("#newProjectButton").addEventListener("click", () => openProjectDialog());
@@ -311,13 +395,17 @@
   $("#systemFileInput").addEventListener("change", async (event) => {
     try {
       const raw = JSON.parse(await event.target.files[0].text());
-      if (Array.isArray(raw.projects)) { state.projects = raw.projects.map(E.normalizeProject); state.musicLibrary = Array.isArray(raw.musicLibrary) ? raw.musicLibrary : []; state.selectedProjectId = raw.selectedProjectId || state.projects[0]?.projectId || ""; }
-      else importProject(raw);
-      save(); render(); notify("JSON 已导入");
+      if (Array.isArray(raw.projects)) {
+        state.projects = raw.projects.map(E.normalizeProject);
+        state.musicLibrary = Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [];
+        state.selectedProjectId = raw.selectedProjectId || state.projects[0]?.projectId || "";
+      } else importProject(raw);
+      save();
+      render();
+      notify("JSON 已导入");
     } catch (error) { notify(`导入失败：${error.message}`, true); }
     event.target.value = "";
   });
 
-  $("#projectTypeSelect").innerHTML = Object.entries(E.PROJECT_TYPES).map(([key, type]) => `<option value="${key}">${type.short} · ${type.label}</option>`).join("");
   render();
 })();

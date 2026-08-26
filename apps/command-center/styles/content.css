@@ -10,6 +10,12 @@
 }
 
 .character-title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.character-title-mainline {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -31,6 +37,30 @@
   font-size: 11px;
   font-weight: 650;
   line-height: 1.45;
+}
+
+.character-title-full {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  color: var(--dim);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.character-title-full > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.character-full-name-label {
+  flex: 0 0 auto;
+  color: var(--dim);
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: .06em;
 }
 
 .character-localized-name {
@@ -230,12 +260,13 @@ body.gucc-enhanced .inline-link {
   color: var(--gucc-cyan) !important;
 }
 
-body.gucc-enhanced .character-title-localized {
+body.gucc-enhanced .character-title-localized,
+body.gucc-enhanced .character-title-full {
   color: var(--gucc-muted) !important;
 }
 
 @media (max-width: 640px) {
-  .character-title {
+  .character-title-mainline {
     gap: 2px 8px;
   }
 
@@ -245,6 +276,10 @@ body.gucc-enhanced .character-title-localized {
     margin-top: 1px;
     font-size: 10.5px;
     line-height: 1.4;
+  }
+
+  .character-title-full {
+    font-size: 9.5px;
   }
 
   .list-progress {

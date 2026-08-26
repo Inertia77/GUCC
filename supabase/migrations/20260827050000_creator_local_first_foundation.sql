@@ -109,6 +109,8 @@ create index if not exists creator_file_locations_logical_file_idx
 alter table public.creator_devices enable row level security;
 alter table public.creator_file_locations enable row level security;
 
+-- RLS mirrors the existing Creator ownership model as defense in depth. Direct
+-- client CRUD remains revoked; the supported write path is creator-project-api.
 create policy creator_devices_owner_select
   on public.creator_devices for select to authenticated
   using ((select auth.uid()) = owner_user_id);
@@ -137,10 +139,10 @@ create policy creator_file_locations_owner_delete
   on public.creator_file_locations for delete to authenticated
   using ((select auth.uid()) = owner_user_id);
 
-revoke all on table public.creator_devices from anon;
-revoke all on table public.creator_file_locations from anon;
-grant select, insert, update, delete on table public.creator_devices to authenticated;
-grant select, insert, update, delete on table public.creator_file_locations to authenticated;
+revoke all on table public.creator_devices from anon, authenticated;
+revoke all on table public.creator_file_locations from anon, authenticated;
+grant select, insert, update, delete on table public.creator_devices to service_role;
+grant select, insert, update, delete on table public.creator_file_locations to service_role;
 
 -- Reuse the existing updated_at contract used by the other Creator tables.
 drop trigger if exists trg_creator_devices_touch_updated_at on public.creator_devices;

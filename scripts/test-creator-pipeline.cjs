@@ -33,6 +33,14 @@ const { pathToFileURL } = require('url');
   assert.equal(project.files.VOICE_MASTER.status, 'Ready');
   assert.equal(project.integration.drive.rootId, Core.DRIVE_ROOT.id);
 
+  let generatedIds = 0;
+  const idFactory = () => `project_studio_${++generatedIds}`;
+  const firstStudioId = Core.resolveStudioProjectId('', false, idFactory);
+  const repeatedStudioId = Core.resolveStudioProjectId(firstStudioId, false, idFactory);
+  const saveAsNewId = Core.resolveStudioProjectId(repeatedStudioId, true, idFactory);
+  assert.equal(repeatedStudioId, firstStudioId, 'repeated Studio handoff must reuse the existing creatorProjectId');
+  assert.notEqual(saveAsNewId, firstStudioId, 'only explicit Save As New may create another project_id');
+
   project.releasePack = `## B站\n### 最终标题\n【绝区零】洛克茜前瞻机制解析\n### 最终简介\n看懂资源循环和队伍价值。\n### 普通标签\n绝区零,洛克茜,攻略\n### 置顶评论\n你最关心哪一段？\n\n## 抖音\n### 最终发布文案\n洛克茜机制先看资源循环 #绝区零\n### 置顶评论\n完整机制见正片\n\n## 小红书视频\n### 最终标题\n洛克茜机制速懂\n### 最终正文\n先看资源，再看队伍。\n### 话题\n绝区零,洛克茜\n### 置顶评论\n欢迎补充问题\n\n## 微信视频号\n### 最终完整描述\n洛克茜前瞻机制解析\n### 话题\n绝区零,洛克茜\n### 置顶评论\n欢迎讨论\n\n## YouTube 简体中文\n### 最终标题\nZenless Zone Zero 洛克茜机制解析\n### 最终简介\nResource loop and team value explained.\n### Hashtags\n#绝区零,#洛克茜\n### 后台 Tags\n绝区零,洛克茜,ZZZ\n\n## TikTok 简体中文\n### 最终 Caption\n洛克茜机制解析 #绝区零\n### 置顶评论\n完整分析见视频`;
   project.files.RELEASE_PACK.content = project.releasePack;
   project.files.RELEASE_PACK.status = 'Ready';
@@ -82,6 +90,29 @@ const { pathToFileURL } = require('url');
   }], Engine);
   assert.equal(protectedMerge.store.projects[0].topic, 'local-unsynced');
   assert.equal(protectedMerge.store.projects[0].integration.cloud.conflict.currentRevision, 8);
+
+  const legacyLocal = {
+    ...project,
+    topic: 'legacy-local-newer',
+    updatedAt: '2026-08-27T02:00:00.000Z',
+    integration: { ...(project.integration || {}) },
+  };
+  delete legacyLocal.integration.cloud;
+  const olderCloud = {
+    ...project,
+    topic: 'cloud-existing',
+    updatedAt: '2026-08-26T02:00:00.000Z',
+  };
+  const bootstrapProtected = Core.mergeCloudProjects({ ...local, projects: [legacyLocal] }, [{
+    project_id: project.projectId,
+    project_data: olderCloud,
+    revision: 5,
+    updated_at: '2026-08-26T02:00:01.000Z',
+  }], Engine);
+  assert.equal(bootstrapProtected.store.projects[0].topic, 'legacy-local-newer');
+  assert.equal(bootstrapProtected.store.projects[0].integration.cloud.revision, 0, 'bootstrap conflict must not grant the local copy a writable cloud revision');
+  assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.kind, 'bootstrap');
+  assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.currentRevision, 5);
 
   console.log('creator pipeline tests passed');
 })().catch((error) => {

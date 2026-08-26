@@ -34,5 +34,8 @@
 - `20260826085937_gucc_schema_guardrails_resources_creator_20260826.sql`
 - `20260826090148_gucc_core_game_mechanisms_seed_20260826.sql`
 - `20260826090225_gucc_creator_project_sync_triggers_20260826.sql`
+- `20260826090950_gucc_creator_owner_fk_indexes_20260826.sql`
+
+其中 `20260826090950...` 是 Advisor 发现复合外键覆盖索引不足后追加的纠正迁移，示范“已应用 migration 不改写，只追加修复”的规则。
 
 2026-08-25 起，生产库不再依赖“只在 SQL Editor 手工改、仓库无记录”的维护方式；2026-08-26 08:58:31 起进一步升级为 production history 与 GitHub migration 严格 1:1。

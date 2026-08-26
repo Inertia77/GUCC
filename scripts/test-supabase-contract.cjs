@@ -64,4 +64,9 @@ assert.match(creatorEdge, /rpc\/save_creator_project_revision/);
 assert.match(creatorEdge, /REVISION_CONFLICT/);
 assert.doesNotMatch(creatorEdge, /creator_projects\?on_conflict=project_id/);
 
+// JSON object key order must not create false semantic events such as LOCKS_CHANGED.
+assert.match(creatorEdge, /function canonicalJson\(/);
+assert.match(creatorEdge, /Object\.keys\(source\)\.sort\(\)/);
+assert.match(creatorEdge, /JSON\.stringify\(canonicalJson\(a \?\? null\)\)/);
+
 console.log("Supabase contract regression tests passed.");

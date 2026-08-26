@@ -17,6 +17,10 @@ const creatorMigration = fs.readFileSync(
   path.join(ROOT, "supabase/migrations/20260826230000_gucc_creator_phase1_revision_conflict_protection.sql"),
   "utf8"
 );
+const creatorTypeCompatMigration = fs.readFileSync(
+  path.join(ROOT, "supabase/migrations/20260827022000_creator_standard_video_compat.sql"),
+  "utf8"
+);
 const creatorEdge = fs.readFileSync(
   path.join(ROOT, "supabase/functions/creator-project-api/index.ts"),
   "utf8"
@@ -63,6 +67,15 @@ assert.match(creatorMigration, /revoke all on function public\.save_creator_proj
 assert.match(creatorEdge, /rpc\/save_creator_project_revision/);
 assert.match(creatorEdge, /REVISION_CONFLICT/);
 assert.doesNotMatch(creatorEdge, /creator_projects\?on_conflict=project_id/);
+
+// Phase 1.2 new projects may persist STANDARD_VIDEO without invalidating any
+// legacy A/B/C/D project_type value. Project Type remains compatibility metadata.
+for (const type of ["A_FULL_GUIDE", "B_SUNO_VIDEO", "C_GAME_SYSTEM", "D_MUSIC_RELEASE", "STANDARD_VIDEO"]) {
+  assert.match(creatorTypeCompatMigration, new RegExp(`'${type}'::text`));
+}
+assert.match(creatorTypeCompatMigration, /drop constraint if exists creator_projects_type_chk/i);
+assert.match(creatorTypeCompatMigration, /add constraint creator_projects_type_chk/i);
+assert.doesNotMatch(creatorTypeCompatMigration, /delete\s+from|truncate\s+table|drop\s+table/i);
 
 // JSON object key order must not create false semantic events such as LOCKS_CHANGED.
 assert.match(creatorEdge, /function canonicalJson\(/);

@@ -1,40 +1,73 @@
-# GUCC Unified AI Creator Pipeline
+# GUCC Creator OS｜Unified Production Pipeline
 
-这份文档描述 GUCC 在 Studio、AI Video Production System、Supabase、Google Drive 与 Publish Console 之间的统一创作主线。
+这份文档记录 GUCC Creator OS 在 **Phase 1.2 — Simplify Creator Model** 之后的正式模型，以及后续 Local-first Foundation 必须遵守的边界。
 
 ## 一句话原则
 
-**一个视频只有一个 `project_id`，Production 的项目 JSON 是结构化主状态，Supabase 是云端状态源，Google Drive / 本地同步目录保存大型真实文件，GitHub 保存系统代码与创作规则。**
+**一个 Creator Project + 一条 Production Workflow + 少量可选 Capability。**
 
-不要再为同一个视频分别维护一套 Studio JSON、一套 Production JSON 和一套 Publish JSON 当作三个独立项目。
+用户不需要先判断视频属于攻略、机制、音乐、剧情、实战还是未来某一种内容类型。内容形式可以无限扩展，但正式制作状态机保持稳定。
 
-## 四层职责
+长期存储职责固定为：
 
-### 1. GUCC Studio：想清楚
+- **Local-first Production**：真实视频、音频、录屏、剪辑工程和大型素材在本地制作与使用。
+- **Supabase Cloud State / History**：项目状态、Revision、Locks、Artifact Metadata、Publish State 与历史。
+- **Google Drive Lightweight Project Archive**：后续只归档 Markdown / JSON / SRT 等小型项目知识文件。
+- **百度云**：最终需要长期保存的大文件由用户自行归档，GUCC 不开发百度云自动上传。
 
-Studio 负责仍然可能变化的创作工作：
+## 1. Creator Project
+
+新建项目只需要：
+
+- Title / 项目名称
+- Game
+- Target Publish Date
+- Topic / 核心主题
+- Notes
+
+用户界面不再显示或要求选择：
+
+- `A_FULL_GUIDE`
+- `B_SUNO_VIDEO`
+- `C_GAME_SYSTEM`
+- `D_MUSIC_RELEASE`
+
+新项目内部使用 `STANDARD_VIDEO`。旧 A/B/C/D 仍可读取，并保留为 Legacy Metadata，但不得再决定 Workflow、Progress、Action Queue 或 Artifact 要求。
+
+## 2. GUCC Studio：想清楚
+
+Studio 负责仍可能变化的创作工作：
 
 - 选题与观众
 - 事前学习
 - 官方资料与社区问题
 - AI 分析
 - 结构草稿
-- 早期脚本和素材方向
+- 早期脚本与素材方向
 
-当一个项目确定要正式制作时，点击右下角 **“转入正式制作”**。
+Studio 不再猜测 A/B/C/D Project Type。
 
-系统会：
+### Workspace Identity
 
-1. 为项目生成唯一 `project_id`。
-2. 把 Studio 已有资料打包为 handoff。
-3. 打开 Production System。
-4. 用同一个 `project_id` 创建正式项目。
-5. 把研究、已有脚本、素材计划和已有发布包带过去。
-6. **不会自动打开 Content / Script / Audio 等 Lock。** 所有 Lock 仍需人工确认。
+每一个真实 Studio Draft 都拥有自己的：
 
-### 2. Production System：严格生产
+- `workspaceInstanceId`
+- `creatorProjectId`
 
-Production 是正式制作的唯一状态机：
+规则：
+
+- 同一个 Draft 继续编辑 → 保持同一个 `creatorProjectId`。
+- 同一个 Draft 重复“转入正式制作” → 保持同一个 `creatorProjectId`。
+- 真正新建空白 Workspace → 自动生成新的 Workspace / Project Identity。
+- 导出后再次导入同一 Workspace → 可恢复原 Identity。
+- 旧浏览器 key `gucc_creator_studio_project_id_v1` 仅作为迁移兼容，不再是唯一真相源。
+- “复制为新项目”才显式创建新的 Creator Project ID。
+
+Studio → Production 只负责把当前创作项目交给统一 Creator Project，不判断内容类型。
+
+## 3. Production System：唯一正式状态机
+
+所有 Creator Video Project 共用：
 
 ```text
 IDEA
@@ -62,190 +95,226 @@ IDEA
 → ARCHIVED
 ```
 
-Production 页面右下角新增统一制作总线：
+不再存在按 Project Type 选择的 B Flow / D Flow。
 
-- **立即云同步**：把当前项目完整 JSON 与文件元数据推到 Supabase。
-- **拉取云端**：恢复其他设备上更新过的项目。
-- **复制发布 Prompt**：为 `RELEASE_PACK.md` 追加 Publish Console 可稳定解析的固定输出合同。
-- **送去 Publish Console**：不再绕回旧 WorkSpace，直接交接发布项目。
-- **Drive 项目库**：打开统一 Google Drive 根目录。
+### 人工确认边界
 
-登录过 Command Center 后，Production 会复用 `gameup_session_v5`，不要求重复登录；未登录时仍可以完整使用本地模式。
+以下 Gate 不能被自动化越过：
 
-### 3. Supabase：云端状态源
+- Content Lock
+- Script Lock
+- Audio Lock
+- Picture Lock
+- Final Publish
 
-新增四张表：
+Research Lock 继续保持现有安全边界。
 
-- `creator_projects`：项目索引与完整 `project_data`。
-- `creator_project_files`：标准文件和大型文件的元数据 / provider pointer。
-- `creator_project_events`：建项、阶段变化、Lock 变化和人工同步事件。
-- `creator_project_releases`：六平台发布状态、作品链接、作品 ID 和数据快照。
+## 4. Audio Production：Voice + Optional Music + Optional SFX
 
-浏览器不直接获得这些表的 CRUD grant。前端统一调用：
+Music 不再拥有顶级 `MUSIC_DRAFT` / `MUSIC_LOCKED` 状态，也不再拥有顶级 Music Lock。
+
+正式路径：
+
+```text
+Voice
++
+Optional Music
++
+Optional SFX
+↓
+AUDIO_MASTER
+↓
+人工确认 Audio Lock
+↓
+Timeline
+```
+
+### Music Mode
+
+#### Skip
+
+完全不使用音乐。
+
+`LYRICS`、`SUNO_PROMPT`、`MUSIC_MASTER`、`INSTRUMENTAL` 不参与缺失判断，也不能让项目 Blocked / Attention。
+
+#### Existing
+
+允许记录已有音乐的：
+
+- Track Name
+- Source
+- Music Notes
+- 本地 `MUSIC_MASTER` 文件信息
+
+真实音乐文件仍属于本地 Production Asset。
+
+#### Generate
+
+展开音乐生成子功能：
+
+- Suno Prompt
+- Lyrics（需要时）
+- Candidate Versions
+- Selected Music / Version
+- Music Notes
+
+这些都是 `AUDIO_PRODUCTION` 内部 Capability，不改变顶级状态机。
+
+## 5. Legacy Compatibility
+
+旧项目绝不因为 Phase 1.2 被 reset 到 `IDEA`。
+
+Legacy State Normalize：
+
+```text
+MUSIC_DRAFT
+→ AUDIO_PRODUCTION
+
+MUSIC_LOCKED
+→ AUDIO_PRODUCTION
+```
+
+只有同时存在：
+
+- 真实 `AUDIO_MASTER`
+- 已确认 `audioLock`
+
+旧 `MUSIC_LOCKED` 才可以安全映射到 `AUDIO_LOCKED`。
+
+旧 Music Lock 本身不能冒充 Audio Lock。
+
+Production Supabase Schema 继续保留 `project_type`，并允许：
+
+```text
+A_FULL_GUIDE
+B_SUNO_VIDEO
+C_GAME_SYSTEM
+D_MUSIC_RELEASE
+STANDARD_VIDEO
+```
+
+旧值不迁移、不删除；新项目可原生保存 `STANDARD_VIDEO`。
+
+## 6. Supabase：Cloud State / History
+
+Creator Project 云端层继续使用：
+
+- `creator_projects`：项目索引、完整 `project_data`、Revision、当前状态。
+- `creator_project_files`：Artifact Metadata / provider pointer。
+- `creator_project_events`：项目创建、状态变化、Lock 变化、同步历史。
+- `creator_project_releases`：发布状态、作品 URL / ID 与数据快照。
+
+前端统一调用：
 
 ```text
 supabase/functions/creator-project-api
 ```
 
-该 Edge Function：
+Phase 1.1 已建立并继续保留：
 
-1. 校验 Supabase Auth access token。
-2. 校验 `app_users.is_active`。
-3. 强制把所有写入绑定到当前登录用户。
-4. 使用服务端 key 访问项目表。
-5. 检查 `project_id` 所有权，避免跨用户覆盖。
+- Revision-based optimistic concurrency
+- revision=0 Bootstrap Conflict Protection
+- Stable / Canonical JSON Equality
+- false `LOCKS_CHANGED` suppression
+- Project Health 与 Next Requirements 分离
+- Project ID deep link
 
-`service_role` 不会进入浏览器。
+Phase 1.2 不改变这些安全语义。
 
-### 4. Google Drive：真实文件仓库
+## 7. Creator Dashboard
 
-统一根目录：
+Dashboard 卡片面向用户只强调：
 
-```text
-GUCC Creator Projects/
-├─ 01_ACTIVE/
-├─ 02_ARCHIVE/
-└─ 03_SHARED_ASSETS/
-```
+- Title
+- Game
+- Topic
+- Current State
+- Progress
+- Health
+- Locks
+- Deadline
+- Next Action
+- Next Requirements
 
-- `01_ACTIVE`：正在制作的项目目录。
-- `02_ARCHIVE`：已完成 / 暂停的完整项目。
-- `03_SHARED_ASSETS`：跨项目复用的 BGM、SFX、图形、模板、通用片头等。
+Dashboard 不显示 A/B/C/D Label。
 
-Production 的项目目录结构继续使用：
+所有 Legacy Project Type 使用同一套 Production Flow 计算 Progress 与 Action Queue。
 
-```text
-项目名/
-├─ 00_CONTROL/
-├─ 01_RESEARCH/
-├─ 02_SCRIPT/TTS_CHUNKS/
-├─ 03_AUDIO/
-├─ 04_SUBTITLES/
-├─ 05_ASSETS/{GAMEPLAY,UI,CHARACTER,BUILD,GRAPHICS,MUSIC,SFX}/
-├─ 06_EDIT_PLAN/
-├─ 07_CODEX_BUILD/
-├─ 08_REVIEW/
-├─ 09_FINAL/
-└─ 10_RELEASE/
-```
+## 8. Publish Console
 
-最省事的方式是在 Windows 安装 Google Drive for Desktop，然后把 Production 的“同步到目录”目标直接选到：
+Production 与 Publish Console 始终通过同一个 `creatorProjectId` 连接。
 
-```text
-Google Drive/GUCC Creator Projects/01_ACTIVE
-```
+Publish Console 继续负责：
 
-这样网页仍使用 File System Access API 写真实目录，Google Drive Desktop 负责云端同步。
+1. 读取 `RELEASE_PACK`。
+2. 映射六个平台字段。
+3. 准备发布资料。
+4. 保存发布状态、作品 URL / ID 与数据快照。
+5. 把最终公开发布动作留给用户确认。
 
-> ChatGPT 的 Google Drive 连接权限和静态 GitHub Pages 网页不是同一个 OAuth 环境。GUCC 前端不会偷用 ChatGPT 的 Drive token。需要真正的网页端 Drive API 时，应另做 Google OAuth，而不是把 token 写进仓库。
-
-## Publish Console 直连
-
-Production 点击 **“送去 Publish Console”** 后：
-
-1. 保存同一个 `project_id`。
-2. 读取 `10_RELEASE/RELEASE_PACK.md`。
-3. 直接打开 Publish Console。
-4. 按固定标题拆成六个平台字段。
-5. 发布控制台的 `source.creatorProjectId` 继续指向同一个项目。
-6. 发布状态、作品 URL / ID、数据快照会回写 Supabase `creator_project_releases`。
-
-Publish Console 仍然不会点击平台最终公开发布按钮。最终发布 / 定时发布由用户检查后确认。
-
-## 发布包固定合同
-
-为保证自动解析，Production 的发布 Prompt 使用以下固定标题：
+发布包固定合同保持不变：
 
 ```text
 ## B站
-### 最终标题
-### 最终简介
-### 普通标签
-### 置顶评论
-
 ## 抖音
-### 最终发布文案
-### 置顶评论
-
 ## 小红书视频
-### 最终标题
-### 最终正文
-### 话题
-### 置顶评论
-
 ## 微信视频号
-### 最终完整描述
-### 话题
-### 置顶评论
-
 ## YouTube 简体中文
-### 最终标题
-### 最终简介
-### Hashtags
-### 后台 Tags
-
 ## TikTok 简体中文
-### 最终 Caption
-### 置顶评论
 ```
 
-这些字段与 `apps/publishing-console/platform-rules.js` 的解析器一一对应。
+## 9. 当前 Source of Truth
 
-## 日常使用
-
-### 新视频
-
-```text
-GUCC Studio
-→ 填选题 / 资料 / AI 分析
-→ 转入正式制作
-→ Production 按“唯一下一步”推进
-→ Content Lock
-→ Script Lock
-→ 做 AUDIO_MASTER
-→ Audio Lock
-→ Codex 对齐字幕 / 时间轴
-→ ChatGPT Timed Storyboard
-→ 补 Must 素材
-→ Codex V0
-→ 带时间码 Review
-→ Codex Revision
-→ Fine Edit
-→ Picture Lock
-→ 复制发布 Prompt，生成 RELEASE_PACK
-→ 送去 Publish Console
-→ 一键准备六平台
-→ 人工最终确认发布
-→ 回填链接 / 数据
-→ Supabase 自动留档
-→ 项目目录从 01_ACTIVE 移到 02_ARCHIVE
-```
-
-### 另一台电脑继续
-
-1. 用同一个浏览器账号在 Command Center 登录一次。
-2. 打开 Production System。
-3. 点击“拉取云端”。
-4. 项目结构状态从 Supabase 恢复。
-5. 大型音视频从 Google Drive Desktop 同步到本机。
-6. Production 的“读取项目目录”仍可从 `00_CONTROL/PROJECT_DATA.json` 做磁盘级恢复。
-
-## Source of Truth
-
-| 内容 | Source of Truth |
+| 内容 | 当前 Source of Truth |
 |---|---|
 | GUCC 程序、Prompt、Creator Constitution | GitHub |
-| 项目状态、Locks、结构化 JSON | Supabase `creator_projects` |
-| 项目标准文件元数据 | Supabase `creator_project_files` |
-| 阶段 / Lock 历史 | Supabase `creator_project_events` |
-| 大型音频、视频、录屏、素材 | Google Drive / 本地同步目录 |
-| 发布执行、作品链接、数据快照 | Supabase `creator_project_releases` |
-| 临时防误关缓存 | 浏览器 localStorage |
+| Project State、Locks、Revision、结构化 JSON | Supabase `creator_projects` |
+| Artifact Metadata | Supabase `creator_project_files` |
+| State / Lock History | Supabase `creator_project_events` |
+| Publish State / URL / Metrics Snapshot | Supabase `creator_project_releases` |
+| 真实视频、音频、录屏、剪辑工程、大型素材 | 本地 |
+| Studio / Production 离线工作缓存 | 浏览器 localStorage |
 
-## 故障时怎么判断
+Google Drive Lightweight Project Archive 尚未在 Phase 1.2 实现；它属于后续阶段。
 
-- 页面右下角显示 **本地模式**：不会影响本地制作；先去 Command Center 登录一次即可恢复云同步。
-- 云端同步失败：本地 Production JSON 与磁盘目录不会被删除；修复连接后重新“立即云同步”。
-- 换电脑没有大视频：Supabase 只保存状态和元数据；等待 Google Drive Desktop 把真实文件同步下来。
-- Publish Console 字段为空：先检查 `RELEASE_PACK.md` 是否使用固定二级 / 三级标题，再重新送去 Publish Console。
-- 平台改版：本机发布助手会停在“未自动定位字段”，不会把失败伪装成成功，也不会替用户点击最终发布。
+## 10. 当前日常使用
+
+```text
+Studio 或 Production 新建 Creator Project
+→ 填 Title / Game / Date / Topic / Notes
+→ 按唯一 Production Workflow 推进
+→ Content Lock
+→ Script Lock
+→ Audio Production
+   ├─ Music Skip
+   ├─ Existing
+   └─ Generate
+→ 导出真实 AUDIO_MASTER
+→ Audio Lock
+→ Timeline / Subtitle Alignment
+→ Storyboard
+→ Asset Completion
+→ Codex Build
+→ Review / Revision / Fine Edit
+→ Picture Lock
+→ Release Ready
+→ Publish Console
+→ 用户最终确认发布
+→ Published / Archived
+```
+
+## 11. Phase 2A 之后的方向
+
+Phase 1.2 只负责把 Creator Project Model 简化稳定，不实现 Local Agent、Filesystem Watcher、ffprobe、Google Drive Archive 或 Analytics Automation。
+
+Phase 2A 应在此基础上建立 Local-first Foundation：
+
+1. Device Identity / Workspace Root。
+2. Logical Artifact 与 Physical File Location 分离。
+3. 本地 Production Asset Registry。
+4. Supabase 只同步状态、历史和 Artifact Metadata，不上传大型真实文件。
+5. 后续再增加 Google Drive 小型知识归档。
+
+最终原则不变：
+
+> 用户负责创作判断。GUCC 负责记忆、流程、状态与机械劳动。系统应该越来越简单，而不是越来越像 ERP。

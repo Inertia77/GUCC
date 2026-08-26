@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
@@ -14,11 +15,12 @@ const { pathToFileURL } = require('node:url');
     currentState: 'PLANNING',
     targetPublishDate: '2026-08-28',
     updatedAt: '2026-08-26T10:00:00.000Z',
-    locks: { contentLock: false, scriptLock: false, audioLock: false, pictureLock: false },
+    locks: { contentLock: false, scriptLock: false, musicLock: false, audioLock: false, pictureLock: false },
     files: { RESEARCH: { status: 'Missing' } },
   };
   const row = {
     project_id: baseProject.projectId,
+    project_type: baseProject.projectType,
     project_data: baseProject,
     current_state: baseProject.currentState,
     revision: 7,
@@ -32,6 +34,36 @@ const { pathToFileURL } = require('node:url');
   assert.equal(project.nextRequirements[0].label, 'RESEARCH.md');
   assert.equal(project.nextAction, '制定研究计划');
   assert.equal(project.revision, 7);
+  assert.equal(project.projectType, undefined, 'Dashboard user model must not expose A/B/C/D labels');
+
+  for (const type of ['A_FULL_GUIDE', 'B_SUNO_VIDEO', 'C_GAME_SYSTEM', 'D_MUSIC_RELEASE']) {
+    const legacy = { ...baseProject, projectId: `legacy_${type}`, projectType: type, currentState: 'PLANNING' };
+    const analyzed = Core.analyzeCreatorProject({ ...row, project_id: legacy.projectId, project_type: type, project_data: legacy }, [], [], { now });
+    assert.equal(analyzed.progress, 5, `${type} must use the same unified progress calculation`);
+    assert.equal(analyzed.nextAction, '制定研究计划', `${type} must not branch Action Queue logic`);
+  }
+
+  const musicDraft = { ...baseProject, projectType: 'B_SUNO_VIDEO', currentState: 'MUSIC_DRAFT' };
+  const migratedDraft = Core.analyzeCreatorProject({ ...row, current_state: 'MUSIC_DRAFT', project_data: musicDraft }, [], [], { now });
+  assert.equal(migratedDraft.currentState, 'AUDIO_PRODUCTION');
+
+  const musicLocked = {
+    ...baseProject,
+    projectType: 'D_MUSIC_RELEASE',
+    currentState: 'MUSIC_LOCKED',
+    locks: { ...baseProject.locks, musicLock: true, audioLock: false },
+    files: { MUSIC_MASTER: { status: 'Ready' } },
+  };
+  const migratedLocked = Core.analyzeCreatorProject({ ...row, current_state: 'MUSIC_LOCKED', project_data: musicLocked }, [], [], { now });
+  assert.equal(migratedLocked.currentState, 'AUDIO_PRODUCTION', 'legacy Music Lock may not bypass Audio Lock in Dashboard');
+
+  const actuallyAudioLocked = {
+    ...musicLocked,
+    locks: { ...musicLocked.locks, audioLock: true },
+    files: { ...musicLocked.files, AUDIO_MASTER: { status: 'Ready' }, RESEARCH: { status: 'Ready' }, CONTENT_LOCK: { status: 'Ready' }, VOICE_MASTER: { status: 'Ready' } },
+  };
+  const safelyMigrated = Core.analyzeCreatorProject({ ...row, current_state: 'MUSIC_LOCKED', project_data: actuallyAudioLocked }, [], [], { now });
+  assert.equal(safelyMigrated.currentState, 'AUDIO_LOCKED');
 
   const invalidLocks = structuredClone(baseProject);
   invalidLocks.currentState = 'AUDIO_LOCKED';
@@ -55,7 +87,12 @@ const { pathToFileURL } = require('node:url');
   const published = structuredClone(baseProject);
   published.currentState = 'PUBLISHED';
   published.locks = { contentLock: true, scriptLock: true, audioLock: true, pictureLock: true };
-  published.files.RELEASE_PACK = { status: 'Ready' };
+  published.files = {
+    RESEARCH: { status: 'Ready' }, CONTENT_LOCK: { status: 'Ready' }, VOICE_MASTER: { status: 'Ready' },
+    AUDIO_MASTER: { status: 'Ready' }, SUBTITLE_MASTER: { status: 'Ready' }, TRANSCRIPT_ALIGNED: { status: 'Ready' },
+    EDIT_BLUEPRINT: { status: 'Ready' }, ASSET_INDEX: { status: 'Ready' }, VISUAL_STYLE: { status: 'Ready' }, EXPORT_SPEC: { status: 'Ready' },
+    VIDEO_V0_REVIEW: { status: 'Ready' }, BUILD_REPORT: { status: 'Ready' }, VIDEO_V1: { status: 'Ready' }, QC_REPORT: { status: 'Ready' }, RELEASE_PACK: { status: 'Ready' },
+  };
   const release = {
     project_id: published.projectId,
     platform: 'bilibili',
@@ -94,7 +131,13 @@ const { pathToFileURL } = require('node:url');
   assert.equal(attached.integration.cloud.revision, 9);
   assert.equal(Core.stripCloudMetadata(attached).integration?.cloud, undefined);
 
-  console.log('Creator Dashboard and conflict checks passed.');
+  const dashboardUi = fs.readFileSync(path.join(__dirname, '..', 'assets', 'creator-dashboard.mjs'), 'utf8');
+  const dashboardCore = fs.readFileSync(path.join(__dirname, '..', 'assets', 'creator-dashboard-core.mjs'), 'utf8');
+  assert(!dashboardUi.includes('project.projectTypeLabel'), 'Dashboard cards must not show Project Type labels');
+  assert(!dashboardCore.includes('B_FLOW') && !dashboardCore.includes('D_FLOW'), 'Dashboard must use one production flow');
+  assert(!dashboardCore.includes('PROJECT_TYPE_LABELS'), 'legacy labels must not be part of Dashboard business logic');
+
+  console.log('Creator Dashboard Phase 1.2 and conflict checks passed.');
 })().catch((error) => {
   console.error(error);
   process.exit(1);

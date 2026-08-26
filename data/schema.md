@@ -1,6 +1,6 @@
 # GUCC Supabase Schema
 
-> Production-aligned reference. Updated 2026-08-26 after migration `20260826090950_gucc_creator_owner_fk_indexes_20260826`.
+> Production-aligned reference. Updated 2026-08-27 after migration `20260826193428_gucc_onmyoji_full_integration_20260827`.
 > Migration SQL under `supabase/migrations/` is authoritative for exact DDL history.
 
 ## Access model
@@ -45,10 +45,11 @@ Creator Project data is also currently written through `creator-project-api`; RL
 | id | uuid | PK |
 | game_id | uuid | FK → games, cascade |
 | name | text | canonical zh name; unique with game_id |
+| full_name | text | nullable; canonical full display name |
 | element | text | nullable |
 | profession | text | nullable |
 | sex | text | nullable; 男/女/未定 |
-| rarity | text | nullable; 4星/5星/6星/A级/S级 |
+| rarity | text | nullable; 4星/5星/6星/A级/S级/UR/SP/SSR/SR/R/N |
 | note | text | nullable |
 | created_at | timestamptz | default now() |
 | updated_at | timestamptz | auto-touched |
@@ -170,7 +171,7 @@ Unique: `(game_id, summary, party_type)`.
 | created_at | timestamptz | default now() |
 | updated_at | timestamptz | auto-touched |
 
-The five maintained games are now seeded with system-level mechanics; this table is no longer intentionally empty.
+The six maintained games are now seeded with system-level mechanics; this table is no longer intentionally empty.
 
 ## `resources`
 

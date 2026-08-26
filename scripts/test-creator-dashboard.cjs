@@ -27,8 +27,9 @@ const { pathToFileURL } = require('node:url');
 
   const project = Core.analyzeCreatorProject(row, [], [], { now });
   assert.equal(project.progress, 5);
-  assert.equal(project.health.code, 'missing');
-  assert.equal(project.missingFiles[0].label, 'RESEARCH.md');
+  assert.equal(project.health.code, 'normal', 'a next-step output must not make Project Health yellow');
+  assert.equal(project.missingFiles.length, 0);
+  assert.equal(project.nextRequirements[0].label, 'RESEARCH.md');
   assert.equal(project.nextAction, '制定研究计划');
   assert.equal(project.revision, 7);
 
@@ -37,6 +38,19 @@ const { pathToFileURL } = require('node:url');
   const blocked = Core.analyzeCreatorProject({ ...row, current_state: 'AUDIO_LOCKED', project_data: invalidLocks }, [], [], { now });
   assert.equal(blocked.health.code, 'blocked');
   assert(blocked.health.reasons.some((reason) => reason.includes('Audio Lock')));
+
+  const crossedStage = structuredClone(baseProject);
+  crossedStage.currentState = 'SCRIPT_LOCKED';
+  crossedStage.locks.contentLock = true;
+  crossedStage.locks.scriptLock = true;
+  crossedStage.files = {
+    RESEARCH: { status: 'Ready' },
+    CONTENT_LOCK: { status: 'Ready' },
+    VOICE_MASTER: { status: 'Missing' },
+  };
+  const attention = Core.analyzeCreatorProject({ ...row, current_state: crossedStage.currentState, project_data: crossedStage }, [], [], { now });
+  assert.equal(attention.health.code, 'attention');
+  assert(attention.health.reasons.some((reason) => reason.includes('VOICE_MASTER.md')));
 
   const published = structuredClone(baseProject);
   published.currentState = 'PUBLISHED';
@@ -66,6 +80,15 @@ const { pathToFileURL } = require('node:url');
   const bothLocal = { ...baseProject, topic: '本机改题' };
   const conflict = Core.mergeProjectVersions(baseProject, bothLocal, remote);
   assert.deepEqual(conflict.conflicts.map((item) => item.key), ['topic']);
+
+  assert.equal(Core.deepEqual(
+    { locks: { contentLock: false, scriptLock: false, audioLock: false } },
+    { locks: { audioLock: false, contentLock: false, scriptLock: false } },
+  ), true, 'object key order must not create a false change');
+  assert.equal(Core.summarizeProjectDiff(
+    { ...baseProject, locks: { contentLock: false, scriptLock: false, audioLock: false, pictureLock: false } },
+    { ...baseProject, locks: { pictureLock: false, audioLock: false, scriptLock: false, contentLock: false } },
+  ).some((item) => item.key === 'locks'), false, 'stable equality must suppress false lock diffs');
 
   const attached = Core.attachCloudMetadata(baseProject, { revision: 9, updated_at: '2026-08-26T12:00:00Z', last_device_id: 'phone' });
   assert.equal(attached.integration.cloud.revision, 9);

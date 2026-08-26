@@ -21,6 +21,10 @@ const creatorTypeCompatMigration = fs.readFileSync(
   path.join(ROOT, "supabase/migrations/20260827022000_creator_standard_video_compat.sql"),
   "utf8"
 );
+const creatorLocalFirstMigration = fs.readFileSync(
+  path.join(ROOT, "supabase/migrations/20260827050000_creator_local_first_foundation.sql"),
+  "utf8"
+);
 const creatorEdge = fs.readFileSync(
   path.join(ROOT, "supabase/functions/creator-project-api/index.ts"),
   "utf8"
@@ -81,5 +85,33 @@ assert.doesNotMatch(creatorTypeCompatMigration, /delete\s+from|truncate\s+table|
 assert.match(creatorEdge, /function canonicalJson\(/);
 assert.match(creatorEdge, /Object\.keys\(source\)\.sort\(\)/);
 assert.match(creatorEdge, /JSON\.stringify\(canonicalJson\(a \?\? null\)\)/);
+
+// Phase 2A: logical artifacts and physical locations are separate concepts.
+assert.match(creatorLocalFirstMigration, /create table if not exists public\.creator_devices/i);
+assert.match(creatorLocalFirstMigration, /create table if not exists public\.creator_file_locations/i);
+assert.match(creatorLocalFirstMigration, /logical_file_id uuid not null/i);
+assert.match(creatorLocalFirstMigration, /references public\.creator_project_files\(id, project_id, owner_user_id\)/i);
+assert.match(creatorLocalFirstMigration, /references public\.creator_devices\(owner_user_id, device_id\)/i);
+assert.match(creatorLocalFirstMigration, /alter table public\.creator_devices enable row level security/i);
+assert.match(creatorLocalFirstMigration, /alter table public\.creator_file_locations enable row level security/i);
+assert.match(creatorLocalFirstMigration, /canonical expected project-relative path for the logical artifact/i);
+assert.match(creatorLocalFirstMigration, /physical\/provider observations belong in creator_file_locations/i);
+
+// Migration may backfill known device identities, but must never fabricate a
+// physical file location from the 48 legacy/template logical artifact rows.
+assert.match(creatorLocalFirstMigration, /insert into public\.creator_devices/i);
+assert.doesNotMatch(creatorLocalFirstMigration, /insert into public\.creator_file_locations/i);
+
+// The Creator API exposes the local-first contract without accepting media bytes.
+assert.match(creatorEdge, /function normalizeRelativePath\(/);
+assert.match(creatorEdge, /workspace-relative, not absolute/);
+assert.match(creatorEdge, /async function touchDevice\(/);
+assert.match(creatorEdge, /async function saveFileLocation\(/);
+assert.match(creatorEdge, /action === "registerDevice"/);
+assert.match(creatorEdge, /action === "saveFileLocation"/);
+assert.match(creatorEdge, /creator_file_locations\?on_conflict=owner_user_id,logical_file_id,device_id,storage_provider/);
+assert.match(creatorEdge, /return \{ projects, files, releases, devices, fileLocations, serverTime:/);
+assert.match(creatorEdge, /const deviceId = await touchDevice\(userId, body\);[\s\S]{0,500}rpc\/save_creator_project_revision/);
+assert.doesNotMatch(creatorEdge, /base64|multipart\/form-data|arrayBuffer\(\)|formData\(\)/i);
 
 console.log("Supabase contract regression tests passed.");

@@ -9,6 +9,11 @@ on:
   pull_request:
     branches:
       - main
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
 
 permissions:
   contents: read

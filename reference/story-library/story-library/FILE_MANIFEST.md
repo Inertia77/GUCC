@@ -1,7 +1,7 @@
 # Story Library File Manifest
 
 > 更新：2026-08-25  
-> 说明：按当前 Story Library 实际目录维护。`ananta/` 本轮仅登记既有文件，不修改其内容。
+> 说明：按当前 Story Library 实际目录维护；新增剧情文件必须同步登记，供 Story Library 前端自动发现。
 
 ## 根文件
 
@@ -19,7 +19,7 @@
 - `story-library/_archive_original_generated/GUCC_story_绝区零_Zenless_Zone_Zero.md`
 - `story-library/_archive_original_generated/GUCC_story_鸣潮_Wuthering_Waves.md`
 
-## 无限大 / ANANTA（本轮未修改）
+## 无限大 / ANANTA（当前不修改）
 
 - `story-library/games/ananta/00-overview.md`
 - `story-library/games/ananta/01-timeline.md`
@@ -61,19 +61,36 @@
 - `story-library/games/honkai-star-rail/04-mysteries.md`
 - `story-library/games/honkai-star-rail/05-video-hooks.md`
 - `story-library/games/honkai-star-rail/README.md`
+- `story-library/games/honkai-star-rail/versions/1.0-1.3-xianzhou-luofu.md`
 - `story-library/games/honkai-star-rail/versions/1.0-herta-space-station.md`
 - `story-library/games/honkai-star-rail/versions/1.0-jarilo-vi.md`
-- `story-library/games/honkai-star-rail/versions/1.0-1.3-xianzhou-luofu.md`
 - `story-library/games/honkai-star-rail/versions/1.4-1.6-interlude.md`
 - `story-library/games/honkai-star-rail/versions/2.0-2.3-penacony.md`
+- `story-library/games/honkai-star-rail/versions/2.0-if-one-dreams-at-midnight.md`
+- `story-library/games/honkai-star-rail/versions/2.1-cat-among-pigeons.md`
+- `story-library/games/honkai-star-rail/versions/2.2-then-wake-to-weep.md`
+- `story-library/games/honkai-star-rail/versions/2.3-farewell-penacony.md`
 - `story-library/games/honkai-star-rail/versions/2.4-2.7-xianzhou-wardance.md`
+- `story-library/games/honkai-star-rail/versions/2.4-finest-duel-pristine-blue-i.md`
+- `story-library/games/honkai-star-rail/versions/2.5-finest-duel-pristine-blue-ii.md`
+- `story-library/games/honkai-star-rail/versions/2.6-banana-outrage.md`
+- `story-library/games/honkai-star-rail/versions/2.7-eighth-dawn.md`
 - `story-library/games/honkai-star-rail/versions/3.0-3.7-amphoreus.md`
-- `story-library/games/honkai-star-rail/versions/4.x-duoxiangleyuan.md`
+- `story-library/games/honkai-star-rail/versions/3.0-paean-of-era-nova.md`
+- `story-library/games/honkai-star-rail/versions/3.1-light-gate-shadow-throne.md`
+- `story-library/games/honkai-star-rail/versions/3.2-petals-land-repose.md`
+- `story-library/games/honkai-star-rail/versions/3.3-fall-at-dawns-rise.md`
+- `story-library/games/honkai-star-rail/versions/3.4-sun-set-to-die.md`
+- `story-library/games/honkai-star-rail/versions/3.5-before-their-deaths.md`
+- `story-library/games/honkai-star-rail/versions/3.6-back-to-earth-evernight.md`
+- `story-library/games/honkai-star-rail/versions/3.7-as-tomorrow-became-yesterday.md`
+- `story-library/games/honkai-star-rail/versions/3.8-memories-prelude-to-dreams.md`
 - `story-library/games/honkai-star-rail/versions/4.0-planarcadia-no-aha-at-full-moon.md`
 - `story-library/games/honkai-star-rail/versions/4.1-planarcadia-unraveled-for-daybreak.md`
 - `story-library/games/honkai-star-rail/versions/4.2-planarcadia-so-laughed-the-masses.md`
 - `story-library/games/honkai-star-rail/versions/4.3-planarcadia-lethe-below-the-living.md`
 - `story-library/games/honkai-star-rail/versions/4.4-planarcadia-in-ravages-whistle.md`
+- `story-library/games/honkai-star-rail/versions/4.x-duoxiangleyuan.md`
 
 ## 异环 / Neverness to Everness
 

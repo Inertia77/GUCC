@@ -34,6 +34,7 @@ import {
 } from '../search-filters.js';
 
 const DEFAULT_LINK_RELATION_TYPE = 'official_profile';
+const CHARACTER_SEARCH_LIMIT = 1000;
 const FILTERS = {
   '#charKeyword': 'cq',
   '#charGame': 'cg',
@@ -185,9 +186,9 @@ function openEditor(data = {}) {
     <form id="charForm" class="editor-form">
       <div class="editor-body form-grid">
         <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-        <label>游戏 code / short_code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩" /></label>
-        <label>中文主名 / 游戏常用名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" placeholder="例：庄方宜 / 洛克茜" /></label>
-        <label>中文全名 <input name="full_name" value="${escapeHtml(data.full_name || data.character_full_name || data.name || data.character_name || '')}" placeholder="可与主名一致；例：庄方宜 / 洛克茜·伊芙莉塔·普莱斯" /></label>
+        <label>游戏 code / short_code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩 / 阴" /></label>
+        <label>中文主名 / 游戏常用名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" placeholder="例：庄方宜 / 洛克茜 / 雪御前" /></label>
+        <label>中文全名 <input name="full_name" value="${escapeHtml(data.full_name || data.character_full_name || data.name || data.character_name || '')}" placeholder="可与主名一致；例：庄方宜 / 源雪姬" /></label>
         <label>属性 <input name="element" value="${escapeHtml(data.element || '')}" /></label>
         <label>职业 <input name="profession" value="${escapeHtml(data.profession || '')}" /></label>
         <label>性别 <input name="sex" value="${escapeHtml(data.sex || '')}" /></label>
@@ -265,7 +266,7 @@ function openEditor(data = {}) {
           const existing = await API.searchCharacters({
             keyword: payload.name,
             game_code: payload.game_code,
-            limit: 200
+            limit: CHARACTER_SEARCH_LIMIT
           });
           assertNewCharacterUnique(normalizeRows(existing), payload);
         }
@@ -293,7 +294,7 @@ export async function searchCharacters({ visibleCount = 0, revealId = '' } = {})
     const rows = await API.searchCharacters({
       keyword: $('#charKeyword').value.trim(),
       game_code: readGameFilter('#charGame', '#charGameCustom'),
-      limit: 200
+      limit: CHARACTER_SEARCH_LIMIT
     });
     const list = normalizeRows(rows).filter((row) => (
       matchesStatus(row.research_status, $('#charResearchStatus').value)
@@ -311,8 +312,9 @@ export async function searchCharacters({ visibleCount = 0, revealId = '' } = {})
             ${renderCharacterTitle(row)}
             ${renderMeta([
               row.game_code || row.game_title,
+              row.rarity,
               row.element,
-              row.profession,
+              row.game_code === '阴' && row.profession === '式神' ? null : row.profession,
               { value: row.research_status, tone: 'progress' },
               { value: row.build_status, tone: 'state' },
               row.like_level,

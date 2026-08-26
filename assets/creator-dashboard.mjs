@@ -69,8 +69,8 @@ function renderAction(item) {
 }
 
 function renderProject(project) {
-  const missing = project.missingFiles.slice(0, 2).map((file) => file.label).join(" · ");
-  const warning = project.health.reasons[0] || project.warnings[0] || (missing ? `缺 ${missing}` : "当前项目状态正常");
+  const requirements = project.nextRequirements.slice(0, 3).map((file) => file.label).join(" · ");
+  const healthNote = project.health.reasons[0] || project.warnings[0] || "当前项目状态正常";
   return `<a class="creator-project-card health-${escapeHtml(project.health.code)}" href="${projectHref(project.projectId)}">
     <div class="creator-project-top"><span class="creator-health">${project.health.icon} ${escapeHtml(project.health.label)}</span><span class="creator-revision">r${project.revision || 0}</span></div>
     <h3>${escapeHtml(project.name)}</h3>
@@ -79,7 +79,7 @@ function renderProject(project) {
     <div class="creator-stage"><strong>${escapeHtml(project.currentState)}</strong><span>${project.progress}%</span></div>
     <div class="creator-progress"><span style="width:${project.progress}%"></span></div>
     <div class="creator-project-meta"><span>${lockPills(project.locks)}</span><span>目标 ${escapeHtml(formatDate(project.targetPublishDate))} · 更新 ${escapeHtml(formatDate(project.updatedAt))}</span></div>
-    <div class="creator-project-next"><small>唯一下一步</small><strong>${escapeHtml(project.nextAction)}</strong><span>${escapeHtml(warning)}</span></div>
+    <div class="creator-project-next"><small>唯一下一步</small><strong>${escapeHtml(project.nextAction)}</strong><span>下一步需要 · ${escapeHtml(requirements || "无需额外文件")}</span><span class="creator-project-health-note">项目状态 · ${escapeHtml(healthNote)}</span></div>
   </a>`;
 }
 

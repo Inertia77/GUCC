@@ -4,8 +4,8 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const edge = fs.readFileSync(path.join(root, "supabase/functions/creator-project-api/index.ts"), "utf8");
-const migration = fs.readFileSync(path.join(root, "supabase/migrations/20260827222000_creator_archive_state_guard.sql"), "utf8");
-const refreshMigration = fs.readFileSync(path.join(root, "supabase/migrations/20260827234000_creator_archived_update_proof_guard.sql"), "utf8");
+const migration = fs.readFileSync(path.join(root, "supabase/migrations/20260827140034_creator_archive_state_guard.sql"), "utf8");
+const refreshMigration = fs.readFileSync(path.join(root, "supabase/migrations/20260827143937_creator_archived_update_proof_guard.sql"), "utf8");
 
 assert.match(migration, /creator_archive_transition_is_verified/i);
 assert.match(migration, /guard_creator_archive_state_transition/i);

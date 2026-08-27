@@ -6,7 +6,7 @@ const fsp = fs.promises;
 const os = require("node:os");
 const path = require("node:path");
 
-const AGENT_VERSION = "2.0.0-phase2a2";
+const AGENT_VERSION = "2.0.1-phase2a2";
 const DEFAULT_HASH_LIMIT_BYTES = 128 * 1024 * 1024;
 const DEFAULT_DEBOUNCE_MS = 1500;
 const DEFAULT_RECONCILE_MS = 15 * 60 * 1000;
@@ -185,7 +185,18 @@ async function observeLogicalArtifact(params) {
   const projectRoot = path.resolve(project.projectRoot);
   const absolutePath = path.resolve(projectRoot, ...relativePath.split("/"));
   if (!isPathInside(projectRoot, absolutePath)) throw new Error(`Artifact path escapes project root: ${relativePath}`);
-  if (!isPathInside(workspaceRealRoot, absolutePath)) throw new Error(`Artifact path escapes Workspace Root: ${relativePath}`);
+
+  // `projectRoot` can be a Windows 8.3/alias spelling while `workspaceRealRoot`
+  // is the canonical long path returned by fs.realpath(). Comparing those two
+  // spellings before resolving the candidate falsely rejects legitimate files
+  // (e.g. C:\Users\RUNNER~1\... vs C:\Users\runneradmin\...). Project discovery
+  // already proves realProjectRoot is inside the real Workspace Root. For files
+  // that exist we additionally realpath the artifact below and enforce both the
+  // project and Workspace containment boundaries, which is the security check
+  // that protects against junction/symlink escapes.
+  const realProjectRoot = project.realProjectRoot || projectRoot;
+  if (!isPathInside(workspaceRealRoot, realProjectRoot)) throw new Error(`Project resolves outside Workspace Root: ${project.projectId || projectRoot}`);
+
   const observedAt = new Date().toISOString();
   let stat;
   try { stat = await fsApi.lstat(absolutePath); }
@@ -204,7 +215,7 @@ async function observeLogicalArtifact(params) {
   if (stat.isSymbolicLink()) throw new Error(`Symlink artifact is not observed for safety: ${relativePath}`);
   if (!stat.isFile()) throw new Error(`Canonical artifact is not a regular file: ${relativePath}`);
   const realFile = await fsApi.realpath(absolutePath);
-  if (!isPathInside(workspaceRealRoot, realFile) || !isPathInside(project.realProjectRoot || projectRoot, realFile)) {
+  if (!isPathInside(workspaceRealRoot, realFile) || !isPathInside(realProjectRoot, realFile)) {
     throw new Error(`Artifact resolves outside the project/Workspace Root: ${relativePath}`);
   }
 

@@ -83,8 +83,10 @@ class FakeDriveTransport {
   oversized.totalBytes = 21 * 1024 * 1024;
   await assert.rejects(() => publisher.publish(oversized), /total size policy/i, "oversized package must fail");
 
-  // Existing duplicate folders/files are tolerated without creating yet another duplicate.
-  const duplicateFolder = { id: transport.nextId(), name: "Creator Projects", mimeType: "application/vnd.google-apps.folder", parents: [transport.files.get(first.folderId).parents[0]], createdTime: "2030-01-01T00:00:00Z" };
+  // Existing duplicate folders are tolerated without creating yet another duplicate.
+  const canonicalCollection = [...transport.files.values()].find((file) => file.name === "Creator Projects" && file.mimeType === "application/vnd.google-apps.folder");
+  assert(canonicalCollection?.parents?.[0], "canonical Creator Projects folder must exist");
+  const duplicateFolder = { id: transport.nextId(), name: "Creator Projects", mimeType: "application/vnd.google-apps.folder", parents: [...canonicalCollection.parents], createdTime: "2030-01-01T00:00:00Z" };
   transport.files.set(duplicateFolder.id, duplicateFolder);
   const beforeExistingDuplicatePublish = transport.files.size;
   const fourth = await publisher.publish(pkg);

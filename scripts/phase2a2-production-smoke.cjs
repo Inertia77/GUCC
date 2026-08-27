@@ -19,32 +19,34 @@ const eventFor = (events, type, fileKey) => (events || []).filter((event) => eve
 const fileRow = (snapshot, key) => (snapshot.files || []).find((file) => file.file_key === key);
 const locationRow = (snapshot, logicalFile, deviceId) => (snapshot.fileLocations || []).find((row) => row.logical_file_id === logicalFile.id && row.device_id === deviceId && (row.storage_provider || "local") === "local");
 
-async function createAnonymousSession() {
-  const response = await fetch(`${Cloud.SUPABASE_URL}/auth/v1/signup`, {
-    method: "POST",
-    headers: { "content-type": "application/json", apikey: Cloud.SUPABASE_ANON_KEY },
-    body: JSON.stringify({ data: { gucc_smoke_test: true, purpose: "phase2a2-production-smoke" } }),
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.msg || payload.message || payload.error_description || payload.error || `anonymous signup ${response.status}`);
-  const user = payload.user?.id ? payload.user : payload.id ? payload : null;
-  const accessToken = payload.access_token || payload.session?.access_token || "";
-  const refreshToken = payload.refresh_token || payload.session?.refresh_token || "";
-  if (!user?.id || !accessToken || !refreshToken) throw new Error(`Anonymous signup returned incomplete session; keys=${Object.keys(payload).sort().join(",")}`);
-  return { user, accessToken, refreshToken };
-}
-
-async function awaitAppUser(client) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= 120; attempt += 1) {
-    try { return await client.ping(); }
-    catch (error) {
-      lastError = error;
-      if (attempt === 1 || attempt % 12 === 0) console.log(`SMOKE_WAITING_FOR_APP_USER attempt=${attempt} status=${error.status || 0}`);
-      await sleep(2500);
+async function getBootstrapCredentials() {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const publicDer = publicKey.export({ type: "spki", format: "der" });
+  const runId = String(process.env.GITHUB_RUN_ID || Date.now());
+  const payloadPath = `.github/smoke/phase2a2-${runId}.json`;
+  console.log(`SMOKE_BOOTSTRAP_PATH=${payloadPath}`);
+  console.log(`SMOKE_PUBLIC_KEY_DER_B64=${publicDer.toString("base64")}`);
+  const token = String(process.env.GUCC_SMOKE_GITHUB_TOKEN || "");
+  const branch = encodeURIComponent(String(process.env.GITHUB_REF_NAME || "feature/creator-os-phase-2b-archive"));
+  const url = `https://api.github.com/repos/Inertia77/GUCC/contents/${payloadPath}?ref=${branch}`;
+  for (let attempt = 1; attempt <= 90; attempt += 1) {
+    const headers = { Accept: "application/vnd.github+json", "User-Agent": "GUCC-Phase2A2-Smoke" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const response = await fetch(url, { headers });
+    if (response.ok) {
+      const remote = await response.json();
+      const text = Buffer.from(String(remote.content || "").replace(/\n/g, ""), "base64").toString("utf8");
+      const envelope = JSON.parse(text);
+      const clear = crypto.privateDecrypt({ key: privateKey, oaepHash: "sha256", padding: crypto.constants.RSA_PKCS1_OAEP_PADDING }, Buffer.from(String(envelope.ciphertext || ""), "base64"));
+      const credentials = JSON.parse(clear.toString("utf8"));
+      if (!credentials.email || !credentials.password) throw new Error("Encrypted bootstrap payload is incomplete");
+      console.log("SMOKE_BOOTSTRAP_RECEIVED=1");
+      return credentials;
     }
+    if (attempt === 1 || attempt % 10 === 0) console.log(`SMOKE_WAITING_FOR_BOOTSTRAP attempt=${attempt}`);
+    await sleep(3000);
   }
-  throw new Error(`Temporary smoke app_user was not enabled: ${lastError?.message || "unknown"}`);
+  throw new Error("Encrypted smoke bootstrap payload was not supplied");
 }
 
 async function runAgent(configPath) {
@@ -66,12 +68,13 @@ async function main() {
   const projectRoot = path.join(workspace, "TEST_SMOKE_CREATOR_PROJECT");
   const configPath = path.join(temp, "creator-agent.json");
 
-  const session = await createAnonymousSession();
-  console.log(`SMOKE_USER_ID=${session.user.id}`);
-  console.log("SMOKE_APP_USER_REQUIRED=1");
-  const client = new Cloud.CreatorCloudClient({ refreshToken: session.refreshToken });
-  client.accessToken = session.accessToken;
-  await awaitAppUser(client);
+  const credentials = await getBootstrapCredentials();
+  const auth = await Cloud.passwordLogin(credentials.email, credentials.password);
+  const client = new Cloud.CreatorCloudClient({ refreshToken: auth.refresh_token });
+  client.accessToken = auth.access_token || "";
+  const ping = await client.ping();
+  assert(ping?.user?.id);
+  console.log(`SMOKE_USER_ID=${ping.user.id}`);
   console.log("SMOKE_ACCOUNT_ENABLED=1");
 
   const project = Engine.createProject({ projectId, name: "TEST / SMOKE Creator Project", game: "TEST", topic: "Phase 2A.2 Production Smoke" });
@@ -95,7 +98,7 @@ async function main() {
   await fsp.writeFile(videoPath, Buffer.from("GUCC smoke video metadata only\n"));
 
   const validated = await Core.validateWorkspaceRoot(workspace);
-  await Core.saveConfig({ deviceId: agentDeviceId, label: "GUCC Phase2A2 Smoke Agent", workspaceRoot: validated.root, workspaceRealRoot: validated.realRoot, email: "", refreshToken: session.refreshToken, lastSync: null }, configPath);
+  await Core.saveConfig({ deviceId: agentDeviceId, label: "GUCC Phase2A2 Smoke Agent", workspaceRoot: validated.root, workspaceRealRoot: validated.realRoot, email: credentials.email, refreshToken: auth.refresh_token, lastSync: null }, configPath);
   console.log(`SMOKE_AGENT_DEVICE_ID=${agentDeviceId}`);
 
   await runAgent(configPath);

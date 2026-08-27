@@ -17,6 +17,7 @@ import {
   renderCollapseButton,
   renderProgressiveList,
   renderRichText,
+  renderLinks,
   restoreListContext,
   safeExternalUrl,
   showToast,
@@ -294,6 +295,7 @@ export async function searchParties({ visibleCount = 0, revealId = '' } = {}) {
           <div class="item-content-title">阵容详情</div>
           <div class="hint">成员：${escapeHtml((row.members || []).map((member) => member.name || member.member_name_raw).join(' / '))}</div>
           ${renderRichText(row.description || '')}
+          ${renderLinks(row.links || row.resources)}
         </div>
       </article>`, {
       visibleCount,

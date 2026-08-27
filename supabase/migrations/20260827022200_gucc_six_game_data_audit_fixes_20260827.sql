@@ -53,7 +53,8 @@ where pm.party_id=p.id and p.game_id=g.id and g.code='HSR'
   and p.summary='姬子・启行阵容' and pm.slot_no=1 and pm.member_role is null;
 
 -- ============================================================
--- ZZZ: announced 3.2 characters + official preview anchor.
+-- ZZZ: announced characters only. Version rows are created by the
+-- dedicated preview/version automation after the preview is published.
 -- ============================================================
 with g as (select id from public.games where code='ZZZ' limit 1),
 n(char_name,lang,localized) as (values
@@ -71,8 +72,7 @@ on conflict(character_id,lang) do update set name=excluded.name,updated_at=now()
 insert into public.resources(id,resource_type,title,url,note,source,source_host,source_authority,ingested_via)
 values
   (gen_random_uuid(),'character_profile','洛克茜 官方资料','https://zenless.hoyoverse.com/zh-cn/news/165574?catchSpider=1','绝区零官网角色档案。','绝区零官网','zenless.hoyoverse.com','official','migration'),
-  (gen_random_uuid(),'character_profile','克拉蕾 官方资料','https://zenless.hoyoverse.com/zh-cn/main?catchSpider=1','绝区零官网当前角色目录/3.2前瞻入口；在独立角色深链稳定确认前作为官方资料入口。','绝区零官网','zenless.hoyoverse.com','official','migration'),
-  (gen_random_uuid(),'game_phase_reference','绝区零 3.2「她与她的隐秘往事」前瞻特别节目公告','https://zenless.hoyoverse.com/en-us/news/165865?catchSpider=1','官方确认3.2前瞻于2026-08-28 19:30（UTC+8）播出，并点名克拉蕾与洛克茜参与。','绝区零官网','zenless.hoyoverse.com','official','migration')
+  (gen_random_uuid(),'character_profile','克拉蕾 官方资料','https://zenless.hoyoverse.com/zh-cn/main?catchSpider=1','绝区零官网当前角色目录/3.2前瞻入口；在独立角色深链稳定确认前作为官方资料入口。','绝区零官网','zenless.hoyoverse.com','official','migration')
 on conflict(url) where url is not null do update set
   resource_type=excluded.resource_type,
   title=excluded.title,
@@ -95,28 +95,6 @@ join public.resources r on r.url=p.url
 where not exists(
   select 1 from public.resource_relations rr
   where rr.entity_type='character' and rr.entity_id=c.id and rr.relation_type='official_profile'
-)
-on conflict do nothing;
-
-with g as (select id from public.games where code='ZZZ' limit 1)
-insert into public.game_versions(game_id,version_no,version_name,start_date,end_date,note)
-select g.id,'3.2','她与她的隐秘往事',null,null,
-  '官方已宣布3.2版本前瞻特别节目将于2026-08-28 19:30（UTC+8）播出；克拉蕾与洛克茜将参与前瞻。版本上线日期、卡池、稀有度与战斗定位尚未在当前官方公告中确认，保持空值等待前瞻。'
-from g
-on conflict(game_id,version_no) do update set
-  version_name=excluded.version_name,
-  note=excluded.note,
-  updated_at=now();
-
-with g as (select id from public.games where code='ZZZ' limit 1),
-v as (select id from public.game_versions where game_id=(select id from g) and version_no='3.2'),
-r as (select id from public.resources where url='https://zenless.hoyoverse.com/en-us/news/165865?catchSpider=1')
-insert into public.resource_relations(id,resource_id,entity_type,entity_id,relation_type)
-select gen_random_uuid(),r.id,'version',v.id,'reference'
-from v cross join r
-where not exists(
-  select 1 from public.resource_relations rr
-  where rr.resource_id=r.id and rr.entity_type='version' and rr.entity_id=v.id and rr.relation_type='reference'
 )
 on conflict do nothing;
 

@@ -7,7 +7,9 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "
 const DEFAULT_ALLOWED_ORIGINS = new Set(["http://localhost:8000", "https://inertia77.github.io"]);
 const DEVICE_KINDS = new Set(["web", "desktop", "agent", "unknown"]);
 const LOCATION_AVAILABILITY = new Set(["unknown", "present", "missing", "stale"]);
+const ARCHIVE_WORKFLOW_STATES = new Set(["PUBLISHED", "ARCHIVED"]);
 const MAX_LOCATION_BATCH = 100;
+const ARCHIVE_VERSION = 1;
 
 function allowedOrigins() {
   const configured = (Deno.env.get("ALLOWED_ORIGINS") || "").split(",").map((value) => value.trim()).filter(Boolean);
@@ -85,6 +87,8 @@ function canonicalJson(value: unknown): unknown {
   return value;
 }
 function sameJson(a: unknown, b: unknown) { try { return JSON.stringify(canonicalJson(a ?? null)) === JSON.stringify(canonicalJson(b ?? null)); } catch { return false; } }
+function safeDriveId(value: unknown) { const id = boundedText(value, 300); if (id && !/^[A-Za-z0-9_-]+$/.test(id)) fail("Invalid Google Drive file/folder id"); return id; }
+function safeDriveUrl(value: unknown) { const url = boundedText(value, 2000); if (!url) return ""; let parsed: URL; try { parsed = new URL(url); } catch { fail("Invalid Google Drive URL"); } if (parsed!.protocol !== "https:" || parsed!.hostname !== "drive.google.com") fail("Archive URL must be a Google Drive https URL"); return parsed!.href; }
 
 function fileRows(project: JsonMap, ownerUserId: string, now: string) {
   const files = asObject(project.files);
@@ -101,10 +105,21 @@ function fileRows(project: JsonMap, ownerUserId: string, now: string) {
   });
 }
 function cloudRevision(project: JsonMap) { const revision = Number(asObject(asObject(project.integration).cloud).revision); return Number.isInteger(revision) && revision >= 0 ? revision : null; }
-function projectWithoutCloudMetadata(project: JsonMap) {
-  const clean = structuredClone(project); const integration = asObject(clean.integration);
-  if (Object.prototype.hasOwnProperty.call(integration, "cloud")) { const nextIntegration = { ...integration }; delete nextIntegration.cloud; clean.integration = nextIntegration; }
+function serverArchive(projectRow: JsonMap | null) { return projectRow ? asObject(asObject(asObject(asObject(projectRow.project_data).integration).archive)) : {}; }
+function projectWithoutServerMetadata(project: JsonMap, existing: JsonMap | null = null) {
+  const clean = structuredClone(project); const integration = { ...asObject(clean.integration) };
+  delete integration.cloud;
+  delete integration.archive;
+  const existingArchive = serverArchive(existing);
+  if (Object.keys(existingArchive).length) integration.archive = structuredClone(existingArchive);
+  clean.integration = integration;
   return clean;
+}
+function guardGenericArchiveState(existing: JsonMap | null, currentState: string) {
+  const previousState = String(existing?.current_state || "");
+  if (!existing && currentState === "ARCHIVED") fail("Generic saveProject cannot create an ARCHIVED project; use the verified Archive workflow", 409);
+  if (existing && previousState !== "ARCHIVED" && currentState === "ARCHIVED") fail("Generic saveProject cannot enter ARCHIVED; use recordArchivePublished or manualArchiveOverride", 409);
+  if (existing && previousState === "ARCHIVED" && currentState !== "ARCHIVED") fail("Generic saveProject cannot reopen an ARCHIVED project; refresh the cloud project before editing", 409);
 }
 function revisionConflict(project: JsonMap | null, currentRevision: number) { failWithPayload("Cloud project has a newer revision", 409, { error: "REVISION_CONFLICT", conflict: { currentRevision, project } }); }
 function inferredDeviceKind(deviceId: string, explicit: string) { if (DEVICE_KINDS.has(explicit)) return explicit; if (deviceId.startsWith("web_")) return "web"; if (deviceId.startsWith("agent_")) return "agent"; if (deviceId.startsWith("desktop_")) return "desktop"; return "unknown"; }
@@ -116,25 +131,16 @@ async function deviceRow(userId: string, deviceId: string) {
 async function touchDevice(userId: string, body: JsonMap) {
   const descriptor = asObject(body.device); const deviceId = boundedText(body.deviceId || descriptor.deviceId, 160); if (!deviceId) return null;
   const existing = await deviceRow(userId, deviceId); const now = new Date().toISOString();
-  const patch: JsonMap = {
-    label: boundedText(descriptor.label, 160) || boundedText(existing?.label, 160) || "GUCC Web",
-    device_kind: inferredDeviceKind(deviceId, boundedText(descriptor.deviceKind || descriptor.kind, 32)), last_seen_at: now,
-  };
+  const patch: JsonMap = { label: boundedText(descriptor.label, 160) || boundedText(existing?.label, 160) || "GUCC Web", device_kind: inferredDeviceKind(deviceId, boundedText(descriptor.deviceKind || descriptor.kind, 32)), last_seen_at: now };
   const platform = boundedText(descriptor.platform, 240); const workspaceRoot = boundedText(descriptor.workspaceRoot, 1200);
   if (platform) patch.platform = platform; if (workspaceRoot) patch.workspace_root = workspaceRoot;
   if (Object.keys(asObject(descriptor.capabilities)).length) patch.capabilities = asObject(descriptor.capabilities);
   if (Object.keys(asObject(descriptor.metadata)).length) patch.metadata = asObject(descriptor.metadata);
-  if (existing) {
-    await serviceRest(`creator_devices?owner_user_id=eq.${encodeURIComponent(userId)}&device_id=eq.${encodeURIComponent(deviceId)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
-  } else {
-    await serviceRest("creator_devices", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ owner_user_id: userId, device_id: deviceId, ...patch }) });
-  }
+  if (existing) await serviceRest(`creator_devices?owner_user_id=eq.${encodeURIComponent(userId)}&device_id=eq.${encodeURIComponent(deviceId)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) });
+  else await serviceRest("creator_devices", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ owner_user_id: userId, device_id: deviceId, ...patch }) });
   return deviceId;
 }
-async function getDevice(userId: string, body: JsonMap) {
-  const deviceId = boundedText(body.deviceId, 160); if (!deviceId) fail("deviceId is required");
-  const device = await deviceRow(userId, deviceId); if (!device) fail("Creator device not found", 404); return { device };
-}
+async function getDevice(userId: string, body: JsonMap) { const deviceId = boundedText(body.deviceId, 160); if (!deviceId) fail("deviceId is required"); const device = await deviceRow(userId, deviceId); if (!device) fail("Creator device not found", 404); return { device }; }
 async function registerDevice(userId: string, body: JsonMap) { const deviceId = await touchDevice(userId, body); if (!deviceId) fail("deviceId is required"); return { device: await deviceRow(userId, deviceId) }; }
 
 async function ownedLogicalFile(userId: string, projectId: string, fileKey: string, skipProjectCheck = false) {
@@ -170,43 +176,25 @@ async function writeEvent(projectId: string, ownerUserId: string, eventType: str
 async function saveOneFileLocation(userId: string, project: JsonMap, logicalFile: JsonMap, deviceId: string, location: JsonMap) {
   const relativePath = normalizeRelativePath(location.relativePath);
   const storageProvider = boundedText(location.storageProvider, 80) || "local";
-  if (storageProvider === "local") {
-    const expectedPath = normalizeRelativePath(logicalFile.relative_path);
-    if (relativePath !== expectedPath) fail(`Local observation path must match logical artifact contract: ${expectedPath}`);
-  }
+  if (storageProvider === "local") { const expectedPath = normalizeRelativePath(logicalFile.relative_path); if (relativePath !== expectedPath) fail(`Local observation path must match logical artifact contract: ${expectedPath}`); }
   const availability = boundedText(location.availability, 32) || "present";
   if (!LOCATION_AVAILABILITY.has(availability)) fail("Unsupported location availability");
   const row: JsonMap = {
     logical_file_id: logicalFile.id, project_id: project.project_id, owner_user_id: userId, device_id: deviceId,
     storage_provider: storageProvider, relative_path: relativePath, availability,
     provider_file_id: boundedText(location.providerFileId, 500) || null, provider_url: boundedText(location.providerUrl, 2000) || null,
-    filename: boundedText(location.filename, 300) || relativePath.split("/").pop() || null,
-    mime_type: boundedText(location.mimeType, 240) || null, size_bytes: nonnegativeIntegerOrNull(location.sizeBytes),
-    checksum: boundedText(location.checksum, 300) || null, file_modified_at: timestampOrNull(location.fileModifiedAt),
-    observed_at: timestampOrNull(location.observedAt) || new Date().toISOString(), metadata: asObject(location.metadata),
+    filename: boundedText(location.filename, 300) || relativePath.split("/").pop() || null, mime_type: boundedText(location.mimeType, 240) || null,
+    size_bytes: nonnegativeIntegerOrNull(location.sizeBytes), checksum: boundedText(location.checksum, 300) || null,
+    file_modified_at: timestampOrNull(location.fileModifiedAt), observed_at: timestampOrNull(location.observedAt) || new Date().toISOString(), metadata: asObject(location.metadata),
   };
   const previous = await previousLocation(userId, String(logicalFile.id), deviceId, storageProvider);
   const eventType = meaningfulFileEvent(previous, row);
-  const eventDetail = {
-    fileKey: logicalFile.file_key, logicalFileId: logicalFile.id, deviceId, storageProvider, relativePath,
-    previousAvailability: previous?.availability || null, availability: row.availability,
-    previousSizeBytes: previous?.size_bytes ?? null, sizeBytes: row.size_bytes ?? null,
-    previousChecksum: previous?.checksum || null, checksum: row.checksum || null,
-    fileModifiedAt: row.file_modified_at || null, observedAt: row.observed_at || null,
-  };
-  const saved = asObject(await serviceRest("rpc/save_creator_file_location_observation", {
-    method: "POST",
-    body: JSON.stringify({
-      p_owner_user_id: userId, p_logical_file_id: logicalFile.id, p_project_id: project.project_id,
-      p_device_id: deviceId, p_storage_provider: storageProvider,
-      p_location: {
-        relative_path: row.relative_path, availability: row.availability, provider_file_id: row.provider_file_id,
-        provider_url: row.provider_url, filename: row.filename, mime_type: row.mime_type, size_bytes: row.size_bytes,
-        checksum: row.checksum, file_modified_at: row.file_modified_at, observed_at: row.observed_at, metadata: row.metadata,
-      },
-      p_event_type: eventType, p_state: String(project.current_state || ""), p_event_detail: eventDetail,
-    }),
-  }));
+  const eventDetail = { fileKey: logicalFile.file_key, logicalFileId: logicalFile.id, deviceId, storageProvider, relativePath, previousAvailability: previous?.availability || null, availability: row.availability, previousSizeBytes: previous?.size_bytes ?? null, sizeBytes: row.size_bytes ?? null, previousChecksum: previous?.checksum || null, checksum: row.checksum || null, fileModifiedAt: row.file_modified_at || null, observedAt: row.observed_at || null };
+  const saved = asObject(await serviceRest("rpc/save_creator_file_location_observation", { method: "POST", body: JSON.stringify({
+    p_owner_user_id: userId, p_logical_file_id: logicalFile.id, p_project_id: project.project_id, p_device_id: deviceId, p_storage_provider: storageProvider,
+    p_location: { relative_path: row.relative_path, availability: row.availability, provider_file_id: row.provider_file_id, provider_url: row.provider_url, filename: row.filename, mime_type: row.mime_type, size_bytes: row.size_bytes, checksum: row.checksum, file_modified_at: row.file_modified_at, observed_at: row.observed_at, metadata: row.metadata },
+    p_event_type: eventType, p_state: String(project.current_state || ""), p_event_detail: eventDetail,
+  }) }));
   return { location: saved, eventType };
 }
 
@@ -222,10 +210,8 @@ async function saveFileLocation(userId: string, body: JsonMap) {
 
 async function saveFileLocationsBatch(userId: string, body: JsonMap) {
   const projectId = boundedText(body.projectId, 220); const locations = Array.isArray(body.locations) ? body.locations : [];
-  if (!projectId) fail("projectId is required"); if (!locations.length) fail("locations must contain at least one observation");
-  if (locations.length > MAX_LOCATION_BATCH) fail(`locations batch exceeds ${MAX_LOCATION_BATCH}`, 413);
-  const project = await ownedProject(projectId, userId);
-  const deviceId = await touchDevice(userId, body); if (!deviceId) fail("deviceId is required");
+  if (!projectId) fail("projectId is required"); if (!locations.length) fail("locations must contain at least one observation"); if (locations.length > MAX_LOCATION_BATCH) fail(`locations batch exceeds ${MAX_LOCATION_BATCH}`, 413);
+  const project = await ownedProject(projectId, userId); const deviceId = await touchDevice(userId, body); if (!deviceId) fail("deviceId is required");
   const saved: JsonMap[] = []; const errors: JsonMap[] = []; const events: JsonMap[] = [];
   for (let index = 0; index < locations.length; index += 1) {
     const location = asObject(locations[index]); const fileKey = boundedText(location.fileKey, 220);
@@ -235,10 +221,7 @@ async function saveFileLocationsBatch(userId: string, body: JsonMap) {
       const result = await saveOneFileLocation(userId, project, logicalFile, deviceId, location);
       saved.push({ index, fileKey, logicalFileId: logicalFile.id, location: result.location });
       if (result.eventType) events.push({ index, fileKey, eventType: result.eventType });
-    } catch (error) {
-      const problem = error as HttpError;
-      errors.push({ index, fileKey: fileKey || null, error: problem.message || "Invalid location", status: problem.status || 400 });
-    }
+    } catch (error) { const problem = error as HttpError; errors.push({ index, fileKey: fileKey || null, error: problem.message || "Invalid location", status: problem.status || 400 }); }
   }
   return { projectId, deviceId, saved: saved.length, failed: errors.length, results: saved, errors, events };
 }
@@ -251,10 +234,11 @@ async function saveProject(userId: string, body: JsonMap) {
   if (existing && (!Number.isInteger(requestedRevision) || Number(requestedRevision) < 1)) revisionConflict(existing, Number(existing.revision || 1));
   if (!existing && requestedRevision != null && requestedRevision !== 0) revisionConflict(null, 0);
   const now = new Date().toISOString(); const integration = asObject(project.integration); const drive = asObject(integration.drive); const workspace = asObject(integration.workspace);
-  const currentState = String(project.currentState || "IDEA"); const locks = asObject(project.locks); const projectData = projectWithoutCloudMetadata(project);
+  const currentState = String(project.currentState || "IDEA");
+  guardGenericArchiveState(existing, currentState);
+  const locks = asObject(project.locks); const projectData = projectWithoutServerMetadata(project, existing);
   const row = {
-    name: String(project.name || ""), game: String(project.game || ""), topic: String(project.topic || ""),
-    project_type: String(project.projectType || "STANDARD_VIDEO"), current_state: currentState,
+    name: String(project.name || ""), game: String(project.game || ""), topic: String(project.topic || ""), project_type: String(project.projectType || "STANDARD_VIDEO"), current_state: currentState,
     target_publish_date: dateOrNull(project.targetPublishDate), locks,
     drive_root_id: drive.rootId || null, drive_root_url: drive.rootUrl || null, drive_folder_id: drive.folderId || null, drive_folder_url: drive.folderUrl || null,
     source_workspace_version: workspace.version || project.sourceWorkspaceVersion || null, project_data: projectData,
@@ -264,13 +248,13 @@ async function saveProject(userId: string, body: JsonMap) {
   if (result.status === "conflict") revisionConflict(asObject(result.project), Number(result.current_revision || 0));
   if (result.status === "forbidden") fail("Creator project belongs to another account", 403);
   if (result.status !== "saved") fail(String(result.message || "Creator project save failed"), 400);
-  const saved = asObject(result.project); const savedRevision = Number(result.revision || saved.revision || 0);
-  if (!existing) await writeEvent(projectId, userId, "PROJECT_CREATED", currentState, { source: workspace.version || "production-system", revision: savedRevision, deviceId });
+  const saved = asObject(result.project); const savedRevision = Number(result.revision || saved.revision || 0); const savedState = String(saved.current_state || currentState);
+  if (!existing) await writeEvent(projectId, userId, "PROJECT_CREATED", savedState, { source: workspace.version || "production-system", revision: savedRevision, deviceId });
   else {
-    if (existing.current_state !== currentState) await writeEvent(projectId, userId, "STATE_CHANGED", currentState, { from: existing.current_state, to: currentState });
-    if (!sameJson(existing.locks, locks)) await writeEvent(projectId, userId, "LOCKS_CHANGED", currentState, { from: existing.locks, to: locks });
+    if (existing.current_state !== savedState) await writeEvent(projectId, userId, "STATE_CHANGED", savedState, { from: existing.current_state, to: savedState });
+    if (!sameJson(existing.locks, locks)) await writeEvent(projectId, userId, "LOCKS_CHANGED", savedState, { from: existing.locks, to: locks });
   }
-  if (body.reason === "manual") await writeEvent(projectId, userId, "MANUAL_SYNC", currentState, { revision: savedRevision, deviceId });
+  if (body.reason === "manual") await writeEvent(projectId, userId, "MANUAL_SYNC", savedState, { revision: savedRevision, deviceId });
   return { project: saved, revision: savedRevision, fileCount: files.length, deviceId };
 }
 
@@ -289,7 +273,7 @@ async function getProject(userId: string, body: JsonMap) {
   const owner = encodeURIComponent(userId); const projectFilter = encodeURIComponent(projectId);
   const [files, events, releases, fileLocations, devices] = await Promise.all([
     serviceRest(`creator_project_files?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
-    serviceRest(`creator_project_events?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=created_at.desc&limit=100`),
+    serviceRest(`creator_project_events?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=created_at.desc&limit=200`),
     serviceRest(`creator_project_releases?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
     serviceRest(`creator_file_locations?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
     serviceRest(`creator_devices?owner_user_id=eq.${owner}&select=*&order=last_seen_at.desc`),
@@ -309,6 +293,121 @@ async function saveRelease(userId: string, body: JsonMap) {
   return { projectId, releaseCount: rows.length };
 }
 
+function archiveFromProject(project: JsonMap) { return asObject(asObject(asObject(project.project_data).integration).archive); }
+function archiveRevision(body: JsonMap, project: JsonMap) {
+  const requested = Number(body.baseRevision);
+  const current = Number(project.revision || 0);
+  if (!Number.isInteger(requested) || requested < 1 || requested !== current) revisionConflict(project, current);
+  return current;
+}
+function archiveBaseData(project: JsonMap) {
+  const current = archiveFromProject(project);
+  return { ...current, provider: current.provider || "google_drive", archiveVersion: Number(current.archiveVersion || ARCHIVE_VERSION), generatedAt: current.generatedAt || new Date().toISOString() };
+}
+async function patchArchiveProject(userId: string, project: JsonMap, baseRevision: number, archive: JsonMap, options: { currentState?: string; archivedAt?: string | null } = {}) {
+  const now = new Date().toISOString();
+  const projectData = structuredClone(asObject(project.project_data));
+  const integration = { ...asObject(projectData.integration), archive };
+  projectData.integration = integration;
+  projectData.currentState = options.currentState || String(project.current_state || projectData.currentState || "PUBLISHED");
+  projectData.updatedAt = now;
+  const patch: JsonMap = { project_data: projectData, revision: baseRevision + 1, updated_at: now };
+  if (options.currentState) patch.current_state = options.currentState;
+  if (options.archivedAt !== undefined) patch.archived_at = options.archivedAt;
+  const rows = await serviceRest(`creator_projects?project_id=eq.${encodeURIComponent(String(project.project_id))}&owner_user_id=eq.${encodeURIComponent(userId)}&revision=eq.${baseRevision}&select=*`, {
+    method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch),
+  }) as Array<JsonMap>;
+  if (!Array.isArray(rows) || !rows.length) {
+    const latest = await ownedProject(String(project.project_id), userId);
+    revisionConflict(latest, Number(latest.revision || 0));
+  }
+  return rows[0];
+}
+function requireArchiveEligible(project: JsonMap) { if (!ARCHIVE_WORKFLOW_STATES.has(String(project.current_state || ""))) fail("Project Archive is available only for PUBLISHED or ARCHIVED projects", 409); }
+
+async function requestArchive(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project);
+  const previous = archiveBaseData(project);
+  const archive = { ...previous, status: "pending", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, requestedAt: new Date().toISOString(), lastError: null };
+  const saved = await patchArchiveProject(userId, project, revision, archive);
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+}
+
+async function beginArchiveGeneration(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project);
+  const archive = { ...archiveBaseData(project), status: "generating", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, generationStartedAt: new Date().toISOString(), lastError: null };
+  const saved = await patchArchiveProject(userId, project, revision, archive);
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+}
+
+async function recordArchiveGenerated(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project); const input = asObject(body.archive);
+  const mainFilename = boundedText(input.mainFilename, 300); if (!mainFilename.endsWith(".md")) fail("Archive mainFilename must be Markdown");
+  const totalBytes = nonnegativeIntegerOrNull(input.totalBytes); if (totalBytes != null && totalBytes > 20 * 1024 * 1024) fail("Archive package exceeds 20 MB policy");
+  const fingerprint = boundedText(input.fingerprint, 300); if (!/^sha256:[0-9a-f]{64}$/i.test(fingerprint)) fail("Archive fingerprint must be SHA-256");
+  const current = archiveFromProject(project);
+  const unchanged = current.status === "generated"
+    && Number(current.archiveVersion || 0) === ARCHIVE_VERSION
+    && boundedText(current.mainFilename, 300) === mainFilename
+    && Number(current.totalBytes ?? -1) === Number(totalBytes ?? -1)
+    && boundedText(current.fingerprint, 300) === fingerprint;
+  if (unchanged) return { project, revision: Number(project.revision || 0), archive: current, unchanged: true };
+  const now = new Date().toISOString();
+  const archive = { ...archiveBaseData(project), status: "generated", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, generatedAt: timestampOrNull(input.generatedAt) || archiveBaseData(project).generatedAt, mainFilename, fingerprint, totalBytes, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null, generatedRecordedAt: now };
+  const saved = await patchArchiveProject(userId, project, revision, archive);
+  await writeEvent(projectId, userId, "PROJECT_ARCHIVE_GENERATED", String(saved.current_state || project.current_state), { archiveVersion: ARCHIVE_VERSION, mainFilename, fingerprint, totalBytes, revision: saved.revision });
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved), unchanged: false };
+}
+
+async function recordArchiveFailed(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project);
+  const lastError = boundedText(body.error, 1200) || "Archive publisher failed";
+  const archive = { ...archiveBaseData(project), status: "failed", failedAt: new Date().toISOString(), lastError };
+  const saved = await patchArchiveProject(userId, project, revision, archive);
+  await writeEvent(projectId, userId, "PROJECT_ARCHIVE_FAILED", String(saved.current_state || project.current_state), { error: lastError, revision: saved.revision });
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+}
+
+async function recordArchivePublished(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project); const input = asObject(body.archive);
+  const folderId = safeDriveId(input.folderId); const mainFileId = safeDriveId(input.mainFileId); const folderUrl = safeDriveUrl(input.folderUrl); const mainFileUrl = safeDriveUrl(input.mainFileUrl);
+  const verifiedAt = timestampOrNull(input.verifiedAt); const publishedAt = timestampOrNull(input.publishedAt) || new Date().toISOString(); const checksum = boundedText(input.checksum, 300); const fingerprint = boundedText(input.fingerprint, 300);
+  if (!folderId || !mainFileId || !folderUrl || !mainFileUrl || !verifiedAt || !checksum) fail("Remote verification metadata is incomplete; project cannot become ARCHIVED");
+  if (fingerprint && !/^sha256:[0-9a-f]{64}$/i.test(fingerprint)) fail("Archive fingerprint must be SHA-256");
+  const wasArchived = String(project.current_state) === "ARCHIVED"; const current = archiveFromProject(project);
+  const unchanged = wasArchived
+    && current.status === "published"
+    && current.provider === "google_drive"
+    && current.folderId === folderId
+    && current.mainFileId === mainFileId
+    && current.checksum === checksum
+    && (!fingerprint || current.fingerprint === fingerprint);
+  if (unchanged) return { project, revision: Number(project.revision || 0), archive: current, unchanged: true };
+  const archive = { ...archiveBaseData(project), status: "published", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, folderId, folderUrl, mainFileId, mainFileUrl, checksum, fingerprint: fingerprint || current.fingerprint || null, verifiedAt, publishedAt, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null };
+  const saved = await patchArchiveProject(userId, project, revision, archive, wasArchived ? { currentState: "ARCHIVED" } : { currentState: "ARCHIVED", archivedAt: verifiedAt });
+  const eventType = wasArchived ? "PROJECT_ARCHIVE_UPDATED" : "PROJECT_ARCHIVE_PUBLISHED";
+  await writeEvent(projectId, userId, eventType, "ARCHIVED", { provider: "google_drive", folderId, mainFileId, checksum, fingerprint: archive.fingerprint, verifiedAt, revision: saved.revision });
+  if (!wasArchived) await writeEvent(projectId, userId, "STATE_CHANGED", "ARCHIVED", { from: "PUBLISHED", to: "ARCHIVED", reason: "drive_archive_remote_verified" });
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved), unchanged: false };
+}
+
+async function manualArchiveOverride(userId: string, body: JsonMap) {
+  const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
+  const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project); const reason = boundedText(body.reason, 1000);
+  if (!reason) fail("Manual Archive Override requires an explicit reason");
+  const wasArchived = String(project.current_state) === "ARCHIVED"; const now = new Date().toISOString();
+  const archive = { ...archiveBaseData(project), status: "manual_override", provider: "manual", archiveVersion: ARCHIVE_VERSION, overrideReason: reason, overrideAt: now, lastError: null };
+  const saved = await patchArchiveProject(userId, project, revision, archive, wasArchived ? { currentState: "ARCHIVED" } : { currentState: "ARCHIVED", archivedAt: now });
+  await writeEvent(projectId, userId, "PROJECT_ARCHIVE_MANUAL_OVERRIDE", "ARCHIVED", { reason, revision: saved.revision });
+  if (!wasArchived) await writeEvent(projectId, userId, "STATE_CHANGED", "ARCHIVED", { from: "PUBLISHED", to: "ARCHIVED", reason: "manual_archive_override" });
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+}
+
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin"); if (origin && !allowedOrigins().has(origin)) return json(req, { error: "Origin not allowed" }, 403);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) }); if (req.method !== "POST") return json(req, { error: "POST only" }, 405);
@@ -325,6 +424,12 @@ Deno.serve(async (req: Request) => {
     if (action === "saveFileLocationsBatch") return json(req, await saveFileLocationsBatch(user.id, body));
     if (action === "saveProject") return json(req, await saveProject(user.id, body));
     if (action === "saveRelease") return json(req, await saveRelease(user.id, body));
+    if (action === "requestArchive") return json(req, await requestArchive(user.id, body));
+    if (action === "beginArchiveGeneration") return json(req, await beginArchiveGeneration(user.id, body));
+    if (action === "recordArchiveGenerated") return json(req, await recordArchiveGenerated(user.id, body));
+    if (action === "recordArchiveFailed") return json(req, await recordArchiveFailed(user.id, body));
+    if (action === "recordArchivePublished") return json(req, await recordArchivePublished(user.id, body));
+    if (action === "manualArchiveOverride") return json(req, await manualArchiveOverride(user.id, body));
     fail(`Unknown action: ${action}`, 400);
   } catch (error) {
     const problem = error as HttpError; console.error("creator-project-api", problem.message);

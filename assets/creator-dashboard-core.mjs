@@ -1,3 +1,5 @@
+import { archiveNextAction, archiveUiState } from "./creator-archive-state-core.mjs";
+
 export const PRODUCTION_FLOW = Object.freeze([
   "IDEA", "PLANNING", "RESEARCHING", "RESEARCH_LOCKED", "CONTENT_LOCKED", "SCRIPTING", "SCRIPT_LOCKED",
   "PRE_ASSET_PREPARATION", "AUDIO_PRODUCTION", "AUDIO_LOCKED", "TIMELINE_GENERATION", "TIMELINE_LOCKED",
@@ -69,9 +71,7 @@ const DIFF_LABELS = Object.freeze({
   integration: "外部关联",
 });
 
-function clone(value) {
-  return value == null ? value : structuredClone(value);
-}
+function clone(value) { return value == null ? value : structuredClone(value); }
 
 function canonicalizeJson(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return value;
@@ -106,9 +106,7 @@ export function deepEqual(a, b) {
   catch { return false; }
 }
 
-function flowFor() {
-  return PRODUCTION_FLOW;
-}
+function flowFor() { return PRODUCTION_FLOW; }
 
 function projectFromRow(row) {
   const raw = row?.project_data && typeof row.project_data === "object" ? clone(row.project_data) : {};
@@ -138,15 +136,11 @@ function fileReady(project, fileRows, key) {
 function normalizedLegacyState(project, fileRows) {
   const state = String(project.currentState || "IDEA");
   if (state === "MUSIC_DRAFT") return "AUDIO_PRODUCTION";
-  if (state === "MUSIC_LOCKED") {
-    return project.locks?.audioLock && fileReady(project, fileRows, "AUDIO_MASTER") ? "AUDIO_LOCKED" : "AUDIO_PRODUCTION";
-  }
+  if (state === "MUSIC_LOCKED") return project.locks?.audioLock && fileReady(project, fileRows, "AUDIO_MASTER") ? "AUDIO_LOCKED" : "AUDIO_PRODUCTION";
   return PRODUCTION_FLOW.includes(state) ? state : state;
 }
 
-function actionFor(project) {
-  return ACTIONS[project.currentState] || ACTIONS.IDEA;
-}
+function actionFor(project) { return ACTIONS[project.currentState] || ACTIONS.IDEA; }
 
 function requiredInputs(project) {
   const state = project.currentState;
@@ -161,15 +155,10 @@ function passedStageRequirements(project, flow) {
   const index = flow.indexOf(project.currentState);
   if (index < 0) return [];
   const milestones = [
-    ["RESEARCH_LOCKED", ["RESEARCH"]],
-    ["CONTENT_LOCKED", ["CONTENT_LOCK"]],
-    ["SCRIPT_LOCKED", ["VOICE_MASTER"]],
-    ["AUDIO_LOCKED", ["AUDIO_MASTER"]],
-    ["TIMELINE_LOCKED", ["SUBTITLE_MASTER", "TRANSCRIPT_ALIGNED"]],
-    ["PRODUCTION_READY", ["EDIT_BLUEPRINT", "ASSET_INDEX", "VISUAL_STYLE", "EXPORT_SPEC"]],
-    ["REVIEW", ["VIDEO_V0_REVIEW", "BUILD_REPORT"]],
-    ["PICTURE_LOCKED", ["VIDEO_V1", "QC_REPORT"]],
-    ["RELEASE_READY", ["RELEASE_PACK"]],
+    ["RESEARCH_LOCKED", ["RESEARCH"]], ["CONTENT_LOCKED", ["CONTENT_LOCK"]], ["SCRIPT_LOCKED", ["VOICE_MASTER"]],
+    ["AUDIO_LOCKED", ["AUDIO_MASTER"]], ["TIMELINE_LOCKED", ["SUBTITLE_MASTER", "TRANSCRIPT_ALIGNED"]],
+    ["PRODUCTION_READY", ["EDIT_BLUEPRINT", "ASSET_INDEX", "VISUAL_STYLE", "EXPORT_SPEC"]], ["REVIEW", ["VIDEO_V0_REVIEW", "BUILD_REPORT"]],
+    ["PICTURE_LOCKED", ["VIDEO_V1", "QC_REPORT"]], ["RELEASE_READY", ["RELEASE_PACK"]],
   ];
   const required = [];
   for (const [state, keys] of milestones) {
@@ -195,6 +184,16 @@ function dueAnalytics(releases, now) {
     for (const day of [1, 3, 7, 30]) if (age >= day && !completed.has(day)) due.add(day);
   }
   return [...due].sort((a, b) => a - b);
+}
+
+function archiveNeedsUpdate(project, releases) {
+  if (project.currentState !== "ARCHIVED") return false;
+  const verifiedAt = Date.parse(project.integration?.archive?.verifiedAt || 0);
+  if (!Number.isFinite(verifiedAt) || verifiedAt <= 0) return false;
+  return releases.some((release) => {
+    const changedAt = Date.parse(release.updated_at || release.published_at || 0);
+    return Number.isFinite(changedAt) && changedAt > verifiedAt;
+  });
 }
 
 function daysUntil(date, now) {
@@ -225,92 +224,68 @@ function releaseProblems(project, releases) {
 
 export function stripCloudMetadata(project) {
   const clean = clone(project) || {};
-  if (clean.integration?.cloud) {
-    clean.integration = { ...clean.integration };
-    delete clean.integration.cloud;
-  }
+  if (clean.integration?.cloud) { clean.integration = { ...clean.integration }; delete clean.integration.cloud; }
   return clean;
 }
 
 export function attachCloudMetadata(project, row) {
   const next = stripCloudMetadata(project);
-  next.integration = { ...(next.integration || {}), cloud: {
-    revision: Number(row?.revision || 0),
-    updatedAt: row?.updated_at || "",
-    deviceId: row?.last_device_id || "",
-    syncedAt: new Date().toISOString(),
-  } };
+  next.integration = { ...(next.integration || {}), cloud: { revision: Number(row?.revision || 0), updatedAt: row?.updated_at || "", deviceId: row?.last_device_id || "", syncedAt: new Date().toISOString() } };
   return next;
 }
 
 export function summarizeProjectDiff(localProject, remoteProject) {
-  const local = stripCloudMetadata(localProject);
-  const remote = stripCloudMetadata(remoteProject);
+  const local = stripCloudMetadata(localProject); const remote = stripCloudMetadata(remoteProject);
   return TOP_LEVEL_MERGE_KEYS.filter((key) => !deepEqual(local?.[key], remote?.[key])).map((key) => ({ key, label: DIFF_LABELS[key] || key }));
 }
 
 export function mergeProjectVersions(baseProject, localProject, remoteProject) {
-  const base = stripCloudMetadata(baseProject || {});
-  const local = stripCloudMetadata(localProject || {});
-  const remote = stripCloudMetadata(remoteProject || {});
-  const merged = { ...remote };
-  const conflicts = [];
+  const base = stripCloudMetadata(baseProject || {}); const local = stripCloudMetadata(localProject || {}); const remote = stripCloudMetadata(remoteProject || {});
+  const merged = { ...remote }; const conflicts = [];
   for (const key of TOP_LEVEL_MERGE_KEYS) {
-    const baseValue = base?.[key];
-    const localValue = local?.[key];
-    const remoteValue = remote?.[key];
+    const baseValue = base?.[key]; const localValue = local?.[key]; const remoteValue = remote?.[key];
     if (deepEqual(localValue, remoteValue) || deepEqual(remoteValue, baseValue)) merged[key] = clone(localValue);
     else if (deepEqual(localValue, baseValue)) merged[key] = clone(remoteValue);
     else conflicts.push({ key, label: DIFF_LABELS[key] || key });
   }
-  merged.projectId = local.projectId || remote.projectId;
-  merged.updatedAt = new Date().toISOString();
+  merged.projectId = local.projectId || remote.projectId; merged.updatedAt = new Date().toISOString();
   return { merged, conflicts };
 }
 
 export function analyzeCreatorProject(row, fileRows = [], releases = [], options = {}) {
   const now = options.now instanceof Date ? options.now : new Date(options.now || Date.now());
-  const serverProject = projectFromRow(row);
-  serverProject.currentState = normalizedLegacyState(serverProject, fileRows);
+  const serverProject = projectFromRow(row); serverProject.currentState = normalizedLegacyState(serverProject, fileRows);
   const local = options.localProject?.projectId === serverProject.projectId ? clone(options.localProject) : null;
   if (local) local.currentState = normalizedLegacyState(local, fileRows);
   const project = local && (Date.parse(local.updatedAt || 0) > Date.parse(row?.updated_at || 0)) ? clone(local) : serverProject;
-  const flow = flowFor();
-  const stateIndex = flow.indexOf(project.currentState);
-  const [actionTitle, outputKeys, actionReason] = actionFor(project);
+  const flow = flowFor(); const stateIndex = flow.indexOf(project.currentState);
+  let [actionTitle, outputKeys, actionReason] = actionFor(project);
+  const archiveAction = archiveNextAction(project);
+  const archive = archiveUiState(project);
+  const needsArchiveUpdate = archiveNeedsUpdate(project, releases);
+  if (archiveAction) {
+    actionTitle = needsArchiveUpdate ? "更新 Project Archive" : archiveAction.title;
+    actionReason = needsArchiveUpdate ? "发布数据在上次 Drive 验证后有更新；更新同一个正式 Archive，不重新打开 Production。" : archiveAction.reason;
+    outputKeys = [];
+  }
 
-  const nextRequirementKeys = [...new Set(outputKeys)]
-    .filter((key) => key !== "PROJECT_MANIFEST" && !fileReady(project, fileRows, key));
-  const currentInputKeys = [...new Set(requiredInputs(project))]
-    .filter((key) => !fileReady(project, fileRows, key));
-  const overdueArtifactKeys = passedStageRequirements(project, flow)
-    .filter((key) => !fileReady(project, fileRows, key));
+  const nextRequirementKeys = [...new Set(outputKeys)].filter((key) => key !== "PROJECT_MANIFEST" && !fileReady(project, fileRows, key));
+  const currentInputKeys = [...new Set(requiredInputs(project))].filter((key) => !fileReady(project, fileRows, key));
+  const overdueArtifactKeys = passedStageRequirements(project, flow).filter((key) => !fileReady(project, fileRows, key));
   const attentionKeys = [...new Set([...currentInputKeys, ...overdueArtifactKeys])];
 
   const problems = stateIndex < 0 ? [`非法状态：${project.currentState}`] : lockProblems(project, flow);
   const cloudConflict = local?.integration?.cloud?.conflict;
   if (cloudConflict) problems.push("本机与云端存在未解决冲突");
-  const releaseIssues = releaseProblems(project, releases);
-  const reviewState = project.currentState === "REVIEW";
+  const releaseIssues = releaseProblems(project, releases); const reviewState = project.currentState === "REVIEW";
 
   let health = { code: "normal", label: "Normal", icon: "🟢", reasons: [] };
-  if (problems.length) {
-    health = { code: "blocked", label: "Blocked", icon: "🔴", reasons: problems };
-  } else if (attentionKeys.length || releaseIssues.length) {
-    health = {
-      code: "attention",
-      label: "Attention",
-      icon: "🟡",
-      reasons: [...attentionKeys.map((key) => `缺少当前阶段必要文件 ${FILE_LABELS[key] || key}`), ...releaseIssues],
-    };
-  } else if (reviewState) {
-    health = { code: "review", label: "Awaiting Review", icon: "🟣", reasons: ["等待人工审片"] };
-  }
+  if (problems.length) health = { code: "blocked", label: "Blocked", icon: "🔴", reasons: problems };
+  else if (attentionKeys.length || releaseIssues.length) health = { code: "attention", label: "Attention", icon: "🟡", reasons: [...attentionKeys.map((key) => `缺少当前阶段必要文件 ${FILE_LABELS[key] || key}`), ...releaseIssues] };
+  else if (reviewState) health = { code: "review", label: "Awaiting Review", icon: "🟣", reasons: ["等待人工审片"] };
 
-  const due = dueAnalytics(releases, now);
-  const targetDays = daysUntil(project.targetPublishDate, now);
-  const lastUpdated = new Date(row?.updated_at || project.updatedAt || 0);
-  const staleDays = Number.isNaN(lastUpdated.getTime()) ? 0 : Math.max(0, Math.floor((now.getTime() - lastUpdated.getTime()) / 86400000));
+  const due = dueAnalytics(releases, now); const targetDays = daysUntil(project.targetPublishDate, now);
+  const lastUpdated = new Date(row?.updated_at || project.updatedAt || 0); const staleDays = Number.isNaN(lastUpdated.getTime()) ? 0 : Math.max(0, Math.floor((now.getTime() - lastUpdated.getTime()) / 86400000));
   const warnings = [];
   if (local && Date.parse(local.updatedAt || 0) > Date.parse(row?.updated_at || 0) && !cloudConflict) warnings.push("本机有待同步修改");
   if (staleDays >= 14 && !["PUBLISHED", "ARCHIVED"].includes(project.currentState)) warnings.push(`${staleDays} 天未更新`);
@@ -319,75 +294,43 @@ export function analyzeCreatorProject(row, fileRows = [], releases = [], options
 
   const percent = stateIndex < 0 ? 0 : Math.round(stateIndex / Math.max(1, flow.length - 1) * 100);
   return {
-    projectId: project.projectId,
-    name: project.name || "未命名项目",
-    game: project.game || "未指定游戏",
-    topic: project.topic || "未填写 Topic",
-    currentState: project.currentState,
-    currentStateLabel: STATE_LABELS[project.currentState] || project.currentState,
-    progress: percent,
-    locks: project.locks || {},
-    targetPublishDate: project.targetPublishDate || row?.target_publish_date || "",
-    updatedAt: row?.updated_at || project.updatedAt || "",
-    revision: Number(row?.revision || 0),
-    lastDeviceId: row?.last_device_id || "",
-    nextAction: actionTitle,
-    actionReason,
+    projectId: project.projectId, name: project.name || "未命名项目", game: project.game || "未指定游戏", topic: project.topic || "未填写 Topic",
+    currentState: project.currentState, currentStateLabel: STATE_LABELS[project.currentState] || project.currentState, progress: percent,
+    locks: project.locks || {}, targetPublishDate: project.targetPublishDate || row?.target_publish_date || "", updatedAt: row?.updated_at || project.updatedAt || "",
+    revision: Number(row?.revision || 0), lastDeviceId: row?.last_device_id || "", nextAction: actionTitle, actionReason,
     nextRequirements: nextRequirementKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
-    missingInputs: currentInputKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
-    missingFiles: attentionKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
-    health,
-    warnings,
-    analyticsDue: due,
-    targetDays,
-    archived: project.currentState === "ARCHIVED",
+    missingInputs: currentInputKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })), missingFiles: attentionKeys.map((key) => ({ key, label: FILE_LABELS[key] || key })),
+    health, warnings, analyticsDue: due, targetDays, archived: project.currentState === "ARCHIVED", archive, archiveNeedsUpdate: needsArchiveUpdate,
   };
 }
 
 function queueItem(project) {
-  if (project.archived) return null;
   if (project.health.code === "blocked") return { projectId: project.projectId, kind: "blocked", icon: "⚠️", label: "阻塞", score: 1000, title: project.nextAction, reason: project.health.reasons[0], route: "production" };
   if (project.analyticsDue.length) return { projectId: project.projectId, kind: "review", icon: "📊", label: "待复盘", score: 900 + Math.max(...project.analyticsDue), title: `补录 ${project.analyticsDue.map((day) => `T+${day}`).join(" / ")} 数据`, reason: "发布复盘节点已到", route: "publish" };
+  if (project.archived) {
+    if (project.archiveNeedsUpdate) return { projectId: project.projectId, kind: "archive", icon: "🗂️", label: "更新归档", score: 760, title: project.nextAction, reason: project.actionReason, route: "production" };
+    return null;
+  }
+  if (project.currentState === "PUBLISHED") return { projectId: project.projectId, kind: "archive", icon: "🗂️", label: "项目归档", score: project.archive?.status === "failed" ? 880 : 780, title: project.nextAction, reason: project.actionReason, route: "production" };
   if (project.health.code === "review") return { projectId: project.projectId, kind: "review", icon: "🟣", label: "待确认", score: 850, title: project.nextAction, reason: project.health.reasons[0], route: "production" };
-  const urgent = project.targetDays != null && project.targetDays <= 2;
-  const attentionBoost = project.health.code === "attention" ? 100 : 0;
+  const urgent = project.targetDays != null && project.targetDays <= 2; const attentionBoost = project.health.code === "attention" ? 100 : 0;
   return {
-    projectId: project.projectId,
-    kind: urgent ? "urgent" : "next",
-    icon: urgent ? "🔥" : "→",
-    label: urgent ? "优先" : "下一步",
+    projectId: project.projectId, kind: urgent ? "urgent" : "next", icon: urgent ? "🔥" : "→", label: urgent ? "优先" : "下一步",
     score: (urgent ? 700 - Math.min(project.targetDays, 2) * 20 : 400) + attentionBoost + project.progress,
     title: project.nextAction,
-    reason: project.health.code === "attention"
-      ? project.health.reasons[0]
-      : urgent ? (project.targetDays < 0 ? "目标发布日期已过" : `目标发布日期还有 ${project.targetDays} 天`) : project.actionReason,
+    reason: project.health.code === "attention" ? project.health.reasons[0] : urgent ? (project.targetDays < 0 ? "目标发布日期已过" : `目标发布日期还有 ${project.targetDays} 天`) : project.actionReason,
     route: "production",
   };
 }
 
 export function buildCreatorDashboard(data = {}, options = {}) {
-  const filesByProject = new Map();
-  const releasesByProject = new Map();
-  for (const file of data.files || []) {
-    const items = filesByProject.get(file.project_id) || [];
-    items.push(file);
-    filesByProject.set(file.project_id, items);
-  }
-  for (const release of data.releases || []) {
-    const items = releasesByProject.get(release.project_id) || [];
-    items.push(release);
-    releasesByProject.set(release.project_id, items);
-  }
+  const filesByProject = new Map(); const releasesByProject = new Map();
+  for (const file of data.files || []) { const items = filesByProject.get(file.project_id) || []; items.push(file); filesByProject.set(file.project_id, items); }
+  for (const release of data.releases || []) { const items = releasesByProject.get(release.project_id) || []; items.push(release); releasesByProject.set(release.project_id, items); }
   const localById = new Map((options.localProjects || []).map((project) => [project.projectId, project]));
-  const projects = (data.projects || []).map((row) => analyzeCreatorProject(
-    row,
-    filesByProject.get(row.project_id) || [],
-    releasesByProject.get(row.project_id) || [],
-    { ...options, localProject: localById.get(row.project_id) },
-  ));
+  const projects = (data.projects || []).map((row) => analyzeCreatorProject(row, filesByProject.get(row.project_id) || [], releasesByProject.get(row.project_id) || [], { ...options, localProject: localById.get(row.project_id) }));
   const activeProjects = projects.filter((project) => !project.archived).sort((a, b) => {
-    const aDays = a.targetDays == null ? 9999 : a.targetDays;
-    const bDays = b.targetDays == null ? 9999 : b.targetDays;
+    const aDays = a.targetDays == null ? 9999 : a.targetDays; const bDays = b.targetDays == null ? 9999 : b.targetDays;
     return aDays - bDays || b.progress - a.progress || String(b.updatedAt).localeCompare(String(a.updatedAt));
   });
   const actions = projects.map(queueItem).filter(Boolean).map((item) => ({ ...item, project: projects.find((project) => project.projectId === item.projectId) })).sort((a, b) => b.score - a.score);

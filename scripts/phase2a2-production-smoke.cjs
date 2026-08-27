@@ -73,7 +73,7 @@ async function runAgent(configPath) {
 
 async function main() {
   const suffix = `${Date.now().toString(36)}_${randomHex(4)}`;
-  const email = `gucc-smoke-${suffix}@example.com`;
+  const email = `gucc-smoke-${suffix}@gmail.com`;
   const password = `${randomHex(18)}Aa!7`;
   const projectId = `project_smoke_${suffix}`;
   const bootstrapDeviceId = `web_smoke_${randomHex(12)}`;
@@ -134,7 +134,6 @@ async function main() {
   }, configPath);
   console.log(`SMOKE_AGENT_DEVICE_ID=${agentDeviceId}`);
 
-  // 1) First real Local Agent scan: present + metadata.
   await runAgent(configPath);
   let snapshot = await client.getProject(projectId);
   const audioFile = fileRow(snapshot, "AUDIO_MASTER");
@@ -165,26 +164,22 @@ async function main() {
   assert.equal(eventFor(snapshot.events, "FILE_FIRST_SEEN", "AUDIO_MASTER").length, 1);
   assert.equal(eventFor(snapshot.events, "FILE_FIRST_SEEN", "SUBTITLE_MASTER").length, 1);
 
-  // Physical presence must never cross human workflow gates.
   assert.equal(snapshot.project.current_state, "IDEA");
   assert.equal(snapshot.project.locks.audioLock, false);
   assert.equal(snapshot.project.locks.pictureLock, false);
 
-  // 2) Delete AUDIO_MASTER => missing + exactly one FILE_DISAPPEARED.
   await fsp.rm(audioPath);
   await runAgent(configPath);
   snapshot = await client.getProject(projectId);
   assert.equal(locationRow(snapshot, audioFile, agentDeviceId).availability, "missing");
   assert.equal(eventFor(snapshot.events, "FILE_DISAPPEARED", "AUDIO_MASTER").length, 1);
 
-  // 3) Restore => present + exactly one FILE_REAPPEARED.
   await fsp.writeFile(audioPath, Buffer.from("GUCC phase2a2 smoke audio v1\n"));
   await runAgent(configPath);
   snapshot = await client.getProject(projectId);
   assert.equal(locationRow(snapshot, audioFile, agentDeviceId).availability, "present");
   assert.equal(eventFor(snapshot.events, "FILE_REAPPEARED", "AUDIO_MASTER").length, 1);
 
-  // 4) Replace contents => checksum changes + exactly one FILE_REPLACED.
   const beforeChecksum = locationRow(snapshot, audioFile, agentDeviceId).checksum;
   await sleep(25);
   await fsp.writeFile(audioPath, Buffer.from("GUCC phase2a2 smoke audio v2 replaced\n"));
@@ -194,7 +189,6 @@ async function main() {
   assert.notEqual(replaced.checksum, beforeChecksum);
   assert.equal(eventFor(snapshot.events, "FILE_REPLACED", "AUDIO_MASTER").length, 1);
 
-  // 5) Unchanged repeat scans => no FILE_* event spam.
   const fileEventCountBefore = (snapshot.events || []).filter((event) => String(event.event_type || "").startsWith("FILE_")).length;
   await runAgent(configPath);
   await runAgent(configPath);
@@ -203,7 +197,6 @@ async function main() {
   assert.equal(fileEvents.length, fileEventCountBefore);
   assert.equal(fileEvents.some((event) => ["FILE_PRESENT", "FILE_SCANNED", "FILE_LOCATION_UPDATED"].includes(event.event_type)), false);
 
-  // Final gate proof: seeing AUDIO_MASTER and VIDEO_V1 changed no locks/state.
   assert.equal(snapshot.project.current_state, "IDEA");
   assert.equal(snapshot.project.locks.audioLock, false);
   assert.equal(snapshot.project.locks.pictureLock, false);

@@ -78,6 +78,14 @@ function bannerTypeClass(value) {
   return 'other';
 }
 
+function formatWindow(start, end) {
+  const from = String(start || '').trim();
+  const to = String(end || '').trim();
+  if (!from && !to) return '';
+  if (from && to) return `${from} → ${to}`;
+  return from ? `开始 ${from}` : `结束 ${to}`;
+}
+
 function renderVersionNote(note) {
   if (!note) return '';
   return `
@@ -89,11 +97,14 @@ function renderVersionNote(note) {
 
 function renderBannerChip(banner) {
   const character = banner.character_name || banner.character_name_raw || banner.name || '未命名角色';
+  const windowText = formatWindow(banner.start_at, banner.end_at);
+  const window = windowText ? `<small>时间：${escapeHtml(windowText)}</small>` : '';
   const note = banner.note ? `<small>${escapeHtml(banner.note)}</small>` : '';
   return `
     <div class="banner-chip ${bannerTypeClass(banner.banner_type)}">
       <span class="banner-character">${escapeHtml(character)}</span>
       <span class="banner-type">${escapeHtml(bannerTypeLabel(banner.banner_type))}</span>
+      ${window}
       ${note}
     </div>`;
 }
@@ -154,7 +165,7 @@ function optionList(options, value) {
 function normalizeBanners(banners) {
   return Array.isArray(banners) && banners.length
     ? banners
-    : [{ phase: 'first_half', banner_type: 'new_limited', character_name: '', note: '' }];
+    : [{ phase: 'first_half', banner_type: 'new_limited', character_name: '', start_at: '', end_at: '', note: '' }];
 }
 
 function renderBannerRow(banner = {}) {
@@ -164,7 +175,9 @@ function renderBannerRow(banner = {}) {
       <label>阶段 <select data-banner-field="phase">${optionList(PHASE_OPTIONS, banner.phase || 'first_half')}</select></label>
       <label>类型 <select data-banner-field="banner_type">${optionList(BANNER_TYPE_OPTIONS, banner.banner_type || 'new_limited')}</select></label>
       <label>角色/对象 <input data-banner-field="character_name" value="${escapeHtml(character)}" placeholder="角色名 / 武器 / 卡池对象" /></label>
-      <label class="row-wide">备注 <input data-banner-field="note" value="${escapeHtml(banner.note || '')}" placeholder="免费送 / 伴生皮肤 / 结束日期等" /></label>
+      <label>开始时间 <input data-banner-field="start_at" value="${escapeHtml(banner.start_at || '')}" placeholder="2026-08-28T19:30:00+08:00" /></label>
+      <label>结束时间 <input data-banner-field="end_at" value="${escapeHtml(banner.end_at || '')}" placeholder="2026-09-10T11:59:00+08:00" /></label>
+      <label class="row-wide">备注 <input data-banner-field="note" value="${escapeHtml(banner.note || '')}" placeholder="免费送 / 伴生皮肤 / 限定规则等" /></label>
       <button type="button" class="ghost remove-row" data-remove-banner>删除</button>
     </div>`;
 }
@@ -175,7 +188,7 @@ function renderBannerEditor(banners) {
       <div class="structured-head">
         <div>
           <strong>卡池信息</strong>
-          <span>按上半/下半、类型和角色填写，保存时自动转换成 banners JSON 数组。</span>
+          <span>时间请使用带时区的 ISO 8601，未知时留空；不要从版本周期猜结束时间。</span>
         </div>
         <button type="button" id="addVersionBanner" class="secondary add-row">添加卡池</button>
       </div>
@@ -212,6 +225,8 @@ function collectBanners(form) {
       phase: value('phase'),
       banner_type: value('banner_type'),
       character_name: value('character_name'),
+      start_at: value('start_at'),
+      end_at: value('end_at'),
       note: value('note')
     };
     return banner.character_name || banner.note ? banner : null;
@@ -235,6 +250,7 @@ function openEditor(data = {}) {
         <label>版本号 <input name="version_no" required value="${escapeHtml(data.version_no || '')}" /></label>
         <label>版本名 <input name="version_name" value="${escapeHtml(data.version_name || '')}" /></label>
         <label>开始日期 <input name="start_date" type="date" value="${escapeHtml(data.start_date || '')}" /></label>
+        <label>结束日期 <input name="end_date" type="date" value="${escapeHtml(data.end_date || '')}" /></label>
         <label class="wide">卡池 JSON（必须是数组，可留空）
           <textarea name="banners" placeholder='[{"phase":"first_half","banner_type":"new_limited","character_name":"角色名"}]'>${escapeHtml(JSON.stringify(data.banners || [], null, 2))}</textarea>
         </label>
@@ -275,6 +291,7 @@ function openEditor(data = {}) {
           version_no: form.version_no,
           version_name: form.version_name,
           start_date: form.start_date,
+          end_date: form.end_date,
           note: form.note,
           banners: collectBanners(event.currentTarget)
         };
@@ -328,7 +345,7 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
               <span class="version-no">${escapeHtml(row.version_no || '')}</span>
               <span>${escapeHtml(row.version_name || '未命名版本')}</span>
             </div>
-            ${renderMeta([row.game_code, row.start_date])}
+            ${renderMeta([row.game_code, formatWindow(row.start_date, row.end_date)])}
           </div>
           <div class="actions collapsible-actions">
             ${renderCollapseButton(`${row.version_no || ''} ${row.version_name || ''}`.trim() || '版本详情')}

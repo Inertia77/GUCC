@@ -1,0 +1,33 @@
+name: Phase 2A.2 Windows Production Smoke
+
+on:
+  push:
+    branches:
+      - feature/creator-os-phase2b-20260827
+    paths:
+      - .github/workflows/phase2a2-windows-production-smoke.yml
+      - scripts/phase2a2-windows-production-smoke.cjs
+      - scripts/creator-local-agent/**
+      - apps/video-workspace/production-system/engine.js
+      - supabase/functions/creator-project-api/**
+
+permissions:
+  contents: read
+
+jobs:
+  windows-production-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Windows Local Agent production smoke
+        shell: pwsh
+        run: node scripts/phase2a2-windows-production-smoke.cjs

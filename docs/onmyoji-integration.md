@@ -118,6 +118,76 @@ Current production records include:
 
 Use the real client/version number when one is available. Synthetic stable IDs remain acceptable for event campaigns that do not map cleanly to a normal client version number.
 
+## Historical version archive
+
+The production database now contains a complete GUCC-grade historical content archive from the mainland China public launch through the last released content update before the current live version.
+
+As of 2026-08-27:
+
+- archive coverage: `2016-09-09` through `2026-07-22`
+- historical archive rows: **136**
+- historical character/banner rows: **202**
+- distinct historical characters referenced by banners: **196**
+- unbound historical banner characters: **0**
+- current live `2.8.80 / 云华依言歌` remains a normal live-version record and is not duplicated as `YYS-2026-08-19`
+
+### Historical ID policy
+
+Onmyoji is older than the other GUCC games and its client build numbers do not cleanly map 1:1 to server-side content releases. The same client build may cover more than one themed content update, and early releases often have no useful modern-style version number.
+
+Therefore historical content rows use:
+
+`YYS-YYYY-MM-DD`
+
+as a stable archival `version_no`.
+
+When a reliable client build number is known, it is stored in the version note (for example `1.8.52`) rather than used as the primary historical identifier.
+
+### What counts as a historical version
+
+The archive intentionally includes:
+
+- major themed / monthly content releases
+- new SSR / SP / UR releases
+- meaningful SR / R / N additions when they arrived in a distinct content update
+- collaboration releases
+- anniversary versions
+- major permanent-system releases such as 永生之海御魂副本 and 契灵之境
+
+It intentionally excludes:
+
+- pure bug-fix builds
+- client-only optimization releases with no meaningful production content
+- speculative or unreleased future versions
+- a made-up official title when an old update's exact marketing title cannot be verified
+
+For an old update whose date/content is reliable but exact official thematic title is not, GUCC uses an explicit label such as `历史更新｜XX登场`. This is an archival label, not an assertion that NetEase marketed the version under that exact title.
+
+### Banner semantics for historical Onmyoji
+
+Historical `version_banners` use the shared GUCC vocabulary:
+
+- `pickup` — new native SSR/SP/UR release / principal summon target
+- `collab` — new collaboration character
+- `rerun` — explicitly represented collaboration/character rerun
+- `standard_addition` — SR/R/N or other standard-pool addition
+
+Because old Onmyoji summon windows are not consistently recoverable at hour-level precision, `start_at / end_at` stay NULL unless a reliable source explicitly confirms exact times. Do not invent timestamps merely to make the table look complete.
+
+### Live automation ownership boundary
+
+Historical backfill and live-version ingestion are separate workflows.
+
+**Historical maintenance may only create `YYS-*` archive rows for content that has already happened.** It must never pre-create a future version merely because a preview stream has been announced.
+
+Future/current normal versions remain owned by the existing preview/version automation:
+
+1. preview is only announced → do not insert a new `game_versions` row;
+2. preview actually airs / official version details are published → normal live-version workflow may create/update the version;
+3. after a version becomes historical, later maintenance may enrich its sources/notes, but must not create a duplicate `YYS-*` row for an already represented live version.
+
+This boundary prevents the historical archive from racing or conflicting with the scheduled preview-detection workflow.
+
 ## Resources and official-profile convention
 
 Game-level sources include:
@@ -126,6 +196,7 @@ Game-level sources include:
 - NetEase official shikigami catalog
 - current TapTap official game/community notices
 - BWIKI shikigami catalog as a community completeness cross-check
+- 3839 Onmyoji official-server historical update log as a community historical cross-check
 - GUCC return guide
 
 Every current Onmyoji character has exactly one `official_profile` relation. At present the shared official NetEase shikigami directory is used as the canonical official-profile target when a reliable stable per-character official deep link has not been established.
@@ -136,13 +207,15 @@ A future maintenance pass may replace the shared catalog target with verified pe
 
 The Command Center already exposes `阴阳师` in character / party / version game filters.
 
-The 2026-08-27 catalog expansion additionally requires:
+The 2026-08-27 integration additionally requires:
 
 - character search hard limit raised from 200 to 1000 so the full Onmyoji catalog is reachable
 - rarity shown in character-card metadata (`UR / SP / SSR / SR / R / N`)
 - redundant `式神` profession chip suppressed for Onmyoji cards
 - full-name small text remains visible even when `full_name = name`
+- party editor supports five member slots so Onmyoji teams are not truncated on save
 - normal research/build status rendering continues to use the global GUCC vocabulary
+- version center displays the historical archive through the shared `app_search_versions` API; no Onmyoji-only frontend or API exists
 
 Do not create a separate Onmyoji frontend or API. It remains a first-class game inside the shared GUCC character / party / version workflows.
 
@@ -154,7 +227,9 @@ For changing facts such as summon windows, event deadlines, anniversary rewards 
 2. official Onmyoji community account / official community post
 3. reliable current community guide, clearly marked as community evidence
 
-For static catalog completeness, official directory + maintained catalog cross-checking is acceptable. Never promote beta/leak/community speculation into a confirmed production fact.
+For static catalog completeness, official directory + maintained catalog cross-checking is acceptable. For deep historical coverage, maintained historical update logs may be used as a cross-check, but they must be marked as community evidence and must not override a conflicting official archive.
+
+Never promote beta/leak/community speculation into a confirmed production fact.
 
 ## Drive / Creator Project policy
 

@@ -29,6 +29,10 @@ const creatorLocalFirstIndexes = fs.readFileSync(
   path.join(ROOT, "supabase/migrations/20260827051000_creator_local_first_fk_indexes.sql"),
   "utf8"
 );
+const creatorFileObservationMigration = fs.readFileSync(
+  path.join(ROOT, "supabase/migrations/20260827110000_creator_local_file_observation_rpc.sql"),
+  "utf8"
+);
 const creatorEdge = fs.readFileSync(
   path.join(ROOT, "supabase/functions/creator-project-api/index.ts"),
   "utf8"
@@ -112,14 +116,31 @@ assert.match(creatorLocalFirstIndexes, /creator_file_locations_logical_owner_fk_
 assert.match(creatorLocalFirstIndexes, /creator_file_locations_project_owner_fk_idx[\s\S]*\(project_id, owner_user_id\)/i);
 assert.doesNotMatch(creatorLocalFirstIndexes, /delete\s+from|update\s+public\.|insert\s+into|drop\s+table/i);
 
+// Phase 2A.2 observation writes keep location + meaningful FILE_* history atomic.
+assert.match(creatorFileObservationMigration, /create or replace function public\.save_creator_file_location_observation/i);
+assert.match(creatorFileObservationMigration, /insert into public\.creator_file_locations/i);
+assert.match(creatorFileObservationMigration, /insert into public\.creator_project_events/i);
+assert.match(creatorFileObservationMigration, /security invoker/i);
+assert.match(creatorFileObservationMigration, /revoke all on function public\.save_creator_file_location_observation[\s\S]*from public, anon, authenticated/i);
+assert.match(creatorFileObservationMigration, /grant execute on function public\.save_creator_file_location_observation[\s\S]*to service_role/i);
+
 // The Creator API exposes the local-first contract without accepting media bytes.
 assert.match(creatorEdge, /function normalizeRelativePath\(/);
 assert.match(creatorEdge, /workspace-relative, not absolute/);
 assert.match(creatorEdge, /async function touchDevice\(/);
 assert.match(creatorEdge, /async function saveFileLocation\(/);
+assert.match(creatorEdge, /async function saveFileLocationsBatch\(/);
+assert.match(creatorEdge, /MAX_LOCATION_BATCH = 100/);
+assert.match(creatorEdge, /action === "getDevice"/);
 assert.match(creatorEdge, /action === "registerDevice"/);
 assert.match(creatorEdge, /action === "saveFileLocation"/);
-assert.match(creatorEdge, /creator_file_locations\?on_conflict=owner_user_id,logical_file_id,device_id,storage_provider/);
+assert.match(creatorEdge, /action === "saveFileLocationsBatch"/);
+assert.match(creatorEdge, /rpc\/save_creator_file_location_observation/);
+for (const event of ["FILE_FIRST_SEEN", "FILE_DISAPPEARED", "FILE_REAPPEARED", "FILE_REPLACED"]) {
+  assert.match(creatorEdge, new RegExp(event));
+}
+assert.doesNotMatch(creatorEdge, /FILE_SCANNED|FILE_PRESENT|FILE_LOCATION_UPDATED/);
+assert.match(creatorEdge, /Local observation path must match logical artifact contract/);
 assert.match(creatorEdge, /return \{ projects, files, releases, devices, fileLocations, serverTime:/);
 assert.match(creatorEdge, /const deviceId = await touchDevice\(userId, body\);[\s\S]{0,500}rpc\/save_creator_project_revision/);
 assert.doesNotMatch(creatorEdge, /base64|multipart\/form-data|arrayBuffer\(\)|formData\(\)/i);

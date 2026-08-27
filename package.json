@@ -6,7 +6,7 @@
   "scripts": {
     "check:story": "node scripts/check-story-library.mjs",
     "check": "node scripts/check-project.mjs && node scripts/check-story-library.mjs",
-    "test": "node scripts/check-project.mjs && node scripts/check-story-library.mjs && node scripts/test-command-center.cjs && node scripts/test-supabase-contract.cjs && node scripts/test-migration-discipline.cjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs && node scripts/test-creator-pipeline.cjs && node scripts/test-creator-workspace-root.cjs && node scripts/test-creator-local-agent.cjs && node scripts/test-creator-local-agent-path-alias.cjs && node scripts/test-creator-file-observations.cjs && node scripts/test-creator-project-archive.cjs && node scripts/test-creator-dashboard.cjs && node scripts/test-uiux-contract.cjs",
+    "test": "node scripts/check-project.mjs && node scripts/check-story-library.mjs && node scripts/test-command-center.cjs && node scripts/test-supabase-contract.cjs && node scripts/test-migration-discipline.cjs && node scripts/test-publishing-console.cjs && node scripts/test-production-system.cjs && node scripts/test-creator-pipeline.cjs && node scripts/test-creator-workspace-root.cjs && node scripts/test-creator-local-agent.cjs && node scripts/test-creator-local-agent-path-alias.cjs && node scripts/test-creator-file-observations.cjs && node scripts/test-creator-project-archive.cjs && node scripts/test-creator-archive-drive.cjs && node scripts/test-creator-dashboard.cjs && node scripts/test-uiux-contract.cjs",
     "publisher:assistant": "node scripts/publisher-assistant/server.cjs",
     "creator:agent": "node scripts/creator-local-agent/index.cjs",
     "creator:archive": "node scripts/creator-archive/index.mjs"

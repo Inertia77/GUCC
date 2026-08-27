@@ -3,6 +3,7 @@ import { isLoggedIn, signIn, signOut, signUp } from './auth.js';
 import { getConfigState } from './config-state.js';
 import { initCharacters, searchCharacters } from './features/characters.js';
 import { initParties, searchParties } from './features/parties.js';
+import { initMechanisms, searchMechanisms } from './features/mechanisms.js';
 import { initResources } from './features/resources.js';
 import { initVersions, searchVersions } from './features/versions.js';
 import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
@@ -17,6 +18,7 @@ async function ensureTabLoaded(tab) {
   const loaders = {
     characters: searchCharacters,
     parties: searchParties,
+    mechanisms: searchMechanisms,
     versions: searchVersions
   };
   const load = loaders[tab];
@@ -135,7 +137,8 @@ function initDashboard() {
     try {
       log($('#smokeResult'), {
         ping: await API.ping(),
-        characters: await API.searchCharacters({ keyword: '', limit: 3 })
+        characters: await API.searchCharacters({ keyword: '', limit: 3 }),
+        mechanisms: await API.searchMechanisms({ keyword: '', limit: 3 })
       });
     } catch (error) {
       log($('#smokeResult'), error.message);
@@ -150,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeActiveDrawer();
   });
+  initMechanisms();
   initTabs();
   initAuth();
   initDashboard();

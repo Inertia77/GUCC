@@ -26,6 +26,10 @@ function updateUrl(values) {
   history.replaceState(history.state, '', url);
 }
 
+function selectHasValue(input, value) {
+  return [...(input?.options || [])].some((option) => option.value === value);
+}
+
 export function getSavedTab(fallback = 'characters') {
   const fromUrl = new URLSearchParams(window.location.search).get('tab');
   return fromUrl || readState().tab || fallback;
@@ -38,6 +42,14 @@ export function saveTab(tab) {
   updateUrl({ tab: tab === 'characters' ? '' : tab });
 }
 
+export function applyPendingFilterValue(input) {
+  if (!input || input.tagName !== 'SELECT') return;
+  const pending = input.dataset.pendingPersistentValue;
+  if (pending == null) return;
+  if (selectHasValue(input, pending)) input.value = pending;
+  delete input.dataset.pendingPersistentValue;
+}
+
 export function bindPersistentFilters(scope, fields) {
   const state = readState();
   const storedFilters = state.filters?.[scope] || {};
@@ -47,9 +59,16 @@ export function bindPersistentFilters(scope, fields) {
     const input = document.querySelector(selector);
     if (!input) return;
     const restored = params.has(param) ? params.get(param) : storedFilters[selector];
-    if (restored != null) input.value = restored;
+    if (restored != null) {
+      if (input.tagName === 'SELECT' && !selectHasValue(input, restored)) {
+        input.dataset.pendingPersistentValue = restored;
+      } else {
+        input.value = restored;
+      }
+    }
 
     const persist = () => {
+      delete input.dataset.pendingPersistentValue;
       const next = readState();
       next.filters = next.filters || {};
       next.filters[scope] = next.filters[scope] || {};

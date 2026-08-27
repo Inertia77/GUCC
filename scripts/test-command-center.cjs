@@ -70,6 +70,73 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
 
   const mainSource = read("apps/command-center/src/main.js");
   assert.doesNotMatch(mainSource, /-v\d/i);
+  assert.match(mainSource, /initMechanisms, searchMechanisms/);
+  assert.match(mainSource, /mechanisms: searchMechanisms/);
+  assert(mainSource.indexOf("initMechanisms();") < mainSource.indexOf("initTabs();"), "Mechanism tab shell must exist before tab initialization");
+
+  const apiSource = read("apps/command-center/src/api.js");
+  for (const method of ["searchMechanisms", "getMechanismDetail", "saveMechanism", "deleteMechanism"]) {
+    assert.match(apiSource, new RegExp(`${method}:`), `Missing API method: ${method}`);
+  }
+
+  const mechanismSource = read("apps/command-center/src/features/mechanisms.js");
+  assert.match(mechanismSource, /data-tab="mechanisms"/);
+  assert.match(mechanismSource, /API\.searchMechanisms/);
+  assert.match(mechanismSource, /API\.getMechanismDetail/);
+  assert.match(mechanismSource, /API\.saveMechanism/);
+  assert.match(mechanismSource, /API\.deleteMechanism/);
+  assert.match(mechanismSource, /bindCollapsibleCards/);
+  assert.match(mechanismSource, /bindCollapseAllControls/);
+  assert.match(mechanismSource, /renderProgressiveList/);
+  assert.match(mechanismSource, /renderStructuredResourceEditor/);
+  assert.match(mechanismSource, /collectStructuredResourceLinks/);
+  assert.match(mechanismSource, /mechanism_type/);
+  assert.match(mechanismSource, /source_kind/);
+  assert.match(mechanismSource, /verified_at/);
+  assert.match(mechanismSource, /window\.confirm/);
+
+  const structuredLinksSource = read("apps/command-center/src/structured-links.js");
+  for (const relationType of ["official_reference", "guide", "research", "demo", "reference"]) {
+    assert.match(structuredLinksSource, new RegExp(relationType));
+  }
+  assert.match(structuredLinksSource, /safeExternalUrl/);
+  assert.match(structuredLinksSource, /renderLinks/);
+  assert.match(structuredLinksSource, /data-resource-link-field="title"/);
+  assert.match(structuredLinksSource, /data-resource-link-field="url"/);
+  assert.match(structuredLinksSource, /data-resource-link-field="relation_type"/);
+  assert.match(structuredLinksSource, /data-resource-link-field="source"/);
+  assert.match(structuredLinksSource, /data-resource-link-field="note"/);
+
+  const mechanismStyles = read("apps/command-center/styles/mechanisms.css");
+  assert.match(mechanismStyles, /data-resource-relation="official_reference"/);
+  assert.match(mechanismStyles, /data-resource-relation="guide"/);
+  assert.match(mechanismStyles, /data-resource-relation="research"/);
+  assert.match(mechanismStyles, /data-resource-relation="demo"/);
+  assert.match(mechanismStyles, /overflow-wrap: anywhere/);
+  assert.match(mechanismStyles, /@media \(max-width: 760px\)/);
+  assert.match(mechanismStyles, /min-height: 44px/);
+
+  const mechanismMigration = read("supabase/migrations/20260827072049_gucc_mechanism_core_entity.sql");
+  assert.match(mechanismMigration, /drop constraint if exists mechanisms_type_chk/);
+  assert.match(mechanismMigration, /drop constraint if exists mechanisms_source_kind_chk/);
+  assert.match(mechanismMigration, /idx_mechanisms_type_source/);
+  assert.match(mechanismMigration, /entity_type, entity_id, relation_type/);
+  assert.match(mechanismMigration, /'mechanism'/);
+  for (const fn of ["app_search_mechanisms", "app_get_mechanism_detail", "app_save_mechanism", "app_delete_mechanism"]) {
+    assert.match(mechanismMigration, new RegExp(`create or replace function public\\.${fn}`));
+    assert.match(mechanismMigration, new RegExp(`grant execute on function public\\.${fn}\\(jsonb\\) to service_role`));
+  }
+  assert.match(mechanismMigration, /UNIQUE|already exists|Mechanism already exists/i);
+  assert.match(mechanismMigration, /p_payload \? 'description'/);
+  assert.match(mechanismMigration, /p_payload \? 'links'/);
+
+  const edgeSource = read("supabase/functions/gameup-api/index.ts");
+  assert.match(edgeSource, /searchMechanisms: 'app_search_mechanisms'/);
+  assert.match(edgeSource, /getMechanismDetail: 'app_get_mechanism_detail'/);
+  assert.match(edgeSource, /saveMechanism: 'app_save_mechanism'/);
+  assert.match(edgeSource, /deleteMechanism: 'app_delete_mechanism'/);
+  assert.match(edgeSource, /getUserFromToken/);
+  assert.match(edgeSource, /assertAllowedUser/);
 
   const styleDir = path.join(ROOT, "apps/command-center/styles");
   const versionedStyles = fs.readdirSync(styleDir).filter((name) => /-v\d+(?:[._-]|$)/i.test(name));
@@ -79,6 +146,9 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.doesNotMatch(serviceWorker, /ignoreSearch\s*:\s*true/);
   assert.doesNotMatch(serviceWorker, /CACHE_VERSION/);
   assert.match(serviceWorker, /apps\/command-center\/src\/main\.js/);
+  assert.match(serviceWorker, /apps\/command-center\/src\/structured-links\.js/);
+  assert.match(serviceWorker, /apps\/command-center\/src\/features\/mechanisms\.js/);
+  assert.match(serviceWorker, /apps\/command-center\/styles\/mechanisms\.css/);
   assert.doesNotMatch(serviceWorker, /apps\/command-center\/styles\/[^"']+-v\d/i);
 
   const publisherServer = read("scripts/publisher-assistant/server.cjs");

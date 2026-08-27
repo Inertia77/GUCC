@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v9";
-const RUNTIME_CACHE = "gucc-runtime-v9";
+const STATIC_CACHE = "gucc-static-v10";
+const RUNTIME_CACHE = "gucc-runtime-v10";
 
 const APP_SHELL = [
   "./",
@@ -43,6 +43,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/mobile-layout.css",
   "./apps/command-center/styles/expanded-details.css",
   "./apps/command-center/styles/interaction-contrast.css",
+  "./apps/command-center/styles/mechanisms.css",
   "./apps/command-center/src/main.js",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
@@ -53,8 +54,10 @@ const APP_SHELL = [
   "./apps/command-center/src/search-filters.js",
   "./apps/command-center/src/fixed-field-options.js",
   "./apps/command-center/src/record-guards.mjs",
+  "./apps/command-center/src/structured-links.js",
   "./apps/command-center/src/features/characters.js",
   "./apps/command-center/src/features/parties.js",
+  "./apps/command-center/src/features/mechanisms.js",
   "./apps/command-center/src/features/resources.js",
   "./apps/command-center/src/features/versions.js",
   "./apps/video-workspace/",

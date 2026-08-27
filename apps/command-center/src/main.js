@@ -1,5 +1,5 @@
 import { API } from './api.js';
-import { isLoggedIn, signIn, signOut, signUp } from './auth.js';
+import { isLoggedIn, signIn, signOut } from './auth.js';
 import { getConfigState } from './config-state.js';
 import { initCharacters, searchCharacters } from './features/characters.js';
 import { initParties, searchParties } from './features/parties.js';
@@ -42,7 +42,6 @@ function syncView() {
   warning.textContent = config.ready ? '' : `需要先配置：${config.issues.join('；')}`;
   setHidden(warning, config.ready);
   $('#loginBtn').disabled = !config.ready;
-  $('#signupBtn').disabled = !config.ready;
   return loggedIn;
 }
 
@@ -88,6 +87,8 @@ function initTabs() {
 }
 
 function initAuth() {
+  $('#signupBtn')?.remove();
+
   $('#loginView').addEventListener('submit', async (event) => {
     event.preventDefault();
     await withBusy($('#loginBtn'), '登录中...', async () => {
@@ -97,17 +98,6 @@ function initAuth() {
         $('#passwordInput').value = '';
         syncView();
         void ensureTabLoaded($('.tabs [role="tab"].active')?.dataset.tab);
-      } catch (error) {
-        log($('#loginLog'), error.message);
-      }
-    });
-  });
-
-  $('#signupBtn').addEventListener('click', async () => {
-    await withBusy($('#signupBtn'), '注册中...', async () => {
-      try {
-        await signUp($('#emailInput').value.trim(), $('#passwordInput').value);
-        log($('#loginLog'), '注册请求已发送。如果启用了邮箱确认，请先确认邮件；之后还要在 app_users 中登记该用户。');
       } catch (error) {
         log($('#loginLog'), error.message);
       }

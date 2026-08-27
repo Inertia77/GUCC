@@ -35,8 +35,17 @@ for (const required of [
   '20260826090225_gucc_creator_project_sync_triggers_20260826.sql',
   '20260826090950_gucc_creator_owner_fk_indexes_20260826.sql',
   '20260826230000_gucc_creator_phase1_revision_conflict_protection.sql',
+  '20260827140034_creator_archive_state_guard.sql',
+  '20260827143937_creator_archived_update_proof_guard.sql',
 ]) {
   assert(sqlFiles.includes(required), `Missing production-synced migration: ${required}`);
+}
+
+for (const drifted of [
+  '20260827222000_creator_archive_state_guard.sql',
+  '20260827234000_creator_archived_update_proof_guard.sql',
+]) {
+  assert(!sqlFiles.includes(drifted), `Drifted Phase 2B migration identity must not return: ${drifted}`);
 }
 
 console.log(`Migration discipline OK: ${seenVersions.size} strict migration(s), ${legacyAllowlist.size} legacy allowlisted file(s).`);

@@ -18,7 +18,7 @@ const creatorMigration = fs.readFileSync(
   "utf8"
 );
 const creatorTypeCompatMigration = fs.readFileSync(
-  path.join(ROOT, "supabase/migrations/20260827022000_creator_standard_video_compat.sql"),
+  path.join(ROOT, "supabase/migrations/20260826172103_creator_standard_video_compat.sql"),
   "utf8"
 );
 const creatorLocalFirstMigration = fs.readFileSync(

@@ -22,11 +22,13 @@
   function syncOnmyojiOfficial() {
     const grid = document.querySelector('#officialGrid');
     if (!grid) return;
-    grid.querySelector('[data-onmyoji-official]')?.remove();
 
     const game = activeGame();
     const shouldShow = (game === 'all' || game === '阴') && queryMatches();
-    if (shouldShow) grid.insertAdjacentHTML('beforeend', yinCard());
+    const existing = grid.querySelector('[data-onmyoji-official]');
+
+    if (shouldShow && !existing) grid.insertAdjacentHTML('beforeend', yinCard());
+    if (!shouldShow && existing) existing.remove();
 
     const empty = document.querySelector('#officialEmpty');
     if (empty && game === '阴') empty.hidden = shouldShow;
@@ -48,9 +50,14 @@
     });
     document.querySelector('#sourceSearch')?.addEventListener('input', () => queueMicrotask(syncOnmyojiOfficial));
 
+    const grid = document.querySelector('#officialGrid');
+    if (grid) {
+      new MutationObserver(() => queueMicrotask(syncOnmyojiOfficial))
+        .observe(grid, { childList: true });
+    }
+
     if (requestedGame === '阴') {
-      const yinButton = document.querySelector('.game-filter[data-game="阴"]');
-      yinButton?.click();
+      document.querySelector('.game-filter[data-game="阴"]')?.click();
     } else {
       syncOnmyojiOfficial();
     }

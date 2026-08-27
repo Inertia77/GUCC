@@ -1,5 +1,5 @@
 -- Creator OS Phase 2B: ARCHIVED is a server-controlled knowledge-archive state.
--- Generic project saves must not create, enter, or reopen ARCHIVED.
+-- Generic project saves must not create, enter, reopen, or erase proof from ARCHIVED.
 
 create or replace function public.creator_archive_transition_is_verified(p_archive jsonb)
 returns boolean
@@ -12,6 +12,8 @@ as $$
       then coalesce(p_archive ->> 'provider', '') = 'google_drive'
        and nullif(btrim(coalesce(p_archive ->> 'folderId', '')), '') is not null
        and nullif(btrim(coalesce(p_archive ->> 'mainFileId', '')), '') is not null
+       and coalesce(p_archive ->> 'folderUrl', '') like 'https://drive.google.com/%'
+       and coalesce(p_archive ->> 'mainFileUrl', '') like 'https://drive.google.com/%'
        and nullif(btrim(coalesce(p_archive ->> 'verifiedAt', '')), '') is not null
        and nullif(btrim(coalesce(p_archive ->> 'checksum', '')), '') is not null
     when coalesce(p_archive ->> 'status', '') = 'manual_override'
@@ -34,22 +36,18 @@ as $$
 declare
   v_archive jsonb := coalesce(new.project_data #> '{integration,archive}', '{}'::jsonb);
 begin
-  if tg_op = 'INSERT' then
-    if new.current_state = 'ARCHIVED' and not public.creator_archive_transition_is_verified(v_archive) then
-      raise exception using
-        errcode = '23514',
-        message = 'ARCHIVE_STATE_GATE: new Creator projects cannot be created as ARCHIVED without verified archive metadata';
-    end if;
-    return new;
+  -- ARCHIVED is not merely a state label: every row that remains ARCHIVED must
+  -- retain the server-verified Drive archive proof (or an audited manual override).
+  if new.current_state = 'ARCHIVED' and not public.creator_archive_transition_is_verified(v_archive) then
+    raise exception using
+      errcode = '23514',
+      message = case
+        when tg_op = 'INSERT' then 'ARCHIVE_STATE_GATE: new Creator projects cannot be created as ARCHIVED without verified archive metadata'
+        else 'ARCHIVE_STATE_GATE: ARCHIVED requires verified Google Drive archive metadata or an explicit manual override reason'
+      end;
   end if;
 
-  if old.current_state <> 'ARCHIVED' and new.current_state = 'ARCHIVED' then
-    if not public.creator_archive_transition_is_verified(v_archive) then
-      raise exception using
-        errcode = '23514',
-        message = 'ARCHIVE_STATE_GATE: ARCHIVED requires verified Google Drive archive metadata or an explicit manual override reason';
-    end if;
-  elsif old.current_state = 'ARCHIVED' and new.current_state <> 'ARCHIVED' then
+  if tg_op = 'UPDATE' and old.current_state = 'ARCHIVED' and new.current_state <> 'ARCHIVED' then
     raise exception using
       errcode = '23514',
       message = 'ARCHIVE_STATE_GATE: an ARCHIVED Creator project cannot be reopened by a generic project update';

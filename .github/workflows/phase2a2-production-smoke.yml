@@ -28,4 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Local Agent production smoke
+        env:
+          GUCC_SMOKE_GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/phase2a2-production-smoke.cjs

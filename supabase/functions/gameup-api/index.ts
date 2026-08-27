@@ -139,6 +139,8 @@ const RPC_MAP: Record<string, string> = {
   searchParties: 'app_search_parties',
   saveParty: 'app_save_party',
   deleteParty: 'app_delete_party',
+  resolvePartyAnalysis: 'app_get_or_create_party_analysis_target',
+  attachPartyNotion: 'app_attach_party_notion',
   searchVersions: 'app_search_versions',
   saveVersion: 'app_save_version',
   deleteVersion: 'app_delete_version',

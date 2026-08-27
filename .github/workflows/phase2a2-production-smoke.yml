@@ -1,0 +1,31 @@
+name: Phase 2A.2 Production Smoke
+
+on:
+  push:
+    branches:
+      - feature/creator-os-phase-2b-archive
+    paths:
+      - .github/workflows/phase2a2-production-smoke.yml
+      - scripts/phase2a2-production-smoke.cjs
+      - scripts/creator-local-agent/**
+      - supabase/functions/creator-project-api/**
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Local Agent production smoke
+        run: node scripts/phase2a2-production-smoke.cjs

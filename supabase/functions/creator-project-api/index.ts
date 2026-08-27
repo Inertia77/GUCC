@@ -115,6 +115,12 @@ function projectWithoutServerMetadata(project: JsonMap, existing: JsonMap | null
   clean.integration = integration;
   return clean;
 }
+function guardGenericArchiveState(existing: JsonMap | null, currentState: string) {
+  const previousState = String(existing?.current_state || "");
+  if (!existing && currentState === "ARCHIVED") fail("Generic saveProject cannot create an ARCHIVED project; use the verified Archive workflow", 409);
+  if (existing && previousState !== "ARCHIVED" && currentState === "ARCHIVED") fail("Generic saveProject cannot enter ARCHIVED; use recordArchivePublished or manualArchiveOverride", 409);
+  if (existing && previousState === "ARCHIVED" && currentState !== "ARCHIVED") fail("Generic saveProject cannot reopen an ARCHIVED project; refresh the cloud project before editing", 409);
+}
 function revisionConflict(project: JsonMap | null, currentRevision: number) { failWithPayload("Cloud project has a newer revision", 409, { error: "REVISION_CONFLICT", conflict: { currentRevision, project } }); }
 function inferredDeviceKind(deviceId: string, explicit: string) { if (DEVICE_KINDS.has(explicit)) return explicit; if (deviceId.startsWith("web_")) return "web"; if (deviceId.startsWith("agent_")) return "agent"; if (deviceId.startsWith("desktop_")) return "desktop"; return "unknown"; }
 
@@ -228,7 +234,9 @@ async function saveProject(userId: string, body: JsonMap) {
   if (existing && (!Number.isInteger(requestedRevision) || Number(requestedRevision) < 1)) revisionConflict(existing, Number(existing.revision || 1));
   if (!existing && requestedRevision != null && requestedRevision !== 0) revisionConflict(null, 0);
   const now = new Date().toISOString(); const integration = asObject(project.integration); const drive = asObject(integration.drive); const workspace = asObject(integration.workspace);
-  const currentState = String(project.currentState || "IDEA"); const locks = asObject(project.locks); const projectData = projectWithoutServerMetadata(project, existing);
+  const currentState = String(project.currentState || "IDEA");
+  guardGenericArchiveState(existing, currentState);
+  const locks = asObject(project.locks); const projectData = projectWithoutServerMetadata(project, existing);
   const row = {
     name: String(project.name || ""), game: String(project.game || ""), topic: String(project.topic || ""), project_type: String(project.projectType || "STANDARD_VIDEO"), current_state: currentState,
     target_publish_date: dateOrNull(project.targetPublishDate), locks,
@@ -240,13 +248,13 @@ async function saveProject(userId: string, body: JsonMap) {
   if (result.status === "conflict") revisionConflict(asObject(result.project), Number(result.current_revision || 0));
   if (result.status === "forbidden") fail("Creator project belongs to another account", 403);
   if (result.status !== "saved") fail(String(result.message || "Creator project save failed"), 400);
-  const saved = asObject(result.project); const savedRevision = Number(result.revision || saved.revision || 0);
-  if (!existing) await writeEvent(projectId, userId, "PROJECT_CREATED", currentState, { source: workspace.version || "production-system", revision: savedRevision, deviceId });
+  const saved = asObject(result.project); const savedRevision = Number(result.revision || saved.revision || 0); const savedState = String(saved.current_state || currentState);
+  if (!existing) await writeEvent(projectId, userId, "PROJECT_CREATED", savedState, { source: workspace.version || "production-system", revision: savedRevision, deviceId });
   else {
-    if (existing.current_state !== currentState) await writeEvent(projectId, userId, "STATE_CHANGED", currentState, { from: existing.current_state, to: currentState });
-    if (!sameJson(existing.locks, locks)) await writeEvent(projectId, userId, "LOCKS_CHANGED", currentState, { from: existing.locks, to: locks });
+    if (existing.current_state !== savedState) await writeEvent(projectId, userId, "STATE_CHANGED", savedState, { from: existing.current_state, to: savedState });
+    if (!sameJson(existing.locks, locks)) await writeEvent(projectId, userId, "LOCKS_CHANGED", savedState, { from: existing.locks, to: locks });
   }
-  if (body.reason === "manual") await writeEvent(projectId, userId, "MANUAL_SYNC", currentState, { revision: savedRevision, deviceId });
+  if (body.reason === "manual") await writeEvent(projectId, userId, "MANUAL_SYNC", savedState, { revision: savedRevision, deviceId });
   return { project: saved, revision: savedRevision, fileCount: files.length, deviceId };
 }
 
@@ -339,11 +347,19 @@ async function recordArchiveGenerated(userId: string, body: JsonMap) {
   const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project); const input = asObject(body.archive);
   const mainFilename = boundedText(input.mainFilename, 300); if (!mainFilename.endsWith(".md")) fail("Archive mainFilename must be Markdown");
   const totalBytes = nonnegativeIntegerOrNull(input.totalBytes); if (totalBytes != null && totalBytes > 20 * 1024 * 1024) fail("Archive package exceeds 20 MB policy");
+  const fingerprint = boundedText(input.fingerprint, 300); if (!/^sha256:[0-9a-f]{64}$/i.test(fingerprint)) fail("Archive fingerprint must be SHA-256");
+  const current = archiveFromProject(project);
+  const unchanged = current.status === "generated"
+    && Number(current.archiveVersion || 0) === ARCHIVE_VERSION
+    && boundedText(current.mainFilename, 300) === mainFilename
+    && Number(current.totalBytes ?? -1) === Number(totalBytes ?? -1)
+    && boundedText(current.fingerprint, 300) === fingerprint;
+  if (unchanged) return { project, revision: Number(project.revision || 0), archive: current, unchanged: true };
   const now = new Date().toISOString();
-  const archive = { ...archiveBaseData(project), status: "generated", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, generatedAt: timestampOrNull(input.generatedAt) || archiveBaseData(project).generatedAt, mainFilename, totalBytes, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null, generatedRecordedAt: now };
+  const archive = { ...archiveBaseData(project), status: "generated", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, generatedAt: timestampOrNull(input.generatedAt) || archiveBaseData(project).generatedAt, mainFilename, fingerprint, totalBytes, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null, generatedRecordedAt: now };
   const saved = await patchArchiveProject(userId, project, revision, archive);
-  await writeEvent(projectId, userId, "PROJECT_ARCHIVE_GENERATED", String(saved.current_state || project.current_state), { archiveVersion: ARCHIVE_VERSION, mainFilename, totalBytes, revision: saved.revision });
-  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+  await writeEvent(projectId, userId, "PROJECT_ARCHIVE_GENERATED", String(saved.current_state || project.current_state), { archiveVersion: ARCHIVE_VERSION, mainFilename, fingerprint, totalBytes, revision: saved.revision });
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved), unchanged: false };
 }
 
 async function recordArchiveFailed(userId: string, body: JsonMap) {
@@ -360,15 +376,24 @@ async function recordArchivePublished(userId: string, body: JsonMap) {
   const projectId = boundedText(body.projectId, 220); if (!projectId) fail("projectId is required");
   const project = await ownedProject(projectId, userId); requireArchiveEligible(project); const revision = archiveRevision(body, project); const input = asObject(body.archive);
   const folderId = safeDriveId(input.folderId); const mainFileId = safeDriveId(input.mainFileId); const folderUrl = safeDriveUrl(input.folderUrl); const mainFileUrl = safeDriveUrl(input.mainFileUrl);
-  const verifiedAt = timestampOrNull(input.verifiedAt); const publishedAt = timestampOrNull(input.publishedAt) || new Date().toISOString(); const checksum = boundedText(input.checksum, 300);
+  const verifiedAt = timestampOrNull(input.verifiedAt); const publishedAt = timestampOrNull(input.publishedAt) || new Date().toISOString(); const checksum = boundedText(input.checksum, 300); const fingerprint = boundedText(input.fingerprint, 300);
   if (!folderId || !mainFileId || !folderUrl || !mainFileUrl || !verifiedAt || !checksum) fail("Remote verification metadata is incomplete; project cannot become ARCHIVED");
-  const wasArchived = String(project.current_state) === "ARCHIVED";
-  const archive = { ...archiveBaseData(project), status: "published", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, folderId, folderUrl, mainFileId, mainFileUrl, checksum, verifiedAt, publishedAt, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null };
+  if (fingerprint && !/^sha256:[0-9a-f]{64}$/i.test(fingerprint)) fail("Archive fingerprint must be SHA-256");
+  const wasArchived = String(project.current_state) === "ARCHIVED"; const current = archiveFromProject(project);
+  const unchanged = wasArchived
+    && current.status === "published"
+    && current.provider === "google_drive"
+    && current.folderId === folderId
+    && current.mainFileId === mainFileId
+    && current.checksum === checksum
+    && (!fingerprint || current.fingerprint === fingerprint);
+  if (unchanged) return { project, revision: Number(project.revision || 0), archive: current, unchanged: true };
+  const archive = { ...archiveBaseData(project), status: "published", provider: "google_drive", archiveVersion: ARCHIVE_VERSION, folderId, folderUrl, mainFileId, mainFileUrl, checksum, fingerprint: fingerprint || current.fingerprint || null, verifiedAt, publishedAt, warnings: Array.isArray(input.warnings) ? input.warnings.slice(0, 50).map((item) => boundedText(item, 500)) : [], lastError: null };
   const saved = await patchArchiveProject(userId, project, revision, archive, wasArchived ? { currentState: "ARCHIVED" } : { currentState: "ARCHIVED", archivedAt: verifiedAt });
   const eventType = wasArchived ? "PROJECT_ARCHIVE_UPDATED" : "PROJECT_ARCHIVE_PUBLISHED";
-  await writeEvent(projectId, userId, eventType, "ARCHIVED", { provider: "google_drive", folderId, mainFileId, checksum, verifiedAt, revision: saved.revision });
+  await writeEvent(projectId, userId, eventType, "ARCHIVED", { provider: "google_drive", folderId, mainFileId, checksum, fingerprint: archive.fingerprint, verifiedAt, revision: saved.revision });
   if (!wasArchived) await writeEvent(projectId, userId, "STATE_CHANGED", "ARCHIVED", { from: "PUBLISHED", to: "ARCHIVED", reason: "drive_archive_remote_verified" });
-  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved) };
+  return { project: saved, revision: Number(saved.revision), archive: archiveFromProject(saved), unchanged: false };
 }
 
 async function manualArchiveOverride(userId: string, body: JsonMap) {

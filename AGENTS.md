@@ -17,3 +17,14 @@ These rules apply to work inside an AI Video Production System project directory
 
 The full creative constraints live in `docs/ai-video-production/CREATOR_CONSTITUTION.md`.
 
+## Production Auth and Database Safety
+
+GUCC is a long-term single-user personal system. The production Supabase project is not a disposable test environment.
+
+1. Never call `/auth/v1/signup`, `supabase.auth.signUp`, or equivalent production signup flows for smoke, E2E, integration, or development tests.
+2. Never create random or fake-email Auth users such as `gucc-smoke-*`, and never add temporary test users to `app_users` in production.
+3. Tests that require creating users must use local Supabase or a separate isolated development project. If neither is available, skip that live-auth case and report it instead of falling back to production.
+4. Production smoke tests may validate the existing owner session, API connectivity, read/write contracts, and reversible owner-scoped fixtures, but must not trigger confirmation, recovery, magic-link, or other transactional Auth emails.
+5. Keep public signup UI and client signup helpers absent or blocked. Existing owner sign-in, sign-out, session refresh, and deliberate account recovery remain allowed.
+6. Temporary production data tests must be clearly marked, reversible, owner-scoped, and cleaned up immediately. Prefer local fixtures whenever possible.
+7. Do not change this project from single-user to multi-user behavior unless the user explicitly requests that product change.

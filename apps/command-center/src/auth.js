@@ -3,6 +3,7 @@ import { assertConfigured } from './config-state.js';
 
 const STORAGE_KEY = 'gameup_session_v5';
 const REFRESH_MARGIN_SECONDS = 60;
+const BLOCKED_PUBLIC_AUTH_PATHS = new Set(['signup']);
 let refreshPromise = null;
 
 export function getSession() {
@@ -33,6 +34,11 @@ export function isLoggedIn() {
 }
 
 async function authFetch(path, body) {
+  const authPath = String(path || '').split('?')[0].replace(/^\/+/, '');
+  if (BLOCKED_PUBLIC_AUTH_PATHS.has(authPath)) {
+    throw new Error('GUCC 是个人系统，生产环境禁止创建新的 Auth 用户。');
+  }
+
   assertConfigured();
   const baseUrl = CONFIG.SUPABASE_URL.replace(/\/+$/, '');
   const res = await fetch(`${baseUrl}/auth/v1/${path}`, {
@@ -55,11 +61,6 @@ export async function signIn(email, password) {
   const json = await authFetch('token?grant_type=password', { email, password });
   setSession(json);
   return json;
-}
-
-export async function signUp(email, password) {
-  if (!email || !password) throw new Error('请输入邮箱和密码。');
-  return authFetch('signup', { email, password });
 }
 
 export async function getAccessToken() {

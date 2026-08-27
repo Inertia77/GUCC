@@ -17,9 +17,10 @@ const MEANINGFUL_EVENT_TYPES = new Set([
 ]);
 const RELEASE_PLATFORMS = ["bilibili", "douyin", "xiaohongshu", "wechat_video_account", "youtube", "tiktok"];
 
-function clone(value) {
-  return value == null ? value : structuredClone(value);
-}
+function clone(value) { return value == null ? value : structuredClone(value); }
+function text(value) { return String(value == null ? "" : value).trim(); }
+function asObject(value) { return value && typeof value === "object" && !Array.isArray(value) ? value : {}; }
+function asArray(value) { return Array.isArray(value) ? value : []; }
 
 export function canonicalizeJson(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return value;
@@ -43,18 +44,6 @@ export function stableStringify(value, space = 2) {
   return `${JSON.stringify(canonicalizeJson(value), null, space)}\n`;
 }
 
-function text(value) {
-  return String(value == null ? "" : value).trim();
-}
-
-function asObject(value) {
-  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
-
 export function sanitizeArchiveName(value, maxLength = 88) {
   const cleaned = text(value)
     .replace(/[\u0000-\u001f\u007f]/g, "")
@@ -76,29 +65,40 @@ function datePart(value) {
   return Number.isFinite(parsed) ? new Date(parsed).toISOString().slice(0, 10) : "";
 }
 
+function normalizeRelease(release = {}) {
+  return {
+    platform: release.platform || "",
+    status: release.status || "",
+    postId: release.postId || release.post_id || "",
+    postUrl: release.postUrl || release.post_url || "",
+    publishedAt: release.publishedAt || release.published_at || "",
+    snapshot: canonicalizeJson(release.snapshot || {}),
+  };
+}
+
+function releaseRows(releases) {
+  return asArray(releases).map(normalizeRelease).sort((a, b) => String(a.platform).localeCompare(String(b.platform)));
+}
+
 function publishedAtFrom(releases, project) {
   const direct = text(project.publishedAt || project.published_at);
   if (datePart(direct)) return new Date(direct).toISOString();
-  const dates = asArray(releases).map((item) => item?.published_at).filter((value) => datePart(value)).sort();
+  const dates = releaseRows(releases).map((item) => item.publishedAt).filter((value) => datePart(value)).sort();
   return dates[0] || "";
 }
 
-function existingArchive(project) {
-  return asObject(asObject(asObject(project).integration).archive);
-}
+function existingArchive(project) { return asObject(asObject(asObject(project).integration).archive); }
 
 export function archiveIdentity(input = {}, options = {}) {
   const projectRow = asObject(input.project);
   const projectData = asObject(projectRow.project_data || input.projectData || projectRow);
-  const releases = asArray(input.releases);
   const archive = existingArchive(projectData);
   const generatedAt = text(archive.generatedAt || archive.generated_at || options.generatedAt || new Date().toISOString());
-  const publishedAt = publishedAtFrom(releases, projectData);
+  const publishedAt = publishedAtFrom(input.releases, projectData);
   const archiveDate = datePart(publishedAt) || datePart(generatedAt) || "1970-01-01";
   const title = text(projectData.name || projectRow.name || "Untitled");
   const game = text(projectData.game || projectRow.game || "Unknown Game");
   const projectId = text(projectData.projectId || projectRow.project_id || input.projectId);
-  const stem = `${archiveDate}_${sanitizeArchiveName(title)}_${shortProjectId(projectId)}`;
   return {
     archiveVersion: ARCHIVE_VERSION,
     projectId,
@@ -110,7 +110,7 @@ export function archiveIdentity(input = {}, options = {}) {
     archiveDate,
     year: archiveDate.slice(0, 4),
     gameFolder: sanitizeArchiveName(game, 64),
-    stem,
+    stem: `${archiveDate}_${sanitizeArchiveName(title)}_${shortProjectId(projectId)}`,
   };
 }
 
@@ -140,12 +140,8 @@ function artifactContent(projectData, contents, key) {
   const file = asObject(asObject(projectData.files)[key]);
   if (file.content != null && String(file.content).trim()) return String(file.content).trim();
   const fieldMap = {
-    RESEARCH: "research",
-    CONTENT_LOCK: "contentLock",
-    VOICE_MASTER: "voiceMaster",
-    REVIEW_NOTES: "reviewNotes",
-    RELEASE_PACK: "releasePack",
-    EDIT_BLUEPRINT: "editBlueprint",
+    RESEARCH: "research", CONTENT_LOCK: "contentLock", VOICE_MASTER: "voiceMaster",
+    REVIEW_NOTES: "reviewNotes", RELEASE_PACK: "releasePack", EDIT_BLUEPRINT: "editBlueprint",
     SUBTITLE_MASTER: "subtitleMaster",
   };
   const value = fieldMap[key] ? projectData[fieldMap[key]] : "";
@@ -163,11 +159,7 @@ function extractMarkdownSection(markdown, headings) {
     const match = lines[i].match(/^(#{1,6})\s+(.+?)\s*$/);
     if (!match) continue;
     const label = match[2].replace(/[：:]/g, "").trim().toLowerCase();
-    if (names.some((name) => label === name || label.includes(name))) {
-      start = i + 1;
-      level = match[1].length;
-      break;
-    }
+    if (names.some((name) => label === name || label.includes(name))) { start = i + 1; level = match[1].length; break; }
   }
   if (start < 0) return "";
   let end = lines.length;
@@ -192,13 +184,10 @@ function extractUrls(...values) {
 }
 
 function explicitSources(projectData) {
-  const values = [projectData.sources, projectData.references, projectData.evidence, projectData.officialSources]
-    .flatMap((item) => asArray(item));
-  return values.map((item) => {
-    if (typeof item === "string") return item;
-    const object = asObject(item);
-    return text(object.url || object.href || object.source || object.title);
-  }).filter(Boolean);
+  return [projectData.sources, projectData.references, projectData.evidence, projectData.officialSources]
+    .flatMap((item) => asArray(item))
+    .map((item) => typeof item === "string" ? item : text(asObject(item).url || asObject(item).href || asObject(item).source || asObject(item).title))
+    .filter(Boolean);
 }
 
 function safeRelativePath(value) {
@@ -207,10 +196,6 @@ function safeRelativePath(value) {
   const parts = raw.split("/").filter((part) => part && part !== ".");
   if (!parts.length || parts.includes("..")) return "";
   return parts.join("/");
-}
-
-function deviceMap(devices) {
-  return new Map(asArray(devices).map((item) => [item.device_id, item]));
 }
 
 function latestLocations(fileLocations) {
@@ -225,7 +210,7 @@ function latestLocations(fileLocations) {
 
 function fileMetadata(files, fileLocations, devices) {
   const locations = latestLocations(fileLocations);
-  const deviceById = deviceMap(devices);
+  const deviceById = new Map(asArray(devices).map((item) => [item.device_id, item]));
   return asArray(files).map((file) => {
     const location = locations.get(file.id) || null;
     const device = location ? deviceById.get(location.device_id) : null;
@@ -251,43 +236,21 @@ function meaningfulEvents(events) {
   return asArray(events)
     .filter((event) => MEANINGFUL_EVENT_TYPES.has(String(event.event_type || "")) || /^(LOCK_|PUBLISH)/.test(String(event.event_type || "")))
     .filter((event) => !/(HEARTBEAT|AUTOSAVE|SCAN|PRESENT|LOCATION_UPDATED)/i.test(String(event.event_type || "")))
-    .map((event) => ({
-      id: event.id || null,
-      eventType: event.event_type || "",
-      state: event.state || "",
-      detail: canonicalizeJson(event.detail || {}),
-      createdAt: event.created_at || "",
-    }))
+    .map((event) => ({ id: event.id || null, eventType: event.event_type || "", state: event.state || "", detail: canonicalizeJson(event.detail || {}), createdAt: event.created_at || "" }))
     .sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)) || String(a.id || "").localeCompare(String(b.id || "")));
-}
-
-function releaseRows(releases) {
-  return asArray(releases).map((release) => ({
-    platform: release.platform || "",
-    status: release.status || "",
-    postId: release.post_id || "",
-    postUrl: release.post_url || "",
-    publishedAt: release.published_at || "",
-    snapshot: canonicalizeJson(release.snapshot || {}),
-  })).sort((a, b) => String(a.platform).localeCompare(String(b.platform)));
 }
 
 function analyticsSnapshots(releases, analytics) {
   const rows = [];
-  for (const release of asArray(releases)) {
-    const metrics = asArray(release?.snapshot?.metrics);
-    for (const metric of metrics) rows.push({ platform: release.platform || metric.platform || "", ...canonicalizeJson(metric) });
+  for (const release of releaseRows(releases)) {
+    for (const metric of asArray(release?.snapshot?.metrics)) rows.push({ platform: release.platform || metric.platform || "", ...canonicalizeJson(metric) });
   }
   for (const metric of asArray(analytics)) rows.push(canonicalizeJson(metric));
   return rows.filter((item) => /T\s*\+\s*(1|3|7|30)/i.test(String(item.window || item.checkpoint || item.label || "")))
     .sort((a, b) => String(a.window || a.checkpoint || "").localeCompare(String(b.window || b.checkpoint || "")) || String(a.platform || "").localeCompare(String(b.platform || "")));
 }
 
-function markdownValue(value) {
-  const output = text(value);
-  return output || "Not recorded";
-}
-
+function markdownValue(value) { return text(value) || "Not recorded"; }
 function mdList(values, fallback = "Not recorded") {
   const list = asArray(values).filter((item) => text(item));
   return list.length ? list.map((item) => `- ${text(item)}`).join("\n") : fallback;
@@ -295,13 +258,11 @@ function mdList(values, fallback = "Not recorded") {
 
 function releasePackageMarkdown(projectData, releases) {
   const rawPack = artifactContent(projectData, {}, "RELEASE_PACK");
-  const rows = releaseRows(releases);
   if (rawPack) return rawPack;
-  const byPlatform = new Map(rows.map((row) => [String(row.platform).toLowerCase(), row]));
+  const byPlatform = new Map(releaseRows(releases).map((row) => [String(row.platform).toLowerCase(), row]));
   const lines = [];
   for (const platform of RELEASE_PLATFORMS) {
-    const row = byPlatform.get(platform);
-    const fields = asObject(row?.snapshot?.fields);
+    const fields = asObject(byPlatform.get(platform)?.snapshot?.fields);
     lines.push(`### ${platform}`);
     lines.push(`- Title: ${text(fields.title) || "Not recorded"}`);
     lines.push(`- Description: ${text(fields.description) || "Not recorded"}`);
@@ -333,13 +294,12 @@ function keyAssets(projectData) {
   if (!assets.length) return "Not recorded";
   return assets.map((asset) => {
     const item = asObject(asset);
-    const fields = [
+    return `- ${[
       text(item.description || item.name || item.filename),
       text(item.source) && `Source: ${text(item.source)}`,
       text(item.purpose || item.role) && `Purpose: ${text(item.purpose || item.role)}`,
       text(item.avAnchor || item.anchor || item.anchorId) && `AV Anchor: ${text(item.avAnchor || item.anchor || item.anchorId)}`,
-    ].filter(Boolean);
-    return `- ${fields.join(" · ") || "Asset metadata recorded"}`;
+    ].filter(Boolean).join(" · ") || "Asset metadata recorded"}`;
   }).join("\n");
 }
 
@@ -372,7 +332,7 @@ function audioMarkdown(metadata) {
   const file = metadata.find((item) => item.fileKey === "AUDIO_MASTER");
   if (!file) return "Not recorded";
   return [
-    `- Logical Artifact: AUDIO_MASTER`,
+    "- Logical Artifact: AUDIO_MASTER",
     `- Filename: ${file.filename || "Not recorded"}`,
     `- Size: ${file.sizeBytes == null ? "Not recorded" : `${file.sizeBytes} bytes`}`,
     `- Checksum: ${file.checksum || "Not recorded"}`,
@@ -402,12 +362,10 @@ function reviewMarkdown(projectData, artifactContents) {
   const reviews = asArray(projectData.reviews);
   const lines = [];
   if (notes) lines.push(notes);
-  if (reviews.length) {
-    lines.push(reviews.map((review) => {
-      const item = asObject(review);
-      return `- ${text(item.timecode || item.time || "")} ${text(item.type || item.category || "Review")} · ${text(item.note || item.description || item.content) || "Not recorded"} · ${text(item.status || "")}`.trim();
-    }).join("\n"));
-  }
+  if (reviews.length) lines.push(reviews.map((review) => {
+    const item = asObject(review);
+    return `- ${text(item.timecode || item.time || "")} ${text(item.type || item.category || "Review")} · ${text(item.note || item.description || item.content) || "Not recorded"} · ${text(item.status || "")}`.trim();
+  }).join("\n"));
   const revision = text(projectData.revisionNotes || projectData.finalRevisionResult);
   if (revision) lines.push(`\nFinal Revision Result\n\n${revision}`);
   return lines.filter(Boolean).join("\n\n") || "Not recorded";
@@ -546,7 +504,7 @@ export function generateArchivePackage(input = {}, options = {}) {
   for (const key of ["RESEARCH", "CONTENT_LOCK", "VOICE_MASTER", "SUBTITLE_MASTER", "RELEASE_PACK", "EDIT_BLUEPRINT", "REVIEW_NOTES"]) artifacts[key] = artifactContent(projectData, input.artifactContents || {}, key);
   const events = meaningfulEvents(input.events);
   const releases = releaseRows(input.releases);
-  const analytics = analyticsSnapshots(input.releases, input.analytics);
+  const analytics = analyticsSnapshots(releases, input.analytics);
   const metadata = fileMetadata(input.files, input.fileLocations, input.devices);
   const archiveMeta = existingArchive(projectData);
   const model = { projectRow, projectData, identity, artifacts, events, releases, analytics, fileMetadata: metadata, archiveMeta };
@@ -575,14 +533,8 @@ export function generateArchivePackage(input = {}, options = {}) {
   const packageMax = Number(options.packageMaxBytes || DEFAULT_PACKAGE_MAX_BYTES);
   for (const candidate of optional) {
     const check = evaluateArchiveFile(candidate, options);
-    if (!check.allowed) {
-      warnings.push(`${candidate.filename}: ${check.reason}`);
-      continue;
-    }
-    if (totalBytes + check.sizeBytes > packageMax) {
-      warnings.push(`${candidate.filename}: package_size_limit`);
-      continue;
-    }
+    if (!check.allowed) { warnings.push(`${candidate.filename}: ${check.reason}`); continue; }
+    if (totalBytes + check.sizeBytes > packageMax) { warnings.push(`${candidate.filename}: package_size_limit`); continue; }
     companions.push({ ...candidate, sizeBytes: check.sizeBytes });
     totalBytes += check.sizeBytes;
   }

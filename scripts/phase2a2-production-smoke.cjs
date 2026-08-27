@@ -9,25 +9,16 @@ const os = require("node:os");
 const path = require("node:path");
 const { execFile } = require("node:child_process");
 const { promisify } = require("node:util");
-
 const ROOT = path.resolve(__dirname, "..");
 const Engine = require(path.join(ROOT, "apps/video-workspace/production-system/engine.js"));
 const Core = require(path.join(ROOT, "scripts/creator-local-agent/core.cjs"));
 const Cloud = require(path.join(ROOT, "scripts/creator-local-agent/cloud.cjs"));
 const execFileAsync = promisify(execFile);
-
-const WAIT_MS = 2500;
-const WAIT_ATTEMPTS = 120;
-
-function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
-function randomHex(bytes = 8) { return crypto.randomBytes(bytes).toString("hex"); }
-function eventFor(events, type, fileKey) {
-  return (events || []).filter((event) => event.event_type === type && event.detail?.fileKey === fileKey);
-}
-function fileRow(snapshot, key) { return (snapshot.files || []).find((file) => file.file_key === key); }
-function locationRow(snapshot, logicalFile, deviceId) {
-  return (snapshot.fileLocations || []).find((row) => row.logical_file_id === logicalFile.id && row.device_id === deviceId && (row.storage_provider || "local") === "local");
-}
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const randomHex = (bytes = 8) => crypto.randomBytes(bytes).toString("hex");
+const eventFor = (events, type, fileKey) => (events || []).filter((event) => event.event_type === type && event.detail?.fileKey === fileKey);
+const fileRow = (snapshot, key) => (snapshot.files || []).find((file) => file.file_key === key);
+const locationRow = (snapshot, logicalFile, deviceId) => (snapshot.fileLocations || []).find((row) => row.logical_file_id === logicalFile.id && row.device_id === deviceId && (row.storage_provider || "local") === "local");
 
 async function signUp(email, password) {
   const response = await fetch(`${Cloud.SUPABASE_URL}/auth/v1/signup`, {
@@ -37,13 +28,14 @@ async function signUp(email, password) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.msg || payload.message || payload.error_description || payload.error || `signup ${response.status}`);
-  if (!payload.user?.id) throw new Error("Supabase signup did not return a user id");
-  return payload;
+  const user = payload.user?.id ? payload.user : payload.id ? payload : null;
+  if (!user?.id) throw new Error(`Supabase signup returned no user id; keys=${Object.keys(payload).sort().join(",")}`);
+  return { payload, user };
 }
 
 async function awaitEnabledSession(email, password) {
   let lastError = null;
-  for (let attempt = 1; attempt <= WAIT_ATTEMPTS; attempt += 1) {
+  for (let attempt = 1; attempt <= 120; attempt += 1) {
     try {
       const session = await Cloud.passwordLogin(email, password);
       const client = new Cloud.CreatorCloudClient({ refreshToken: session.refresh_token });
@@ -52,23 +44,19 @@ async function awaitEnabledSession(email, password) {
       return { session, client };
     } catch (error) {
       lastError = error;
-      if (attempt === 1 || attempt % 12 === 0) {
-        console.log(`SMOKE_WAITING_FOR_TEST_ACCOUNT attempt=${attempt} status=${error.status || 0}`);
-      }
-      await sleep(WAIT_MS);
+      if (attempt === 1 || attempt % 12 === 0) console.log(`SMOKE_WAITING_FOR_TEST_ACCOUNT attempt=${attempt} status=${error.status || 0}`);
+      await sleep(2500);
     }
   }
-  throw new Error(`Temporary smoke account was not enabled in time: ${lastError?.message || "unknown error"}`);
+  throw new Error(`Temporary smoke account was not enabled: ${lastError?.message || "unknown"}`);
 }
 
 async function runAgent(configPath) {
-  const { stdout, stderr } = await execFileAsync(process.execPath, [
-    path.join(ROOT, "scripts/creator-local-agent/index.cjs"), "--once", "--config", configPath,
-  ], { cwd: ROOT, env: process.env, maxBuffer: 4 * 1024 * 1024 });
+  const { stdout, stderr } = await execFileAsync(process.execPath, [path.join(ROOT, "scripts/creator-local-agent/index.cjs"), "--once", "--config", configPath], {
+    cwd: ROOT, env: process.env, maxBuffer: 4 * 1024 * 1024,
+  });
   if (stderr.trim()) process.stderr.write(stderr);
-  const clean = stdout.split(/\r?\n/).filter((line) => !/refresh|token|password/i.test(line)).join("\n");
-  console.log(clean);
-  return stdout;
+  console.log(stdout.split(/\r?\n/).filter((line) => !/refresh|token|password/i.test(line)).join("\n"));
 }
 
 async function main() {
@@ -87,33 +75,21 @@ async function main() {
   const signup = await signUp(email, password);
   console.log(`SMOKE_USER_ID=${signup.user.id}`);
   console.log("SMOKE_ACTIVATION_REQUIRED=1");
-
   const { session, client } = await awaitEnabledSession(email, password);
   console.log("SMOKE_ACCOUNT_ENABLED=1");
 
-  const project = Engine.createProject({
-    projectId,
-    name: "TEST / SMOKE Creator Project",
-    game: "TEST",
-    topic: "Phase 2A.2 Production Smoke",
-  });
+  const project = Engine.createProject({ projectId, name: "TEST / SMOKE Creator Project", game: "TEST", topic: "Phase 2A.2 Production Smoke" });
   assert.equal(project.projectType, "STANDARD_VIDEO");
   assert.equal(project.currentState, "IDEA");
   assert.equal(project.locks.audioLock, false);
   assert.equal(project.locks.pictureLock, false);
-
   await client.api("saveProject", {
-    projectData: project,
-    baseRevision: 0,
-    deviceId: bootstrapDeviceId,
+    projectData: project, baseRevision: 0, deviceId: bootstrapDeviceId,
     device: { deviceId: bootstrapDeviceId, label: "GUCC Smoke Bootstrap", deviceKind: "web", platform: "github-actions-smoke" },
   });
   console.log(`SMOKE_PROJECT_ID=${projectId}`);
 
-  await fsp.mkdir(path.join(projectRoot, "00_CONTROL"), { recursive: true });
-  await fsp.mkdir(path.join(projectRoot, "03_AUDIO"), { recursive: true });
-  await fsp.mkdir(path.join(projectRoot, "04_SUBTITLES"), { recursive: true });
-  await fsp.mkdir(path.join(projectRoot, "09_FINAL"), { recursive: true });
+  for (const dir of ["00_CONTROL", "03_AUDIO", "04_SUBTITLES", "09_FINAL"]) await fsp.mkdir(path.join(projectRoot, dir), { recursive: true });
   await fsp.writeFile(path.join(projectRoot, "00_CONTROL", "PROJECT_DATA.json"), Engine.projectDataJson(project));
   const audioPath = path.join(projectRoot, "03_AUDIO", "AUDIO_MASTER.wav");
   const subtitlePath = path.join(projectRoot, "04_SUBTITLES", "SUBTITLE_MASTER.srt");
@@ -123,15 +99,7 @@ async function main() {
   await fsp.writeFile(videoPath, Buffer.from("GUCC smoke video metadata only\n"));
 
   const validated = await Core.validateWorkspaceRoot(workspace);
-  await Core.saveConfig({
-    deviceId: agentDeviceId,
-    label: "GUCC Phase2A2 Smoke Agent",
-    workspaceRoot: validated.root,
-    workspaceRealRoot: validated.realRoot,
-    email,
-    refreshToken: session.refresh_token,
-    lastSync: null,
-  }, configPath);
+  await Core.saveConfig({ deviceId: agentDeviceId, label: "GUCC Phase2A2 Smoke Agent", workspaceRoot: validated.root, workspaceRealRoot: validated.realRoot, email, refreshToken: session.refresh_token, lastSync: null }, configPath);
   console.log(`SMOKE_AGENT_DEVICE_ID=${agentDeviceId}`);
 
   await runAgent(configPath);
@@ -140,21 +108,14 @@ async function main() {
   const subtitleFile = fileRow(snapshot, "SUBTITLE_MASTER");
   const videoFile = fileRow(snapshot, "VIDEO_V1");
   assert(audioFile && subtitleFile && videoFile);
-  const audioLocation1 = locationRow(snapshot, audioFile, agentDeviceId);
-  const subtitleLocation1 = locationRow(snapshot, subtitleFile, agentDeviceId);
-  const videoLocation1 = locationRow(snapshot, videoFile, agentDeviceId);
-  for (const [location, expectedPath] of [
-    [audioLocation1, "03_AUDIO/AUDIO_MASTER.wav"],
-    [subtitleLocation1, "04_SUBTITLES/SUBTITLE_MASTER.srt"],
-    [videoLocation1, "09_FINAL/VIDEO_V1.mp4"],
-  ]) {
+  for (const [logical, expectedPath] of [[audioFile, "03_AUDIO/AUDIO_MASTER.wav"], [subtitleFile, "04_SUBTITLES/SUBTITLE_MASTER.srt"], [videoFile, "09_FINAL/VIDEO_V1.mp4"]]) {
+    const location = locationRow(snapshot, logical, agentDeviceId);
     assert(location);
     assert.equal(location.availability, "present");
     assert.equal(location.relative_path, expectedPath);
     assert(Number(location.size_bytes) > 0);
     assert.match(String(location.checksum || ""), /^sha256:[a-f0-9]{64}$/);
-    assert(location.observed_at);
-    assert(location.file_modified_at);
+    assert(location.observed_at && location.file_modified_at);
   }
   const agentDevice = (snapshot.devices || []).find((device) => device.device_id === agentDeviceId);
   assert(agentDevice);
@@ -163,7 +124,6 @@ async function main() {
   assert(agentDevice.last_seen_at);
   assert.equal(eventFor(snapshot.events, "FILE_FIRST_SEEN", "AUDIO_MASTER").length, 1);
   assert.equal(eventFor(snapshot.events, "FILE_FIRST_SEEN", "SUBTITLE_MASTER").length, 1);
-
   assert.equal(snapshot.project.current_state, "IDEA");
   assert.equal(snapshot.project.locks.audioLock, false);
   assert.equal(snapshot.project.locks.pictureLock, false);
@@ -185,30 +145,24 @@ async function main() {
   await fsp.writeFile(audioPath, Buffer.from("GUCC phase2a2 smoke audio v2 replaced\n"));
   await runAgent(configPath);
   snapshot = await client.getProject(projectId);
-  const replaced = locationRow(snapshot, audioFile, agentDeviceId);
-  assert.notEqual(replaced.checksum, beforeChecksum);
+  assert.notEqual(locationRow(snapshot, audioFile, agentDeviceId).checksum, beforeChecksum);
   assert.equal(eventFor(snapshot.events, "FILE_REPLACED", "AUDIO_MASTER").length, 1);
 
-  const fileEventCountBefore = (snapshot.events || []).filter((event) => String(event.event_type || "").startsWith("FILE_")).length;
+  const eventCount = (snapshot.events || []).filter((event) => String(event.event_type || "").startsWith("FILE_")).length;
   await runAgent(configPath);
   await runAgent(configPath);
   snapshot = await client.getProject(projectId);
   const fileEvents = (snapshot.events || []).filter((event) => String(event.event_type || "").startsWith("FILE_"));
-  assert.equal(fileEvents.length, fileEventCountBefore);
+  assert.equal(fileEvents.length, eventCount);
   assert.equal(fileEvents.some((event) => ["FILE_PRESENT", "FILE_SCANNED", "FILE_LOCATION_UPDATED"].includes(event.event_type)), false);
-
   assert.equal(snapshot.project.current_state, "IDEA");
   assert.equal(snapshot.project.locks.audioLock, false);
   assert.equal(snapshot.project.locks.pictureLock, false);
 
   console.log(`SMOKE_FILE_EVENTS=${fileEvents.map((event) => `${event.event_type}:${event.detail?.fileKey || ""}`).join(",")}`);
   console.log("SMOKE_PASS=1");
-  console.log("SMOKE_CLEANUP_NOTE=Production test rows intentionally retained for connector readback; clean by exact project/user ids after verification.");
-
+  console.log("SMOKE_CLEANUP_NOTE=Production TEST rows retained only for connector readback; delete by exact project/user ids after verification.");
   await fsp.rm(temp, { recursive: true, force: true });
 }
 
-main().catch((error) => {
-  console.error(`SMOKE_FAIL=${error.stack || error.message || error}`);
-  process.exit(1);
-});
+main().catch((error) => { console.error(`SMOKE_FAIL=${error.stack || error.message || error}`); process.exit(1); });

@@ -15,19 +15,11 @@ const Engine = require(path.join(ROOT, "apps/video-workspace/production-system/e
 const Core = require(path.join(ROOT, "scripts/creator-local-agent/core.cjs"));
 const Cloud = require(path.join(ROOT, "scripts/creator-local-agent/cloud.cjs"));
 const execFileAsync = promisify(execFile);
-
-const WAIT_MS = 2000;
-const WAIT_ATTEMPTS = 150;
-const SMOKE_USER_ID = "4eca9371-dd6e-4d84-95b6-324728313653";
-const SMOKE_EMAIL = "gucc-smoke-mtb9x097_1269a527@outlook.com";
+const OIDC_AUDIENCE = "gucc-phase2a2-smoke";
+const BOOTSTRAP_URL = `${Cloud.SUPABASE_URL}/functions/v1/creator-smoke-bootstrap`;
 
 function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 function randomHex(bytes = 8) { return crypto.randomBytes(bytes).toString("hex"); }
-function smokePassword() {
-  const sha = String(process.env.GITHUB_SHA || "").trim();
-  if (!/^[a-f0-9]{40}$/i.test(sha)) throw new Error("GITHUB_SHA is required for isolated production smoke authentication");
-  return `${crypto.createHash("sha256").update(`gucc-phase2a2:${sha}:${SMOKE_USER_ID}`).digest("hex")}Aa!7`;
-}
 function eventFor(events, type, fileKey) {
   return (events || []).filter((event) => event.event_type === type && event.detail?.fileKey === fileKey);
 }
@@ -39,22 +31,28 @@ function fileEventCount(snapshot) {
   return (snapshot.events || []).filter((event) => String(event.event_type || "").startsWith("FILE_")).length;
 }
 
-async function awaitEnabledSession(email, password) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= WAIT_ATTEMPTS; attempt += 1) {
-    try {
-      const session = await Cloud.passwordLogin(email, password);
-      const client = new Cloud.CreatorCloudClient({ refreshToken: session.refresh_token });
-      client.accessToken = session.access_token || "";
-      await client.ping();
-      return { session, client };
-    } catch (error) {
-      lastError = error;
-      if (attempt === 1 || attempt % 10 === 0) console.log(`SMOKE_WAITING_FOR_TEST_ACCOUNT attempt=${attempt} status=${error.status || 0}`);
-      await sleep(WAIT_MS);
-    }
-  }
-  throw new Error(`Temporary smoke account was not enabled in time: ${lastError?.message || "unknown error"}`);
+async function githubOidcToken() {
+  const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+  const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+  if (!requestUrl || !requestToken) throw new Error("GitHub Actions OIDC environment is unavailable");
+  const url = new URL(requestUrl);
+  url.searchParams.set("audience", OIDC_AUDIENCE);
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${requestToken}` } });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.value) throw new Error(`GitHub OIDC token request failed (${response.status})`);
+  return payload.value;
+}
+
+async function bootstrapSmokeUser(email, password) {
+  const oidc = await githubOidcToken();
+  const response = await fetch(BOOTSTRAP_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json", Authorization: `Bearer ${oidc}` },
+    body: JSON.stringify({ email, password }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.userId) throw new Error(payload.error || `Smoke bootstrap failed (${response.status})`);
+  return payload;
 }
 
 async function runAgent(configPath) {
@@ -70,8 +68,8 @@ async function runAgent(configPath) {
 async function main() {
   assert.equal(process.platform, "win32", "Production smoke must run on a Windows runner");
   const suffix = `${Date.now().toString(36)}_${randomHex(4)}`;
-  const email = SMOKE_EMAIL;
-  const password = smokePassword();
+  const email = `gucc-smoke-${suffix}@outlook.com`;
+  const password = `${randomHex(24)}Aa!7`;
   const projectId = `project_smoke_${suffix}`;
   const bootstrapDeviceId = `web_smoke_${randomHex(12)}`;
   const agentDeviceId = Core.stableDeviceId();
@@ -80,15 +78,17 @@ async function main() {
   const projectRoot = path.join(workspace, `GUCC_LocalAgent_Smoke_${suffix.slice(-8)}`);
   const configPath = path.join(temp, "creator-agent.json");
 
-  console.log(`SMOKE_EMAIL=${email}`);
-  console.log(`SMOKE_USER_ID=${SMOKE_USER_ID}`);
-  console.log(`SMOKE_CREDENTIAL_SHA=${process.env.GITHUB_SHA}`);
-
-  let session;
   let client;
   try {
-    ({ session, client } = await awaitEnabledSession(email, password));
-    console.log("SMOKE_ACCOUNT_ENABLED=1");
+    const bootstrap = await bootstrapSmokeUser(email, password);
+    console.log(`SMOKE_USER_ID=${bootstrap.userId}`);
+    console.log("SMOKE_OIDC_BOOTSTRAP=1");
+
+    const session = await Cloud.passwordLogin(email, password);
+    client = new Cloud.CreatorCloudClient({ refreshToken: session.refresh_token });
+    client.accessToken = session.access_token || "";
+    await client.ping();
+    console.log("SMOKE_NORMAL_USER_SESSION=1");
 
     const project = Engine.createProject({
       projectId,
@@ -135,7 +135,6 @@ async function main() {
     console.log(`SMOKE_AGENT_DEVICE_ID=${agentDeviceId}`);
     console.log(`SMOKE_PLATFORM=${process.platform}/${process.arch} Node ${process.versions.node}`);
 
-    // 1) First real Windows Local Agent scan: present + metadata.
     await runAgent(configPath);
     let snapshot = await client.getProject(projectId);
     const audioFile = fileRow(snapshot, "AUDIO_MASTER");
@@ -170,13 +169,11 @@ async function main() {
     assert.equal(snapshot.project.locks.audioLock, false);
     assert.equal(snapshot.project.locks.pictureLock, false);
 
-    // 2) Repeat unchanged first state: no duplicate FIRST_SEEN.
     const afterFirst = fileEventCount(snapshot);
     await runAgent(configPath);
     snapshot = await client.getProject(projectId);
     assert.equal(fileEventCount(snapshot), afterFirst);
 
-    // 3) Disappear and repeat missing.
     await fsp.rm(audioPath);
     await runAgent(configPath);
     snapshot = await client.getProject(projectId);
@@ -187,7 +184,6 @@ async function main() {
     snapshot = await client.getProject(projectId);
     assert.equal(fileEventCount(snapshot), afterDisappear);
 
-    // 4) Reappear and repeat present.
     await fsp.writeFile(audioPath, audioV1);
     await runAgent(configPath);
     snapshot = await client.getProject(projectId);
@@ -198,7 +194,6 @@ async function main() {
     snapshot = await client.getProject(projectId);
     assert.equal(fileEventCount(snapshot), afterReappear);
 
-    // 5) Content replace -> checksum changes exactly once.
     const beforeChecksum = locationRow(snapshot, audioFile, agentDeviceId).checksum;
     await sleep(50);
     await fsp.writeFile(audioPath, Buffer.from("GUCC phase2a2 smoke audio v2 replacement with different bytes\n"));
@@ -208,7 +203,6 @@ async function main() {
     assert.notEqual(replaced.checksum, beforeChecksum);
     assert.equal(eventFor(snapshot.events, "FILE_REPLACED", "AUDIO_MASTER").length, 1);
 
-    // 6) mtime-only change with identical bytes must not count as replacement.
     const sameBytes = await fsp.readFile(audioPath);
     const replaceCount = eventFor(snapshot.events, "FILE_REPLACED", "AUDIO_MASTER").length;
     const future = new Date(Date.now() + 5000);
@@ -218,7 +212,6 @@ async function main() {
     snapshot = await client.getProject(projectId);
     assert.equal(eventFor(snapshot.events, "FILE_REPLACED", "AUDIO_MASTER").length, replaceCount);
 
-    // 7) Final unchanged scan and human gate proof.
     const eventCountBeforeFinal = fileEventCount(snapshot);
     await runAgent(configPath);
     snapshot = await client.getProject(projectId);

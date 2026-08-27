@@ -70,10 +70,14 @@ function pkcePair() {
   return { verifier, challenge };
 }
 
+export function browserLaunchCommand(url, platform = process.platform) {
+  if (platform === "win32") return ["explorer.exe", [String(url)]];
+  if (platform === "darwin") return ["open", [String(url)]];
+  return ["xdg-open", [String(url)]];
+}
+
 function openBrowser(url) {
-  const command = process.platform === "win32" ? ["cmd", ["/c", "start", "", url]]
-    : process.platform === "darwin" ? ["open", [url]]
-    : ["xdg-open", [url]];
+  const command = browserLaunchCommand(url);
   try {
     const child = spawn(command[0], command[1], { detached: true, stdio: "ignore" });
     child.unref();

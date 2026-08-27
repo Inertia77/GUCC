@@ -20,19 +20,6 @@ const eventFor = (events, type, fileKey) => (events || []).filter((event) => eve
 const fileRow = (snapshot, key) => (snapshot.files || []).find((file) => file.file_key === key);
 const locationRow = (snapshot, logicalFile, deviceId) => (snapshot.fileLocations || []).find((row) => row.logical_file_id === logicalFile.id && row.device_id === deviceId && (row.storage_provider || "local") === "local");
 
-async function signUp(email, password) {
-  const response = await fetch(`${Cloud.SUPABASE_URL}/auth/v1/signup`, {
-    method: "POST",
-    headers: { "content-type": "application/json", apikey: Cloud.SUPABASE_ANON_KEY },
-    body: JSON.stringify({ email, password, data: { gucc_smoke_test: true } }),
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.msg || payload.message || payload.error_description || payload.error || `signup ${response.status}`);
-  const user = payload.user?.id ? payload.user : payload.id ? payload : null;
-  if (!user?.id) throw new Error(`Supabase signup returned no user id; keys=${Object.keys(payload).sort().join(",")}`);
-  return { payload, user };
-}
-
 async function awaitEnabledSession(email, password) {
   let lastError = null;
   for (let attempt = 1; attempt <= 120; attempt += 1) {
@@ -40,8 +27,8 @@ async function awaitEnabledSession(email, password) {
       const session = await Cloud.passwordLogin(email, password);
       const client = new Cloud.CreatorCloudClient({ refreshToken: session.refresh_token });
       client.accessToken = session.access_token || "";
-      await client.ping();
-      return { session, client };
+      const ping = await client.ping();
+      return { session, client, ping };
     } catch (error) {
       lastError = error;
       if (attempt === 1 || attempt % 12 === 0) console.log(`SMOKE_WAITING_FOR_TEST_ACCOUNT attempt=${attempt} status=${error.status || 0}`);
@@ -60,11 +47,12 @@ async function runAgent(configPath) {
 }
 
 async function main() {
-  const suffix = `${Date.now().toString(36)}_${randomHex(4)}`;
+  const runSha = String(process.env.GITHUB_SHA || crypto.createHash("sha256").update(`${Date.now()}-${randomHex(8)}`).digest("hex")).toLowerCase();
+  const suffix = runSha.slice(0, 12);
   const email = `gucc-smoke-${suffix}@gmail.com`;
-  const password = `${randomHex(18)}Aa!7`;
+  const password = `GuccSmoke!${runSha.slice(0, 20)}Aa7`;
   const projectId = `project_smoke_${suffix}`;
-  const bootstrapDeviceId = `web_smoke_${randomHex(12)}`;
+  const bootstrapDeviceId = `web_smoke_${suffix}`;
   const agentDeviceId = Core.stableDeviceId();
   const temp = await fsp.mkdtemp(path.join(os.tmpdir(), "GUCC_SMOKE_TEST_"));
   const workspace = path.join(temp, "GUCC_SMOKE_TEST");
@@ -72,10 +60,10 @@ async function main() {
   const configPath = path.join(temp, "creator-agent.json");
 
   console.log(`SMOKE_EMAIL=${email}`);
-  const signup = await signUp(email, password);
-  console.log(`SMOKE_USER_ID=${signup.user.id}`);
-  console.log("SMOKE_ACTIVATION_REQUIRED=1");
-  const { session, client } = await awaitEnabledSession(email, password);
+  console.log("SMOKE_PROVISIONING_REQUIRED=1");
+  const { session, client, ping } = await awaitEnabledSession(email, password);
+  assert(ping?.user?.id);
+  console.log(`SMOKE_USER_ID=${ping.user.id}`);
   console.log("SMOKE_ACCOUNT_ENABLED=1");
 
   const project = Engine.createProject({ projectId, name: "TEST / SMOKE Creator Project", game: "TEST", topic: "Phase 2A.2 Production Smoke" });

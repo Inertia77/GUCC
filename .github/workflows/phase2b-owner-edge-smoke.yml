@@ -1,0 +1,30 @@
+name: Phase 2B Owner Edge Smoke
+
+on:
+  push:
+    branches:
+      - feature/creator-os-phase2b-20260827
+    paths:
+      - .github/workflows/phase2b-owner-edge-smoke.yml
+      - scripts/phase2b-owner-edge-smoke.cjs
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  owner-edge-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run authenticated owner archive Edge smoke
+        run: node scripts/phase2b-owner-edge-smoke.cjs

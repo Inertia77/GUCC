@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { generateArchivePackage, evaluateArchiveFile } from "../../assets/creator-project-archive-core.mjs";
+import { applyArchiveSafeSnapshot } from "../../assets/creator-archive-safe-snapshot.mjs";
 import { DriveArchivePublisher } from "./drive-publisher.mjs";
 import {
   defaultOAuthConfigPath,
@@ -87,6 +89,20 @@ async function lightweightArtifactContents(localProject, files) {
   return result;
 }
 
+function packageFingerprint(pkg) {
+  const hash = crypto.createHash("sha256");
+  const files = [pkg.mainMarkdown, pkg.snapshotJson, pkg.eventsJson, ...(pkg.companions || [])]
+    .slice()
+    .sort((a, b) => String(a.filename).localeCompare(String(b.filename)));
+  for (const file of files) {
+    hash.update(String(file.filename));
+    hash.update("\0");
+    hash.update(String(file.content));
+    hash.update("\0");
+  }
+  return `sha256:${hash.digest("hex")}`;
+}
+
 async function saveLocalPackage(pkg) {
   const dir = path.join(os.homedir(), ".gucc", "archive-packages", pkg.identity.projectId);
   await fs.mkdir(dir, { recursive: true, mode: 0o700 });
@@ -111,41 +127,58 @@ function shouldProcess(row, explicitId) {
 
 async function processProject(client, row, options, googleConfig) {
   const projectId = row.project_id;
-  let snapshot = await client.getProject(projectId);
+  const snapshot = await client.getProject(projectId);
   if (!["PUBLISHED", "ARCHIVED"].includes(snapshot.project.current_state)) throw new Error(`${projectId} is ${snapshot.project.current_state}; Archive is available only after PUBLISHED`);
 
   const workspaceRoot = options.workspaceRoot || options.agentConfig.workspaceRoot || "";
   const localProject = await localProjectFor(projectId, workspaceRoot);
   const artifactContents = await lightweightArtifactContents(localProject, snapshot.files || []);
   const generatedAt = snapshot.project.project_data?.integration?.archive?.generatedAt || new Date().toISOString();
-  const pkg = generateArchivePackage({
+  const archiveInput = {
     project: snapshot.project,
     files: snapshot.files || [],
     fileLocations: snapshot.fileLocations || [],
     devices: snapshot.devices || [],
     events: snapshot.events || [],
     releases: snapshot.releases || [],
+    analytics: snapshot.analytics || [],
     artifactContents,
-  }, { generatedAt });
+  };
+  let pkg = generateArchivePackage(archiveInput, { generatedAt });
+  pkg = applyArchiveSafeSnapshot(pkg, archiveInput);
+  const fingerprint = packageFingerprint(pkg);
   const localDir = await saveLocalPackage(pkg);
   console.log(`Archive generated: ${projectId} -> ${localDir} (${pkg.totalBytes} bytes)`);
-  const generated = await client.api("recordArchiveGenerated", {
-    projectId,
-    baseRevision: snapshot.project.revision,
-    archive: {
-      archiveVersion: pkg.archiveVersion,
-      generatedAt: pkg.identity.generatedAt,
-      mainFilename: pkg.mainMarkdown.filename,
-      checksum: "",
-      totalBytes: pkg.totalBytes,
-      warnings: pkg.warnings,
-    },
-  });
-  let baseRevision = generated.revision;
+
+  const currentArchive = snapshot.project.project_data?.integration?.archive || {};
+  let baseRevision = Number(snapshot.project.revision || 0);
+  const identicalGenerated = currentArchive.status === "generated"
+    && currentArchive.archiveVersion === pkg.archiveVersion
+    && currentArchive.fingerprint === fingerprint
+    && currentArchive.mainFilename === pkg.mainMarkdown.filename
+    && Number(currentArchive.totalBytes || 0) === Number(pkg.totalBytes || 0);
+
+  if (!identicalGenerated) {
+    const generated = await client.api("recordArchiveGenerated", {
+      projectId,
+      baseRevision,
+      archive: {
+        archiveVersion: pkg.archiveVersion,
+        generatedAt: pkg.identity.generatedAt,
+        mainFilename: pkg.mainMarkdown.filename,
+        fingerprint,
+        totalBytes: pkg.totalBytes,
+        warnings: pkg.warnings,
+      },
+    });
+    baseRevision = generated.revision;
+  } else {
+    console.log(`Archive unchanged: ${projectId} · generated state already matches ${fingerprint}`);
+  }
 
   if (!googleConfig) {
     console.log("Drive Runtime Publisher Pending OAuth Setup. Run: npm run creator:archive -- --setup-drive");
-    return { projectId, status: "generated", localDir, drivePending: true };
+    return { projectId, status: "generated", localDir, drivePending: true, fingerprint };
   }
 
   try {
@@ -162,13 +195,14 @@ async function processProject(client, row, options, googleConfig) {
         mainFileId: published.mainFileId,
         mainFileUrl: published.mainFileUrl,
         checksum: published.checksum,
+        fingerprint,
         verifiedAt: published.verifiedAt,
         publishedAt: new Date().toISOString(),
         warnings: published.warnings,
       },
     });
     console.log(`Archive published + verified: ${projectId} -> ${published.mainFileUrl}`);
-    return { projectId, status: recorded.project?.current_state === "ARCHIVED" ? "archived" : "published", published };
+    return { projectId, status: recorded.project?.current_state === "ARCHIVED" ? "archived" : "published", published, fingerprint };
   } catch (error) {
     await client.api("recordArchiveFailed", { projectId, baseRevision, error: String(error?.message || error).slice(0, 1200) }).catch(() => {});
     throw error;

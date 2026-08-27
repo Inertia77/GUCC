@@ -5,6 +5,7 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const edge = fs.readFileSync(path.join(root, "supabase/functions/creator-project-api/index.ts"), "utf8");
 const migration = fs.readFileSync(path.join(root, "supabase/migrations/20260827222000_creator_archive_state_guard.sql"), "utf8");
+const refreshMigration = fs.readFileSync(path.join(root, "supabase/migrations/20260827234000_creator_archived_update_proof_guard.sql"), "utf8");
 
 assert.match(migration, /creator_archive_transition_is_verified/i);
 assert.match(migration, /guard_creator_archive_state_transition/i);
@@ -14,6 +15,15 @@ assert.match(migration, /ARCHIVED requires verified Google Drive archive metadat
 assert.match(migration, /ARCHIVED Creator project cannot be reopened/i);
 assert.match(migration, /status[^\n]+published[\s\S]+provider[^\n]+google_drive/i);
 assert.match(migration, /status[^\n]+manual_override[\s\S]+overrideReason/i);
+
+assert.match(refreshMigration, /creator_archive_has_retained_drive_proof/i);
+assert.match(refreshMigration, /creator_archive_preserves_prior_proof/i);
+assert.match(refreshMigration, /old\.current_state <> 'ARCHIVED' and new\.current_state = 'ARCHIVED'/i);
+assert.match(refreshMigration, /old\.current_state = 'ARCHIVED' and new\.current_state <> 'ARCHIVED'/i);
+assert.match(refreshMigration, /old\.current_state = 'ARCHIVED' and new\.current_state = 'ARCHIVED'/i);
+assert.match(refreshMigration, /pending[\s\S]+generating[\s\S]+generated[\s\S]+failed/i);
+assert.match(refreshMigration, /preserve prior verified archive proof until replacement verification succeeds/i);
+assert.match(refreshMigration, /folderId[\s\S]+mainFileId[\s\S]+verifiedAt[\s\S]+checksum/i);
 
 assert.match(edge, /function guardGenericArchiveState/i, "Edge must reject generic ARCHIVED transitions before the DB RPC");
 assert.match(edge, /guardGenericArchiveState\(existing, currentState\)/, "saveProject must invoke the Edge archive gate");

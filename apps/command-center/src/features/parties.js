@@ -34,6 +34,7 @@ import {
 
 let partyRows = new Map();
 const PARTY_MARKDOWN_LINK = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/gi;
+const PARTY_MEMBER_SLOT_COUNT = 5;
 const FILTERS = {
   '#partyKeyword': 'pq',
   '#partyGame': 'pg',
@@ -180,7 +181,7 @@ function openEditor(data = {}) {
         <label>持有状态
           <select name="hold_status" required>${renderFixedFieldOptions('partyHoldStatus', data.hold_status)}</select>
         </label>
-        ${[0, 1, 2, 3].map((index) => `<label>成员 ${index + 1} <input name="m${index + 1}" value="${escapeHtml(members[index]?.name || members[index]?.member_name_raw || '')}" /></label>`).join('')}
+        ${Array.from({ length: PARTY_MEMBER_SLOT_COUNT }, (_, index) => `<label>成员 ${index + 1} <input name="m${index + 1}" value="${escapeHtml(members[index]?.name || members[index]?.member_name_raw || '')}" /></label>`).join('')}
         <label class="wide">
           说明正文
           <span class="field-help">正文支持自由换行；需要添加链接时使用下方的链接表单。</span>
@@ -211,9 +212,10 @@ function openEditor(data = {}) {
       try {
         const listContext = captureListContext($('#partyResults'));
         const form = readForm(event.currentTarget);
-        const membersPayload = [form.m1, form.m2, form.m3, form.m4]
-          .filter(Boolean)
-          .map((name, index) => ({ slot_no: index + 1, name }));
+        const membersPayload = Array.from({ length: PARTY_MEMBER_SLOT_COUNT }, (_, index) => ({
+          slot_no: index + 1,
+          name: form[`m${index + 1}`]
+        })).filter((member) => member.name);
         const result = await API.saveParty({
           id: form.id || null,
           game_code: form.game_code,

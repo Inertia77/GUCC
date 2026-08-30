@@ -1,3 +1,5 @@
+@import url('./game-themes.css');
+
 @media (max-width: 900px) {
   body.gucc-enhanced .topbar .back-link {
     display: inline-flex;

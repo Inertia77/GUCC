@@ -36,6 +36,7 @@ const FILTERS = {
   '#versionGameCustom': 'vgx'
 };
 const COLLAPSE_KEY = 'versions';
+const VERSION_SEARCH_LIMIT = 500;
 
 function normalizeToken(value) {
   return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
@@ -44,38 +45,70 @@ function normalizeToken(value) {
 function phaseKey(value) {
   const token = normalizeToken(value);
   if (!token) return 'other';
+  if (token.includes('whole') || token.includes('entire') || token.includes('整版本')) return 'whole_version';
   if (token.includes('first') || token.includes('phase_1') || token.includes('上半')) return 'first_half';
   if (token.includes('second') || token.includes('phase_2') || token.includes('下半')) return 'second_half';
+  if (token.includes('independent') || token.includes('独立')) return 'independent';
   if (token.includes('standard') || token.includes('permanent') || token.includes('常驻') || token.includes('非限定')) return 'standard';
   return 'other';
 }
 
 function phaseLabel(key, raw) {
   return {
+    whole_version: '整版本',
     first_half: '上半',
     second_half: '下半',
-    standard: '常驻 / 其他池',
-    other: raw || '未分组'
-  }[key] || raw || '未分组';
+    independent: '独立时段',
+    standard: '常驻',
+    other: raw || '其他 / 未分组'
+  }[key] || raw || '其他 / 未分组';
 }
 
-function bannerTypeLabel(value) {
-  const token = normalizeToken(value);
-  if (token.includes('rerun') || token.includes('复刻')) return '复刻';
-  if (token.includes('standard_addition') || token.includes('常驻追加')) return '常驻追加';
-  if (token.includes('standard') || token.includes('permanent') || token.includes('常驻')) return '常驻';
-  if (token.includes('new_limited')) return '新限定';
-  if (token.includes('pickup') || token.includes('up')) return '新出 / UP';
-  if (token.includes('collab') || token.includes('联动')) return '联动';
-  return value || '未标注';
+function poolTypeLabel(value) {
+  return {
+    limited: '限定池',
+    rerun: '复刻池',
+    collab: '联动池',
+    standard: '常驻池',
+    restructured: '重构寻访',
+    custom: '定制池',
+    selector: '自选池',
+    other: '其他池',
+    unknown: '池类型未标注'
+  }[normalizeToken(value)] || value || '池类型未标注';
 }
 
-function bannerTypeClass(value) {
-  const token = normalizeToken(value);
-  if (token.includes('rerun') || token.includes('复刻')) return 'rerun';
-  if (token.includes('standard') || token.includes('permanent') || token.includes('常驻')) return 'standard';
-  if (token.includes('new') || token.includes('pickup') || token.includes('up') || token.includes('限定')) return 'new';
+function entryRoleLabel(value) {
+  return {
+    featured_new: '新角色 UP',
+    featured_rerun: '复刻 UP',
+    featured: 'UP / 主推',
+    standard_addition: '常驻追加',
+    pool_option: '可选角色',
+    other: '其他身份',
+    unknown: '身份未标注'
+  }[normalizeToken(value)] || value || '身份未标注';
+}
+
+function bannerVisualClass(banner) {
+  const role = normalizeToken(banner.entry_role);
+  const pool = normalizeToken(banner.pool_type);
+  if (role === 'featured_rerun' || pool === 'rerun' || pool === 'restructured') return 'rerun';
+  if (role === 'standard_addition' || pool === 'standard') return 'standard';
+  if (role === 'featured_new' || pool === 'limited' || pool === 'collab') return 'new';
   return 'other';
+}
+
+function acquisitionTypeLabel(value) {
+  return {
+    login_reward: '登录赠送',
+    event_reward: '活动赠送',
+    mail_reward: '邮件赠送',
+    selector: '自选获取',
+    shop_exchange: '商店兑换',
+    story_reward: '剧情获取',
+    other: '其他非卡池获取'
+  }[normalizeToken(value)] || value || '其他非卡池获取';
 }
 
 function formatWindow(start, end) {
@@ -100,10 +133,13 @@ function renderBannerChip(banner) {
   const windowText = formatWindow(banner.start_at, banner.end_at);
   const window = windowText ? `<small>时间：${escapeHtml(windowText)}</small>` : '';
   const note = banner.note ? `<small>${escapeHtml(banner.note)}</small>` : '';
+  const poolName = banner.pool_name ? `<small>池名：${escapeHtml(banner.pool_name)}</small>` : '';
+  const featured = banner.is_featured === false ? ' · 非UP' : '';
   return `
-    <div class="banner-chip ${bannerTypeClass(banner.banner_type)}">
+    <div class="banner-chip ${bannerVisualClass(banner)}">
       <span class="banner-character">${escapeHtml(character)}</span>
-      <span class="banner-type">${escapeHtml(bannerTypeLabel(banner.banner_type))}</span>
+      <span class="banner-type">${escapeHtml(`${poolTypeLabel(banner.pool_type)} · ${entryRoleLabel(banner.entry_role)}${featured}`)}</span>
+      ${poolName}
       ${window}
       ${note}
     </div>`;
@@ -111,7 +147,7 @@ function renderBannerChip(banner) {
 
 function renderBannerGroups(banners = []) {
   if (!Array.isArray(banners) || !banners.length) {
-    return '<div class="banner-empty">暂无卡池记录</div>';
+    return '<div class="banner-empty">暂无卡池 / 寻访记录</div>';
   }
 
   const grouped = banners.reduce((acc, banner) => {
@@ -121,7 +157,7 @@ function renderBannerGroups(banners = []) {
     return acc;
   }, {});
 
-  const order = ['first_half', 'second_half', 'standard', 'other'];
+  const order = ['whole_version', 'first_half', 'second_half', 'independent', 'standard', 'other'];
   return `
     <div class="version-banners">
       ${order.filter((key) => grouped[key]?.length).map((key) => `
@@ -136,25 +172,76 @@ function renderBannerGroups(banners = []) {
     </div>`;
 }
 
+function renderAcquisitions(acquisitions = []) {
+  if (!Array.isArray(acquisitions) || !acquisitions.length) return '';
+  return `
+    <section class="version-acquisitions">
+      <div class="phase-head">
+        <span>非卡池获取</span>
+        <small>${acquisitions.length} entries</small>
+      </div>
+      <div class="banner-list">
+        ${acquisitions.map((item) => {
+          const character = item.character_name || item.character_name_raw || '未命名角色';
+          const windowText = formatWindow(item.start_at, item.end_at);
+          return `
+            <div class="banner-chip other acquisition-chip">
+              <span class="banner-character">${escapeHtml(character)}</span>
+              <span class="banner-type">${escapeHtml(acquisitionTypeLabel(item.acquisition_type))}</span>
+              ${windowText ? `<small>时间：${escapeHtml(windowText)}</small>` : ''}
+              ${item.note ? `<small>${escapeHtml(item.note)}</small>` : ''}
+            </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+}
+
 const PHASE_OPTIONS = [
+  ['whole_version', '整版本'],
   ['first_half', '上半'],
   ['second_half', '下半'],
-  ['standard', '常驻 / 其他池'],
+  ['independent', '独立时段'],
+  ['standard', '常驻'],
   ['other', '其他']
 ];
 
-const BANNER_TYPE_OPTIONS = [
-  ['new_limited', '新限定'],
-  ['pickup', '新出 / UP'],
-  ['rerun', '复刻'],
+const POOL_TYPE_OPTIONS = [
+  ['limited', '限定池'],
+  ['rerun', '复刻池'],
+  ['collab', '联动池'],
+  ['standard', '常驻池'],
+  ['restructured', '重构寻访'],
+  ['custom', '定制池'],
+  ['selector', '自选池'],
+  ['other', '其他池']
+];
+
+const ENTRY_ROLE_OPTIONS = [
+  ['featured_new', '新角色 UP'],
+  ['featured_rerun', '复刻 UP'],
+  ['featured', 'UP / 主推'],
   ['standard_addition', '常驻追加'],
-  ['standard', '常驻'],
-  ['collab', '联动'],
+  ['pool_option', '可选角色'],
+  ['other', '其他身份']
+];
+
+const FEATURED_OPTIONS = [
+  ['true', '是'],
+  ['false', '否']
+];
+
+const ACQUISITION_TYPE_OPTIONS = [
+  ['login_reward', '登录赠送'],
+  ['event_reward', '活动赠送'],
+  ['mail_reward', '邮件赠送'],
+  ['selector', '自选获取'],
+  ['shop_exchange', '商店兑换'],
+  ['story_reward', '剧情获取'],
   ['other', '其他']
 ];
 
 function optionList(options, value) {
-  const current = String(value || '');
+  const current = String(value ?? '');
   const hasCurrent = options.some(([optionValue]) => optionValue === current);
   const normalizedOptions = current && !hasCurrent ? [[current, current], ...options] : options;
   return normalizedOptions.map(([optionValue, label]) => (
@@ -165,7 +252,7 @@ function optionList(options, value) {
 function normalizeBanners(banners) {
   return Array.isArray(banners) && banners.length
     ? banners
-    : [{ phase: 'first_half', banner_type: 'new_limited', character_name: '', start_at: '', end_at: '', note: '' }];
+    : [{ phase: 'first_half', pool_type: 'limited', entry_role: 'featured_new', is_featured: true, character_name: '', pool_name: '', start_at: '', end_at: '', note: '' }];
 }
 
 function renderBannerRow(banner = {}) {
@@ -173,11 +260,14 @@ function renderBannerRow(banner = {}) {
   return `
     <div class="structured-row banner-edit-row" data-banner-row>
       <label>阶段 <select data-banner-field="phase">${optionList(PHASE_OPTIONS, banner.phase || 'first_half')}</select></label>
-      <label>类型 <select data-banner-field="banner_type">${optionList(BANNER_TYPE_OPTIONS, banner.banner_type || 'new_limited')}</select></label>
-      <label>角色/对象 <input data-banner-field="character_name" value="${escapeHtml(character)}" placeholder="角色名 / 武器 / 卡池对象" /></label>
-      <label>开始时间 <input data-banner-field="start_at" value="${escapeHtml(banner.start_at || '')}" placeholder="2026-08-28T19:30:00+08:00" /></label>
-      <label>结束时间 <input data-banner-field="end_at" value="${escapeHtml(banner.end_at || '')}" placeholder="2026-09-10T11:59:00+08:00" /></label>
-      <label class="row-wide">备注 <input data-banner-field="note" value="${escapeHtml(banner.note || '')}" placeholder="免费送 / 伴生皮肤 / 限定规则等" /></label>
+      <label>池类型 <select data-banner-field="pool_type">${optionList(POOL_TYPE_OPTIONS, banner.pool_type || 'limited')}</select></label>
+      <label>角色身份 <select data-banner-field="entry_role">${optionList(ENTRY_ROLE_OPTIONS, banner.entry_role || 'featured_new')}</select></label>
+      <label>是否 UP <select data-banner-field="is_featured">${optionList(FEATURED_OPTIONS, String(banner.is_featured !== false))}</select></label>
+      <label>池名 <input data-banner-field="pool_name" value="${escapeHtml(banner.pool_name || '')}" placeholder="可留空：冬猎 / 独家重映" /></label>
+      <label>角色 <input data-banner-field="character_name" value="${escapeHtml(character)}" placeholder="角色名" /></label>
+      <label>开始时间 <input data-banner-field="start_at" value="${escapeHtml(banner.start_at || '')}" placeholder="2026-09-24T12:00:00+08:00" /></label>
+      <label>结束时间 <input data-banner-field="end_at" value="${escapeHtml(banner.end_at || '')}" placeholder="未知就留空，不要猜" /></label>
+      <label class="row-wide">备注 <input data-banner-field="note" value="${escapeHtml(banner.note || '')}" placeholder="规则 / 保底 / 版本更新后开启等" /></label>
       <button type="button" class="ghost remove-row" data-remove-banner>删除</button>
     </div>`;
 }
@@ -187,10 +277,10 @@ function renderBannerEditor(banners) {
     <section class="structured-editor wide" aria-label="版本卡池">
       <div class="structured-head">
         <div>
-          <strong>卡池信息</strong>
-          <span>时间请使用带时区的 ISO 8601，未知时留空；不要从版本周期猜结束时间。</span>
+          <strong>卡池 / 寻访</strong>
+          <span>阶段、池类型、角色身份分别填写。免费赠送不要写在这里；时间未知就留空，不从版本周期推测。</span>
         </div>
-        <button type="button" id="addVersionBanner" class="secondary add-row">添加卡池</button>
+        <button type="button" id="addVersionBanner" class="secondary add-row">添加池内角色</button>
       </div>
       <div id="versionBannerRows" class="structured-list">
         ${normalizeBanners(banners).map(renderBannerRow).join('')}
@@ -200,7 +290,11 @@ function renderBannerEditor(banners) {
 
 function emptyBannerRow(row) {
   row.querySelectorAll('[data-banner-field]').forEach((input) => {
-    input.value = input.dataset.bannerField === 'phase' ? 'first_half' : input.dataset.bannerField === 'banner_type' ? 'new_limited' : '';
+    const field = input.dataset.bannerField;
+    input.value = field === 'phase' ? 'first_half'
+      : field === 'pool_type' ? 'limited'
+        : field === 'entry_role' ? 'featured_new'
+          : field === 'is_featured' ? 'true' : '';
   });
 }
 
@@ -223,13 +317,85 @@ function collectBanners(form) {
     const value = (field) => row.querySelector(`[data-banner-field="${field}"]`)?.value.trim() || '';
     const banner = {
       phase: value('phase'),
-      banner_type: value('banner_type'),
+      pool_type: value('pool_type'),
+      entry_role: value('entry_role'),
+      pool_name: value('pool_name'),
+      is_featured: value('is_featured') !== 'false',
       character_name: value('character_name'),
       start_at: value('start_at'),
       end_at: value('end_at'),
       note: value('note')
     };
     return banner.character_name || banner.note ? banner : null;
+  }).filter(Boolean);
+}
+
+function normalizeAcquisitions(items) {
+  return Array.isArray(items) && items.length
+    ? items
+    : [{ acquisition_type: 'event_reward', character_name: '', start_at: '', end_at: '', note: '' }];
+}
+
+function renderAcquisitionRow(item = {}) {
+  const character = item.character_name || item.character_name_raw || '';
+  return `
+    <div class="structured-row banner-edit-row" data-acquisition-row>
+      <label>获取方式 <select data-acquisition-field="acquisition_type">${optionList(ACQUISITION_TYPE_OPTIONS, item.acquisition_type || 'event_reward')}</select></label>
+      <label>角色 <input data-acquisition-field="character_name" value="${escapeHtml(character)}" placeholder="角色名" /></label>
+      <label>开始时间 <input data-acquisition-field="start_at" value="${escapeHtml(item.start_at || '')}" placeholder="未知可留空" /></label>
+      <label>结束时间 <input data-acquisition-field="end_at" value="${escapeHtml(item.end_at || '')}" placeholder="未知可留空" /></label>
+      <label class="row-wide">备注 <input data-acquisition-field="note" value="${escapeHtml(item.note || '')}" placeholder="登录送 / 活动满潜 / 自选规则等" /></label>
+      <button type="button" class="ghost remove-row" data-remove-acquisition>删除</button>
+    </div>`;
+}
+
+function renderAcquisitionEditor(items) {
+  return `
+    <section class="structured-editor wide" aria-label="非卡池获取">
+      <div class="structured-head">
+        <div>
+          <strong>非卡池获取</strong>
+          <span>登录赠送、活动赠送、自选、兑换等单独维护；即使角色以后进入常驻池，也可以同时保留这条获取记录。</span>
+        </div>
+        <button type="button" id="addVersionAcquisition" class="secondary add-row">添加获取方式</button>
+      </div>
+      <div id="versionAcquisitionRows" class="structured-list">
+        ${normalizeAcquisitions(items).map(renderAcquisitionRow).join('')}
+      </div>
+    </section>`;
+}
+
+function emptyAcquisitionRow(row) {
+  row.querySelectorAll('[data-acquisition-field]').forEach((input) => {
+    input.value = input.dataset.acquisitionField === 'acquisition_type' ? 'event_reward' : '';
+  });
+}
+
+function bindAcquisitionEditor(form) {
+  const list = form.querySelector('#versionAcquisitionRows');
+  form.querySelector('#addVersionAcquisition').addEventListener('click', () => {
+    list.insertAdjacentHTML('beforeend', renderAcquisitionRow());
+  });
+  list.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-acquisition]');
+    if (!button) return;
+    const row = button.closest('[data-acquisition-row]');
+    if (list.querySelectorAll('[data-acquisition-row]').length <= 1) emptyAcquisitionRow(row);
+    else row.remove();
+  });
+}
+
+function collectAcquisitions(form) {
+  return [...form.querySelectorAll('[data-acquisition-row]')].map((row) => {
+    const value = (field) => row.querySelector(`[data-acquisition-field="${field}"]`)?.value.trim() || '';
+    const item = {
+      acquisition_type: value('acquisition_type'),
+      character_name: value('character_name'),
+      start_at: value('start_at'),
+      end_at: value('end_at'),
+      note: value('note')
+    };
+    return item.character_name || item.note ? item : null;
   }).filter(Boolean);
 }
 
@@ -251,8 +417,8 @@ function openEditor(data = {}) {
         <label>版本名 <input name="version_name" value="${escapeHtml(data.version_name || '')}" /></label>
         <label>开始日期 <input name="start_date" type="date" value="${escapeHtml(data.start_date || '')}" /></label>
         <label>结束日期 <input name="end_date" type="date" value="${escapeHtml(data.end_date || '')}" /></label>
-        <label class="wide">卡池 JSON（必须是数组，可留空）
-          <textarea name="banners" placeholder='[{"phase":"first_half","banner_type":"new_limited","character_name":"角色名"}]'>${escapeHtml(JSON.stringify(data.banners || [], null, 2))}</textarea>
+        <label class="wide legacy-json-field">卡池 JSON
+          <textarea name="banners">${escapeHtml(JSON.stringify(data.banners || [], null, 2))}</textarea>
         </label>
         <label class="wide">备注 <textarea name="note">${escapeHtml(data.note || '')}</textarea></label>
         <pre id="versionSaveLog" class="log wide" aria-live="polite"></pre>
@@ -266,7 +432,7 @@ function openEditor(data = {}) {
 
   const legacyBannersLabel = editor.querySelector('textarea[name="banners"]')?.closest('label');
   if (legacyBannersLabel) {
-    legacyBannersLabel.insertAdjacentHTML('afterend', renderBannerEditor(data.banners || []));
+    legacyBannersLabel.insertAdjacentHTML('afterend', `${renderBannerEditor(data.banners || [])}${renderAcquisitionEditor(data.acquisitions || [])}`);
     legacyBannersLabel.remove();
   }
 
@@ -276,7 +442,9 @@ function openEditor(data = {}) {
   $('#closeVersionEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelVersionEdit').addEventListener('click', () => closeDrawer(editor));
   bindBannerEditor($('#versionForm'));
+  bindAcquisitionEditor($('#versionForm'));
   openDrawer(editor);
+
   $('#versionForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
@@ -293,14 +461,15 @@ function openEditor(data = {}) {
           start_date: form.start_date,
           end_date: form.end_date,
           note: form.note,
-          banners: collectBanners(event.currentTarget)
+          banners: collectBanners(event.currentTarget),
+          acquisitions: collectAcquisitions(event.currentTarget)
         };
 
         if (!payload.id) {
           const existing = await API.searchVersions({
             keyword: payload.version_no,
             game_code: payload.game_code,
-            limit: 200
+            limit: VERSION_SEARCH_LIMIT
           });
           assertNewVersionUnique(normalizeRows(existing), payload);
         }
@@ -309,7 +478,7 @@ function openEditor(data = {}) {
         await searchVersions({ visibleCount: listContext.visibleCount, revealId: result.id });
         closeDrawer(editor, { restoreFocus: false });
         restoreListContext($('#versionResults'), listContext, { focusId: result.id, highlight: true });
-        showToast(data.id ? '版本已保存，已回到原列表位置。' : '版本已新增并定位。');
+        showToast(data.id ? '版本已保存，卡池与非卡池获取已同步。' : '版本已新增并定位。');
       } catch (error) {
         log($('#versionSaveLog'), error.message);
       }
@@ -328,7 +497,7 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
     const rows = await API.searchVersions({
       keyword: $('#versionKeyword').value.trim(),
       game_code: readGameFilter('#versionGame', '#versionGameCustom'),
-      limit: 200
+      limit: VERSION_SEARCH_LIMIT
     });
     const list = normalizeRows(rows);
     versionRows = new Map(list.map((row) => [String(row.id), row]));
@@ -357,6 +526,7 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
           <div class="item-content-title">版本详情</div>
           ${renderVersionNote(row.note)}
           ${renderBannerGroups(row.banners || [])}
+          ${renderAcquisitions(row.acquisitions || [])}
         </div>
       </article>`, {
       visibleCount,
@@ -384,7 +554,7 @@ export function initVersions() {
   bindCollapseAllControls($('#versionResultControls'), $('#versionResults'), COLLAPSE_KEY);
   searchButton.addEventListener('click', runSearch);
   bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchVersions);
-  $('#newVersionBtn').addEventListener('click', () => openEditor({ banners: [] }));
+  $('#newVersionBtn').addEventListener('click', () => openEditor({ banners: [], acquisitions: [] }));
   $('#versionResults').addEventListener('click', async (event) => {
     const editButton = event.target.closest('[data-edit-version]');
     const deleteButton = event.target.closest('[data-delete-version]');

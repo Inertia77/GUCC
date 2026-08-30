@@ -1,0 +1,120 @@
+/* Shared six-game visual identity for Command Center core entities.
+   Keep backgrounds intentionally light and calm: this is an operations UI, not an event page. */
+
+body.gucc-enhanced .item[data-game-code="崩"],
+body.gucc-enhanced .item[data-game-code="HSR"] {
+  --game-card-bg: #f3f0ff;
+  --game-card-border: #d8d0f5;
+  --game-title: #6652b8;
+  --game-title-strong: #49358e;
+  --game-soft-accent: rgba(102, 82, 184, 0.10);
+}
+
+body.gucc-enhanced .item[data-game-code="鸣"],
+body.gucc-enhanced .item[data-game-code="WW"] {
+  --game-card-bg: #edf9fb;
+  --game-card-border: #c7e8ed;
+  --game-title: #247f93;
+  --game-title-strong: #176477;
+  --game-soft-accent: rgba(36, 127, 147, 0.10);
+}
+
+body.gucc-enhanced .item[data-game-code="绝"],
+body.gucc-enhanced .item[data-game-code="ZZZ"] {
+  --game-card-bg: #fff8e7;
+  --game-card-border: #f0d995;
+  --game-title: #a86e13;
+  --game-title-strong: #7c4d00;
+  --game-soft-accent: rgba(168, 110, 19, 0.11);
+}
+
+body.gucc-enhanced .item[data-game-code="末"],
+body.gucc-enhanced .item[data-game-code="ENF"] {
+  --game-card-bg: #f4f8e9;
+  --game-card-border: #d7e2b2;
+  --game-title: #6d7e2e;
+  --game-title-strong: #51601e;
+  --game-soft-accent: rgba(109, 126, 46, 0.10);
+}
+
+body.gucc-enhanced .item[data-game-code="异"],
+body.gucc-enhanced .item[data-game-code="NTE"] {
+  --game-card-bg: #fff0f6;
+  --game-card-border: #f0c8da;
+  --game-title: #b14e7a;
+  --game-title-strong: #86345a;
+  --game-soft-accent: rgba(177, 78, 122, 0.10);
+}
+
+body.gucc-enhanced .item[data-game-code="阴"],
+body.gucc-enhanced .item[data-game-code="YYS"] {
+  --game-card-bg: #fff2ef;
+  --game-card-border: #edc9c0;
+  --game-title: #b65343;
+  --game-title-strong: #87372c;
+  --game-soft-accent: rgba(182, 83, 67, 0.10);
+}
+
+body.gucc-enhanced .item[data-game-code] {
+  background: var(--game-card-bg) !important;
+  border-color: var(--game-card-border) !important;
+  color: #202833 !important;
+  box-shadow: 0 10px 28px rgba(12, 18, 28, 0.06);
+}
+
+body.gucc-enhanced .item[data-game-code]:hover,
+body.gucc-enhanced .item[data-game-code]:focus-within {
+  border-color: var(--game-title) !important;
+  box-shadow: 0 12px 30px rgba(12, 18, 28, 0.09);
+}
+
+body.gucc-enhanced .item[data-game-code] .item-title,
+body.gucc-enhanced .item[data-game-code] .character-title-primary,
+body.gucc-enhanced .item[data-game-code] .version-title > span:last-child {
+  color: var(--game-title) !important;
+}
+
+body.gucc-enhanced .item[data-game-code] .version-no,
+body.gucc-enhanced .item[data-game-code] .item-content-title,
+body.gucc-enhanced .item[data-game-code] .note-label,
+body.gucc-enhanced .item[data-game-code] .phase-head > span {
+  color: var(--game-title-strong) !important;
+}
+
+body.gucc-enhanced .item[data-game-code] .version-no {
+  background: var(--game-soft-accent) !important;
+  border-color: var(--game-card-border) !important;
+}
+
+body.gucc-enhanced .item[data-game-code] .item-content,
+body.gucc-enhanced .item[data-game-code] .version-note p,
+body.gucc-enhanced .item[data-game-code] .note-block,
+body.gucc-enhanced .item[data-game-code] .mechanism-description,
+body.gucc-enhanced .item[data-game-code] .mechanism-note,
+body.gucc-enhanced .item[data-game-code] small {
+  color: #36414d;
+}
+
+body.gucc-enhanced .item[data-game-code] .item-content {
+  border-top-color: var(--game-card-border) !important;
+}
+
+body.gucc-enhanced .item[data-game-code] .banner-phase,
+body.gucc-enhanced .item[data-game-code] .version-acquisitions,
+body.gucc-enhanced .item[data-game-code] .note-block,
+body.gucc-enhanced .item[data-game-code] .version-note {
+  border-color: var(--game-card-border) !important;
+}
+
+/* Keep controls readable on the light cards even when the surrounding application uses a dark shell. */
+body.gucc-enhanced .item[data-game-code] button:not(.danger),
+body.gucc-enhanced .item[data-game-code] .badge,
+body.gucc-enhanced .item[data-game-code] .meta-chip {
+  color: inherit;
+}
+
+@media (max-width: 900px) {
+  body.gucc-enhanced .item[data-game-code] {
+    box-shadow: 0 7px 20px rgba(12, 18, 28, 0.055);
+  }
+}

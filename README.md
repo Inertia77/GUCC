@@ -100,6 +100,26 @@ EDGE_FUNCTION_NAME
 
 不要把 `service_role`、数据库密码、JWT secret 放进仓库。部署细节见 [docs/supabase-setup.html](docs/supabase-setup.html)。
 
+## Creator Project 本地 Workspace
+
+Production 中的 Creator Project 以 Project ID 作为本机目录身份。日常直接点击：
+
+```text
+创建 / 同步本地 Workspace
+```
+
+新目录使用 `<SafeProjectName>_<ShortProjectId>`；如果旧目录中的 `00_CONTROL/PROJECT_DATA.json.projectId` 已匹配，则继续复用旧目录，不自动改名或复制。
+
+浏览器不可用时可以显式执行：
+
+```powershell
+npm.cmd run creator:agent -- --bootstrap-project <projectId>
+```
+
+Publish Console 会继续使用同一个 `creatorProjectId` 自动发现 `09_FINAL` 成片与 `10_RELEASE` 可选封面；多个候选会显示 Ambiguous，不按修改时间猜。本机绝对路径仅发送给 `127.0.0.1` 的 Publisher Assistant，不进入 Supabase / Drive payload。
+
+完整操作与安全边界见 [docs/creator-local-project-workspace.md](docs/creator-local-project-workspace.md)。
+
 ## 视频发布与复盘
 
 推荐流程是：WorkSpace 导出项目 JSON → Publish Console 自动拆分六个平台发布包并预检 → 本机助手一键上传视频、封面并填表 → 在各平台页面最终检查和发布 → 定时登记数据快照并导出 AI 复盘包。
@@ -115,6 +135,7 @@ python -m http.server 8000
 node scripts/check-project.mjs
 npm test
 npm run publisher:assistant
+npm.cmd run creator:agent -- --bootstrap-project <projectId>
 .\scripts\test-edge-function.ps1
 ```
 

@@ -54,7 +54,7 @@
             <button class="button ghost" type="button" data-action="edit-project">编辑资料</button>
             <button class="button ghost" type="button" data-action="export-project">导出项目</button>
             <button class="button ghost" type="button" data-action="import-directory">读取项目目录</button>
-            <button class="button primary" type="button" data-action="sync-directory">同步到目录</button>
+            <button class="button primary" type="button" data-action="sync-directory">创建 / 同步本地 Workspace</button>
           </div>
           <div class="progress-wrap">
             <div class="progress-label"><span id="currentStateLabel"></span><strong id="progressText"></strong></div>
@@ -95,8 +95,10 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="../../../assets/creator-local-project-contract.js?v=1"></script>
   <script src="./engine.js"></script>
   <script src="./app.js"></script>
+  <script src="../../../assets/creator-project-bootstrap-browser.js?v=1"></script>
   <script type="module" src="../../../assets/creator-workspace-root.mjs?v=1"></script>
   <script type="module" src="../../../assets/creator-file-observations.mjs?v=1"></script>
 </body>

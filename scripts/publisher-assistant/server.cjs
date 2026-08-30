@@ -8,6 +8,8 @@ const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { chromium } = require("playwright-core");
 const { preparePlatform } = require("./adapters.cjs");
+const CreatorCore = require("../creator-local-agent/core.cjs");
+const ProjectAssets = require("../creator-local-agent/project-assets.cjs");
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.GUCC_PUBLISHER_PORT || 17877);
@@ -87,6 +89,17 @@ function validateFile(filePath, kind) {
   return path.resolve(value);
 }
 
+async function discoverProjectAssets(body) {
+  const projectId = String(body?.projectId || "").trim();
+  if (!projectId) throw new Error("projectId is required");
+  if (body?.workspaceRoot || body?.root || body?.path || body?.projectRoot) {
+    throw new Error("Discovery root is controlled by Creator Local Agent config; browser paths are not accepted");
+  }
+  const config = await CreatorCore.loadConfig(CreatorCore.CONFIG_PATH);
+  if (!config.workspaceRoot) throw new Error("Creator Local Agent Workspace Root is not configured; run creator:agent -- --setup first");
+  return ProjectAssets.discoverProjectAssets({ workspaceRoot: config.workspaceRoot, projectId });
+}
+
 async function ensureBrowser() {
   if (browserContext) return browserContext;
   if (launchPromise) return launchPromise;
@@ -142,9 +155,7 @@ function newJob(platformKeys) {
   return job;
 }
 
-function publicJob(job) {
-  return JSON.parse(JSON.stringify(job));
-}
+function publicJob(job) { return JSON.parse(JSON.stringify(job)); }
 
 async function runJob(job, payload) {
   job.status = "running";
@@ -156,19 +167,8 @@ async function runJob(job, payload) {
       job.platforms[key].status = "running";
       try {
         const page = await platformPage(key);
-        const result = await preparePlatform({
-          page,
-          key,
-          uploadUrl: PLATFORM_URLS[key],
-          data: payload.platforms[key] || {},
-          videoPath,
-          coverPath
-        });
-        job.platforms[key] = {
-          status: result.needsLogin ? "needs_login" : result.prepared ? "ready_for_review" : "needs_attention",
-          filled: result.filled,
-          warnings: result.warnings
-        };
+        const result = await preparePlatform({ page, key, uploadUrl: PLATFORM_URLS[key], data: payload.platforms[key] || {}, videoPath, coverPath });
+        job.platforms[key] = { status: result.needsLogin ? "needs_login" : result.prepared ? "ready_for_review" : "needs_attention", filled: result.filled, warnings: result.warnings };
       } catch (error) {
         job.platforms[key] = { status: "failed", filled: [], warnings: [error.message] };
       }
@@ -187,11 +187,7 @@ async function runJob(job, payload) {
 function selectFile(kind) {
   if (process.platform !== "win32") return Promise.reject(new Error("当前原生文件选择器仅支持 Windows；请在控制台输入绝对路径"));
   return new Promise((resolve, reject) => {
-    const child = spawn("powershell.exe", ["-NoProfile", "-STA", "-ExecutionPolicy", "Bypass", "-File", PICKER_SCRIPT, "-Kind", kind], {
-      windowsHide: true,
-      cwd: ROOT,
-      stdio: ["ignore", "pipe", "pipe"]
-    });
+    const child = spawn("powershell.exe", ["-NoProfile", "-STA", "-ExecutionPolicy", "Bypass", "-File", PICKER_SCRIPT, "-Kind", kind], { windowsHide: true, cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => { stdout += chunk; });
@@ -217,7 +213,14 @@ const server = http.createServer(async (request, response) => {
 
   try {
     if (request.method === "GET" && url.pathname === "/api/health") {
-      sendJson(request, response, 200, { ok: true, service: "GUCC Publisher Assistant", version: 1, browserOpen: Boolean(browserContext), profileDir: PROFILE_DIR });
+      const config = await CreatorCore.loadConfig(CreatorCore.CONFIG_PATH).catch(() => ({}));
+      sendJson(request, response, 200, { ok: true, service: "GUCC Publisher Assistant", version: 2, browserOpen: Boolean(browserContext), profileDir: PROFILE_DIR, creatorWorkspaceConfigured: Boolean(config.workspaceRoot) });
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/discover-project-assets") {
+      const body = await readJson(request);
+      const assets = await discoverProjectAssets(body);
+      sendJson(request, response, 200, { ok: true, ...assets });
       return;
     }
     if (request.method === "POST" && url.pathname === "/api/select-file") {

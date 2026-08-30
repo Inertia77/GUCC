@@ -175,22 +175,25 @@ function ensureHost(anchor, className) {
   return host;
 }
 
+function setTextIfChanged(element, desired) {
+  if (element && element.textContent !== desired) element.textContent = desired;
+}
+
 function updateCopy() {
   if (isStudio) {
     const productionLink = document.querySelector('a[href="./production-system/"]');
-    if (productionLink) productionLink.textContent = '正式制作 Production';
+    setTextIfChanged(productionLink, '正式制作 Production');
   }
 
   if (isPublish) {
     const importButton = document.getElementById('importWorkspaceButton');
     if (importButton) {
-      importButton.textContent = '兼容导入旧 JSON';
-      importButton.title = '新流程优先从 Production 直接交接；此按钮保留给旧 WorkSpace / 历史 JSON。';
+      setTextIfChanged(importButton, '兼容导入旧 JSON');
+      const desiredTitle = '新流程优先从 Production 直接交接；此按钮保留给旧 WorkSpace / 历史 JSON。';
+      if (importButton.title !== desiredTitle) importButton.title = desiredTitle;
     }
     const heroText = document.querySelector('.hero > div > p:last-child');
-    if (heroText) {
-      heroText.textContent = '优先接收 Production 的正式发布交接，自动拆分六平台字段、预检、执行与记录；旧 WorkSpace JSON 仅作为兼容入口。';
-    }
+    setTextIfChanged(heroText, '优先接收 Production 的正式发布交接，自动拆分六平台字段、预检、执行与记录；旧 WorkSpace JSON 仅作为兼容入口。');
   }
 }
 
@@ -215,10 +218,9 @@ function init() {
   if (!isStudio && !isProduction && !isPublish) return;
   injectStyles();
   updateCopy();
-  integratePanel();
+  if (integratePanel()) return;
 
   const observer = new MutationObserver(() => {
-    updateCopy();
     if (integratePanel()) observer.disconnect();
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });

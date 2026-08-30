@@ -275,4 +275,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parseArgs, setup, createRuntime, scan, printScan, deviceDescriptor };
+module.exports = { parseArgs, setup, createRuntime, scan, printScan, deviceDescriptor, main };

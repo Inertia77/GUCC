@@ -28,9 +28,9 @@ const distribution = fs.readFileSync(distributionPath, "utf8");
 const unified = fs.readFileSync(unifiedPath, "utf8");
 
 assert.ok(migration.includes("WP_GLOB_002 production-synced migration"), "Canonical migration header must identify the Production-synced migration");
-assert.ok(!migration.includes("candidate migration"), "Canonical migration content must not retain candidate-migration wording");
-assert.ok(!migration.includes("intentionally staged outside"), "Canonical migration content must not claim it is staged outside supabase/migrations");
-assert.ok(!migration.includes("Production assigns the canonical migration version"), "Canonical migration content must not describe a future Production-assigned version");
+assert.ok(!migration.includes("WP_GLOB_002 candidate migration"), "Canonical migration content must not retain the stale candidate header");
+assert.ok(!migration.includes("This file is intentionally staged outside"), "Canonical migration content must not claim it is staged outside supabase/migrations");
+assert.ok(!migration.includes("until Production assigns the canonical migration version"), "Canonical migration content must not describe a future Production-assigned version");
 assert.ok(acceptance.includes(canonicalMigration), `Acceptance SQL must reference canonical Production migration: ${canonicalMigration}`);
 assert.ok(!acceptance.includes("wp_glob_002_language_track_scope_migration_candidate.sql"), "Acceptance SQL must not reference provisional migration candidate");
 

@@ -1,0 +1,704 @@
+/* GUCC Command Center interface chrome.
+   Shared navigation, query controls and editors use one restrained operations-console
+   language; a selected game only lends a small accent and system mark. */
+
+body.command-center-page.gucc-enhanced {
+  --console-accent: #76f7ff;
+  --console-accent-2: #77ffb8;
+  --console-metal: #222a34;
+  --console-line: #394552;
+  --console-line-soft: rgba(199, 219, 238, .12);
+  --console-glass: rgba(10, 14, 20, .965);
+  --console-inset: #090d13;
+  --console-system: "GUCC // DATABASE";
+}
+
+/* --------------------------------------------------------------------------
+   GAME-AWARE MICRO TOKENS
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="崩"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="HSR"] {
+  --console-accent: #a9cff7;
+  --console-accent-2: #c8ad69;
+  --console-system: "RAIL ARCHIVE // 01";
+}
+
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="绝"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="ZZZ"] {
+  --console-accent: #f2e83f;
+  --console-accent-2: #ee8a38;
+  --console-system: "VIDEO ARCHIVE // 06";
+}
+
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="鸣"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="WW"] {
+  --console-accent: #79d4d4;
+  --console-accent-2: #d7f5f2;
+  --console-system: "RESONANCE SIGNAL // 02";
+}
+
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="终"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="ENF"] {
+  --console-accent: #d9ab45;
+  --console-accent-2: #efdc9d;
+  --console-system: "FIELD OPS // 04";
+}
+
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="异"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="NTE"] {
+  --console-accent: #78d2ec;
+  --console-accent-2: #ce78b7;
+  --console-system: "CITY SIGNAL // 05";
+}
+
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="阴"],
+body.command-center-page.gucc-enhanced :is(.filter-toolbar, .editor)[data-game-code="YYS"] {
+  --console-accent: #a95749;
+  --console-accent-2: #b99b62;
+  --console-system: "HEIAN RECORD // 03";
+}
+
+/* Result-card system marks: a fictional product-family language, not extra content. */
+body.command-center-page.gucc-enhanced .item[data-game-code="崩"],
+body.command-center-page.gucc-enhanced .item[data-game-code="HSR"] { --card-system-mark: "RAIL ARCHIVE // 01"; }
+body.command-center-page.gucc-enhanced .item[data-game-code="绝"],
+body.command-center-page.gucc-enhanced .item[data-game-code="ZZZ"] { --card-system-mark: "VIDEO ARCHIVE // 06"; }
+body.command-center-page.gucc-enhanced .item[data-game-code="鸣"],
+body.command-center-page.gucc-enhanced .item[data-game-code="WW"] { --card-system-mark: "RESONANCE SIGNAL // 02"; }
+body.command-center-page.gucc-enhanced .item[data-game-code="终"],
+body.command-center-page.gucc-enhanced .item[data-game-code="ENF"] { --card-system-mark: "FIELD OPS // 04"; }
+body.command-center-page.gucc-enhanced .item[data-game-code="异"],
+body.command-center-page.gucc-enhanced .item[data-game-code="NTE"] { --card-system-mark: "CITY SIGNAL // 05"; }
+body.command-center-page.gucc-enhanced .item[data-game-code="阴"],
+body.command-center-page.gucc-enhanced .item[data-game-code="YYS"] { --card-system-mark: "HEIAN RECORD // 03"; }
+
+body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary > .meta::before {
+  content: var(--card-system-mark, "GUCC RECORD");
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 3px 8px 3px 14px;
+  border: 1px solid var(--game-border-soft, var(--console-line));
+  background:
+    linear-gradient(90deg, var(--game-accent, var(--console-accent)) 0 3px, transparent 3px),
+    color-mix(in srgb, var(--game-inset, #0a0f15) 94%, white 6%);
+  color: var(--game-muted, #aeb8c5);
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   TOP COMMAND STRIP
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .topbar {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(127, 151, 178, .22) !important;
+  border-left: 3px solid rgba(118, 247, 255, .62) !important;
+  border-radius: 4px !important;
+  background:
+    linear-gradient(90deg, rgba(118, 247, 255, .045), transparent 18%),
+    linear-gradient(180deg, rgba(20, 26, 34, .96), rgba(9, 13, 19, .96)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 9px 24px rgba(0,0,0,.18) !important;
+}
+
+body.command-center-page.gucc-enhanced .topbar::before {
+  content: "GUCC DATABASE // LIVE OPERATIONS";
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  color: rgba(165, 186, 208, .45);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .topbar::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 7px;
+  width: 78px;
+  height: 5px;
+  opacity: .28;
+  background: repeating-linear-gradient(90deg, #a8c2d8 0 1px, transparent 1px 7px);
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .topbar h1 {
+  letter-spacing: .025em !important;
+  text-shadow: none !important;
+}
+
+body.command-center-page.gucc-enhanced .topbar .auth-panel {
+  padding-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   PRIMARY MODE RAIL
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .tabs {
+  overflow: hidden;
+  border: 1px solid rgba(120, 145, 170, .24) !important;
+  border-radius: 5px !important;
+  background:
+    linear-gradient(180deg, rgba(25, 31, 40, .98), rgba(10, 14, 20, .98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    inset 0 -1px 0 rgba(0,0,0,.35),
+    0 8px 20px rgba(0,0,0,.17) !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs::before {
+  content: "MODE SELECT";
+  align-self: center;
+  padding-left: 8px;
+  color: rgba(159, 180, 203, .48);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"] {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(116, 137, 158, .18) !important;
+  border-radius: 2px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.018), rgba(0,0,0,.08)) !important;
+  color: #9eabba !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02) !important;
+  letter-spacing: .025em;
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"]::before {
+  margin-right: 8px;
+  color: rgba(133, 153, 175, .5);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
+body.command-center-page.gucc-enhanced #tab-characters::before { content: "01"; }
+body.command-center-page.gucc-enhanced #tab-parties::before { content: "02"; }
+body.command-center-page.gucc-enhanced #tab-versions::before { content: "03"; }
+body.command-center-page.gucc-enhanced #tab-more::before { content: "•••"; }
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--console-accent), var(--console-accent-2));
+  transition: transform .14s ease;
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"]:is(:hover, :focus-visible) {
+  border-color: rgba(132, 162, 190, .36) !important;
+  color: #dbe5ee !important;
+  filter: none !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"].active {
+  border-color: rgba(118, 247, 255, .34) !important;
+  background:
+    linear-gradient(180deg, rgba(118, 247, 255, .075), rgba(10, 15, 21, .92)) !important;
+  color: #f1f7fb !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"].active::before {
+  color: var(--console-accent);
+}
+
+body.command-center-page.gucc-enhanced .tabs [role="tab"].active::after {
+  transform: scaleX(1);
+}
+
+body.command-center-page.gucc-enhanced .tabs .tab-more {
+  justify-self: stretch !important;
+}
+
+/* --------------------------------------------------------------------------
+   QUERY MATRIX / SHARED FILTERS
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .filter-toolbar {
+  position: sticky !important;
+  overflow: hidden;
+  padding: 23px 10px 10px !important;
+  border: 1px solid color-mix(in srgb, var(--console-line) 82%, var(--console-accent) 18%) !important;
+  border-left: 3px solid color-mix(in srgb, var(--console-accent) 58%, #56616d) !important;
+  border-radius: 5px !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent) 5%, transparent), transparent 22%),
+    linear-gradient(180deg, rgba(20, 25, 33, .985), rgba(10, 14, 20, .985)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.03),
+    0 8px 20px rgba(0,0,0,.17) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar::before {
+  content: "QUERY MATRIX   //   " var(--console-system);
+  position: absolute;
+  top: 6px;
+  left: 11px;
+  color: color-mix(in srgb, var(--console-accent) 58%, #8290a0 42%);
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .13em;
+  line-height: 1;
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  width: 64px;
+  height: 4px;
+  opacity: .28;
+  background: repeating-linear-gradient(90deg, var(--console-accent) 0 1px, transparent 1px 7px);
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid :is(input, select, button) {
+  border-radius: 2px !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid :is(input, select) {
+  border-color: #36414d !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.014), transparent 55%),
+    #090e14 !important;
+  color: #e2e9f0 !important;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.32) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid :is(input, select):focus {
+  border-color: color-mix(in srgb, var(--console-accent) 72%, white 28%) !important;
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,.28),
+    0 0 0 2px color-mix(in srgb, var(--console-accent) 13%, transparent) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid .filter-keyword {
+  border-left: 3px solid color-mix(in srgb, var(--console-accent) 68%, #66717d) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid > button:not(.secondary) {
+  border-color: color-mix(in srgb, var(--console-accent) 62%, #63707c) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--console-accent) 13%, #1a2128), #11171d) !important;
+  color: #f3f8fb !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid > button.secondary {
+  border-color: #3b4652 !important;
+  background: linear-gradient(180deg, #1c232b, #10151b) !important;
+  color: #c6d0da !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid > button[id^="new"] {
+  border-right: 3px solid color-mix(in srgb, var(--console-accent-2) 64%, #6f7780) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid .filter-clear {
+  color: #8995a2 !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons {
+  gap: 0 !important;
+  border: 1px solid #35404b !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+  background: #0a0f15 !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons button {
+  border: 0 !important;
+  border-right: 1px solid #35404b !important;
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, #1c232b, #10151b) !important;
+  color: #b7c2ce !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons button:last-child {
+  border-right: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   EDITOR / RECORD CONSOLE
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .editor {
+  --editor-field: #0b1017;
+  --editor-field-raised: #101720;
+  width: min(860px, calc(100vw - 28px)) !important;
+  border: 0 !important;
+  border-left: 1px solid color-mix(in srgb, var(--console-accent) 48%, #53606d) !important;
+  border-radius: 8px 0 0 8px !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent) 4%, transparent), transparent 20%),
+    repeating-linear-gradient(90deg, rgba(178, 202, 226, .015) 0 1px, transparent 1px 58px),
+    linear-gradient(180deg, #151b23, #0a0f15 46%, #080c12) !important;
+  box-shadow:
+    -1px 0 0 color-mix(in srgb, var(--console-accent) 18%, transparent),
+    -26px 0 76px rgba(0,0,0,.54) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 104px;
+  background: linear-gradient(180deg, var(--console-accent), var(--console-accent-2), transparent);
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .editor-header {
+  position: relative !important;
+  min-height: 88px;
+  padding: 18px 22px 15px !important;
+  border-bottom: 1px solid #34404c !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent) 7%, transparent), transparent 34%),
+    linear-gradient(180deg, rgba(24,31,40,.99), rgba(11,16,23,.99)) !important;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.32) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-header::before {
+  content: var(--console-system) "   //   RECORD CONSOLE";
+  position: absolute;
+  right: 65px;
+  top: 15px;
+  color: color-mix(in srgb, var(--console-accent) 58%, #8794a2 42%);
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .13em;
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .editor-header::after {
+  content: "";
+  position: absolute;
+  right: 66px;
+  bottom: 15px;
+  width: 88px;
+  height: 5px;
+  opacity: .28;
+  background:
+    repeating-linear-gradient(90deg, var(--console-accent) 0 1px, transparent 1px 7px),
+    linear-gradient(180deg, transparent 3px, var(--console-accent-2) 3px 4px, transparent 4px);
+  pointer-events: none;
+}
+
+body.command-center-page.gucc-enhanced .editor-header .kicker {
+  color: var(--console-accent) !important;
+  font-size: 9px !important;
+  letter-spacing: .18em !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-header h2 {
+  margin-top: 6px !important;
+  color: #f1f5f8 !important;
+  font-size: 25px !important;
+  letter-spacing: .015em;
+}
+
+body.command-center-page.gucc-enhanced .editor-header .icon-button {
+  border: 1px solid #3c4854 !important;
+  border-radius: 2px !important;
+  background: linear-gradient(180deg, #222a33, #10161c) !important;
+  color: #c5d0da !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-body {
+  gap: 10px !important;
+  padding: 16px 20px 24px !important;
+  align-content: start;
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label {
+  position: relative;
+  min-width: 0;
+  gap: 7px !important;
+  padding: 9px 10px 10px;
+  border: 1px solid #2e3945;
+  border-top-color: #394653;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.018), transparent 34%),
+    rgba(10, 15, 22, .72);
+  color: #9eabb8 !important;
+  font-size: 11px !important;
+  font-weight: 850;
+  letter-spacing: .035em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: #3f4a55;
+  transition: background-color .12s ease;
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label:has(:focus)::before {
+  background: var(--console-accent);
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label:has(:focus) {
+  border-color: color-mix(in srgb, var(--console-accent) 42%, #46515d) !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent) 4%, transparent), transparent 34%),
+    rgba(10, 15, 22, .82);
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label :is(input, textarea, select) {
+  border: 1px solid #35414d !important;
+  border-radius: 2px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.012), transparent 48%),
+    #080d13 !important;
+  color: #edf2f6 !important;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,.28) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-body > label :is(input, textarea, select):focus {
+  border-color: color-mix(in srgb, var(--console-accent) 72%, white 28%) !important;
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,.24),
+    0 0 0 2px color-mix(in srgb, var(--console-accent) 11%, transparent) !important;
+}
+
+/* Give the most important identity fields more breathing room without changing data structure. */
+body.command-center-page.gucc-enhanced #charForm .editor-body > label:has(input[name="name"]) {
+  grid-column: span 2;
+}
+
+body.command-center-page.gucc-enhanced #charForm .editor-body > label:has(input[name="full_name"]),
+body.command-center-page.gucc-enhanced #partyForm .editor-body > label:has(input[name="summary"]) {
+  grid-column: 1 / -1;
+}
+
+body.command-center-page.gucc-enhanced .structured-editor {
+  position: relative;
+  gap: 11px !important;
+  padding: 12px !important;
+  border: 1px solid #36424e !important;
+  border-left: 3px solid color-mix(in srgb, var(--console-accent-2) 54%, #5b6671) !important;
+  border-radius: 3px !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent-2) 4%, transparent), transparent 30%),
+    #0b1118 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.018) !important;
+}
+
+body.command-center-page.gucc-enhanced .structured-head {
+  align-items: center !important;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(135, 155, 174, .14);
+}
+
+body.command-center-page.gucc-enhanced .structured-head strong {
+  color: #eef3f7 !important;
+  font-size: 14px !important;
+  letter-spacing: .02em;
+}
+
+body.command-center-page.gucc-enhanced .structured-head span {
+  max-width: 570px;
+  color: #8795a3 !important;
+  font-size: 11.5px !important;
+}
+
+body.command-center-page.gucc-enhanced .structured-row {
+  border: 1px solid #303b46 !important;
+  border-radius: 2px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.012), transparent 34%),
+    #090e14 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.012) !important;
+}
+
+body.command-center-page.gucc-enhanced .structured-row label {
+  color: #8997a5 !important;
+  font-size: 10.5px !important;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+
+body.command-center-page.gucc-enhanced .structured-row :is(input, textarea, select) {
+  border-radius: 2px !important;
+  border-color: #34404b !important;
+  background: #080d13 !important;
+}
+
+body.command-center-page.gucc-enhanced .structured-head .add-row,
+body.command-center-page.gucc-enhanced .structured-row .remove-row {
+  border-radius: 2px !important;
+}
+
+body.command-center-page.gucc-enhanced .structured-head .add-row {
+  border: 1px solid color-mix(in srgb, var(--console-accent-2) 54%, #4f5b67) !important;
+  background: linear-gradient(180deg, #202831, #11171d) !important;
+  color: #e7edf2 !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-footer {
+  min-height: 70px;
+  padding: 11px 20px max(12px, env(safe-area-inset-bottom)) !important;
+  border-top: 1px solid #35404b !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--console-accent) 4%, transparent), transparent 22%),
+    #0a0f15 !important;
+  box-shadow: 0 -14px 32px rgba(0,0,0,.25) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-footer button {
+  min-height: 46px !important;
+  border-radius: 2px !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-footer button[type="submit"] {
+  min-width: 190px;
+  border: 1px solid color-mix(in srgb, var(--console-accent) 68%, #57636e) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--console-accent) 13%, #1a2229), #10161c) !important;
+  color: #f4f8fb !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+body.command-center-page.gucc-enhanced .editor-footer .ghost {
+  border-color: #3b4651 !important;
+  background: #11171d !important;
+  color: #aeb9c4 !important;
+}
+
+body.command-center-page.gucc-enhanced .editor .log {
+  border-radius: 2px !important;
+  border-color: #303b46 !important;
+  background: #070b10 !important;
+  color: #b9c8d6 !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE + ACCESSIBILITY
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  body.command-center-page.gucc-enhanced .topbar::before,
+  body.command-center-page.gucc-enhanced .topbar::after {
+    display: none;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs::before {
+    display: none;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar {
+    padding: 21px 8px 8px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar::before {
+    left: 9px;
+    max-width: calc(100% - 86px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary > .meta::before {
+    font-size: 8.5px;
+    letter-spacing: .08em;
+  }
+
+  body.command-center-page.gucc-enhanced .editor {
+    width: min(100vw, 760px) !important;
+    max-width: 100vw !important;
+    border-radius: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-header {
+    min-height: 76px;
+    padding: 14px 14px 12px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-header::before,
+  body.command-center-page.gucc-enhanced .editor-header::after {
+    display: none;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-header h2 {
+    font-size: 22px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-body {
+    padding: 12px 12px 18px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-body > label {
+    grid-column: 1 / -1 !important;
+    padding: 8px 9px 9px;
+  }
+
+  body.command-center-page.gucc-enhanced .structured-row {
+    padding: 9px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .structured-head {
+    align-items: stretch !important;
+  }
+
+  body.command-center-page.gucc-enhanced .structured-head .add-row {
+    width: 100%;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-footer button[type="submit"] {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  body.command-center-page.gucc-enhanced .tabs [role="tab"]::before {
+    display: none;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs [role="tab"] {
+    padding-inline: 8px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar::after {
+    width: 46px;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-footer {
+    min-height: 66px;
+    padding-inline: 12px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.command-center-page.gucc-enhanced .tabs [role="tab"]::after,
+  body.command-center-page.gucc-enhanced .editor-body > label::before {
+    transition: none !important;
+  }
+}

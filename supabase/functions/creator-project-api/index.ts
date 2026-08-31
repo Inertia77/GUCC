@@ -92,10 +92,12 @@ function safeDriveUrl(value: unknown) { const url = boundedText(value, 2000); if
 
 function fileRows(project: JsonMap, ownerUserId: string, now: string) {
   const files = asObject(project.files);
+  const projectId = String(project.projectId || "");
   return Object.entries(files).map(([fileKey, raw]) => {
     const file = asObject(raw);
     return {
-      project_id: String(project.projectId || ""), owner_user_id: ownerUserId, file_key: fileKey,
+      project_id: projectId, owner_user_id: ownerUserId,
+      artifact_scope_type: "project", artifact_scope_id: projectId, file_key: fileKey,
       relative_path: String(file.relativePath || ""), kind: String(file.kind || "other"), status: String(file.status || "Missing"),
       storage_provider: String(file.storageProvider || "local"), provider_file_id: file.providerFileId || null, provider_url: file.providerUrl || null,
       filename: file.filename || null, mime_type: file.mimeType || null,
@@ -145,7 +147,7 @@ async function registerDevice(userId: string, body: JsonMap) { const deviceId = 
 
 async function ownedLogicalFile(userId: string, projectId: string, fileKey: string, skipProjectCheck = false) {
   if (!skipProjectCheck) await ownedProject(projectId, userId);
-  const rows = await serviceRest(`creator_project_files?owner_user_id=eq.${encodeURIComponent(userId)}&project_id=eq.${encodeURIComponent(projectId)}&file_key=eq.${encodeURIComponent(fileKey)}&select=id,project_id,owner_user_id,file_key,relative_path,kind,status&limit=1`) as Array<JsonMap>;
+  const rows = await serviceRest(`creator_project_files?owner_user_id=eq.${encodeURIComponent(userId)}&project_id=eq.${encodeURIComponent(projectId)}&artifact_scope_type=eq.project&artifact_scope_id=eq.${encodeURIComponent(projectId)}&file_key=eq.${encodeURIComponent(fileKey)}&select=id,project_id,owner_user_id,artifact_scope_type,artifact_scope_id,file_key,relative_path,kind,status&limit=1`) as Array<JsonMap>;
   if (!Array.isArray(rows) || !rows.length) fail("Logical artifact not found", 404); return rows[0];
 }
 async function previousLocation(userId: string, logicalFileId: string, deviceId: string, storageProvider: string) {
@@ -262,7 +264,7 @@ async function listProjects(userId: string) { return await serviceRest(`creator_
 async function dashboard(userId: string) {
   const owner = encodeURIComponent(userId);
   const [projects, files, releases, devices, fileLocations] = await Promise.all([
-    serviceRest(`creator_projects?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`), serviceRest(`creator_project_files?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
+    serviceRest(`creator_projects?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`), serviceRest(`creator_project_files?owner_user_id=eq.${owner}&artifact_scope_type=eq.project&select=*&order=updated_at.desc`),
     serviceRest(`creator_project_releases?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`), serviceRest(`creator_devices?owner_user_id=eq.${owner}&select=*&order=last_seen_at.desc`),
     serviceRest(`creator_file_locations?owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
   ]);
@@ -271,14 +273,16 @@ async function dashboard(userId: string) {
 async function getProject(userId: string, body: JsonMap) {
   const projectId = String(body.projectId || "").trim(); if (!projectId) fail("projectId is required"); const project = await ownedProject(projectId, userId);
   const owner = encodeURIComponent(userId); const projectFilter = encodeURIComponent(projectId);
-  const [files, events, releases, fileLocations, devices] = await Promise.all([
-    serviceRest(`creator_project_files?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
+  const [files, languageTracks, scopedArtifacts, events, releases, fileLocations, devices] = await Promise.all([
+    serviceRest(`creator_project_files?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&artifact_scope_type=eq.project&artifact_scope_id=eq.${projectFilter}&select=*&order=updated_at.desc`),
+    serviceRest(`creator_language_tracks?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=created_at.asc`),
+    serviceRest(`creator_project_files?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&artifact_scope_type=neq.project&select=*&order=updated_at.desc`),
     serviceRest(`creator_project_events?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=created_at.desc&limit=200`),
     serviceRest(`creator_project_releases?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
     serviceRest(`creator_file_locations?project_id=eq.${projectFilter}&owner_user_id=eq.${owner}&select=*&order=updated_at.desc`),
     serviceRest(`creator_devices?owner_user_id=eq.${owner}&select=*&order=last_seen_at.desc`),
   ]);
-  return { project, files, events, releases, fileLocations, devices };
+  return { project, files, languageTracks, scopedArtifacts, events, releases, fileLocations, devices };
 }
 async function saveRelease(userId: string, body: JsonMap) {
   const publishState = asObject(body.publishState); const source = asObject(publishState.source); const projectId = String(body.projectId || source.creatorProjectId || "").trim();

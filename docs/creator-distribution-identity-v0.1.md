@@ -1,6 +1,6 @@
 # Creator Distribution Identity Foundation v0.1
 
-Status: **WP_GLOB_001 contract**
+Status: **WP_GLOB_001 distribution contract + WP_GLOB_002 language/artifact-scope alignment**
 
 This document defines the minimum identity layer required for one Creator content project to safely produce many distribution objects without prematurely implementing the Global Creator OS production pipeline.
 
@@ -23,6 +23,7 @@ The concrete database identities are:
 - `platforms` — **Platform Dictionary** only.
 - `creator_channels` — **Platform + Account + Market + Language Strategy**.
 - `creator_publications` — one concrete Variant → Channel publication event/instance.
+- `creator_language_tracks` — **Language Track** identity under one Content Project Root.
 - `creator_project_releases` — **Legacy Project Release Compatibility Model** for the current Publish Console.
 
 No SQL rename of `creator_projects` is required. Its semantic role changes, not its physical table name.
@@ -33,16 +34,14 @@ A Creator Project is the root identity for one piece of content/research/creativ
 
 `creator_projects.current_state` remains a coarse global project state for current compatibility. It must not become the dumping ground for every future child workflow.
 
-Future child identities such as:
+Child identities are separate from that global state:
 
-- Language Track,
-- Visual Master,
-- Distribution Variant,
-- Publication,
+- Language Track — identity exists in `creator_language_tracks`; WP_GLOB_002 does not add per-track workflow/locks.
+- Visual Master — future child identity.
+- Distribution Variant — identity exists in `creator_variants`.
+- Publication — identity exists in `creator_publications`.
 
-must own their own state/status/lock where required.
-
-No new Global Creator Pipeline state is introduced by WP_GLOB_001.
+No new Global Creator Pipeline state is introduced by WP_GLOB_001 or WP_GLOB_002.
 
 ## 3. Platform is not Channel
 
@@ -85,11 +84,11 @@ BILIBILI_ZH_LONG
 
 The key may describe intended market/language/format, but the Variant itself is **not** a Language Track.
 
-A future `YOUTUBE_GLOBAL_LONG` Variant may consume several language/audio tracks such as ZH, JA and EN. WP_GLOB_001 does not create those tracks; it only makes sure the Variant identity does not prevent them.
+A `YOUTUBE_GLOBAL_LONG` Variant may eventually consume several Language Tracks such as ZH, JA and EN. WP_GLOB_002 now provides the separate Language Track identity, but it does **not** create Variant ↔ Language Track consumption/rendering logic, multi-audio upload, translation or dubbing.
 
 ## 5. Channel language strategy
 
-A Channel may describe routing strategy without implementing Language Tracks.
+A Channel may describe routing strategy independently from Language Track workflow.
 
 Example:
 
@@ -117,6 +116,8 @@ primary_language: EN
 language_mode: single_language
 ```
 
+Channel language metadata is routing identity; it is not a Language Track row and does not create audio/subtitle artifacts by itself.
+
 Account fields are labels/identity only. Credentials, tokens and login secrets do not belong in `creator_channels`.
 
 ## 6. Publication is an event/instance
@@ -142,7 +143,7 @@ Different Variants may publish to the same Platform or Channel, and the same Var
 
 ## 7. Legacy release compatibility
 
-`creator_project_releases` remains the current Publish Console compatibility table. Its existing project/platform-slot semantics are intentionally not generalized in WP_GLOB_001.
+`creator_project_releases` remains the current Publish Console compatibility table. Its existing project/platform-slot semantics are intentionally not generalized in WP_GLOB_001 or WP_GLOB_002.
 
 Rules:
 
@@ -150,11 +151,31 @@ Rules:
 - Do not migrate existing projects into the new identity tables just to satisfy the new architecture.
 - Do not add Globalization fields to it.
 - Do not make the current six-platform Publish Console depend on Variant/Channel/Publication rows.
-- A later explicit compatibility WP may bridge legacy releases to the new identity model after the identity foundation is accepted.
+- A later explicit compatibility WP may bridge legacy releases to the new identity model.
 
 ## 8. Artifact scope contract
 
-Current `creator_project_files` is a Project-level logical artifact checklist with `UNIQUE(project_id, file_key)`. Current keys such as:
+`creator_project_files` is the existing logical Artifact Metadata registry. WP_GLOB_002 extends it **in place** with:
+
+```text
+artifact_scope_type
+artifact_scope_id
+```
+
+Existing rows are preserved as:
+
+```text
+artifact_scope_type = project
+artifact_scope_id   = project_id
+```
+
+The scoped logical identity is:
+
+```text
+(project_id, artifact_scope_type, artifact_scope_id, file_key)
+```
+
+Current keys such as:
 
 ```text
 VOICE_MASTER
@@ -163,22 +184,29 @@ SUBTITLE_MASTER
 VIDEO_V1
 ```
 
-remain **Legacy/default Project artifacts** for current Production compatibility.
+remain **Legacy/default Project artifacts** when their scope is `project`.
 
-`VIDEO_V1` means the current default/final master artifact. It does **not** mean:
+`VIDEO_V1` means the current default/final Project master artifact. It does **not** mean:
 
 ```text
 One Project = One Video
 ```
 
-The future artifact identity layer must support explicit scope at least for:
+WP_GLOB_002 implements writable scope for:
 
 ```text
 project
 language_track
+```
+
+and reserves these scope names for later dedicated contracts:
+
+```text
 visual_master
 variant
 ```
+
+Reserved future scopes are not writable in WP_GLOB_002.
 
 Do not emulate scope by inventing file keys such as:
 
@@ -189,13 +217,22 @@ SUBTITLE_MASTER_JA
 SUBTITLE_MASTER_EN
 ```
 
-A later Work Package must introduce an explicit artifact scope/owner identity before multilingual artifacts are implemented. WP_GLOB_001 deliberately does not migrate `creator_project_files`.
+The same logical `file_key` may coexist safely under different explicit scope identities.
 
 ## 9. Current Timeline compatibility
 
-The existing Project-level Timeline contract, when present, belongs to the current Legacy/default Production path. It may remain useful as a compatibility invariant, but it must not be mistaken for the future multilingual Language Track / Visual Master timeline architecture.
+The existing Project-level Timeline contract remains the **Legacy/default Project Timeline Compatibility Layer**. The current Phase 2C.2 Project bundle is unchanged:
 
-Future Language Tracks and Visual Masters must receive their own explicit artifact/state identities rather than expanding Project-level singleton file keys or `creator_projects.current_state`.
+```text
+SUBTITLE_MASTER
+TIMELINE_SENTENCE
+TRANSCRIPT_ALIGNED
+ALIGNMENT_REPORT
+```
+
+WP_GLOB_002 allows a Language Track to own the same logical keys under `language_track / <language_track_id>` scope without overwriting or replacing the Project-level bundle.
+
+This is identity/storage compatibility only. WP_GLOB_002 does not add Language Track workflow states, child locks, multilingual Production UI, local ZH/JA/EN folder trees or a Visual Master timeline.
 
 ## 10. Storage boundary
 
@@ -227,7 +264,7 @@ Content Project Root
   → Publication
 ```
 
-The Variant/Channel metadata can describe `multi_audio` and `[ZH, JA, EN]` without creating Language Tracks or uploading multi-audio.
+The Variant/Channel metadata can describe `multi_audio` and `[ZH, JA, EN]` without forcing a one-to-one Variant ↔ Language Track relationship. Language Track identity exists separately; actual multi-audio production/upload remains outside this foundation.
 
 ### Case B — two TikTok Channels on one Platform
 
@@ -249,13 +286,13 @@ Both Publication rows are valid independent instances.
 
 ## 12. Explicit non-scope
 
-WP_GLOB_001 does not implement:
+WP_GLOB_001 + WP_GLOB_002 still do not implement:
 
-- Language Track tables or workflow,
+- Language Track workflow states or child locks,
 - ZH/JA/EN voice production,
 - ASR / Whisper,
-- multilingual subtitle/timeline,
-- Language Timeline,
+- translation or multilingual script generation,
+- multilingual Production UI,
 - Visual Master / Visual Master Timeline,
 - AI dubbing,
 - YouTube Multi-Audio upload,
@@ -268,6 +305,6 @@ WP_GLOB_001 does not implement:
 - Publisher UI redesign,
 - media cloud upload.
 
-The only problem solved here is:
+The foundations solved so far are identity problems:
 
-> One Content Project Root can safely identify many different distribution and publication objects.
+> One Content Project Root can safely identify many distribution/publication objects and many Language Tracks, while Logical Artifacts can coexist under explicit scopes without changing the current top-level Production workflow.

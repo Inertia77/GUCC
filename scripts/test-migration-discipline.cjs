@@ -39,6 +39,7 @@ for (const required of [
   '20260827143937_creator_archived_update_proof_guard.sql',
   '20260831043241_creator_distribution_identity_foundation.sql',
   '20260831043603_creator_distribution_identity_fk_indexes.sql',
+  '20260831084516_creator_language_track_scoped_artifacts.sql',
 ]) {
   assert(sqlFiles.includes(required), `Missing production-synced migration: ${required}`);
 }
@@ -52,4 +53,4 @@ for (const drifted of [
   assert(!sqlFiles.includes(drifted), `Drifted migration identity must not return: ${drifted}`);
 }
 
-console.log(`Migration discipline OK: ${seenVersions.size} strict migration(s), ${legacyAllowlist.size} legacy allowlisted file(s), WP_GLOB_001 production identities pinned.`);
+console.log(`Migration discipline OK: ${seenVersions.size} strict migration(s), ${legacyAllowlist.size} legacy allowlisted file(s), WP_GLOB_001 + WP_GLOB_002 production identities pinned.`);

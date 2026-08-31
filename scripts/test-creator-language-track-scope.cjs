@@ -5,27 +5,26 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.join(__dirname, "..");
-const migrationCandidatePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_migration_candidate.sql");
 const migrationsDir = path.join(root, "supabase", "migrations");
+const canonicalMigration = "20260831084516_creator_language_track_scoped_artifacts.sql";
+const migrationPath = path.join(migrationsDir, canonicalMigration);
+const provisionalCandidatePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_migration_candidate.sql");
 const acceptancePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_acceptance.sql");
 const apiPath = path.join(root, "supabase", "functions", "creator-project-api", "index.ts");
 const enginePath = path.join(root, "apps", "video-workspace", "production-system", "engine.js");
 const contractPath = path.join(root, "docs", "creator-language-track-artifact-scope-v0.1.md");
 
-const canonicalCandidates = fs.readdirSync(migrationsDir)
-  .filter((name) => /^\d{14}_creator_language_track_scoped_artifacts\.sql$/.test(name));
-const migrationPath = canonicalCandidates.length === 1
-  ? path.join(migrationsDir, canonicalCandidates[0])
-  : migrationCandidatePath;
-
-assert.ok(fs.existsSync(migrationPath), "WP_GLOB_002 migration candidate/canonical file is missing");
-assert.ok(canonicalCandidates.length <= 1, "More than one canonical WP_GLOB_002 migration identity exists");
+assert.ok(fs.existsSync(migrationPath), `Canonical Production-synced migration missing: ${canonicalMigration}`);
+assert.ok(!fs.existsSync(provisionalCandidatePath), "Provisional WP_GLOB_002 migration candidate must not remain after Production assigns a version");
 
 const migration = fs.readFileSync(migrationPath, "utf8");
 const acceptance = fs.readFileSync(acceptancePath, "utf8");
 const api = fs.readFileSync(apiPath, "utf8");
 const engine = fs.readFileSync(enginePath, "utf8");
 const contract = fs.readFileSync(contractPath, "utf8");
+
+assert.ok(acceptance.includes(canonicalMigration), `Acceptance SQL must reference canonical Production migration: ${canonicalMigration}`);
+assert.ok(!acceptance.includes("wp_glob_002_language_track_scope_migration_candidate.sql"), "Acceptance SQL must not reference provisional migration candidate");
 
 function has(pattern, source, message = String(pattern)) { assert.match(source, pattern, message); }
 function lacks(pattern, source, message = String(pattern)) { assert.doesNotMatch(source, pattern, message); }
@@ -98,5 +97,7 @@ has(/WP_GLOB_002_ACCEPTANCE_OK/i, acceptance);
 has(/file_id_digest_before/i, acceptance);
 has(/legacy save did not target Project scope/i, acceptance);
 has(/Project prune removed child scoped artifacts/i, acceptance);
+has(/coalesce\(f\.metadata->>'wp',''\) <> 'WP_GLOB_002'/i, acceptance,
+  "Acceptance ID-preservation proof must include rows whose metadata has no wp key");
 
-console.log(`WP_GLOB_002 language-track scope tests passed using ${path.basename(migrationPath)}: Language Track identity, scoped Artifact identity, legacy Project compatibility, RPC/API scope defaults, prune safety, security/storage boundaries and rollback acceptance are pinned.`);
+console.log(`WP_GLOB_002 language-track scope tests passed using ${canonicalMigration}: Language Track identity, scoped Artifact identity, legacy Project compatibility, RPC/API scope defaults, prune safety, migration identity, security/storage boundaries and rollback acceptance are pinned.`);

@@ -12,7 +12,8 @@ import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 
 const FINAL_STYLE_SHEETS = [
   ['gucc-search-ux-final', '../styles/game-os.css?v=3'],
-  ['gucc-game-themes-final', '../styles/game-themes.css?v=9']
+  ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
+  ['gucc-game-premium-final', '../styles/game-premium.css?v=1']
 ];
 
 const TAB_LOADERS = {
@@ -177,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initResources();
 
   // Feature CSS may be injected during initialization. Keep the neutral search UX
-  // first and the per-game geometry layer last so variants win by cascade order.
+  // first, game geometry second, and the physical-material finish last.
   ensureFinalStyleSheets({ reorder: true });
   featuresReady = true;
 

@@ -13,7 +13,8 @@ import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 const FINAL_STYLE_SHEETS = [
   ['gucc-search-ux-final', '../styles/game-os.css?v=3'],
   ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
-  ['gucc-game-premium-final', '../styles/game-premium.css?v=1']
+  ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
+  ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1']
 ];
 
 const TAB_LOADERS = {
@@ -22,6 +23,15 @@ const TAB_LOADERS = {
   mechanisms: searchMechanisms,
   versions: searchVersions
 };
+
+const GAME_THEME_CODES = [
+  { code: '崩', aliases: ['崩', 'hsr', '崩铁', '崩坏星穹铁道', '崩坏：星穹铁道'] },
+  { code: '绝', aliases: ['绝', 'zzz', '绝区零'] },
+  { code: '鸣', aliases: ['鸣', 'ww', '鸣潮'] },
+  { code: '终', aliases: ['终', '末', 'enf', '终末地', '明日方舟终末地', '明日方舟：终末地'] },
+  { code: '异', aliases: ['异', 'nte', '异环'] },
+  { code: '阴', aliases: ['阴', 'yys', '阴阳师'] }
+];
 
 function ensureFinalStyleSheets({ reorder = false } = {}) {
   FINAL_STYLE_SHEETS.forEach(([id, relativePath]) => {
@@ -35,6 +45,61 @@ function ensureFinalStyleSheets({ reorder = false } = {}) {
       return;
     }
     if (reorder) document.head.appendChild(link);
+  });
+}
+
+function resolveThemeGameCode(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (!normalized || normalized === '__custom') return '';
+  const match = GAME_THEME_CODES.find(({ aliases }) => aliases.some((alias) => normalized === alias.toLowerCase()));
+  return match?.code || '';
+}
+
+function applyThemeGameCode(target, value) {
+  if (!target) return;
+  const code = resolveThemeGameCode(value);
+  if (code) target.dataset.gameCode = code;
+  else delete target.dataset.gameCode;
+}
+
+function syncFilterToolbarTheme(select) {
+  const toolbar = select?.closest('.filter-toolbar');
+  if (!toolbar) return;
+  const gameFilter = select.closest('[data-game-filter]');
+  const customInput = gameFilter?.querySelector('input:not([hidden])');
+  applyThemeGameCode(toolbar, select.value === '__custom' ? customInput?.value : select.value);
+}
+
+function syncEditorTheme(input) {
+  const editor = input?.closest('.editor');
+  if (!editor) return;
+  applyThemeGameCode(editor, input.value);
+}
+
+function initInterfaceThemeSync() {
+  document.querySelectorAll('[data-game-filter] select').forEach(syncFilterToolbarTheme);
+
+  document.addEventListener('change', (event) => {
+    const gameSelect = event.target.closest?.('[data-game-filter] select');
+    if (gameSelect) syncFilterToolbarTheme(gameSelect);
+  });
+
+  document.addEventListener('input', (event) => {
+    const editorGameInput = event.target.closest?.('.editor [name="game_code"]');
+    if (editorGameInput) syncEditorTheme(editorGameInput);
+
+    const customGameInput = event.target.closest?.('[data-game-filter] input');
+    if (customGameInput) {
+      const select = customGameInput.closest('[data-game-filter]')?.querySelector('select');
+      if (select) syncFilterToolbarTheme(select);
+    }
+  });
+
+  document.addEventListener('focusin', (event) => {
+    const editor = event.target.closest?.('.editor');
+    if (!editor) return;
+    const gameInput = editor.querySelector('[name="game_code"]');
+    if (gameInput) syncEditorTheme(gameInput);
   });
 }
 
@@ -163,6 +228,7 @@ function initDashboard() {
 
 document.addEventListener('DOMContentLoaded', () => {
   hydrateFixedFieldFilters();
+  initInterfaceThemeSync();
   $('#drawerBackdrop')?.addEventListener('click', closeActiveDrawer);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeActiveDrawer();
@@ -178,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initResources();
 
   // Feature CSS may be injected during initialization. Keep the neutral search UX
-  // first, game geometry second, and the physical-material finish last.
+  // first, game geometry second, physical material third, and shared interface chrome last.
   ensureFinalStyleSheets({ reorder: true });
   featuresReady = true;
 

@@ -27,6 +27,15 @@ const acceptance = fs.readFileSync(acceptancePath, "utf8");
 const contract = fs.readFileSync(contractPath, "utf8");
 const readme = fs.readFileSync(readmePath, "utf8");
 
+assert.ok(
+  acceptance.includes(canonicalFoundation),
+  `Acceptance SQL must reference canonical Production-synced migration: ${canonicalFoundation}`
+);
+assert.ok(
+  !acceptance.includes(driftedFoundation),
+  `Acceptance SQL must not reference drifted migration identity: ${driftedFoundation}`
+);
+
 function has(pattern, source = migration, message = String(pattern)) {
   assert.match(source, pattern, message);
 }

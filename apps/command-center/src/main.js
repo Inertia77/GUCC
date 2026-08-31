@@ -18,7 +18,8 @@ import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 
 const FINAL_STYLE_SHEETS = [
   ['gucc-game-themes-final', '../styles/game-themes.css?v=7'],
-  ['gucc-game-os-final', '../styles/game-os.css?v=1']
+  ['gucc-game-os-final', '../styles/game-os.css?v=1'],
+  ['gucc-game-os-shell-final', '../styles/game-os-shell.css?v=1']
 ];
 const TAB_LOADERS = {
   characters: searchCharacters,

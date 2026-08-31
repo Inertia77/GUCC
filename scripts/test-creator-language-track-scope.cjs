@@ -13,6 +13,8 @@ const acceptancePath = path.join(root, "supabase", "sql", "wp_glob_002_language_
 const apiPath = path.join(root, "supabase", "functions", "creator-project-api", "index.ts");
 const enginePath = path.join(root, "apps", "video-workspace", "production-system", "engine.js");
 const contractPath = path.join(root, "docs", "creator-language-track-artifact-scope-v0.1.md");
+const distributionPath = path.join(root, "docs", "creator-distribution-identity-v0.1.md");
+const unifiedPath = path.join(root, "docs", "ai-video-production", "UNIFIED_PIPELINE.md");
 
 assert.ok(fs.existsSync(migrationPath), `Canonical Production-synced migration missing: ${canonicalMigration}`);
 assert.ok(!fs.existsSync(provisionalCandidatePath), "Provisional WP_GLOB_002 migration candidate must not remain after Production assigns a version");
@@ -22,6 +24,8 @@ const acceptance = fs.readFileSync(acceptancePath, "utf8");
 const api = fs.readFileSync(apiPath, "utf8");
 const engine = fs.readFileSync(enginePath, "utf8");
 const contract = fs.readFileSync(contractPath, "utf8");
+const distribution = fs.readFileSync(distributionPath, "utf8");
+const unified = fs.readFileSync(unifiedPath, "utf8");
 
 assert.ok(acceptance.includes(canonicalMigration), `Acceptance SQL must reference canonical Production migration: ${canonicalMigration}`);
 assert.ok(!acceptance.includes("wp_glob_002_language_track_scope_migration_candidate.sql"), "Acceptance SQL must not reference provisional migration candidate");
@@ -70,6 +74,7 @@ has(/creator_project_files\?owner_user_id=eq\.\$\{owner\}&artifact_scope_type=eq
 has(/creator_language_tracks\?project_id=eq\.\$\{projectFilter\}/i, api);
 has(/artifact_scope_type=neq\.project/i, api);
 has(/return \{ project, files, languageTracks, scopedArtifacts, events, releases, fileLocations, devices \}/i, api);
+lacks(/projectId \? project : project/i, api, "Repository API source must not contain the superseded v7 parity drift");
 
 // No fake language suffixes in implementation.
 lacks(/AUDIO_MASTER_(?:ZH|JA|EN)|SUBTITLE_MASTER_(?:ZH|JA|EN)/i, migration + "\n" + api,
@@ -80,6 +85,14 @@ lacks(/LANGUAGE_SCRIPTING|JA_AUDIO_LOCKED|EN_TIMELINE_LOCKED|ZH_AUDIO_LOCKED/i, 
 lacks(/02_SCRIPT\/(?:ZH|JA|EN)|03_AUDIO\/(?:ZH|JA|EN)|04_SUBTITLES\/(?:ZH|JA|EN)/i, migration + "\n" + api);
 has(/Legacy\/default Project Timeline Compatibility Layer/i, contract);
 has(/Do not introduce `ZH\/`, `JA\/`, `EN\/` local folders yet/i, contract);
+
+// Distribution / Unified Pipeline docs must reflect the implemented identity layer without claiming new workflow.
+has(/creator_language_tracks[^\n]*Language Track/i, distribution);
+has(/\(project_id, artifact_scope_type, artifact_scope_id, file_key\)/i, distribution);
+has(/No new Global Creator Pipeline state is introduced by WP_GLOB_001 or WP_GLOB_002/i, distribution);
+has(/Language Track Identity \| Supabase `creator_language_tracks`/i, unified);
+has(/multilingual identity foundation[^\n]*不改变这套日常操作/i, unified);
+lacks(/Language Track tables or workflow/i, distribution, "Distribution doc must not claim the Language Track table is still unimplemented");
 
 // Storage/security boundary.
 has(/alter table public\.creator_language_tracks enable row level security/i, migration);
@@ -99,5 +112,7 @@ has(/legacy save did not target Project scope/i, acceptance);
 has(/Project prune removed child scoped artifacts/i, acceptance);
 has(/where f\.artifact_scope_type='project'/i, acceptance,
   "Acceptance ID-preservation proof must structurally hash the pre-existing Project-scope rows");
+has(/metadata->>'wp'='WP_GLOB_002' and artifact_scope_type='language_track'\) as scoped_artifacts_inside_tx/i, acceptance,
+  "Acceptance summary must count only the 15 Language Track scoped artifacts");
 
-console.log(`WP_GLOB_002 language-track scope tests passed using ${canonicalMigration}: Language Track identity, scoped Artifact identity, legacy Project compatibility, RPC/API scope defaults, prune safety, migration identity, security/storage boundaries and rollback acceptance are pinned.`);
+console.log(`WP_GLOB_002 language-track scope tests passed using ${canonicalMigration}: Language Track identity, scoped Artifact identity, legacy Project compatibility, RPC/API scope defaults, prune safety, migration identity, docs alignment, security/storage boundaries and rollback acceptance are pinned.`);

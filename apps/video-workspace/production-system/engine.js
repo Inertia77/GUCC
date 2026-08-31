@@ -84,6 +84,8 @@
   Object.values(FILE_DEFINITIONS).forEach((def) => { def.filename = def.path.split("/").pop(); });
 
   const MUSIC_FILE_KEYS = Object.freeze(["LYRICS", "SUNO_PROMPT", "MUSIC_MASTER", "INSTRUMENTAL"]);
+  const TIMELINE_BUNDLE_FILES = Object.freeze(["SUBTITLE_MASTER", "TIMELINE_SENTENCE", "TRANSCRIPT_ALIGNED", "ALIGNMENT_REPORT"]);
+  const TIMELINE_DEPENDENT_STATES = new Set(PRODUCTION_FLOW.slice(PRODUCTION_FLOW.indexOf("TIMELINE_LOCKED"), PRODUCTION_FLOW.indexOf("PUBLISHED")));
   const PRODUCTION_READY_FILES = ["AUDIO_MASTER", "SUBTITLE_MASTER", "EDIT_BLUEPRINT", "ASSET_INDEX", "VISUAL_STYLE", "EXPORT_SPEC"];
   const DIRECTORY_STRUCTURE = [
     "00_CONTROL", "01_RESEARCH", "02_SCRIPT/TTS_CHUNKS", "03_AUDIO", "04_SUBTITLES", "05_ASSETS/GAMEPLAY",
@@ -108,6 +110,57 @@
   function safeName(value) { return String(value || "PROJECT").replace(/[\\/:*?"<>|]/g, "_").replace(/\s+/g, "_").slice(0, 72); }
   function flowFor() { return [...PRODUCTION_FLOW]; }
   function fileReady(project, key) { return project.files?.[key]?.status === "Ready" || Boolean(project.files?.[key]?.content); }
+  function missingTimelineArtifacts(project) { return TIMELINE_BUNDLE_FILES.filter((key) => !fileReady(project, key)); }
+  function timelineBundleReady(project) { return missingTimelineArtifacts(project).length === 0; }
+  function workflowInvariantErrors(project, state = project?.currentState) {
+    if (!TIMELINE_DEPENDENT_STATES.has(state)) return [];
+    return missingTimelineArtifacts(project).map((key) => `缺少 ${FILE_DEFINITIONS[key]?.filename || key}`);
+  }
+  function validateWorkflowInvariants(project, options = {}) {
+    const state = options.state || project?.currentState || "IDEA";
+    const errors = workflowInvariantErrors(project, state);
+    const missingTimeline = missingTimelineArtifacts(project);
+    return {
+      valid: errors.length === 0,
+      state,
+      errors,
+      timeline: {
+        required: TIMELINE_DEPENDENT_STATES.has(state),
+        ready: missingTimeline.length === 0,
+        missing: missingTimeline,
+      },
+    };
+  }
+  function assertWorkflowInvariants(project, context = "workflow") {
+    const validation = validateWorkflowInvariants(project);
+    if (!validation.valid) throw new Error(`${context} 状态不合法：${validation.errors.join("；")}`);
+    return validation;
+  }
+  function recoverWorkflowInvariants(project, options = {}) {
+    const validation = validateWorkflowInvariants(project);
+    if (validation.valid) return { project, recovered: false, validation };
+    if (!validation.timeline.required || validation.timeline.ready) return { project, recovered: false, validation };
+    const fromState = project.currentState;
+    project.currentState = "TIMELINE_GENERATION";
+    project.workflowRecovery = {
+      kind: "TIMELINE_BUNDLE_INCOMPLETE",
+      source: String(options.source || "normalize"),
+      fromState,
+      toState: "TIMELINE_GENERATION",
+      missing: [...validation.timeline.missing],
+      message: "Imported workflow state depended on Timeline Lock but the canonical Timeline Bundle was incomplete.",
+    };
+    project.history ||= [];
+    project.history.push({
+      at: now(),
+      action: "WORKFLOW_INVARIANT_RECOVERED",
+      from: fromState,
+      state: "TIMELINE_GENERATION",
+      missing: [...validation.timeline.missing],
+      source: project.workflowRecovery.source,
+    });
+    return { project, recovered: true, validation: validateWorkflowInvariants(project) };
+  }
   function csvCell(value) { const text = String(value == null ? "" : value); return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; }
   function toCsv(headers, rows) { return [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n"; }
 
@@ -233,7 +286,7 @@
     return project;
   }
 
-  function normalizeProject(raw = {}) {
+  function normalizeProject(raw = {}, options = {}) {
     const mode = inferLegacyMusicMode(raw);
     const legacyType = projectLegacyType(raw);
     const base = createProject({
@@ -267,6 +320,7 @@
     project.history = Array.isArray(raw.history) ? raw.history : [];
     project.linkedMusicIds = Array.isArray(raw.linkedMusicIds) ? raw.linkedMusicIds : [];
     ensureCapabilityFiles(project);
+    recoverWorkflowInvariants(project, { source: options.source || "normalize" });
     refreshGeneratedFiles(project);
     return project;
   }
@@ -301,8 +355,7 @@
       if (!fileReady(project, "AUDIO_MASTER")) errors.push("缺少 AUDIO_MASTER.wav");
     }
     if (target === "TIMELINE_GENERATION" && !project.locks.audioLock) errors.push("Audio Lock 前禁止生成精确时间轴");
-    if (target === "TIMELINE_LOCKED" && !fileReady(project, "SUBTITLE_MASTER")) errors.push("缺少 SUBTITLE_MASTER.srt");
-    if (target === "STORYBOARDING" && !fileReady(project, "SUBTITLE_MASTER")) errors.push("Timed Storyboard 必须基于真实字幕时间轴");
+    for (const error of workflowInvariantErrors(project, target)) if (!errors.includes(error)) errors.push(error);
     if (target === "PRODUCTION_READY") {
       PRODUCTION_READY_FILES.filter((key) => !fileReady(project, key)).forEach((key) => errors.push(`缺少 ${FILE_DEFINITIONS[key].filename}`));
       const mustMissing = (project.assets || []).filter((asset) => asset.priority === "Must" && !["Ready", "Used"].includes(asset.status));
@@ -318,10 +371,11 @@
     const current = currentIndex(project);
     const targetIndex = PRODUCTION_FLOW.indexOf(target);
     if (!options.force && Math.abs(targetIndex - current) > 1) throw new Error("状态只能前进或回退一个阶段");
-    const errors = targetIndex > current ? gateForState(project, target) : [];
+    const errors = targetIndex > current ? gateForState(project, target) : workflowInvariantErrors(project, target);
     if (errors.length) throw new Error(errors.join("；"));
     const from = project.currentState;
     project.currentState = target;
+    if (target === "TIMELINE_LOCKED" && timelineBundleReady(project)) delete project.workflowRecovery;
     project.updatedAt = now();
     project.history ||= [];
     project.history.push({ at: now(), action: targetIndex > current ? "STATE_ADVANCED" : "STATE_REOPENED", from, state: target, note: options.note || "" });
@@ -356,8 +410,8 @@
     SCRIPT_LOCKED: ["ChatGPT", "生成 PRE_ASSET_GUIDE", ["PRE_ASSET_GUIDE", "ASSET_INDEX"], "只描述确定需要的素材，不绑定时间码。"],
     PRE_ASSET_PREPARATION: ["User", "进入音频制作", [], "准备 Voice；Music 与 SFX 按需启用，不再产生独立顶级音乐阶段。"],
     AUDIO_PRODUCTION: ["User", "完成 AUDIO_MASTER 并确认 Audio Lock", ["AUDIO_MASTER"], "完成 Voice + 可选 Music + 可选 SFX，最终导出真实 AUDIO_MASTER.wav。"],
-    AUDIO_LOCKED: ["Codex", "按真实音频生成字幕时间轴", ["SUBTITLE_MASTER", "TIMELINE_SENTENCE", "TRANSCRIPT_ALIGNED", "ALIGNMENT_REPORT"], "实际音频是唯一时间源，VOICE_MASTER 只用于校正文案。"],
-    TIMELINE_GENERATION: ["Codex", "完成音频转写与对齐", ["SUBTITLE_MASTER", "TIMELINE_SENTENCE", "TRANSCRIPT_ALIGNED", "ALIGNMENT_REPORT"], "记录实际朗读与原稿差异。"],
+    AUDIO_LOCKED: ["Codex", "按真实音频生成字幕时间轴", [...TIMELINE_BUNDLE_FILES], "实际音频是唯一时间源，VOICE_MASTER 只用于校正文案。"],
+    TIMELINE_GENERATION: ["Codex", "完成音频转写与对齐", [...TIMELINE_BUNDLE_FILES], "记录实际朗读与原稿差异。"],
     TIMELINE_LOCKED: ["ChatGPT", "生成 Timed Storyboard", ["EDIT_BLUEPRINT"], "基于 SRT 和 AV Anchor 为每个时间段绑定真实素材。"],
     STORYBOARDING: ["ChatGPT", "完善 EDIT_BLUEPRINT", ["EDIT_BLUEPRINT"], "坚持 A AV Anchor > B Evidence Visual > C Ambient Gameplay。"],
     ASSET_COMPLETION: ["User", "补齐 Must 素材", ["ASSET_INDEX"], "真实录制或收集缺失素材，禁止用假 UI 替代。"],
@@ -380,7 +434,7 @@
   function requiredInputs(project) {
     const state = project.currentState;
     if (["AUDIO_LOCKED", "TIMELINE_GENERATION"].includes(state)) return ["AUDIO_MASTER", "VOICE_MASTER"];
-    if (["TIMELINE_LOCKED", "STORYBOARDING"].includes(state)) return ["SUBTITLE_MASTER", "TRANSCRIPT_ALIGNED", "PRE_ASSET_GUIDE"];
+    if (["TIMELINE_LOCKED", "STORYBOARDING"].includes(state)) return [...TIMELINE_BUNDLE_FILES, "PRE_ASSET_GUIDE"];
     if (["PRODUCTION_READY", "CODEX_BUILD"].includes(state)) return [...PRODUCTION_READY_FILES];
     if (state === "REVISION") return ["VIDEO_V0_REVIEW", "REVIEW_NOTES"];
     return [];
@@ -500,7 +554,7 @@ ${outputs}
 
   function reconcileProject(project) {
     if (project.currentState === "AUDIO_LOCKED" && fileReady(project, "SUBTITLE_MASTER")) transition(project, "TIMELINE_GENERATION");
-    if (project.currentState === "TIMELINE_GENERATION" && fileReady(project, "SUBTITLE_MASTER")) transition(project, "TIMELINE_LOCKED");
+    if (project.currentState === "TIMELINE_GENERATION" && timelineBundleReady(project)) transition(project, "TIMELINE_LOCKED");
     if (project.currentState === "ASSET_COMPLETION" && gateForState(project, "PRODUCTION_READY").length === 0) transition(project, "PRODUCTION_READY");
     if (project.currentState === "CODEX_BUILD" && fileReady(project, "VIDEO_V0_REVIEW")) transition(project, "REVIEW");
     return project;
@@ -655,7 +709,8 @@ ${outputs}
 
   function statusMarkdown(project) {
     const action = nextAction(project);
-    return `# STATUS\n\n## PROJECT\n${project.name}\n\n## STATE\n${project.currentState}\n\n## LOCKS\n- CONTENT LOCK: ${project.locks.contentLock ? "YES" : "NO"}\n- SCRIPT LOCK: ${project.locks.scriptLock ? "YES" : "NO"}\n- AUDIO LOCK: ${project.locks.audioLock ? "YES" : "NO"}\n- PICTURE LOCK: ${project.locks.pictureLock ? "YES" : "NO"}\n\n## AUDIO\n- MUSIC MODE: ${musicMode(project)}\n- MUSIC STATUS: ${project.audioProduction?.musicStatus || "skipped"}\n- AUDIO MASTER: ${fileReady(project, "AUDIO_MASTER") ? "READY" : "MISSING"}\n\n## NEXT ACTION\n${action.title}\n\n## OWNER\n${action.target}\n\n## REQUIRED INPUT\n${action.requiredInputs.map((key) => FILE_DEFINITIONS[key]?.filename || key).join("\n") || "PROJECT_MANIFEST.md"}\n\n## MISSING\n${[...action.missingInputs, ...action.missingOutputs].map((key) => FILE_DEFINITIONS[key]?.filename || key).join("\n") || "None"}\n`;
+    const timelineMissing = missingTimelineArtifacts(project);
+    return `# STATUS\n\n## PROJECT\n${project.name}\n\n## STATE\n${project.currentState}\n\n## LOCKS\n- CONTENT LOCK: ${project.locks.contentLock ? "YES" : "NO"}\n- SCRIPT LOCK: ${project.locks.scriptLock ? "YES" : "NO"}\n- AUDIO LOCK: ${project.locks.audioLock ? "YES" : "NO"}\n- PICTURE LOCK: ${project.locks.pictureLock ? "YES" : "NO"}\n\n## AUDIO\n- MUSIC MODE: ${musicMode(project)}\n- MUSIC STATUS: ${project.audioProduction?.musicStatus || "skipped"}\n- AUDIO MASTER: ${fileReady(project, "AUDIO_MASTER") ? "READY" : "MISSING"}\n\n## TIMELINE\n- BUNDLE: ${timelineMissing.length ? "INCOMPLETE" : "READY"}\n- MISSING: ${timelineMissing.map((key) => FILE_DEFINITIONS[key]?.filename || key).join(", ") || "None"}\n\n## NEXT ACTION\n${action.title}\n\n## OWNER\n${action.target}\n\n## REQUIRED INPUT\n${action.requiredInputs.map((key) => FILE_DEFINITIONS[key]?.filename || key).join("\n") || "PROJECT_MANIFEST.md"}\n\n## MISSING\n${[...action.missingInputs, ...action.missingOutputs].map((key) => FILE_DEFINITIONS[key]?.filename || key).join("\n") || "None"}\n`;
   }
 
   function projectDataJson(project) {
@@ -726,12 +781,15 @@ ${outputs}
   return {
     SCHEMA_VERSION, STANDARD_PROJECT_TYPE, LEGACY_PROJECT_TYPES, PROJECT_TYPES, PROJECT_TYPE_RULES,
     PRODUCTION_FLOW, STANDARD_FLOW, MUSIC_MODES, STATE_LABELS, FILE_DEFINITIONS, DIRECTORY_STRUCTURE,
+    TIMELINE_BUNDLE_FILES,
     AV_TYPES, ASSET_TYPES, ASSET_STATUSES, ASSET_PRIORITIES, REVIEW_TYPES,
     flowFor, createProject, normalizeProject, transition, previousState, nextState, gateForState, setLock,
     actionFor, nextAction, generatePrompt, registerFile, reconcileProject, splitTts, generateTts, ttsManifestCsv,
     extractAvAnchors, suggestAssetFilename, createAsset, createReview, createBlueprintRow, createMusicAsset,
     assetIndexCsv, blueprintCsv, reviewMarkdown, manifestMarkdown, statusMarkdown, refreshGeneratedFiles,
     projectDataJson, projectFileTree, progress, fileReady, safeName, toCsv, musicMode, setMusicMode,
-    fileContract, visibleFileKeys, ensureCapabilityFiles, defaultAudioProduction
+    fileContract, visibleFileKeys, ensureCapabilityFiles, defaultAudioProduction,
+    missingTimelineArtifacts, timelineBundleReady, workflowInvariantErrors, validateWorkflowInvariants,
+    assertWorkflowInvariants, recoverWorkflowInvariants
   };
 });

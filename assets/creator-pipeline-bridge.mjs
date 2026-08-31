@@ -122,6 +122,13 @@ function currentProductionProject() {
   return store.projects?.find((project) => project.projectId === store.selectedProjectId) || store.projects?.[0] || null;
 }
 
+function validateProjectWorkflow(engine, project) {
+  if (!engine?.validateWorkflowInvariants) {
+    return { valid: false, errors: ["Production Core workflow invariant validator unavailable"] };
+  }
+  return engine.validateWorkflowInvariants(project);
+}
+
 function ensureDriveRoot(project) {
   if (!project) return false;
   project.integration ||= {};
@@ -205,7 +212,7 @@ function replaceLocalProject(project) {
 function showConflictDialog(panel, engine, localProject, conflict) {
   document.querySelector(".gcb-conflict-dialog")?.remove();
   const remoteRow = conflict?.project || {};
-  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data || {}), remoteRow);
+  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data || {}, { source: "cloud_conflict_remote" }), remoteRow);
   const differences = summarizeProjectDiff(localProject, remote);
   const dialog = document.createElement("dialog");
   dialog.className = "gcb-conflict-dialog";
@@ -236,7 +243,7 @@ function showConflictDialog(panel, engine, localProject, conflict) {
       window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
       return;
     }
-    replaceLocalProject(attachCloudMetadata(engine.normalizeProject(result.merged), remoteRow));
+    replaceLocalProject(attachCloudMetadata(engine.normalizeProject(result.merged, { source: "cloud_conflict_merge" }), remoteRow));
     close();
     await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
   });
@@ -299,6 +306,11 @@ async function pushCurrentProject(panel, reason = "auto", engine = window.GuccPr
   const store = currentProductionStore();
   const project = store.projects.find((item) => item.projectId === store.selectedProjectId);
   if (!project) return false;
+  const workflow = validateProjectWorkflow(engine, project);
+  if (!workflow.valid) {
+    setPanelStatus(panel, "error", `工作流状态不合法 · ${workflow.errors.join(" / ")}`);
+    return false;
+  }
   const existingConflict = project.integration?.cloud?.conflict;
   if (existingConflict && !options.bypassConflict) {
     setPanelStatus(panel, "error", "云端冲突待处理 · 自动同步已停止");
@@ -391,6 +403,11 @@ async function runProduction() {
   publish.addEventListener("click", async () => {
     const project = currentProductionProject();
     if (!project) return;
+    const workflow = validateProjectWorkflow(engine, project);
+    if (!workflow.valid) {
+      setPanelStatus(panel, "error", `工作流状态不合法 · ${workflow.errors.join(" / ")}`);
+      return;
+    }
     await pushCurrentProject(panel, "manual", engine);
     writeJson(PUBLISH_HANDOFF_KEY, { project, releasePackage: releasePackageFromProject(project), createdAt: new Date().toISOString() });
     window.location.href = publishConsoleUrl();

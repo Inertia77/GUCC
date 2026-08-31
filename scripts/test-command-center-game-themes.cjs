@@ -11,6 +11,7 @@ const mainSource = read("apps/command-center/src/main.js");
 const indexSource = read("apps/command-center/index.html");
 const gameThemeStyles = read("apps/command-center/styles/game-themes.css");
 const gamePremiumStyles = read("apps/command-center/styles/game-premium.css");
+const interfaceChromeStyles = read("apps/command-center/styles/interface-chrome.css");
 const gameOsStyles = read("apps/command-center/styles/game-os.css");
 const interactionContrastStyles = read("apps/command-center/styles/interaction-contrast.css");
 
@@ -20,21 +21,25 @@ for (const forbidden of ["TODAY", "Next Action", "game-overview", "game-hub", "s
 }
 
 // Dynamic feature CSS may load during initialization. Neutral search UX must be
-// followed by geometry and then the material-finish layer.
+// followed by geometry, material finish, then shared navigation/editor chrome.
 const searchUxIndex = mainSource.indexOf("game-os.css?v=3");
 const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
+const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
 assert(gamePremiumIndex >= 0, "Missing premium game material stylesheet");
+assert(interfaceChromeIndex >= 0, "Missing final shared interface chrome stylesheet");
 assert(searchUxIndex < gameThemeIndex, "Neutral search UX must load before game variants");
 assert(gameThemeIndex < gamePremiumIndex, "Premium material finish must load after game geometry");
+assert(gamePremiumIndex < interfaceChromeIndex, "Shared chrome must load after card material finish");
 assert.match(mainSource, /ensureFinalStyleSheets\(\{ reorder: true \}\)/);
 
 // All six games need explicit selectors in both identity and material layers.
 for (const code of ["崩", "绝", "鸣", "终", "异", "阴"]) {
   assert(gameThemeStyles.includes(`data-game-code=\"${code}\"`), `Missing visual grammar for ${code}`);
   assert(gamePremiumStyles.includes(`data-game-code=\"${code}\"`), `Missing premium material language for ${code}`);
+  assert(interfaceChromeStyles.includes(`data-game-code=\"${code}\"`), `Missing interface accent/system mark for ${code}`);
 }
 
 // Grayscale-identifiable geometry: each game must have a materially distinct
@@ -67,12 +72,36 @@ for (const materialPhrase of [
 }
 
 // Onmyoji must stay dark, warm and readable instead of returning to a bright
-// daylight parchment card. These tokens intentionally sit in the final layer.
+// daylight parchment card. These tokens intentionally sit in the final material layer.
 assert.match(gamePremiumStyles, /data-game-code=\"YYS\"[\s\S]*?--game-surface:\s*#181416/);
 assert.match(gamePremiumStyles, /data-game-code=\"YYS\"[\s\S]*?--game-surface-2:\s*#0f1117/);
 assert.match(gamePremiumStyles, /data-game-code=\"YYS\"[\s\S]*?--game-title:\s*#f3e8d8/);
 assert.match(gamePremiumStyles, /data-game-code=\"YYS\"[\s\S]*?--game-text:\s*#e5d8cb/);
 assert.match(gamePremiumStyles, /data-game-code=\"YYS\"[\s\S]*?linear-gradient\(145deg, #1a1517 0%, #13131a 55%, #0d1015 100%\)/);
+
+// Next-stage interface language: shared navigation/query/editor remain GUCC-first,
+// while the selected game lends only a restrained accent and micro system mark.
+for (const systemMark of [
+  "RAIL ARCHIVE // 01",
+  "VIDEO ARCHIVE // 06",
+  "RESONANCE SIGNAL // 02",
+  "FIELD OPS // 04",
+  "CITY SIGNAL // 05",
+  "HEIAN RECORD // 03"
+]) {
+  assert(interfaceChromeStyles.includes(systemMark), `Missing product-family system mark: ${systemMark}`);
+}
+assert.match(interfaceChromeStyles, /GUCC DATABASE \/\/ LIVE OPERATIONS/);
+assert.match(interfaceChromeStyles, /MODE SELECT/);
+assert.match(interfaceChromeStyles, /QUERY MATRIX/);
+assert.match(interfaceChromeStyles, /RECORD CONSOLE/);
+assert.match(interfaceChromeStyles, /\.editor-body > label:has\(:focus\)/);
+assert.match(interfaceChromeStyles, /#charForm[\s\S]*?input\[name=\"name\"\][\s\S]*?grid-column:\s*span 2/);
+assert.match(interfaceChromeStyles, /\.editor-footer button\[type=\"submit\"\]/);
+assert.match(mainSource, /function resolveThemeGameCode\(value\)/);
+assert.match(mainSource, /function syncFilterToolbarTheme\(select\)/);
+assert.match(mainSource, /function syncEditorTheme\(input\)/);
+assert.match(mainSource, /initInterfaceThemeSync\(\)/);
 
 // Readability / search density / touch targets stay explicit.
 assert.match(gameThemeStyles, /character-title-localized[\s\S]*?font-size:\s*13px/);
@@ -86,9 +115,12 @@ assert.match(gameOsStyles, /character-title-localized[\s\S]*?flex-wrap:\s*wrap/)
 // Decorations remain CSS-only and retreat on small screens / reduced motion.
 assert.doesNotMatch(gameThemeStyles, /url\s*\(/i);
 assert.doesNotMatch(gamePremiumStyles, /url\s*\(/i);
+assert.doesNotMatch(interfaceChromeStyles, /url\s*\(/i);
 assert.match(gameThemeStyles, /@media \(prefers-reduced-motion:\s*reduce\)/);
 assert.match(gamePremiumStyles, /@media \(max-width:\s*900px\)/);
 assert.match(gamePremiumStyles, /@media \(prefers-reduced-motion:\s*reduce\)/);
+assert.match(interfaceChromeStyles, /@media \(max-width:\s*900px\)/);
+assert.match(interfaceChromeStyles, /@media \(prefers-reduced-motion:\s*reduce\)/);
 assert.match(gameOsStyles, /@media \(prefers-reduced-motion:\s*reduce\)/);
 
 // Neutral interaction contrast rules must no longer own result-card collapse

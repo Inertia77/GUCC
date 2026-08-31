@@ -1,6 +1,6 @@
 -- WP_GLOB_001 Production acceptance probe
 -- Safe by design: every fixture is created inside this transaction and rolled back.
--- Run only after 20260831133000_creator_distribution_identity_foundation.sql.
+-- Run only after 20260831043241_creator_distribution_identity_foundation.sql.
 
 begin;
 

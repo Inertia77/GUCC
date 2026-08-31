@@ -126,17 +126,30 @@ function eventName(entry, kind) {
 
 function buildSummary(game, versions, now = new Date()) {
   const current = selectCurrentVersion(versions, now);
+  const today = dayStart(now);
   const todayKey = dayKey(now);
   const banners = Array.isArray(current?.banners) ? current.banners : [];
   const acquisitions = Array.isArray(current?.acquisitions) ? current.acquisitions : [];
   const timeline = [];
   const activeEntries = [];
+  const upcomingVersion = versions
+    .map((version) => ({ ...version, _start: parseDateOnly(version.start_date) }))
+    .filter((version) => version._start && version._start > today && version.id !== current?.id)
+    .sort((a, b) => a._start - b._start)[0] || null;
 
   if (current?._end) {
     timeline.push({
       label: `${current.version_no || ''} ${current.version_name || '版本'}`.trim(),
       date: current._end,
       kind: 'version-end'
+    });
+  }
+
+  if (upcomingVersion?._start) {
+    timeline.push({
+      label: `${upcomingVersion.version_no || ''} ${upcomingVersion.version_name || '新版本'}`.replace(/\s+/g, ' ').trim(),
+      date: upcomingVersion._start,
+      kind: 'start'
     });
   }
 

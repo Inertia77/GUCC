@@ -1,6 +1,8 @@
 # Creator Archive Runtime Setup (Windows)
 
-One-time setup for GUCC Google Drive Lightweight Project Archive.
+Status: **IMPLEMENTED / ACTIVE** for the GUCC Google Drive Lightweight Project Archive.
+
+This is the existing runtime/setup path, not a future architecture placeholder. Google Drive remains a lightweight project archive only; large media stays Local-first.
 
 ## Prerequisite
 

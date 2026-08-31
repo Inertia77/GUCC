@@ -228,7 +228,6 @@ function initDashboard() {
 
 document.addEventListener('DOMContentLoaded', () => {
   hydrateFixedFieldFilters();
-  initInterfaceThemeSync();
   $('#drawerBackdrop')?.addEventListener('click', closeActiveDrawer);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeActiveDrawer();
@@ -242,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initParties();
   initVersions();
   initResources();
+  // Persistent filters are restored by the feature initializers above; sync the
+  // game-aware chrome only after those values are in place.
+  initInterfaceThemeSync();
 
   // Feature CSS may be injected during initialization. Keep the neutral search UX
   // first, game geometry second, physical material third, and shared interface chrome last.

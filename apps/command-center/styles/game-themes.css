@@ -1,117 +1,108 @@
 /* Six-game result-card identity layer.
-   Search page rule: neutral readable content first; game personality stays on edges,
-   titles and tiny non-text motifs. No full-screen game theming, no glowing body text. */
+   Database-search rule: reading comes first; identity is expressed through geometry,
+   edge language, labels and controls. No full-screen theming, no body-text glow. */
 
 /* --------------------------------------------------------------------------
    GAME TOKENS
    -------------------------------------------------------------------------- */
 body.command-center-page.gucc-enhanced .item[data-game-code="崩"],
 body.command-center-page.gucc-enhanced .item[data-game-code="HSR"] {
-  --game-surface: #151a23;
-  --game-surface-2: #111720;
-  --game-inset: #10151d;
-  --game-border: #46556d;
-  --game-border-soft: #303c50;
-  --game-accent: #9fc6f6;
-  --game-accent-2: #c9aa5b;
-  --game-title: #f5f8ff;
+  --game-surface: #151b24;
+  --game-surface-2: #101720;
+  --game-inset: #0e151e;
+  --game-border: #52627a;
+  --game-border-soft: #35445a;
+  --game-accent: #a9cff7;
+  --game-accent-2: #c8ad69;
+  --game-title: #f7f9ff;
   --game-text: #e9eef6;
-  --game-secondary: #c4cedc;
-  --game-muted: #9eabba;
-  --game-radius: 17px;
+  --game-secondary: #c8d2df;
+  --game-muted: #a8b4c3;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code="绝"],
 body.command-center-page.gucc-enhanced .item[data-game-code="ZZZ"] {
   --game-surface: #181a1d;
-  --game-surface-2: #131518;
-  --game-inset: #101215;
-  --game-border: #555b62;
-  --game-border-soft: #363b41;
-  --game-accent: #eee53f;
-  --game-accent-2: #f28a3c;
-  --game-title: #fffef2;
-  --game-text: #f0f1ec;
-  --game-secondary: #cfd1cc;
-  --game-muted: #a9aca9;
-  --game-radius: 7px;
+  --game-surface-2: #121417;
+  --game-inset: #0f1114;
+  --game-border: #666b72;
+  --game-border-soft: #393e45;
+  --game-accent: #f2e83f;
+  --game-accent-2: #ee8a38;
+  --game-title: #fffef3;
+  --game-text: #f1f2ed;
+  --game-secondary: #d4d6d1;
+  --game-muted: #afb2ae;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code="鸣"],
 body.command-center-page.gucc-enhanced .item[data-game-code="WW"] {
   --game-surface: #141b1d;
   --game-surface-2: #101719;
-  --game-inset: #0e1517;
-  --game-border: #405e62;
-  --game-border-soft: #294044;
-  --game-accent: #76d2d4;
-  --game-accent-2: #d8fbf9;
-  --game-title: #f4fbfb;
-  --game-text: #e8f0f0;
-  --game-secondary: #c5d3d4;
-  --game-muted: #9fb2b3;
-  --game-radius: 18px;
+  --game-inset: #0d1517;
+  --game-border: #49666a;
+  --game-border-soft: #2f474a;
+  --game-accent: #79d4d4;
+  --game-accent-2: #d7f5f2;
+  --game-title: #f5fbfb;
+  --game-text: #e9f1f1;
+  --game-secondary: #cbd8d9;
+  --game-muted: #a7b9ba;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code="终"],
 body.command-center-page.gucc-enhanced .item[data-game-code="末"],
 body.command-center-page.gucc-enhanced .item[data-game-code="ENF"] {
-  --game-surface: #1a1b1c;
+  --game-surface: #1b1c1d;
   --game-surface-2: #141617;
-  --game-inset: #111314;
-  --game-border: #5d594e;
-  --game-border-soft: #393832;
-  --game-accent: #d9aa42;
-  --game-accent-2: #f0d995;
-  --game-title: #f6f3e9;
-  --game-text: #eceae5;
-  --game-secondary: #cbc7bc;
-  --game-muted: #aaa69d;
-  --game-radius: 7px;
+  --game-inset: #101213;
+  --game-border: #696355;
+  --game-border-soft: #403d35;
+  --game-accent: #d9ab45;
+  --game-accent-2: #efdc9d;
+  --game-title: #f6f3ea;
+  --game-text: #edebe5;
+  --game-secondary: #d0ccc0;
+  --game-muted: #b0aca2;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code="异"],
 body.command-center-page.gucc-enhanced .item[data-game-code="NTE"] {
-  --game-surface: #171925;
-  --game-surface-2: #131520;
-  --game-inset: #11131c;
-  --game-border: #55536b;
-  --game-border-soft: #353448;
-  --game-accent: #72cee9;
-  --game-accent-2: #c96caf;
-  --game-title: #f7f7ff;
-  --game-text: #ececf4;
-  --game-secondary: #cbc9d8;
-  --game-muted: #a9a6b7;
-  --game-radius: 18px;
+  --game-surface: #171b27;
+  --game-surface-2: #121620;
+  --game-inset: #0f131d;
+  --game-border: #5a6078;
+  --game-border-soft: #373d53;
+  --game-accent: #78d2ec;
+  --game-accent-2: #ce78b7;
+  --game-title: #f8f8ff;
+  --game-text: #edeef5;
+  --game-secondary: #cfd2df;
+  --game-muted: #aeb1c0;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code="阴"],
 body.command-center-page.gucc-enhanced .item[data-game-code="YYS"] {
   --game-surface: #f2eadb;
-  --game-surface-2: #e9ddc8;
+  --game-surface-2: #e8dcc7;
   --game-inset: #fbf4e7;
-  --game-border: #b69b72;
-  --game-border-soft: #d2bc97;
-  --game-accent: #a64b3e;
-  --game-accent-2: #80652f;
-  --game-title: #4a211d;
-  --game-text: #302922;
-  --game-secondary: #54493f;
-  --game-muted: #706459;
-  --game-radius: 18px;
+  --game-border: #aa8f68;
+  --game-border-soft: #c7af89;
+  --game-accent: #a14a3d;
+  --game-accent-2: #795f2d;
+  --game-title: #43211d;
+  --game-text: #2f2923;
+  --game-secondary: #51473e;
+  --game-muted: #675b50;
 }
 
 /* --------------------------------------------------------------------------
-   SHARED RESULT CARD
+   SHARED READABILITY + SEMANTICS
    -------------------------------------------------------------------------- */
 body.command-center-page.gucc-enhanced .item[data-game-code] {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid var(--game-border) !important;
-  border-left: 4px solid var(--game-accent) !important;
-  border-radius: var(--game-radius) !important;
   background: linear-gradient(145deg, var(--game-surface), var(--game-surface-2)) !important;
   color: var(--game-text) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, .16) !important;
@@ -124,61 +115,82 @@ body.command-center-page.gucc-enhanced .item[data-game-code] > * {
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code]::before,
-body.command-center-page.gucc-enhanced .item[data-game-code]::after {
+body.command-center-page.gucc-enhanced .item[data-game-code]::after,
+body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary::before,
+body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary::after {
   content: "";
   position: absolute;
-  z-index: 1;
   pointer-events: none;
 }
 
+body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary {
+  position: relative;
+}
+
 body.command-center-page.gucc-enhanced .item[data-game-code]:focus-within {
-  border-color: var(--game-accent) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--game-accent) 20%, transparent), 0 8px 20px rgba(0, 0, 0, .16) !important;
+  outline: 2px solid color-mix(in srgb, var(--game-accent) 78%, white 22%);
+  outline-offset: 2px;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] :is(.item-title, .character-title-primary, .version-title > span:last-child) {
   color: var(--game-title) !important;
   font-weight: 900 !important;
-  letter-spacing: 0 !important;
+  letter-spacing: 0;
   text-shadow: none !important;
   overflow-wrap: anywhere;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .item-title {
   font-size: 19px !important;
-  line-height: 1.35 !important;
+  line-height: 1.32 !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .character-title-primary {
   font-size: 21px !important;
-  line-height: 1.3 !important;
+  line-height: 1.28 !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] :is(.character-title-localized, .character-title-full) {
   color: var(--game-secondary) !important;
   font-size: 13px !important;
   font-weight: 650 !important;
-  line-height: 1.5 !important;
+  line-height: 1.48 !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] :is(.character-localized-label, .character-full-name-label) {
   color: var(--game-muted) !important;
-  font-size: 11.5px !important;
+  font-size: 12px !important;
   font-weight: 850 !important;
 }
 
+body.command-center-page.gucc-enhanced .item[data-game-code] .meta {
+  align-items: center;
+}
+
 body.command-center-page.gucc-enhanced .item[data-game-code] .badge {
+  position: relative;
   border: 1px solid var(--game-border-soft) !important;
-  border-radius: 7px !important;
   background: var(--game-inset) !important;
   color: var(--game-secondary) !important;
   box-shadow: none !important;
+  white-space: normal;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .badge.status-highlight {
-  border-color: color-mix(in srgb, var(--game-accent) 65%, var(--game-border-soft)) !important;
-  background: color-mix(in srgb, var(--game-accent) 9%, var(--game-inset)) !important;
+  padding-left: 18px !important;
+  border-color: color-mix(in srgb, var(--game-accent) 58%, var(--game-border-soft)) !important;
   color: var(--game-title) !important;
+}
+
+body.command-center-page.gucc-enhanced .item[data-game-code] .badge.status-highlight::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border: 1px solid currentColor;
+  transform: translateY(-50%);
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .item-content {
@@ -194,18 +206,18 @@ body.command-center-page.gucc-enhanced .item[data-game-code] :is(.rich-text, .pr
 body.command-center-page.gucc-enhanced .item[data-game-code] :is(.item-content-title, .note-label, .phase-head > span, .resource-card-title) {
   color: var(--game-title) !important;
   font-weight: 900 !important;
-}
-
-body.command-center-page.gucc-enhanced .item[data-game-code] :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
-  border: 1px solid var(--game-border-soft) !important;
-  border-radius: 9px !important;
-  background: var(--game-inset) !important;
-  color: var(--game-text) !important;
-  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] :is(.phase-head small, .resource-relation-chip, .banner-chip small) {
   color: var(--game-muted) !important;
+}
+
+body.command-center-page.gucc-enhanced .item[data-game-code] :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
+  border: 1px solid var(--game-border-soft) !important;
+  background: var(--game-inset) !important;
+  color: var(--game-text) !important;
+  box-shadow: none !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .version-no {
@@ -218,8 +230,7 @@ body.command-center-page.gucc-enhanced .item[data-game-code] .version-no {
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .banner-chip {
   border: 1px solid var(--game-border-soft) !important;
-  border-radius: 8px !important;
-  background: color-mix(in srgb, var(--game-inset) 92%, black 8%) !important;
+  background: color-mix(in srgb, var(--game-inset) 94%, black 6%) !important;
   color: var(--game-text) !important;
 }
 
@@ -236,135 +247,444 @@ body.command-center-page.gucc-enhanced .item[data-game-code] .banner-type {
   color: var(--game-secondary) !important;
 }
 
-/* Unified button semantics. Identity comes from accent, not completely different controls. */
+/* Stable action meaning; geometry changes by game below. */
+body.command-center-page.gucc-enhanced .item[data-game-code] .actions button {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
 body.command-center-page.gucc-enhanced .item[data-game-code] .actions .collapse-toggle {
-  border: 1px solid color-mix(in srgb, var(--game-accent) 72%, var(--game-border)) !important;
+  border: 1px solid color-mix(in srgb, var(--game-accent) 70%, var(--game-border)) !important;
   background: var(--game-inset) !important;
   color: var(--game-accent) !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .actions .secondary {
   border: 1px solid var(--game-border) !important;
-  background: color-mix(in srgb, var(--game-inset) 92%, white 8%) !important;
+  background: color-mix(in srgb, var(--game-inset) 94%, white 6%) !important;
   color: var(--game-title) !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .actions .danger {
-  border: 1px solid #8e4547 !important;
-  background: #71383b !important;
-  color: #fff7f7 !important;
+  border: 1px solid #91494c !important;
+  background: #733b3e !important;
+  color: #fff8f8 !important;
 }
 
 body.command-center-page.gucc-enhanced .item[data-game-code] .actions button:is(:hover, :focus-visible) {
   filter: brightness(1.08) !important;
   transform: none !important;
-  text-shadow: none !important;
 }
 
 /* --------------------------------------------------------------------------
-   SIX VISUAL GRAMMARS — decoration stays outside the reading area
+   HSR — star-rail archive terminal
    -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) {
+  border: 1px solid var(--game-border) !important;
+  border-left: 3px solid var(--game-accent) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
 
-/* HSR: quiet star-map / rail line. */
 body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"])::before {
   top: 0;
   right: 0;
-  width: 108px;
-  height: 44px;
-  opacity: .5;
+  width: 126px;
+  height: 45px;
+  opacity: .62;
   background:
-    radial-gradient(circle at 76% 28%, #dbeaff 0 1px, transparent 1.4px),
-    radial-gradient(circle at 92% 58%, #d5b96b 0 1px, transparent 1.4px),
-    linear-gradient(153deg, transparent 49%, rgba(201, 170, 91, .55) 49.5% 50%, transparent 50.5%);
+    radial-gradient(circle at 72% 28%, #e6efff 0 1px, transparent 1.5px),
+    radial-gradient(circle at 90% 55%, #d7bd79 0 1px, transparent 1.5px),
+    linear-gradient(151deg, transparent 48%, rgba(200, 173, 105, .56) 49% 50%, transparent 51%);
 }
 
-/* ZZZ: one clipped corner + small caution strip, never behind text. */
-body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) {
-  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 0 100%);
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .item-summary::before {
+  top: -4px;
+  left: 0;
+  width: 42px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--game-accent), transparent);
 }
-body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"])::before {
-  top: 0;
-  right: 16px;
-  width: 68px;
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .item-summary::after {
+  top: -7px;
+  left: 42px;
+  width: 5px;
   height: 5px;
-  background: repeating-linear-gradient(135deg, var(--game-accent) 0 7px, #111 7px 12px);
+  border: 1px solid var(--game-accent-2);
+  transform: rotate(45deg);
 }
 
-/* WW: almost empty; one resonance arc only. */
-body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"])::before {
-  top: -38px;
-  right: -38px;
-  width: 92px;
-  height: 92px;
-  border: 1px solid rgba(118, 210, 212, .22);
-  border-radius: 50%;
-  box-shadow: 0 0 0 11px rgba(118, 210, 212, .025);
-}
-
-/* Endfield: engineering bracket / equipment marker. */
-body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"])::before {
-  top: 10px;
-  right: 12px;
-  width: 62px;
-  height: 8px;
-  border-top: 2px solid rgba(217, 170, 66, .68);
-  border-right: 2px solid rgba(217, 170, 66, .68);
-}
-body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .badge {
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .badge,
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .actions button {
   border-radius: 3px !important;
 }
 
-/* NTE: polished urban signal, cyan/magenta split. */
-body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"])::before {
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .badge.status-highlight::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
+  border-radius: 4px !important;
+  border-left: 2px solid var(--game-accent-2) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) .item-content-title {
+  padding-left: 10px;
+  border-left: 2px solid var(--game-accent);
+  letter-spacing: .035em;
+}
+
+/* --------------------------------------------------------------------------
+   ZZZ — VHS / street operations backend
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) {
+  border: 2px solid var(--game-border) !important;
+  border-left: 6px solid var(--game-accent) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"])::before {
+  top: 0;
+  right: 24px;
+  width: 78px;
+  height: 6px;
+  background: repeating-linear-gradient(135deg, var(--game-accent) 0 8px, #111 8px 13px);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .item-summary::before {
+  top: 1px;
+  left: -7px;
+  width: 4px;
+  height: 24px;
+  background: var(--game-accent-2);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .item-title {
+  letter-spacing: -.025em;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .badge,
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .actions button,
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .badge {
+  border-left: 3px solid var(--game-accent) !important;
+  font-weight: 800 !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .badge.status-highlight::before {
+  border-radius: 0;
+  background: currentColor;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .actions .collapse-toggle {
+  border-left: 4px solid var(--game-accent) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .actions .danger {
+  border-left: 4px solid #ff777c !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .item-content-title {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-left: 4px solid var(--game-accent);
+  background: rgba(242, 232, 63, .08);
+}
+
+/* --------------------------------------------------------------------------
+   Wuthering Waves — resonance analysis terminal
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) {
+  border: 1px solid var(--game-border) !important;
+  border-radius: 26px !important;
+  box-shadow: inset 0 0 0 1px rgba(121, 212, 212, .025), 0 8px 20px rgba(0, 0, 0, .13) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"])::before {
   top: -42px;
   right: -42px;
   width: 104px;
   height: 104px;
-  border: 1px solid rgba(114, 206, 233, .18);
+  border: 1px solid rgba(121, 212, 212, .25);
   border-radius: 50%;
-  box-shadow: inset 0 0 0 9px rgba(201, 108, 175, .035);
+  box-shadow: 0 0 0 12px rgba(121, 212, 212, .028), 0 0 0 24px rgba(121, 212, 212, .014);
 }
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .item-summary::before {
+  top: 0;
+  left: -2px;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--game-accent);
+  border-radius: 50%;
+  opacity: .7;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .item-summary {
+  padding-left: 20px;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .badge,
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .actions button {
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--game-inset) 92%, transparent) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .badge.status-highlight::before {
+  border-radius: 50%;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
+  border-radius: 18px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="鸣"], [data-game-code="WW"]) .item-content-title {
+  font-weight: 800 !important;
+  letter-spacing: .01em;
+}
+
+/* --------------------------------------------------------------------------
+   Endfield — industrial facility control console
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) {
+  border: 1px solid var(--game-border) !important;
+  border-top: 3px solid var(--game-accent) !important;
+  border-left: 5px double var(--game-border) !important;
+  border-radius: 1px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"])::before {
+  top: 8px;
+  right: 10px;
+  width: 96px;
+  height: 28px;
+  opacity: .23;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 12px, var(--game-accent) 12px 13px),
+    linear-gradient(var(--game-accent), var(--game-accent)) top right / 44px 2px no-repeat,
+    linear-gradient(var(--game-accent), var(--game-accent)) top right / 2px 14px no-repeat;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .item-summary::before {
+  top: 0;
+  left: -4px;
+  width: 22px;
+  height: 8px;
+  border-top: 2px solid var(--game-accent);
+  border-left: 2px solid var(--game-accent);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .badge {
+  border-radius: 0 !important;
+  border-left: 3px solid var(--game-accent) !important;
+  letter-spacing: .025em;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .badge.status-highlight::before {
+  width: 8px;
+  height: 4px;
+  border-radius: 0;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .actions button {
+  border-radius: 0 !important;
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, currentColor 35%, transparent) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
+  border-radius: 0 !important;
+  border-left: 3px solid var(--game-accent) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="终"], [data-game-code="末"], [data-game-code="ENF"]) .item-content-title {
+  display: inline-flex;
+  padding: 2px 7px;
+  border: 1px solid var(--game-border-soft);
+  border-left: 4px solid var(--game-accent);
+  background: rgba(217, 171, 69, .055);
+  letter-spacing: .045em;
+}
+
+/* --------------------------------------------------------------------------
+   NTE — urban anomaly management terminal
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) {
+  border: 1px solid var(--game-border) !important;
+  border-top-color: color-mix(in srgb, var(--game-accent) 62%, var(--game-border)) !important;
+  border-right-color: color-mix(in srgb, var(--game-accent-2) 55%, var(--game-border)) !important;
+  border-radius: 18px 5px 18px 5px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"])::before {
+  top: -45px;
+  right: -43px;
+  width: 112px;
+  height: 112px;
+  border: 1px solid rgba(120, 210, 236, .24);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 10px rgba(206, 120, 183, .04), inset 0 0 0 20px rgba(120, 210, 236, .025);
+}
+
 body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"])::after {
   top: 0;
   right: 0;
-  width: 46px;
-  height: 2px;
+  width: 58px;
+  height: 3px;
   background: linear-gradient(90deg, var(--game-accent), var(--game-accent-2));
 }
 
-/* Onmyoji: paper archive / vermilion seal. */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .item-summary::before {
+  top: 1px;
+  left: -1px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--game-accent);
+  border-radius: 50%;
+  box-shadow: 6px 0 0 -3px var(--game-accent-2);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .item-summary {
+  padding-left: 19px;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .badge,
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .actions button {
+  border-radius: 12px 3px 12px 3px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .badge.status-highlight::before {
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 20%, transparent);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
+  border-radius: 15px 4px 15px 4px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .item-content-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="异"], [data-game-code="NTE"]) .item-content-title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--game-accent);
+  border-radius: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   Onmyoji — digital shikigami archive / Heian record
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) {
+  border: 1px solid var(--game-border) !important;
+  border-left: 5px solid var(--game-accent) !important;
+  border-radius: 2px 16px 2px 16px !important;
+  background:
+    linear-gradient(90deg, rgba(92, 65, 40, .035) 1px, transparent 1px) 0 0 / 22px 100%,
+    linear-gradient(145deg, var(--game-surface), var(--game-surface-2)) !important;
+}
+
 body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"])::before {
   inset: 0;
-  opacity: .16;
-  background: repeating-linear-gradient(0deg, transparent 0 18px, rgba(78, 54, 32, .08) 18px 19px);
-  mask-image: linear-gradient(90deg, transparent 0 58%, #000 100%);
+  opacity: .17;
+  background: repeating-linear-gradient(0deg, transparent 0 18px, rgba(78, 54, 32, .09) 18px 19px);
+  mask-image: linear-gradient(90deg, transparent 0 55%, #000 100%);
 }
+
 body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"])::after {
   top: 13px;
   right: 15px;
-  width: 17px;
-  height: 17px;
-  border: 2px solid rgba(166, 75, 62, .55);
-  border-radius: 2px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(161, 74, 61, .62);
+  border-radius: 1px;
   transform: rotate(5deg);
 }
-body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .character-title-primary,
-body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .item-title {
-  font-family: "Noto Serif SC", "Noto Serif JP", "Songti SC", serif !important;
-}
-body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .actions .danger {
-  border-color: #9e4a42 !important;
-  background: #8d4039 !important;
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .item-summary::before {
+  top: 0;
+  left: -3px;
+  width: 2px;
+  height: 28px;
+  background: var(--game-accent-2);
 }
 
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) :is(.character-title-primary, .item-title, .item-content-title) {
+  font-family: "Noto Serif SC", "Noto Serif JP", "Songti SC", "STSong", serif !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .badge {
+  border-radius: 1px 9px 1px 9px !important;
+  border-bottom: 2px solid var(--game-accent-2) !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .badge.status-highlight::before {
+  border-radius: 1px;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .actions button {
+  border-radius: 1px 10px 1px 10px !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .actions .collapse-toggle {
+  border-color: #56493a !important;
+  background: #302b25 !important;
+  color: #ead7a1 !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .actions .secondary {
+  border-color: var(--game-border) !important;
+  background: #f8efdf !important;
+  color: #43372e !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .actions .danger {
+  border-color: #8d3b34 !important;
+  background: #98473d !important;
+  color: #fff8ee !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
+  border-radius: 1px 12px 1px 12px !important;
+  border-left: 3px solid rgba(161, 74, 61, .65) !important;
+  background: #fbf4e7 !important;
+}
+
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .item-content-title {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--game-border-soft);
+}
+
+/* --------------------------------------------------------------------------
+   VIEWPORT / MOTION SAFETY
+   -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
   body.command-center-page.gucc-enhanced .item[data-game-code]::before,
   body.command-center-page.gucc-enhanced .item[data-game-code]::after {
-    opacity: .38;
+    opacity: .34;
   }
 
   body.command-center-page.gucc-enhanced .item[data-game-code] .item-title {
     font-size: 18px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) {
+    clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px));
+  }
+
+  body.command-center-page.gucc-enhanced .item:is([data-game-code="崩"], [data-game-code="HSR"]) {
+    clip-path: polygon(0 8px, 8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
   }
 }
 
@@ -372,5 +692,6 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-ga
   body.command-center-page.gucc-enhanced .item[data-game-code],
   body.command-center-page.gucc-enhanced .item[data-game-code] * {
     transition: none !important;
+    animation: none !important;
   }
 }

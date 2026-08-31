@@ -100,6 +100,33 @@ EDGE_FUNCTION_NAME
 
 不要把 `service_role`、数据库密码、JWT secret 放进仓库。部署细节见 [docs/supabase-setup.html](docs/supabase-setup.html)。
 
+## Creator Identity 与存储边界
+
+Creator Project 的正式语义是 **Content Project Root**，不是“一条 Project 永远只对应一个视频文件”。当前 `VIDEO_V1` 只是 Legacy/default final master artifact；未来同一个 Content Project Root 可以产生多个 Distribution Variant，再通过不同 Channel 形成多个 Publication。
+
+正式身份关系是：
+
+```text
+Content Project Root
+  → Distribution Variant
+  → Channel
+  → Publication instance
+```
+
+`platforms` 只是 **Platform Dictionary**；Platform ≠ Channel。比如 TikTok JP 与 TikTok Global 应是两个 Channel，并共同通过 `platform_id` 指向同一个 TikTok Platform，而不是创建两个 Platform。
+
+长期存储边界保持：
+
+```text
+Local machine  = Large Media + active production files
+Supabase       = State + History + Identity + Metadata
+Google Drive   = Lightweight Project Archive
+```
+
+Google Drive Lightweight Project Archive **已经实现**，不是待开发能力；它只归档轻量 `.md/.json/.srt/.csv/.txt/.vtt` 等项目知识文件，不接管视频、音频、游戏录屏或剪辑工程大文件。详见 [docs/creator-archive-runtime-setup.md](docs/creator-archive-runtime-setup.md)。
+
+Distribution Identity、未来 Artifact Scope 与 child-state 边界见 [docs/creator-distribution-identity-v0.1.md](docs/creator-distribution-identity-v0.1.md)。
+
 ## Creator Project 本地 Workspace
 
 Production 中的 Creator Project 以 Project ID 作为本机目录身份。日常直接点击：

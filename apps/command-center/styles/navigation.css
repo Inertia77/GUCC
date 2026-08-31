@@ -6,6 +6,12 @@ body.gucc-enhanced .tabs {
   gap: 10px;
 }
 
+/* The premium chrome owns a decorative MODE SELECT pseudo label. Keep it out of
+   the four-column tab grid so it can never become an accidental fifth cell. */
+body.gucc-enhanced .tabs::before {
+  display: none;
+}
+
 body.gucc-enhanced .tabs button:not(.tab-more) {
   min-height: 48px;
   font-size: 17px;

@@ -1,6 +1,7 @@
--- WP_GLOB_002 candidate migration. This file is intentionally staged outside
--- supabase/migrations until Production assigns the canonical migration version.
--- Final repository identity MUST match supabase_migrations.schema_migrations.
+-- WP_GLOB_002 production-synced migration.
+-- Canonical migration identity:
+-- 20260831084516_creator_language_track_scoped_artifacts.sql
+-- Repository identity matches supabase_migrations.schema_migrations.
 
 create table public.creator_language_tracks (
   language_track_id uuid primary key default gen_random_uuid(),

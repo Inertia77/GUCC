@@ -97,7 +97,7 @@ has(/WP_GLOB_002_ACCEPTANCE_OK/i, acceptance);
 has(/file_id_digest_before/i, acceptance);
 has(/legacy save did not target Project scope/i, acceptance);
 has(/Project prune removed child scoped artifacts/i, acceptance);
-has(/coalesce\(f\.metadata->>'wp',''\) <> 'WP_GLOB_002'/i, acceptance,
-  "Acceptance ID-preservation proof must include rows whose metadata has no wp key");
+has(/where f\.artifact_scope_type='project'/i, acceptance,
+  "Acceptance ID-preservation proof must structurally hash the pre-existing Project-scope rows");
 
 console.log(`WP_GLOB_002 language-track scope tests passed using ${canonicalMigration}: Language Track identity, scoped Artifact identity, legacy Project compatibility, RPC/API scope defaults, prune safety, migration identity, security/storage boundaries and rollback acceptance are pinned.`);

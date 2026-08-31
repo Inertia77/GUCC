@@ -28,14 +28,18 @@ const TAB_LOADERS = {
 };
 const GAME_FILTERS = ['#charGame', '#partyGame', '#mechanismGame', '#versionGame'];
 
-function ensureFinalStyleSheets() {
+function ensureFinalStyleSheets({ reorder = false } = {}) {
   FINAL_STYLE_SHEETS.forEach(([id, relativePath]) => {
-    if (document.getElementById(id)) return;
-    const link = document.createElement('link');
-    link.id = id;
-    link.rel = 'stylesheet';
-    link.href = new URL(relativePath, import.meta.url).href;
-    document.head.appendChild(link);
+    let link = document.getElementById(id);
+    if (!link) {
+      link = document.createElement('link');
+      link.id = id;
+      link.rel = 'stylesheet';
+      link.href = new URL(relativePath, import.meta.url).href;
+      document.head.appendChild(link);
+      return;
+    }
+    if (reorder) document.head.appendChild(link);
   });
 }
 
@@ -207,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParties();
   initVersions();
   initResources();
+  ensureFinalStyleSheets({ reorder: true });
   featuresReady = true;
 
   if (syncView()) {

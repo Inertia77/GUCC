@@ -173,10 +173,10 @@ begin
     raise exception 'CASE E failed: Project prune removed child scoped artifacts';
   end if;
 
-  -- CASE F: pre-existing logical-file IDs are preserved.
+  -- CASE F: all 48 pre-existing rows are Project-scope identities; their IDs must stay byte-for-byte the same.
   if (select md5(string_agg(f.id::text, ',' order by f.id::text))
       from public.creator_project_files f
-      where coalesce(f.metadata->>'wp','') <> 'WP_GLOB_002') <> c.file_id_digest_before then
+      where f.artifact_scope_type='project') <> c.file_id_digest_before then
     raise exception 'CASE F failed: existing creator_project_files IDs changed';
   end if;
 end $$;

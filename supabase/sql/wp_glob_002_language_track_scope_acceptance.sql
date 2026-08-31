@@ -1,6 +1,5 @@
 -- WP_GLOB_002 Production acceptance probe.
--- Run only after the canonical Production migration created from
--- wp_glob_002_language_track_scope_migration_candidate.sql.
+-- Run only after 20260831084516_creator_language_track_scoped_artifacts.sql.
 -- Every fixture/change is transaction-scoped and rolled back.
 
 begin;
@@ -177,7 +176,7 @@ begin
   -- CASE F: pre-existing logical-file IDs are preserved.
   if (select md5(string_agg(f.id::text, ',' order by f.id::text))
       from public.creator_project_files f
-      where not (f.metadata->>'wp' = 'WP_GLOB_002')) <> c.file_id_digest_before then
+      where coalesce(f.metadata->>'wp','') <> 'WP_GLOB_002') <> c.file_id_digest_before then
     raise exception 'CASE F failed: existing creator_project_files IDs changed';
   end if;
 end $$;

@@ -1,59 +1,213 @@
-/* GUCC Game Operations System layer.
-   Loaded last. Highest priorities: readable text, fast scanning, stable controls, no fixed-layer collisions. */
+/* Search-first UX layer for GUCC Command Center.
+   This page is a database tool. Search and results always outrank overview/decorative UI. */
 
 :root {
-  --ops-text-primary: #f5f7fb;
-  --ops-text-secondary: #d1d7e0;
-  --ops-text-muted: #aeb8c5;
-  --ops-text-disabled: #77828f;
-  --ops-surface: #10141a;
-  --ops-surface-raised: #151a21;
-  --ops-border: #343b45;
-  --ops-danger: #ef7378;
+  --search-text-primary: #f5f7fb;
+  --search-text-secondary: #d5dbe4;
+  --search-text-muted: #aeb8c5;
+  --search-surface: #10141a;
+  --search-surface-raised: #151a21;
+  --search-border: #343b45;
 }
 
-/* --------------------------------------------------------------------------
-   GLOBAL READABILITY CORRECTIONS
-   -------------------------------------------------------------------------- */
 body.command-center-page.gucc-enhanced {
   font-family: "Noto Sans SC", "Noto Sans CJK SC", "Noto Sans JP", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  color: var(--ops-text-primary) !important;
+  color: var(--search-text-primary) !important;
 }
 
 body.command-center-page.gucc-enhanced main {
-  width: min(1320px, calc(100vw - 36px));
+  width: min(1180px, calc(100vw - 28px)) !important;
 }
 
-body.command-center-page.gucc-enhanced :is(.subtitle, .hint, .field-help, .state, .muted) {
-  color: var(--ops-text-muted) !important;
+/* Compact shell: do not spend the first screen on branding. */
+body.command-center-page.gucc-enhanced .topbar {
+  width: min(1180px, calc(100vw - 28px)) !important;
+  min-height: 54px !important;
+  margin: 8px auto 6px !important;
+  padding: 8px 12px !important;
+  align-items: center !important;
 }
 
+body.command-center-page.gucc-enhanced .topbar h1 {
+  margin: 0 !important;
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+}
+
+body.command-center-page.gucc-enhanced .topbar .subtitle {
+  display: none !important;
+}
+
+body.command-center-page.gucc-enhanced .topbar .back-link {
+  display: inline-flex !important;
+  margin-top: 3px !important;
+  color: var(--search-text-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+body.command-center-page.gucc-enhanced .auth-panel {
+  gap: 6px !important;
+}
+
+/* Tabs are the only persistent navigation layer on this screen. */
 body.command-center-page.gucc-enhanced .tabs {
-  top: 8px !important;
-  z-index: 28 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+  margin: 0 0 8px !important;
+  padding: 5px !important;
+  border: 1px solid #2c333d !important;
+  border-radius: 14px !important;
+  background: rgba(10, 13, 18, .96) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .18) !important;
 }
 
+body.command-center-page.gucc-enhanced .tabs [role="tab"] {
+  min-height: 42px !important;
+  padding: 7px 16px !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+}
+
+/* Search toolbar must appear immediately after tabs and stay compact. */
 body.command-center-page.gucc-enhanced .filter-toolbar {
-  z-index: 24 !important;
+  position: sticky !important;
+  top: 60px !important;
+  z-index: 22 !important;
+  margin: 0 0 10px !important;
+  padding: 10px !important;
+  border: 1px solid #303743 !important;
+  border-radius: 14px !important;
+  background: rgba(15, 19, 25, .97) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .16) !important;
+  backdrop-filter: blur(10px);
 }
 
-body.command-center-page.gucc-enhanced .filter-guidance {
+body.command-center-page.gucc-enhanced .filter-grid {
+  gap: 7px !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-grid :is(input, select, button) {
+  min-height: 42px !important;
   font-size: 14px !important;
-  line-height: 1.65 !important;
 }
 
-body.command-center-page.gucc-enhanced .filter-guidance span {
-  color: var(--ops-text-secondary) !important;
+body.command-center-page.gucc-enhanced .filter-grid .filter-keyword {
+  flex-basis: 300px !important;
 }
 
-body.command-center-page.gucc-enhanced :is(input, textarea, select, button) {
-  font-size: 14px;
+body.command-center-page.gucc-enhanced .filter-grid .filter-guidance {
+  order: 20;
+  min-height: 0 !important;
+  padding: 5px 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--search-text-muted) !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
 }
 
-body.command-center-page.gucc-enhanced textarea {
-  line-height: 1.65;
+body.command-center-page.gucc-enhanced .filter-grid .filter-guidance strong {
+  display: none !important;
 }
 
+body.command-center-page.gucc-enhanced .filter-grid .filter-guidance span {
+  color: var(--search-text-muted) !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-controls {
+  min-height: 42px !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons {
+  gap: 6px !important;
+}
+
+body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons button {
+  min-height: 42px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+}
+
+/* Results should be dense enough for scanning without turning into a table. */
+body.command-center-page.gucc-enhanced .list {
+  gap: 10px !important;
+  padding-bottom: 16px;
+}
+
+body.command-center-page.gucc-enhanced .item {
+  padding: 13px 14px !important;
+}
+
+body.command-center-page.gucc-enhanced .item-head {
+  gap: 10px !important;
+}
+
+body.command-center-page.gucc-enhanced .item-summary {
+  min-width: 0;
+}
+
+body.command-center-page.gucc-enhanced .item .meta {
+  gap: 6px !important;
+  margin-top: 7px !important;
+}
+
+body.command-center-page.gucc-enhanced .item .badge {
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  font-size: 12.5px !important;
+  line-height: 1.25 !important;
+}
+
+body.command-center-page.gucc-enhanced .item .actions {
+  gap: 7px !important;
+}
+
+body.command-center-page.gucc-enhanced .item .actions button {
+  min-height: 42px !important;
+  padding: 7px 13px !important;
+  font-size: 14px !important;
+}
+
+body.command-center-page.gucc-enhanced .item-content {
+  margin-top: 11px !important;
+  padding-top: 12px !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+
+body.command-center-page.gucc-enhanced :is(.rich-text, .preserved-text, .note-block, .mechanism-section, .version-note, .resource-note) {
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+
+/* Collapsed cards are the fast scanning state. Never truncate primary names. */
+body.command-center-page.gucc-enhanced .item.is-collapsed {
+  padding: 10px 12px !important;
+}
+
+body.command-center-page.gucc-enhanced .item.is-collapsed .item-summary {
+  gap: 8px !important;
+}
+
+body.command-center-page.gucc-enhanced .item.is-collapsed .item-title {
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}
+
+body.command-center-page.gucc-enhanced .item.is-collapsed .character-title-mainline {
+  flex-wrap: wrap !important;
+}
+
+body.command-center-page.gucc-enhanced .item.is-collapsed .meta {
+  margin-top: 0 !important;
+}
+
+/* Editors stay readable and are not themed like display cards. */
 body.command-center-page.gucc-enhanced .editor-body label,
 body.command-center-page.gucc-enhanced .structured-head span,
 body.command-center-page.gucc-enhanced .field-help {
@@ -61,618 +215,164 @@ body.command-center-page.gucc-enhanced .field-help {
   line-height: 1.55 !important;
 }
 
-body.command-center-page.gucc-enhanced .editor-body input,
-body.command-center-page.gucc-enhanced .editor-body textarea,
-body.command-center-page.gucc-enhanced .editor-body select {
+body.command-center-page.gucc-enhanced .editor-body :is(input, textarea, select) {
   font-size: 15px !important;
   line-height: 1.55 !important;
 }
 
-body.command-center-page.gucc-enhanced .editor-header h2 {
-  font-size: 24px !important;
-  line-height: 1.25;
+body.command-center-page.gucc-enhanced textarea {
+  line-height: 1.65 !important;
 }
 
 body.command-center-page.gucc-enhanced .ux-toast {
-  bottom: calc(92px + env(safe-area-inset-bottom));
-  font-size: 14px;
-  line-height: 1.5;
+  bottom: calc(92px + env(safe-area-inset-bottom)) !important;
 }
 
-/* Prevent the sticky tabs and sticky desktop filter from occupying the same top coordinate. */
-@media (min-width: 901px) {
-  body.command-center-page.gucc-enhanced .filter-toolbar {
-    top: 72px !important;
-  }
-}
-
+/* Phone: search is visible immediately. No sticky filter, no giant helper box. */
 @media (max-width: 900px) {
   body.command-center-page.gucc-enhanced main,
   body.command-center-page.gucc-enhanced .topbar {
-    width: min(100% - 22px, 760px) !important;
+    width: min(100% - 18px, 760px) !important;
+  }
+
+  body.command-center-page.gucc-enhanced .topbar {
+    min-height: 44px !important;
+    margin: 4px auto !important;
+    padding: 5px 9px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .topbar h1 {
+    font-size: 15px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .topbar .back-link {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced .auth-panel .badge {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs {
+    top: 0 !important;
+    margin-bottom: 6px !important;
+    border-radius: 12px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs [role="tab"] {
+    min-width: 78px !important;
+    min-height: 44px !important;
+    padding: 7px 13px !important;
+    font-size: 15px !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-toolbar {
     position: static !important;
     top: auto !important;
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+    border-radius: 12px !important;
   }
 
-  body.command-center-page.gucc-enhanced .tabs {
-    top: 4px !important;
+  body.command-center-page.gucc-enhanced .filter-grid .filter-keyword,
+  body.command-center-page.gucc-enhanced .filter-grid .filter-select,
+  body.command-center-page.gucc-enhanced .game-filter,
+  body.command-center-page.gucc-enhanced .game-filter.is-custom {
+    flex: 1 1 calc(50% - 4px) !important;
   }
 
-  body.command-center-page.gucc-enhanced .list {
-    padding-bottom: 18px;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   GAME OPERATIONS HUB
-   -------------------------------------------------------------------------- */
-.game-hub {
-  margin: 0 0 16px;
-}
-
-.game-hub-shell {
-  display: grid;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid var(--ops-border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(18, 23, 30, .98), rgba(12, 16, 22, .98));
-  box-shadow: 0 14px 34px rgba(0, 0, 0, .22);
-}
-
-.game-hub-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 20px;
-}
-
-.game-hub-heading > div {
-  min-width: 0;
-}
-
-.game-hub-heading h2 {
-  margin: 2px 0 0 !important;
-  color: var(--ops-text-primary) !important;
-  font-size: 20px !important;
-  line-height: 1.25;
-  letter-spacing: -.01em !important;
-}
-
-.game-hub-heading > p {
-  max-width: 620px;
-  margin: 0;
-  color: var(--ops-text-muted) !important;
-  font-size: 13px;
-  line-height: 1.55;
-  text-align: right;
-}
-
-.game-hub-eyebrow,
-.game-kicker {
-  margin: 0;
-  color: var(--ops-text-muted) !important;
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: .1em;
-  line-height: 1.35;
-}
-
-.game-switcher {
-  display: flex;
-  gap: 8px;
-  min-width: 0;
-  padding: 3px 0 2px;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: thin;
-}
-
-body.command-center-page.gucc-enhanced .game-switch-button {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 44px !important;
-  padding: 8px 12px !important;
-  border: 1px solid var(--ops-border) !important;
-  border-radius: 12px !important;
-  background: #171c23 !important;
-  color: var(--ops-text-secondary) !important;
-  box-shadow: none !important;
-  font-size: 13px !important;
-  font-weight: 800 !important;
-  white-space: nowrap;
-}
-
-body.command-center-page.gucc-enhanced .game-switch-button[data-game-code] {
-  border-color: var(--gc-border-soft) !important;
-}
-
-body.command-center-page.gucc-enhanced .game-switch-button:hover,
-body.command-center-page.gucc-enhanced .game-switch-button:focus-visible {
-  border-color: var(--gc-accent, #687587) !important;
-  color: var(--ops-text-primary) !important;
-  background: #1c222b !important;
-  transform: none !important;
-}
-
-body.command-center-page.gucc-enhanced .game-switch-button.is-active {
-  border-color: var(--gc-accent, #dbe2ec) !important;
-  background: color-mix(in srgb, var(--gc-accent, #dbe2ec) 14%, #151a20) !important;
-  color: var(--gc-title, var(--ops-text-primary)) !important;
-  box-shadow: inset 0 -2px 0 var(--gc-accent, #dbe2ec) !important;
-}
-
-body.command-center-page.gucc-enhanced .game-switch-all.is-active {
-  border-color: #d4dbe5 !important;
-  color: #fff !important;
-  background: #222933 !important;
-  box-shadow: inset 0 -2px 0 #d4dbe5 !important;
-}
-
-.game-switch-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid currentColor;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.game-overview-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 11px;
-}
-
-.game-overview-card,
-.game-focus-card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border: 1px solid var(--gc-border) !important;
-  border-left: 3px solid var(--gc-accent) !important;
-  border-radius: var(--gc-radius) !important;
-  background: linear-gradient(145deg, var(--gc-surface-a), var(--gc-surface-b)) !important;
-  color: var(--gc-text) !important;
-  box-shadow: var(--gc-shadow) !important;
-}
-
-.game-overview-card {
-  display: grid;
-  gap: 11px;
-  min-width: 0;
-  padding: 14px;
-}
-
-.game-overview-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.game-overview-head h2,
-.game-focus-card h2 {
-  margin: 2px 0 0 !important;
-  color: var(--gc-title) !important;
-  font-size: 18px !important;
-  line-height: 1.3;
-  letter-spacing: 0 !important;
-  text-shadow: none !important;
-  overflow-wrap: anywhere;
-}
-
-.game-overview-card .game-kicker,
-.game-focus-card .game-kicker {
-  color: var(--gc-muted) !important;
-}
-
-body.command-center-page.gucc-enhanced .game-enter-button {
-  flex: 0 0 auto;
-  min-height: 42px !important;
-  padding: 7px 12px !important;
-  border: 1px solid var(--gc-border) !important;
-  border-radius: 9px !important;
-  background: var(--gc-surface-inset) !important;
-  color: var(--gc-accent) !important;
-  box-shadow: none !important;
-  font-size: 13px !important;
-  font-weight: 900 !important;
-}
-
-body.command-center-page.gucc-enhanced .game-enter-button:hover,
-body.command-center-page.gucc-enhanced .game-enter-button:focus-visible {
-  border-color: var(--gc-accent) !important;
-  background: color-mix(in srgb, var(--gc-accent) 10%, var(--gc-surface-inset)) !important;
-  color: var(--gc-title) !important;
-  transform: none !important;
-}
-
-.game-version-line,
-.game-focus-version,
-.game-focus-banner {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-  padding: 10px 11px;
-  border: 1px solid var(--gc-border-soft);
-  border-radius: 10px;
-  background: var(--gc-surface-inset);
-}
-
-.game-version-line > span,
-.game-focus-version > span,
-.game-focus-banner > span {
-  color: var(--gc-muted);
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-.game-version-line > strong,
-.game-focus-version > strong,
-.game-focus-banner > strong {
-  color: var(--gc-title);
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-
-.game-version-line > small,
-.game-focus-version > small {
-  color: var(--gc-secondary);
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.game-overview-status {
-  display: grid;
-  gap: 8px;
-}
-
-.game-status-block {
-  min-width: 0;
-  padding: 9px 10px;
-  border: 1px solid var(--gc-border-soft, var(--ops-border));
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--gc-surface-inset, #11161c) 86%, transparent);
-}
-
-.game-status-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  color: var(--gc-muted, var(--ops-text-muted));
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .03em;
-  line-height: 1.35;
-}
-
-.game-status-label span {
-  color: var(--gc-accent, var(--ops-text-primary));
-  font-size: 12px;
-}
-
-.game-status-value {
-  color: var(--gc-text, var(--ops-text-primary));
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-}
-
-.game-focus-card {
-  display: grid;
-  grid-template-columns: minmax(260px, .92fr) minmax(0, 2.08fr);
-  gap: 14px;
-  padding: 16px;
-}
-
-.game-focus-identity {
-  display: grid;
-  align-content: start;
-  gap: 9px;
-  min-width: 0;
-}
-
-.game-focus-status {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
-  min-width: 0;
-}
-
-.game-focus-status .game-status-block {
-  min-height: 100%;
-}
-
-.game-hub-state {
-  padding: 14px;
-  border: 1px solid var(--ops-border);
-  border-radius: 12px;
-  color: var(--ops-text-secondary);
-  background: #11161c;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.game-hub-state.is-error {
-  border-color: rgba(239, 115, 120, .55);
-  color: #ffd9dc;
-}
-
-.game-hub.is-loading .game-hub-shell {
-  cursor: progress;
-}
-
-/* --------------------------------------------------------------------------
-   GAME PERSONALITY IN THE HUB — edge grammar only, never behind body text
-   -------------------------------------------------------------------------- */
-.game-overview-card::before,
-.game-focus-card::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.game-overview-card > *,
-.game-focus-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="崩"]::before {
-  top: 0;
-  right: 0;
-  width: 34%;
-  height: 70px;
-  opacity: .28;
-  background:
-    radial-gradient(circle at 76% 25%, #fff 0 1px, transparent 1.5px),
-    radial-gradient(circle at 90% 55%, #fff 0 1px, transparent 1.5px),
-    linear-gradient(155deg, transparent 48%, #d6b765 49% 49.8%, transparent 50.5%);
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="绝"] {
-  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
-}
-:is(.game-overview-card, .game-focus-card)[data-game-code="绝"]::before {
-  top: 0;
-  right: 0;
-  width: 92px;
-  height: 7px;
-  background: repeating-linear-gradient(135deg, #f3ea3f 0 8px, #111 8px 15px);
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="鸣"]::before {
-  top: -58px;
-  right: -44px;
-  width: 140px;
-  height: 140px;
-  border: 1px solid rgba(125, 221, 224, .22);
-  border-radius: 50%;
-  box-shadow: 0 0 0 18px rgba(125, 221, 224, .025);
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="终"]::before {
-  inset: 0 0 0 auto;
-  width: 27%;
-  opacity: .11;
-  background:
-    linear-gradient(90deg, #f0bf4a 1px, transparent 1px),
-    linear-gradient(0deg, #f0bf4a 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: linear-gradient(90deg, transparent, #000 38%);
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="异"]::before {
-  top: -66px;
-  right: -64px;
-  width: 156px;
-  height: 156px;
-  border: 1px solid rgba(119, 217, 246, .17);
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 13px rgba(209, 107, 185, .028);
-}
-
-:is(.game-overview-card, .game-focus-card)[data-game-code="阴"]::before {
-  inset: 0;
-  opacity: .20;
-  background:
-    repeating-linear-gradient(0deg, rgba(70, 49, 30, .035) 0 1px, transparent 1px 6px),
-    radial-gradient(circle at 96% 10%, rgba(139, 106, 45, .15), transparent 22%);
-}
-
-/* --------------------------------------------------------------------------
-   DESKTOP DENSITY
-   -------------------------------------------------------------------------- */
-@media (min-width: 1100px) {
-  body.command-center-page.gucc-enhanced .item[data-game-code] .item-head {
-    align-items: center;
+  body.command-center-page.gucc-enhanced .filter-grid .filter-keyword {
+    flex-basis: 100% !important;
   }
 
-  body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary {
-    min-width: 0;
-    max-width: min(800px, 72%);
+  body.command-center-page.gucc-enhanced .filter-grid > button {
+    flex: 1 1 calc(33.333% - 5px) !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
   }
 
-  body.command-center-page.gucc-enhanced .item[data-game-code] .item-content > :is(.rich-text, .preserved-text, .mechanism-section, .note-stack) {
-    max-width: 980px;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   MOBILE — 360 / 390 / 430 class widths
-   -------------------------------------------------------------------------- */
-@media (max-width: 760px) {
-  .game-hub-shell {
-    gap: 12px;
-    padding: 12px;
-    border-radius: 15px;
+  body.command-center-page.gucc-enhanced .filter-grid .filter-guidance {
+    display: none !important;
   }
 
-  .game-hub-heading {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 6px;
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-controls {
+    flex: 1 1 100% !important;
+    min-height: 0 !important;
   }
 
-  .game-hub-heading > p {
-    max-width: none;
-    font-size: 12.5px;
-    text-align: left;
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons {
+    width: 100%;
   }
 
-  .game-switcher {
-    margin-inline: -2px;
-    padding-bottom: 6px;
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons button {
+    flex: 1 1 0 !important;
   }
 
-  body.command-center-page.gucc-enhanced .game-switch-button {
-    min-height: 44px !important;
+  body.command-center-page.gucc-enhanced .item {
+    padding: 12px !important;
   }
 
-  .game-overview-grid {
-    display: flex;
-    gap: 10px;
-    margin-inline: -2px;
-    padding: 2px 2px 8px;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    overscroll-behavior-inline: contain;
-  }
-
-  .game-overview-card {
-    flex: 0 0 min(84vw, 350px);
-    scroll-snap-align: start;
-  }
-
-  .game-focus-card {
-    grid-template-columns: 1fr;
-    gap: 11px;
-    padding: 13px;
-  }
-
-  .game-focus-status {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .game-status-value {
-    font-size: 14px;
-    line-height: 1.55;
-  }
-
-  .game-overview-head h2,
-  .game-focus-card h2 {
-    font-size: 18px !important;
-  }
-
-  body.command-center-page.gucc-enhanced .tabs {
-    margin-top: 0;
-    overflow-x: auto;
-    flex-wrap: nowrap !important;
-    scrollbar-width: none;
-  }
-
-  body.command-center-page.gucc-enhanced .tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  body.command-center-page.gucc-enhanced .tabs button {
-    flex: 0 0 auto;
-    min-width: 74px;
-    min-height: 44px !important;
-    font-size: 14px !important;
-  }
-
-  body.command-center-page.gucc-enhanced .toolbar.card.compact {
-    padding: 11px !important;
-  }
-
-  body.command-center-page.gucc-enhanced .filter-grid {
-    gap: 8px !important;
-  }
-
-  body.command-center-page.gucc-enhanced :is(input, select, textarea) {
-    min-width: 0;
-  }
-
-  body.command-center-page.gucc-enhanced .structured-row,
-  body.command-center-page.gucc-enhanced .form-grid {
+  body.command-center-page.gucc-enhanced .item-head,
+  body.command-center-page.gucc-enhanced .item.is-collapsed .item-head {
+    display: grid !important;
     grid-template-columns: 1fr !important;
+    gap: 9px !important;
   }
 
-  body.command-center-page.gucc-enhanced :is(.structured-row .row-wide, .form-grid .wide) {
-    grid-column: auto !important;
+  body.command-center-page.gucc-enhanced .item .actions,
+  body.command-center-page.gucc-enhanced .item.is-collapsed .collapsible-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .item .actions button,
+  body.command-center-page.gucc-enhanced .item.is-collapsed .collapsible-actions button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 6px 5px !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .character-title-primary {
+    font-size: 20px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .character-title-localized {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 2px !important;
+    width: 100%;
+  }
+
+  body.command-center-page.gucc-enhanced .character-localized-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   body.command-center-page.gucc-enhanced .editor {
     width: 100vw !important;
     max-width: 100vw !important;
-    border-radius: 0 !important;
-  }
-
-  body.command-center-page.gucc-enhanced .editor-header,
-  body.command-center-page.gucc-enhanced .editor-body {
-    padding-inline: 14px !important;
-  }
-
-  body.command-center-page.gucc-enhanced .editor-footer {
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
 
-@media (max-width: 380px) {
-  body.command-center-page.gucc-enhanced main,
-  body.command-center-page.gucc-enhanced .topbar {
-    width: calc(100% - 16px) !important;
+@media (max-width: 430px) {
+  body.command-center-page.gucc-enhanced .filter-grid .filter-select,
+  body.command-center-page.gucc-enhanced .game-filter,
+  body.command-center-page.gucc-enhanced .game-filter.is-custom {
+    flex-basis: 100% !important;
   }
-
-  .game-hub-shell {
-    padding: 10px;
-  }
-
-  .game-overview-card {
-    flex-basis: 88vw;
-    padding: 12px;
-  }
-
-  .game-version-line,
-  .game-focus-version,
-  .game-focus-banner,
-  .game-status-block {
-    padding: 9px;
-  }
-}
-
-/* Keyboard and accessibility. No core information exists only on hover. */
-.game-switch-button:focus-visible,
-.game-enter-button:focus-visible,
-.game-overview-card:focus-within,
-.game-focus-card:focus-within {
-  outline: 2px solid var(--gc-accent, #d8e2ef) !important;
-  outline-offset: 2px !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game-hub *,
-  body.command-center-page.gucc-enhanced .tabs,
-  body.command-center-page.gucc-enhanced .filter-toolbar {
-    scroll-behavior: auto !important;
+  body.command-center-page.gucc-enhanced *,
+  body.command-center-page.gucc-enhanced *::before,
+  body.command-center-page.gucc-enhanced *::after {
     animation: none !important;
     transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
   }
 }

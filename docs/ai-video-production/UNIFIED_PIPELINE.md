@@ -1,6 +1,6 @@
 # GUCC Creator OS｜Unified Production Pipeline
 
-这份文档记录 GUCC Creator OS 在 **Phase 1.2 — Simplify Creator Model** 之后的正式模型，以及后续 Local-first Foundation 必须遵守的边界。
+这份文档记录 GUCC Creator OS 在 **Phase 1.2 — Simplify Creator Model** 之后的正式模型，以及后续已经落地的 Local-first / Identity Foundation 必须遵守的边界。
 
 ## 一句话原则
 
@@ -11,8 +11,8 @@
 长期存储职责固定为：
 
 - **Local-first Production**：真实视频、音频、录屏、剪辑工程和大型素材在本地制作与使用。
-- **Supabase Cloud State / History**：项目状态、Revision、Locks、Artifact Metadata、Publish State 与历史。
-- **Google Drive Lightweight Project Archive**：后续只归档 Markdown / JSON / SRT 等小型项目知识文件。
+- **Supabase Cloud State / History / Identity**：项目状态、Revision、Locks、Language Track / Distribution Identity、Artifact Metadata、Publish State 与历史。
+- **Google Drive Lightweight Project Archive**：只归档 Markdown / JSON / SRT / CSV / TXT / VTT 等轻量项目知识文件；不归档大型媒体。
 - **百度云**：最终需要长期保存的大文件由用户自行归档，GUCC 不开发百度云自动上传。
 
 ## 1. Creator Project
@@ -109,6 +109,20 @@ IDEA
 
 Research Lock 继续保持现有安全边界。
 
+### Globalization Identity Compatibility
+
+WP_GLOB_001 / WP_GLOB_002 只扩展身份层，不扩展这条顶级状态机：
+
+```text
+Content Project Root
+  ├─ Language Track(s)
+  ├─ Distribution Variant(s)
+  ├─ Channel / Publication identities
+  └─ scoped Logical Artifacts
+```
+
+Language Track 不是新的 Creator Project，也不会自动生成新的顶级 `SCRIPTING / AUDIO_LOCKED / TIMELINE_LOCKED` 状态。当前 Project-level Production flow 继续作为 Legacy/default compatibility path。
+
 ## 4. Audio Production：Voice + Optional Music + Optional SFX
 
 Music 不再拥有顶级 `MUSIC_DRAFT` / `MUSIC_LOCKED` 状态，也不再拥有顶级 Music Lock。
@@ -195,14 +209,30 @@ STANDARD_VIDEO
 
 旧值不迁移、不删除；新项目可原生保存 `STANDARD_VIDEO`。
 
-## 6. Supabase：Cloud State / History
+## 6. Supabase：Cloud State / History / Identity
 
 Creator Project 云端层继续使用：
 
-- `creator_projects`：项目索引、完整 `project_data`、Revision、当前状态。
-- `creator_project_files`：Artifact Metadata / provider pointer。
+- `creator_projects`：Content Project Root、完整 `project_data`、Revision、当前顶级状态。
+- `creator_language_tracks`：一个 Content Project 下的 Language Track identity；不是独立 Creator Project。
+- `creator_project_files`：Logical Artifact Metadata / provider pointer，并通过 `artifact_scope_type + artifact_scope_id` 区分 Project / Language Track 等 scope。
 - `creator_project_events`：项目创建、状态变化、Lock 变化、同步历史。
-- `creator_project_releases`：发布状态、作品 URL / ID 与数据快照。
+- `creator_project_releases`：Legacy Publish Console 的发布状态、作品 URL / ID 与数据快照。
+- `creator_variants` / `creator_channels` / `creator_publications`：Distribution Identity Foundation；当前 Publish Console 不依赖这些新身份表。
+
+`creator_project_files` 当前兼容规则：
+
+```text
+Legacy/default Project artifact
+artifact_scope_type = project
+artifact_scope_id   = creatorProjectId
+
+Language Track artifact
+artifact_scope_type = language_track
+artifact_scope_id   = language_track_id
+```
+
+同一个 `file_key`（例如 `AUDIO_MASTER` / `SUBTITLE_MASTER`）可以在不同 scope 下共存；不得用 `AUDIO_MASTER_JA`、`SUBTITLE_MASTER_EN` 之类后缀模拟 scope。
 
 前端统一调用：
 
@@ -219,7 +249,7 @@ Phase 1.1 已建立并继续保留：
 - Project Health 与 Next Requirements 分离
 - Project ID deep link
 
-Phase 1.2 不改变这些安全语义。
+WP_GLOB_002 保持 Legacy API compatibility：当前 Dashboard / file observation 的默认 `files` projection 仍只读取 Project scope；Language Track / child scoped artifacts 作为 additive identity data 暴露，不替换现有 Project files contract。
 
 ## 7. Creator Dashboard
 
@@ -239,6 +269,8 @@ Dashboard 卡片面向用户只强调：
 Dashboard 不显示 A/B/C/D Label。
 
 所有 Legacy Project Type 使用同一套 Production Flow 计算 Progress 与 Action Queue。
+
+WP_GLOB_002 不在 Dashboard 增加多语言制作流程 UI；默认 artifact health / observation 继续以 Project scope 为兼容基线。
 
 ## 8. Publish Console
 
@@ -263,19 +295,24 @@ Publish Console 继续负责：
 ## TikTok 简体中文
 ```
 
+Distribution Variant / Channel / Publication identity 已存在，但 WP_GLOB_002 不重构当前 Publish Console，也不实现 YouTube Multi-Audio、TikTok 多账号自动发布或新的 Channel routing UI。
+
 ## 9. 当前 Source of Truth
 
 | 内容 | 当前 Source of Truth |
 |---|---|
 | GUCC 程序、Prompt、Creator Constitution | GitHub |
-| Project State、Locks、Revision、结构化 JSON | Supabase `creator_projects` |
-| Artifact Metadata | Supabase `creator_project_files` |
+| Content Project State、Locks、Revision、结构化 JSON | Supabase `creator_projects` |
+| Language Track Identity | Supabase `creator_language_tracks` |
+| Logical Artifact Metadata + Scope | Supabase `creator_project_files` |
 | State / Lock History | Supabase `creator_project_events` |
-| Publish State / URL / Metrics Snapshot | Supabase `creator_project_releases` |
+| Distribution Variant / Channel / Publication Identity | Supabase `creator_variants` / `creator_channels` / `creator_publications` |
+| Legacy Publish State / URL / Metrics Snapshot | Supabase `creator_project_releases` |
 | 真实视频、音频、录屏、剪辑工程、大型素材 | 本地 |
 | Studio / Production 离线工作缓存 | 浏览器 localStorage |
+| Lightweight Project Archive | Google Drive |
 
-Google Drive Lightweight Project Archive 尚未在 Phase 1.2 实现；它属于后续阶段。
+Google Drive Lightweight Project Archive 已实现；它只保存轻量项目知识文件，不接管真实视频、音频、游戏录屏、剪辑工程等大型文件。
 
 ## 10. 当前日常使用
 
@@ -303,17 +340,33 @@ Studio 或 Production 新建 Creator Project
 → Published / Archived
 ```
 
-## 11. Phase 2A 之后的方向
+当前 multilingual identity foundation 不改变这套日常操作。除非后续独立 WP 明确实现，否则不要引入 `02_SCRIPT/ZH`、`03_AUDIO/JA`、`04_SUBTITLES/EN` 等语言目录，也不要自动产生 Language Track child locks / child workflow。
 
-Phase 1.2 只负责把 Creator Project Model 简化稳定，不实现 Local Agent、Filesystem Watcher、ffprobe、Google Drive Archive 或 Analytics Automation。
+## 11. 已落地 Foundation 与后续方向
 
-Phase 2A 应在此基础上建立 Local-first Foundation：
+Local-first Foundation 已建立：
 
 1. Device Identity / Workspace Root。
 2. Logical Artifact 与 Physical File Location 分离。
-3. 本地 Production Asset Registry。
-4. Supabase 只同步状态、历史和 Artifact Metadata，不上传大型真实文件。
-5. 后续再增加 Google Drive 小型知识归档。
+3. 本地 Production Asset Registry / observation。
+4. Supabase 只同步状态、历史、Identity 和 Artifact Metadata，不上传大型真实文件。
+5. Google Drive Lightweight Project Archive。
+
+Globalization identity foundation 当前已建立：
+
+1. Content Project Root。
+2. Distribution Variant / Channel / Publication identity。
+3. Language Track identity。
+4. Scoped Logical Artifact identity（Project / Language Track 已实现；Visual Master / Variant scope 名称保留给后续独立 WP）。
+
+仍属于后续独立 Work Package 的内容包括：
+
+- multilingual Production UI / child workflow / child locks，
+- translation / dubbing / ASR，
+- Visual Master identity + timeline，
+- Variant rendering，
+- YouTube Multi-Audio / TikTok globalization execution，
+- analytics / learning loop。
 
 最终原则不变：
 

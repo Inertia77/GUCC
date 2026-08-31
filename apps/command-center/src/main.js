@@ -10,6 +10,19 @@ import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
 import { getSavedTab, saveTab } from './ux-state.js';
 import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 
+const GAME_THEME_STYLESHEET_ID = 'gucc-game-themes-final';
+
+function ensureFinalGameThemeStylesheet() {
+  if (document.getElementById(GAME_THEME_STYLESHEET_ID)) return;
+  const link = document.createElement('link');
+  link.id = GAME_THEME_STYLESHEET_ID;
+  link.rel = 'stylesheet';
+  link.href = new URL('../styles/game-themes.css?v=6', import.meta.url).href;
+  document.head.appendChild(link);
+}
+
+ensureFinalGameThemeStylesheet();
+
 const loadedTabs = new Set();
 let featuresReady = false;
 

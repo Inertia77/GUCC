@@ -312,7 +312,7 @@ export function mergeCloudProjects(localStore, remoteRows, engine, preferredProj
   for (const row of remoteRows || []) {
     const raw = row?.project_data;
     if (!raw?.projectId) continue;
-    const remote = attachCloudMetadata(engine.normalizeProject(raw), row);
+    const remote = attachCloudMetadata(engine.normalizeProject(raw, { source: "cloud_pull" }), row);
     const index = store.projects.findIndex((item) => item.projectId === remote.projectId);
     if (index < 0) {
       store.projects.push(remote);

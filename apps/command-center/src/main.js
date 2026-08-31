@@ -11,8 +11,8 @@ import { getSavedTab, saveTab } from './ux-state.js';
 import { hydrateFixedFieldFilters } from './fixed-field-options.js';
 
 const FINAL_STYLE_SHEETS = [
-  ['gucc-game-themes-final', '../styles/game-themes.css?v=8'],
-  ['gucc-search-ux-final', '../styles/game-os.css?v=2']
+  ['gucc-search-ux-final', '../styles/game-os.css?v=3'],
+  ['gucc-game-themes-final', '../styles/game-themes.css?v=9']
 ];
 
 const TAB_LOADERS = {
@@ -176,8 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initVersions();
   initResources();
 
-  // Some feature styles are injected during initialization. Keep the search-first
-  // UX and game identity layers last so old global !important rules cannot win.
+  // Feature CSS may be injected during initialization. Keep the neutral search UX
+  // first and the per-game geometry layer last so variants win by cascade order.
   ensureFinalStyleSheets({ reorder: true });
   featuresReady = true;
 

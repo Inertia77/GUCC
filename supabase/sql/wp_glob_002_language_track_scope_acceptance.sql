@@ -232,6 +232,6 @@ end $$;
 select
   'WP_GLOB_002_ACCEPTANCE_OK' as result,
   (select count(*) from public.creator_language_tracks where metadata->>'wp'='WP_GLOB_002') as language_tracks_inside_tx,
-  (select count(*) from public.creator_project_files where metadata->>'wp'='WP_GLOB_002') as scoped_artifacts_inside_tx;
+  (select count(*) from public.creator_project_files where metadata->>'wp'='WP_GLOB_002' and artifact_scope_type='language_track') as scoped_artifacts_inside_tx;
 
 rollback;

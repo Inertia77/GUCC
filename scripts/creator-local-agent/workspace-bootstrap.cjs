@@ -7,6 +7,7 @@ const path = require("node:path");
 const Core = require("./core.cjs");
 const Engine = require("../../apps/video-workspace/production-system/engine.js");
 const Contract = require("../../assets/creator-local-project-contract.js");
+const Global = require("../../assets/creator-global-production-core.js");
 
 function sha256Text(value) {
   return `sha256:${crypto.createHash("sha256").update(String(value), "utf8").digest("hex")}`;
@@ -219,7 +220,12 @@ async function bootstrapProjectWorkspace({ workspaceRoot, snapshot, project: exp
     await ensureSafeDirectoryChain(resolved.validated.realRoot, resolved.projectRoot, projectRealRoot, relativeDir);
   }
 
-  const tree = Engine.projectFileTree(project);
+  const globalPlan = snapshot ? Global.globalWorkspacePlan(snapshot) : { directories: [], files: {} };
+  for (const relativeDir of globalPlan.directories) {
+    await ensureSafeDirectoryChain(resolved.validated.realRoot, resolved.projectRoot, projectRealRoot, relativeDir);
+  }
+
+  const tree = { ...Engine.projectFileTree(project), ...globalPlan.files };
   const previous = await loadProjectionManifest(resolved.projectRoot, projectRealRoot);
   if (previous.projectId && previous.projectId !== project.projectId) throw new Error(`Projection manifest belongs to another project: ${previous.projectId}`);
   const next = {
@@ -254,6 +260,7 @@ async function bootstrapProjectWorkspace({ workspaceRoot, snapshot, project: exp
     projectRoot: resolved.projectRoot,
     canonicalFolderName: resolved.canonicalName,
     reusedLegacyFolder: resolved.reusedLegacy,
+    globalDirectories: globalPlan.directories,
     ...summary,
   };
 }

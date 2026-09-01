@@ -26,7 +26,11 @@ Visual Master is a reusable semantic visual identity. `creator_visual_segments` 
 
 A Variant references one Visual Master and one or more Language Tracks. Platform Presentation owns title, description, tags, chapters and export metadata for one Variant + Platform. A Publish Package binds Variant + Presentation + Channel + registered local output artifact. Package changes invalidate QA; Platform Lock freezes automated changes; Release Lock writes an immutable snapshot.
 
-A Publication is a real distribution instance. Initial, Retry and Repost are separate rows, so one Variant + Channel can have multiple publication events. Distribution requires current QA PASS, Human Final Review, Release Lock and Final Publish Confirmation. External provider OAuth/upload is intentionally outside v1; the user performs or confirms the real platform publish and records the Post ID/URL.
+A Publication is a real distribution instance. Initial, Retry and Repost are separate `publication_mode` rows, so one Variant + Channel can have multiple publication events. Every new mode enters the lifecycle at `READY_TO_PUBLISH`; legacy `RETRY`/`REPOST` status rows remain confirmable for compatibility. Distribution requires current QA PASS, Human Final Review, Release Lock and Final Publish Confirmation. A human may withdraw that confirmation before Distribution starts, but not after the status reaches Scheduled, Publishing or Published. External provider OAuth/upload is intentionally outside v1; the user performs or confirms the real platform publish and records the Post ID/URL.
+
+Metric snapshots reject negative watch time and average view duration. Retention and CTR remain constrained to the inclusive `0..1` range.
+
+Research, Asset and Publication URLs are parsed as credential-free HTTPS URLs, and metadata flags must be actual JSON booleans rather than truthy strings.
 
 ## Human/AI boundary
 
@@ -45,6 +49,8 @@ Accepted Learning is the only learning state exposed to the next-project feedbac
 
 `scripts/creator-audio-analysis.cjs` reads the real local audio duration (RIFF/WAV directly or `ffprobe`), computes SHA-256, consumes timestamped ASR segments, aligns them to the locked script and writes the four Timeline Bundle files. If no timestamped ASR JSON is supplied, it may invoke a local Whisper CLI. Missing ASR, unreadable audio, overlapping/out-of-bounds timestamps, estimated/script-derived providers or invalid alignment all block the lock.
 
+The tool refuses to overwrite any existing formal Timeline output by default. Only after a human explicitly reopens the Voice / Timeline Lock may the operator rerun it with `--force`; the flag is never implied by automation.
+
 Example:
 
 ```powershell
@@ -61,7 +67,7 @@ The Local Agent understands the full scoped Artifact identity and uses scope-awa
 - `06_EDIT_PLAN/VISUAL_MASTER/{VISUAL_MASTER_KEY}`
 - `10_RELEASE/VARIANTS/{VARIANT_KEY}`
 
-The daily UI path is Portal → Creator Dashboard → Open Project → Global Production. It presents one next action, human-required state, Language Tracks, Visual Master, Variants, Packages/QA/Release, Publications, Analytics and Learning. Architecture details and setup forms are collapsed by default.
+The daily UI path is Portal → Creator Dashboard → Open Project → Global Production. It presents one next action, human-required state, Language Tracks, Visual Master, Variants, Packages/QA/Release, Publications, Analytics and Learning. Architecture details and setup forms are collapsed by default. Portal and Production observe the shared Owner-session storage event, so completing Command Center login in another tab refreshes their cloud state without a manual reload. The versioned Dashboard and Production assets are included in the PWA application shell for deterministic cache updates and offline startup.
 
 ## Verification
 

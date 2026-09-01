@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const Global = require("../assets/creator-global-production-core.js");
+const OUTPUT_NAMES = Object.freeze({ SUBTITLE_MASTER: "SUBTITLE_MASTER.srt", TIMELINE_SENTENCE: "TIMELINE_SENTENCE.csv", TRANSCRIPT_ALIGNED: "TRANSCRIPT_ALIGNED.json", ALIGNMENT_REPORT: "ALIGNMENT_REPORT.md" });
 
 function wavDurationMs(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length < 44 || buffer.toString("ascii", 0, 4) !== "RIFF" || buffer.toString("ascii", 8, 12) !== "WAVE") {
@@ -96,6 +97,18 @@ function parseArgs(argv) {
   return result;
 }
 
+function writeTimelineFiles(outputDir, files, { force = false, fsModule = fs } = {}) {
+  const outputs = Object.entries(OUTPUT_NAMES).map(([key, filename]) => ({ key, filename, target: path.join(outputDir, filename), content: files[key] }));
+  const missing = outputs.filter((item) => typeof item.content !== "string").map((item) => item.key);
+  if (missing.length) throw new Error(`TIMELINE_BUNDLE_INCOMPLETE: missing ${missing.join(", ")}`);
+  const existing = outputs.filter((item) => fsModule.existsSync(item.target));
+  if (existing.length && !force) {
+    throw new Error(`TIMELINE_OUTPUT_EXISTS: ${existing.map((item) => item.filename).join(", ")}. Reopen the human Voice / Timeline Lock explicitly, then rerun with --force.`);
+  }
+  for (const output of outputs) fsModule.writeFileSync(output.target, output.content, "utf8");
+  return outputs.map((item) => item.target);
+}
+
 function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv); const audioPath = path.resolve(String(args.audio || "")); const outputDir = path.resolve(String(args.output || path.dirname(audioPath)));
   if (!args.audio || !fs.existsSync(audioPath)) throw new Error("--audio must identify the real local AUDIO_MASTER");
@@ -104,10 +117,7 @@ function main(argv = process.argv.slice(2)) {
   const asr = args.asr ? JSON.parse(fs.readFileSync(path.resolve(String(args.asr)), "utf8")) : runWhisper(audioPath, outputDir, String(args.language || ""));
   const lockedScript = args.script ? fs.readFileSync(path.resolve(String(args.script)), "utf8") : "";
   const bundle = buildTimelineBundle({ audioPath, audioBuffer, durationMs, provider: String(args.provider || (args.asr ? "external_timestamped_asr" : "openai_whisper_local")), languageCode: String(args.language || ""), segments: asr, lockedScript });
-  for (const [key, content] of Object.entries(bundle.files)) {
-    const names = { SUBTITLE_MASTER: "SUBTITLE_MASTER.srt", TIMELINE_SENTENCE: "TIMELINE_SENTENCE.csv", TRANSCRIPT_ALIGNED: "TRANSCRIPT_ALIGNED.json", ALIGNMENT_REPORT: "ALIGNMENT_REPORT.md" };
-    fs.writeFileSync(path.join(outputDir, names[key]), content, "utf8");
-  }
+  writeTimelineFiles(outputDir, bundle.files, { force: args.force === true });
   process.stdout.write(`${JSON.stringify({ status: bundle.alignmentStatus === "VALID" ? "READY_FOR_HUMAN_TIMELINE_LOCK" : "BLOCKED_REVIEW_REQUIRED", ...bundle.provenance, alignment_score: bundle.alignmentScore }, null, 2)}\n`);
 }
 
@@ -115,4 +125,4 @@ if (require.main === module) {
   try { main(); } catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
 }
 
-module.exports = { wavDurationMs, ffprobeDurationMs, audioDurationMs, audioChecksum, timestamp, normalizeSegments, alignmentScore, buildTimelineBundle, runWhisper, main };
+module.exports = { OUTPUT_NAMES, wavDurationMs, ffprobeDurationMs, audioDurationMs, audioChecksum, timestamp, normalizeSegments, alignmentScore, buildTimelineBundle, writeTimelineFiles, runWhisper, main };

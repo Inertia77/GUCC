@@ -2,6 +2,9 @@
 
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
 const Audio = require("./creator-audio-analysis.cjs");
 
 function pcmWav(durationMs, sampleRate = 8000) {
@@ -27,5 +30,18 @@ assert.match(bundle.files.ALIGNMENT_REPORT, /timing_provenance: real_audio/);
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "", languageCode: "zh-CN", segments }), /ASR provider identity is required/);
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "timestamped-local-asr", languageCode: "zh-CN", segments: [{ startMs: 0, endMs: 3000, text: "one" }, { startMs: 2500, endMs: 3900, text: "overlap" }] }), /overlaps the previous/);
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "script-estimate", languageCode: "zh-CN", segments }), /not estimated or synthetic timing/);
+
+const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "gucc-audio-analysis-"));
+try {
+  const written = Audio.writeTimelineFiles(outputDir, bundle.files);
+  assert.equal(written.length, 4);
+  for (const filename of Object.values(Audio.OUTPUT_NAMES)) assert.equal(fs.existsSync(path.join(outputDir, filename)), true, `${filename} must be written on the first pass`);
+  assert.throws(() => Audio.writeTimelineFiles(outputDir, bundle.files), /TIMELINE_OUTPUT_EXISTS.*--force/, "Existing formal Timeline outputs must fail closed");
+  const forced = { ...bundle.files, ALIGNMENT_REPORT: `${bundle.files.ALIGNMENT_REPORT}\nforced revision\n` };
+  Audio.writeTimelineFiles(outputDir, forced, { force: true });
+  assert.match(fs.readFileSync(path.join(outputDir, Audio.OUTPUT_NAMES.ALIGNMENT_REPORT), "utf8"), /forced revision/);
+} finally {
+  fs.rmSync(outputDir, { recursive: true, force: true });
+}
 
 console.log("Creator real-audio analysis tests passed: duration/checksum provenance, timestamped bundle, alignment, pause output and fail-closed cases are verified.");

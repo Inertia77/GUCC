@@ -162,9 +162,9 @@ begin
   perform public.app_creator_human_lock(v_owner,'publication',v_publication_a::text,'final_publish_confirmation',true,(select revision from public.creator_publications where publication_id=v_publication_a),true,'Fixture human final publish confirmation');
   update public.creator_publications set status='PUBLISHED',post_id='fixture-post-a',post_url='https://example.invalid/fixture-a',published_at=now() where publication_id=v_publication_a;
   insert into public.creator_publications(project_id,owner_user_id,variant_id,channel_id,publish_package_id,publication_mode,retry_of_publication_id,status)
-    select project_id,owner_user_id,variant_id,channel_id,publish_package_id,'RETRY',publication_id,'RETRY' from public.creator_publications where publication_id=v_publication_a returning publication_id into v_publication_b;
+    select project_id,owner_user_id,variant_id,channel_id,publish_package_id,'RETRY',publication_id,'READY_TO_PUBLISH' from public.creator_publications where publication_id=v_publication_a returning publication_id into v_publication_b;
   insert into public.creator_publications(project_id,owner_user_id,variant_id,channel_id,publish_package_id,publication_mode,repost_of_publication_id,status)
-    select project_id,owner_user_id,variant_id,channel_id,publish_package_id,'REPOST',publication_id,'REPOST' from public.creator_publications where publication_id=v_publication_a returning publication_id into v_publication_c;
+    select project_id,owner_user_id,variant_id,channel_id,publish_package_id,'REPOST',publication_id,'READY_TO_PUBLISH' from public.creator_publications where publication_id=v_publication_a returning publication_id into v_publication_c;
   insert into public.creator_publication_metric_snapshots(publication_id,project_id,owner_user_id,captured_at,provider,views,likes,comments,shares,raw_snapshot)
     values(v_publication_a,v_project,v_owner,now(),'synthetic-fixture',100,10,2,1,'{"fixture":true}');
   insert into public.creator_performance_reports(project_id,owner_user_id,report_key,variant_id,publication_id,window_start,window_end,metrics_captured_through,report)

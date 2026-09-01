@@ -37,6 +37,7 @@ assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors mu
 assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
 
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
+assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
 assert.match(accessGuard, /creator-pipeline-ux\.mjs/, 'Creator pipeline UX integration must be bootstrapped on eligible pages.');
 assert.match(portal, /id="creatorDashboard"/, 'Portal must include the integrated Creator Dashboard.');

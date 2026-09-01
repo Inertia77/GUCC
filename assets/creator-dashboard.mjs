@@ -6,6 +6,8 @@ import { attachObservationSummaries } from "./creator-file-observation-core.mjs"
 
 const CREATOR_API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
 const root = document.getElementById("creatorDashboard");
+const AUTH_STORE_KEY = "gameup_session_v5";
+let loadEpoch = 0;
 
 function escapeHtml(value) {
   return String(value == null ? "" : value)
@@ -87,12 +89,17 @@ function renderDashboard(dashboard) {
 function renderLogin() { root.innerHTML = `<div class="creator-login-card"><div><p class="eyebrow">CREATOR OS</p><h2>我的创作</h2><p>登录 DB 后，这里会直接显示跨项目下一步、健康状态和截止日期。</p></div><a href="./apps/command-center/">登录并读取项目</a></div>`; }
 function renderError(error) { root.innerHTML = `<div class="creator-login-card creator-error"><div><p class="eyebrow">CREATOR DASHBOARD</p><h2>暂时无法读取项目</h2><p>${escapeHtml(error?.message || "未知错误")}</p></div><button id="creatorDashboardRetry" type="button">重试</button></div>`; document.getElementById("creatorDashboardRetry")?.addEventListener("click", loadDashboard); }
 async function loadDashboard() {
-  if (!root) return; if (!loggedIn()) return renderLogin(); root.setAttribute("aria-busy", "true"); root.innerHTML = `<div class="creator-loading">正在计算跨项目唯一下一步…</div>`;
+  if (!root) return;
+  const epoch = ++loadEpoch;
+  if (!loggedIn()) { root.removeAttribute("aria-busy"); return renderLogin(); }
+  root.setAttribute("aria-busy", "true"); root.innerHTML = `<div class="creator-loading">正在计算跨项目唯一下一步…</div>`;
   try {
     const data = await creatorApi("dashboard");
+    if (epoch !== loadEpoch) return;
     const dashboard = attachGlobalProduction(buildCreatorDashboard(data, { localProjects: readLocalProjects(), now: new Date() }), data);
     renderDashboard(attachObservationSummaries(dashboard, data));
-  } catch (error) { renderError(error); }
-  finally { root.removeAttribute("aria-busy"); }
+  } catch (error) { if (epoch === loadEpoch) renderError(error); }
+  finally { if (epoch === loadEpoch) root.removeAttribute("aria-busy"); }
 }
+window.addEventListener("storage", (event) => { if (event.key === AUTH_STORE_KEY) loadDashboard(); });
 loadDashboard();

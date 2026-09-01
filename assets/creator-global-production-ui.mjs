@@ -3,10 +3,13 @@ import { getAccessToken, getSession } from "../apps/command-center/src/auth.js";
 
 const API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
 const STORE_KEY = "gucc_ai_video_production_v1";
+const AUTH_STORE_KEY = "gameup_session_v5";
 const root = document.getElementById("globalProduction");
 const G = window.GuccCreatorGlobal;
 let snapshot = null;
 let loadingProjectId = "";
+let refreshEpoch = 0;
+let mutationInFlight = false;
 
 const h = (value) => String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 const statusClass = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9_-]/g, "-");
@@ -32,8 +35,7 @@ function toast(message, error = false) {
 }
 function pill(value) { return `<span class="global-pill ${statusClass(value)}">${h(value || "DRAFT")}</span>`; }
 function projectLock(name, lockType, lockedAt) {
-  const disabled = lockedAt ? "" : "";
-  return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}" ${disabled}>${lockedAt ? `✓ ${h(name)} · 解锁` : h(name)}</button>`;
+  return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}">${lockedAt ? `✓ ${h(name)} · 解锁` : h(name)}</button>`;
 }
 function languageCard(track) {
   const artifacts = G.filesForScope(snapshot, "language_track", track.language_track_id); const timeline = G.timelineReadiness(track, artifacts);
@@ -42,7 +44,7 @@ function languageCard(track) {
     <p>${timeline.ready ? "真实音频 Timeline 已验证" : `缺少：${h([...timeline.missing, ...(!timeline.realAudio ? ["REAL_AUDIO"] : []), ...(!timeline.aligned ? ["ALIGNMENT"] : [])].join(" / ") || "人工 Lock")}`}</p>
     <div class="inline-actions">
       <button class="button tiny ${track.script_locked_at ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="language_track" data-scope-id="${track.language_track_id}" data-lock-type="language_script" data-revision="${Number(track.revision || 1)}" data-locked="${track.script_locked_at ? "false" : "true"}">${track.script_locked_at ? "✓ Script Lock · 解锁" : "Script Lock"}</button>
-      <button class="button tiny ${track.voice_timeline_locked_at ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="language_track" data-scope-id="${track.language_track_id}" data-lock-type="voice_timeline" data-revision="${Number(track.revision || 1)}" data-locked="${track.voice_timeline_locked_at ? "false" : "true"}">${track.voice_timeline_locked_at ? "✓ Voice / Timeline" : "Voice / Timeline Lock"}</button>
+      <button class="button tiny ${track.voice_timeline_locked_at ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="language_track" data-scope-id="${track.language_track_id}" data-lock-type="voice_timeline" data-revision="${Number(track.revision || 1)}" data-locked="${track.voice_timeline_locked_at ? "false" : "true"}">${track.voice_timeline_locked_at ? "✓ Voice / Timeline · 解锁" : "Voice / Timeline Lock"}</button>
     </div>
   </article>`;
 }
@@ -52,7 +54,7 @@ function visualCard(visual) {
     <div class="global-card-head"><div><strong>${h(visual.visual_master_key)}</strong><small>${segments.length} semantic anchors · r${Number(visual.revision || 1)}</small></div>${pill(visual.status)}</div>
     <div class="global-lock-line"><span class="${visual.visual_locked_at ? "is-on" : ""}">Visual</span><span class="${visual.edit_plan_locked_at ? "is-on" : ""}">Edit Plan</span><span class="${visual.master_render_locked_at ? "is-on" : ""}">Master Render</span></div>
     <div class="inline-actions">
-      ${[["visual_master", "Visual Master", visual.visual_locked_at], ["edit_plan", "Edit Plan", visual.edit_plan_locked_at], ["master_render", "Master Render", visual.master_render_locked_at]].map(([key, label, on]) => `<button class="button tiny ${on ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="visual_master" data-scope-id="${visual.visual_master_id}" data-lock-type="${key}" data-revision="${Number(visual.revision || 1)}" data-locked="${on ? "false" : "true"}">${on ? `✓ ${label}` : `${label} Lock`}</button>`).join("")}
+      ${[["visual_master", "Visual Master", visual.visual_locked_at], ["edit_plan", "Edit Plan", visual.edit_plan_locked_at], ["master_render", "Master Render", visual.master_render_locked_at]].map(([key, label, on]) => `<button class="button tiny ${on ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="visual_master" data-scope-id="${visual.visual_master_id}" data-lock-type="${key}" data-revision="${Number(visual.revision || 1)}" data-locked="${on ? "false" : "true"}">${on ? `✓ ${label} · 解锁` : `${label} Lock`}</button>`).join("")}
     </div>
   </article>`;
 }
@@ -70,7 +72,7 @@ function packageCard(pkg) {
     <div class="global-lock-line"><span class="${locked ? "is-on" : ""}">Platform</span><span class="${qaCurrent ? "is-on" : ""}">AI QA</span><span class="${pkg.human_reviewed_at ? "is-on" : ""}">Human Review</span><span class="${pkg.release_locked_at ? "is-on" : ""}">Release</span></div>
     ${(pkg.validation_errors || []).length ? `<p class="global-blocked">${h(pkg.validation_errors.join(" · "))}</p>` : ""}
     <div class="inline-actions">
-      <button class="button tiny ${locked ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="publish_package" data-scope-id="${pkg.publish_package_id}" data-lock-type="platform_variant" data-revision="${Number(pkg.package_revision)}" data-locked="${locked ? "false" : "true"}">${locked ? "✓ Platform Lock" : "Platform Lock"}</button>
+      <button class="button tiny ${locked ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="publish_package" data-scope-id="${pkg.publish_package_id}" data-lock-type="platform_variant" data-revision="${Number(pkg.package_revision)}" data-locked="${locked ? "false" : "true"}">${locked ? "✓ Platform Lock · 解锁" : "Platform Lock"}</button>
       <button class="button tiny ghost" type="button" data-run-qa="${pkg.publish_package_id}" ${locked ? "" : "disabled"}>运行 AI QA</button>
       <button class="button tiny ${pkg.human_reviewed_at ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="publish_package" data-scope-id="${pkg.publish_package_id}" data-lock-type="human_final_review" data-revision="${Number(pkg.package_revision)}" data-locked="true" ${qaCurrent && !pkg.human_reviewed_at ? "" : "disabled"}>${pkg.human_reviewed_at ? "✓ 最终精修" : "确认最终精修"}</button>
       <button class="button tiny ${pkg.release_locked_at ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="publish_package" data-scope-id="${pkg.publish_package_id}" data-lock-type="release" data-revision="${Number(pkg.package_revision)}" data-locked="true" ${pkg.human_reviewed_at && !pkg.release_locked_at ? "" : "disabled"}>${pkg.release_locked_at ? "✓ Release Lock" : "Release Lock"}</button>
@@ -79,9 +81,12 @@ function packageCard(pkg) {
   </article>`;
 }
 function publicationCard(publication) {
-  const canConfirm = !publication.final_publish_confirmed_at && publication.status === "READY_TO_PUBLISH";
+  const confirmed = Boolean(publication.final_publish_confirmed_at);
+  const distributionStarted = ["SCHEDULED", "PUBLISHING", "PUBLISHED"].includes(publication.status);
+  const canConfirm = !confirmed && ["READY_TO_PUBLISH", "RETRY", "REPOST"].includes(publication.status);
+  const canWithdraw = confirmed && !distributionStarted;
   return `<article class="global-entity-card"><div class="global-card-head"><div><strong>${h(publication.publication_mode)} Publication</strong><small>${h(publication.post_url || publication.publication_id)}</small></div>${pill(publication.status)}</div><div class="inline-actions">
-    <button class="button tiny primary" type="button" data-human-lock data-scope-type="publication" data-scope-id="${publication.publication_id}" data-lock-type="final_publish_confirmation" data-revision="${Number(publication.revision || 1)}" data-locked="true" ${canConfirm ? "" : "disabled"}>${publication.final_publish_confirmed_at ? "✓ 已确认发布" : "最终发布确认"}</button>
+    <button class="button tiny ${confirmed ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="publication" data-scope-id="${publication.publication_id}" data-lock-type="final_publish_confirmation" data-revision="${Number(publication.revision || 1)}" data-locked="${confirmed ? "false" : "true"}" ${canConfirm || canWithdraw ? "" : "disabled"}>${confirmed ? (canWithdraw ? "✓ 已确认发布 · 撤回" : "✓ 已确认发布") : "最终发布确认"}</button>
     <button class="button tiny ghost" type="button" data-record-published="${publication.publication_id}" ${publication.final_publish_confirmed_at && publication.status !== "PUBLISHED" ? "" : "disabled"}>登记已发布</button>
     <button class="button tiny ghost" type="button" data-publication-copy="${publication.publication_id}" data-mode="RETRY">Retry</button>
     <button class="button tiny ghost" type="button" data-publication-copy="${publication.publication_id}" data-mode="REPOST">Repost</button>
@@ -128,19 +133,34 @@ function learningReview() {
 async function refresh(force = false) {
   if (!root || !G) return;
   const projectId = currentProjectId();
-  if (!projectId) { root.innerHTML = `<p class="muted">选择一个 Project 后读取 Global Production。</p>`; return; }
-  if (!loggedIn()) { root.innerHTML = `<p class="muted">登录 Command Center 后启用 Global Production 云状态与人工锁。</p>`; return; }
+  if (!projectId) { refreshEpoch += 1; loadingProjectId = ""; snapshot = null; root.removeAttribute("aria-busy"); root.innerHTML = `<p class="muted">选择一个 Project 后读取 Global Production。</p>`; return; }
+  if (!loggedIn()) {
+    refreshEpoch += 1;
+    loadingProjectId = "";
+    snapshot = null;
+    root.removeAttribute("aria-busy");
+    root.innerHTML = `<div class="global-auth-needed"><p class="muted">登录 Command Center 后启用 Global Production 云状态与人工锁。</p><div class="inline-actions"><a class="button tiny primary" href="../../../apps/command-center/" target="_blank" rel="noopener">打开 Command Center 登录</a><button class="button tiny ghost" type="button" data-global-refresh>我已登录，重试</button></div></div>`;
+    return;
+  }
   if (loadingProjectId === projectId && !force) return;
+  const epoch = ++refreshEpoch;
   loadingProjectId = projectId; root.setAttribute("aria-busy", "true");
-  try { snapshot = await api("getProject", { projectId }); if (loadingProjectId === projectId) render(); }
-  catch (error) { root.innerHTML = `<div class="global-error"><strong>Global Production 暂时不可用</strong><p>${h(error.message)}</p><button class="button tiny ghost" data-global-refresh>重试</button></div>`; }
-  finally { root.removeAttribute("aria-busy"); }
+  try {
+    const nextSnapshot = await api("getProject", { projectId });
+    if (epoch === refreshEpoch && currentProjectId() === projectId) { snapshot = nextSnapshot; render(); }
+  }
+  catch (error) {
+    if (epoch === refreshEpoch) root.innerHTML = `<div class="global-error"><strong>Global Production 暂时不可用</strong><p>${h(error.message)}</p><button class="button tiny ghost" data-global-refresh>重试</button></div>`;
+  }
+  finally { if (epoch === refreshEpoch) root.removeAttribute("aria-busy"); }
 }
 async function mutate(action, payload, success) {
+  if (mutationInFlight) return;
+  mutationInFlight = true;
   root?.setAttribute("aria-busy", "true");
   try { await api(action, { projectId: snapshot.project.project_id, ...payload }); toast(success); await refresh(true); }
   catch (error) { toast(error.message, true); }
-  finally { root?.removeAttribute("aria-busy"); }
+  finally { mutationInFlight = false; root?.removeAttribute("aria-busy"); }
 }
 
 root?.addEventListener("click", async (event) => {
@@ -163,7 +183,7 @@ root?.addEventListener("click", async (event) => {
   const copy = event.target.closest("[data-publication-copy]");
   if (copy) {
     const source = snapshot.publications.find((item) => item.publication_id === copy.dataset.publicationCopy); const mode = copy.dataset.mode;
-    return mutate("savePublication", { publishPackageId: source.publish_package_id, publicationMode: mode, status: mode, [`${mode.toLowerCase()}OfPublicationId`]: source.publication_id }, `${mode} Publication 已建立`);
+    return mutate("savePublication", { publishPackageId: source.publish_package_id, publicationMode: mode, status: "READY_TO_PUBLISH", [`${mode.toLowerCase()}OfPublicationId`]: source.publication_id }, `${mode} Publication 已建立`);
   }
   const learning = event.target.closest("[data-learning-review]");
   if (learning) {
@@ -194,4 +214,9 @@ root?.addEventListener("submit", async (event) => {
 
 const title = document.getElementById("projectTitle");
 if (title) new MutationObserver(() => { const projectId = currentProjectId(); if (projectId !== loadingProjectId) refresh(true); }).observe(title, { childList: true });
+window.addEventListener("storage", (event) => {
+  if (event.key !== AUTH_STORE_KEY) return;
+  loadingProjectId = "";
+  refresh(true);
+});
 refresh(true);

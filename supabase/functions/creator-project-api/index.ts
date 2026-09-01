@@ -94,6 +94,9 @@ function nonnegativeIntegerOrNull(value: unknown, label = "sizeBytes") { if (val
 function finiteNumberOrNull(value: unknown, label = "number") { if (value == null || value === "") return null; const number = Number(value); if (!Number.isFinite(number)) fail(`${label} must be a finite number or null`); return number; }
 function uuidOrNull(value: unknown, label = "id") { const text = boundedText(value, 80); if (!text) return null; if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text)) fail(`${label} must be a UUID`); return text; }
 function requiredText(value: unknown, label: string, max = 240) { const text = boundedText(value, max); if (!text) fail(`${label} is required`); return text; }
+function booleanValue(value: unknown, label: string, fallback = false) { if (value == null) return fallback; if (typeof value !== "boolean") fail(`${label} must be a boolean`); return value; }
+function optionalBoolean(value: unknown, label: string) { return value == null ? null : booleanValue(value, label); }
+function httpsUrlOrNull(value: unknown, label: string) { const url = boundedText(value, 2000); if (!url) return null; let parsed: URL; try { parsed = new URL(url); } catch { fail(`${label} must be a valid https URL`); } if (parsed!.protocol !== "https:" || !parsed!.hostname || parsed!.username || parsed!.password) fail(`${label} must be a valid https URL without embedded credentials`); return parsed!.href; }
 function boundedJson(value: unknown, label: string, max = MAX_METADATA_JSON) { const normalized = value == null ? {} : value; let serialized = ""; try { serialized = JSON.stringify(normalized); } catch { fail(`${label} must be valid JSON`); } if (serialized.length > max) fail(`${label} is too large`, 413); return normalized; }
 function boundedTextArray(value: unknown, label: string, maxItems = 100, maxItemLength = 240) { if (value == null) return []; if (!Array.isArray(value)) fail(`${label} must be an array`); if (value.length > maxItems) fail(`${label} has too many items`, 413); return value.map((item) => requiredText(item, `${label} item`, maxItemLength)); }
 function enumValue(value: unknown, allowed: Set<string>, label: string, fallback?: string) { const normalized = boundedText(value, 80).toUpperCase() || fallback || ""; if (!allowed.has(normalized)) fail(`Unsupported ${label}: ${normalized || "empty"}`); return normalized; }
@@ -408,12 +411,11 @@ async function saveScopedArtifact(userId: string, body: JsonMap) {
 
 async function saveResearchSource(userId: string, body: JsonMap) {
   const projectId = requiredText(body.projectId, "projectId", 220); await ownedProject(projectId, userId);
-  const sourceKey = requiredText(body.sourceKey, "sourceKey", 160); const sourceUrl = boundedText(body.sourceUrl, 2000) || null;
-  if (sourceUrl && !sourceUrl.startsWith("https://")) fail("sourceUrl must use https");
+  const sourceKey = requiredText(body.sourceKey, "sourceKey", 160); const sourceUrl = httpsUrlOrNull(body.sourceUrl, "sourceUrl");
   const row: JsonMap = {
     project_id: projectId, owner_user_id: userId, source_key: sourceKey, source_kind: boundedText(body.sourceKind, 80) || "official", source_url: sourceUrl,
     version_context: boundedText(body.versionContext, 300) || null, last_checked_at: timestampOrNull(body.lastCheckedAt), source_updated_at: timestampOrNull(body.sourceUpdatedAt),
-    fact_snapshot: boundedJson(asObject(body.factSnapshot), "factSnapshot"), is_stale: Boolean(body.isStale), revalidation_required: Boolean(body.revalidationRequired),
+    fact_snapshot: boundedJson(asObject(body.factSnapshot), "factSnapshot"), is_stale: booleanValue(body.isStale, "isStale"), revalidation_required: booleanValue(body.revalidationRequired, "revalidationRequired"),
     source_change_note: boundedText(body.sourceChangeNote, 1200) || null, metadata: boundedJson(asObject(body.metadata), "metadata"),
   };
   return { researchSource: await upsertReturning("creator_research_sources", "project_id,owner_user_id,source_key", row) };
@@ -423,13 +425,13 @@ async function saveAsset(userId: string, body: JsonMap) {
   assertMetadataOnly(body);
   const projectId = requiredText(body.projectId, "projectId", 220); await ownedProject(projectId, userId);
   const rawPath = boundedText(body.relativePath, 1200); const relativePath = rawPath ? normalizeRelativePath(rawPath) : null;
-  const sourceUrl = boundedText(body.sourceUrl, 2000) || null; if (sourceUrl && !sourceUrl.startsWith("https://")) fail("sourceUrl must use https");
+  const sourceUrl = httpsUrlOrNull(body.sourceUrl, "sourceUrl");
   const row: JsonMap = {
     project_id: projectId, owner_user_id: userId, asset_key: requiredText(body.assetKey, "assetKey", 160), asset_type: requiredText(body.assetType, "assetType", 80),
     label: boundedText(body.label, 240), relative_path: relativePath, source_name: boundedText(body.sourceName, 240) || null, source_url: sourceUrl,
     rights_status: boundedText(body.rightsStatus, 80) || "unknown", evidence_grade: boundedText(body.evidenceGrade, 80) || "unknown", quality_status: boundedText(body.qualityStatus, 80) || "unreviewed",
-    horizontal_compatible: body.horizontalCompatible == null ? null : Boolean(body.horizontalCompatible), vertical_compatible: body.verticalCompatible == null ? null : Boolean(body.verticalCompatible),
-    reusable: Boolean(body.reusable), semantic_tags: boundedTextArray(body.semanticTags, "semanticTags"), clip_metadata: boundedJson(asObject(body.clipMetadata), "clipMetadata"), metadata: boundedJson(asObject(body.metadata), "metadata"),
+    horizontal_compatible: optionalBoolean(body.horizontalCompatible, "horizontalCompatible"), vertical_compatible: optionalBoolean(body.verticalCompatible, "verticalCompatible"),
+    reusable: booleanValue(body.reusable, "reusable"), semantic_tags: boundedTextArray(body.semanticTags, "semanticTags"), clip_metadata: boundedJson(asObject(body.clipMetadata), "clipMetadata"), metadata: boundedJson(asObject(body.metadata), "metadata"),
   };
   return { asset: await upsertReturning("creator_assets", "project_id,owner_user_id,asset_key", row) };
 }
@@ -441,7 +443,7 @@ async function saveLanguageTrack(userId: string, body: JsonMap) {
   const provenance = boundedText(body.timingProvenance, 80) || null; if (provenance && provenance !== "real_audio") fail("timingProvenance must be real_audio or null");
   const row: JsonMap = {
     project_id: projectId, owner_user_id: userId, track_key: requiredText(body.trackKey, "trackKey", 160), language_code: requiredText(body.languageCode, "languageCode", 80),
-    label: boundedText(body.label, 240), is_source: Boolean(body.isSource), status, timing_provenance: provenance,
+    label: boundedText(body.label, 240), is_source: booleanValue(body.isSource, "isSource"), status, timing_provenance: provenance,
     alignment_status: enumValue(body.alignmentStatus, LANGUAGE_ALIGNMENT_STATES, "alignmentStatus", "PENDING"), metadata: boundedJson(asObject(body.metadata), "metadata"),
   };
   const requestedId = uuidOrNull(body.languageTrackId, "languageTrackId");
@@ -678,8 +680,8 @@ async function savePublication(userId: string, body: JsonMap) {
   if (!existing && mode === "RETRY" && !retryOf) fail("Retry Publication requires retryOfPublicationId");
   if (!existing && mode === "REPOST" && !repostOf) fail("Repost Publication requires repostOfPublicationId");
   const parentId = retryOf || repostOf; if (parentId) { const parent = await ownedEntity("creator_publications", "publication_id", parentId, userId, projectId); if (parent.variant_id !== variantId || parent.channel_id !== channelId) fail("Retry/Repost must preserve Variant and Channel identity", 409); }
-  const status = enumValue(body.status, PUBLICATION_STATES, "Publication status", mode === "INITIAL" ? "READY_TO_PUBLISH" : mode);
-  const postUrl = boundedText(body.postUrl, 2000) || null; if (postUrl && !postUrl.startsWith("https://")) fail("postUrl must use https");
+  const status = enumValue(body.status, PUBLICATION_STATES, "Publication status", "READY_TO_PUBLISH");
+  const postUrl = httpsUrlOrNull(body.postUrl, "postUrl");
   const row: JsonMap = {
     project_id: projectId, owner_user_id: userId, publish_package_id: publishPackageId, variant_id: variantId, channel_id: channelId, publication_mode: mode,
     retry_of_publication_id: existing ? existing.retry_of_publication_id : retryOf, repost_of_publication_id: existing ? existing.repost_of_publication_id : repostOf,
@@ -696,10 +698,11 @@ async function recordMetricSnapshot(userId: string, body: JsonMap) {
   const publication = await ownedEntity("creator_publications", "publication_id", publicationId, userId, projectId); if (publication.status !== "PUBLISHED") fail("Metrics require a PUBLISHED Publication", 409);
   function count(value: unknown, label: string) { const number = nonnegativeIntegerOrNull(value, label); return number == null ? null : number; }
   function rate(value: unknown, label: string) { const number = finiteNumberOrNull(value, label); if (number != null && (number < 0 || number > 1)) fail(`${label} must be between 0 and 1`); return number; }
+  function duration(value: unknown, label: string) { const number = finiteNumberOrNull(value, label); if (number != null && number < 0) fail(`${label} must be non-negative`); return number; }
   const row: JsonMap = {
     publication_id: publicationId, project_id: projectId, owner_user_id: userId, captured_at: timestampOrNull(body.capturedAt) || new Date().toISOString(), provider: requiredText(body.provider, "provider", 120),
     views: count(body.views, "views"), likes: count(body.likes, "likes"), comments: count(body.comments, "comments"), shares: count(body.shares, "shares"), saves: count(body.saves, "saves"),
-    watch_time_seconds: finiteNumberOrNull(body.watchTimeSeconds, "watchTimeSeconds"), average_view_duration_seconds: finiteNumberOrNull(body.averageViewDurationSeconds, "averageViewDurationSeconds"),
+    watch_time_seconds: duration(body.watchTimeSeconds, "watchTimeSeconds"), average_view_duration_seconds: duration(body.averageViewDurationSeconds, "averageViewDurationSeconds"),
     retention_rate: rate(body.retentionRate, "retentionRate"), ctr: rate(body.ctr, "ctr"), followers_gained: count(body.followersGained, "followersGained"), raw_snapshot: boundedJson(asObject(body.rawSnapshot), "rawSnapshot"),
   };
   return { metricSnapshot: await upsertReturning("creator_publication_metric_snapshots", "publication_id,captured_at,provider", row) };

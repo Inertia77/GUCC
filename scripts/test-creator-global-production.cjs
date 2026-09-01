@@ -104,6 +104,7 @@ assert.match(api, /function duration[\s\S]*number < 0[\s\S]*watch_time_seconds: 
 assert.match(api, /function httpsUrlOrNull[\s\S]*protocol !== "https:"[\s\S]*username[\s\S]*sourceUrl = httpsUrlOrNull[\s\S]*postUrl = httpsUrlOrNull/, "Research, Asset and Publication URLs must be parsed https URLs without embedded credentials");
 assert.doesNotMatch(api, /Boolean\(body\.(?:isStale|revalidationRequired|horizontalCompatible|verticalCompatible|reusable|isSource)\)/, "Global metadata booleans must not coerce string false to true");
 assert.match(api, /function booleanValue[\s\S]*typeof value !== "boolean"[\s\S]*is_stale: booleanValue[\s\S]*horizontal_compatible: optionalBoolean[\s\S]*is_source: booleanValue/, "Global metadata booleans must reject non-boolean values");
+assert.match(api, /const locked = booleanValue\(body\.locked, "locked", true\)/, "Human lock writes must reject string booleans instead of reversing operator intent");
 
 assert.ok(html.includes('id="globalProduction"')); assert.ok(html.includes("creator-global-production-ui.mjs?v=3"), "Production must cache-bust Global UI changes");
 assert.ok(html.includes("styles.css?v=2"), "Production must cache-bust Global layout changes");

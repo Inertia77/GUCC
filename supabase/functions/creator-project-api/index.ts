@@ -636,7 +636,7 @@ async function humanLock(userId: string, body: JsonMap) {
   };
   if (!allowed[scopeType]?.has(lockType)) fail("Unsupported human lock scope/type");
   const expectedRevision = Number(body.expectedRevision); if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 1) fail("expectedRevision is required");
-  const reason = requiredText(body.reason, "reason", 1000); const locked = body.locked !== false;
+  const reason = requiredText(body.reason, "reason", 1000); const locked = booleanValue(body.locked, "locked", true);
   if (["human_final_review", "release"].includes(lockType) && !locked) fail(`${lockType} is a one-way human completion gate`);
   const result = await serviceRest("rpc/app_creator_human_lock", { method: "POST", body: JSON.stringify({ p_owner_user_id: userId, p_scope_type: scopeType, p_scope_id: scopeId, p_lock_type: lockType, p_locked: locked, p_expected_revision: expectedRevision, p_confirmed_by_human: true, p_reason: reason }) });
   return { ...asObject(result), humanGate: { scopeType, scopeId, lockType, locked, reason } };

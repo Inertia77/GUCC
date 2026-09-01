@@ -33,6 +33,13 @@ function toast(message, error = false) {
   target.textContent = message; target.className = `toast show${error ? " error" : ""}`;
   setTimeout(() => { target.className = "toast"; }, 3600);
 }
+function renderAuthNeeded() {
+  if (!root) return;
+  loadingProjectId = "";
+  snapshot = null;
+  root.removeAttribute("aria-busy");
+  root.innerHTML = `<div class="global-auth-needed"><p class="muted">登录 Command Center 后启用 Global Production 云状态与人工锁。</p><div class="inline-actions"><a class="button tiny primary" href="../../../apps/command-center/" target="_blank" rel="noopener">打开 Command Center 登录</a><button class="button tiny ghost" type="button" data-global-refresh>我已登录，重试</button></div></div>`;
+}
 function pill(value) { return `<span class="global-pill ${statusClass(value)}">${h(value || "DRAFT")}</span>`; }
 function projectLock(name, lockType, lockedAt) {
   return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}">${lockedAt ? `✓ ${h(name)} · 解锁` : h(name)}</button>`;
@@ -136,10 +143,7 @@ async function refresh(force = false) {
   if (!projectId) { refreshEpoch += 1; loadingProjectId = ""; snapshot = null; root.removeAttribute("aria-busy"); root.innerHTML = `<p class="muted">选择一个 Project 后读取 Global Production。</p>`; return; }
   if (!loggedIn()) {
     refreshEpoch += 1;
-    loadingProjectId = "";
-    snapshot = null;
-    root.removeAttribute("aria-busy");
-    root.innerHTML = `<div class="global-auth-needed"><p class="muted">登录 Command Center 后启用 Global Production 云状态与人工锁。</p><div class="inline-actions"><a class="button tiny primary" href="../../../apps/command-center/" target="_blank" rel="noopener">打开 Command Center 登录</a><button class="button tiny ghost" type="button" data-global-refresh>我已登录，重试</button></div></div>`;
+    renderAuthNeeded();
     return;
   }
   if (loadingProjectId === projectId && !force) return;
@@ -150,7 +154,10 @@ async function refresh(force = false) {
     if (epoch === refreshEpoch && currentProjectId() === projectId) { snapshot = nextSnapshot; render(); }
   }
   catch (error) {
-    if (epoch === refreshEpoch) root.innerHTML = `<div class="global-error"><strong>Global Production 暂时不可用</strong><p>${h(error.message)}</p><button class="button tiny ghost" data-global-refresh>重试</button></div>`;
+    if (epoch === refreshEpoch) {
+      if (!loggedIn()) renderAuthNeeded();
+      else root.innerHTML = `<div class="global-error"><strong>Global Production 暂时不可用</strong><p>${h(error.message)}</p><button class="button tiny ghost" data-global-refresh>重试</button></div>`;
+    }
   }
   finally { if (epoch === refreshEpoch) root.removeAttribute("aria-busy"); }
 }

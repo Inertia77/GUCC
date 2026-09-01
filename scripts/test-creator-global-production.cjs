@@ -106,7 +106,7 @@ assert.doesNotMatch(api, /Boolean\(body\.(?:isStale|revalidationRequired|horizon
 assert.match(api, /function booleanValue[\s\S]*typeof value !== "boolean"[\s\S]*is_stale: booleanValue[\s\S]*horizontal_compatible: optionalBoolean[\s\S]*is_source: booleanValue/, "Global metadata booleans must reject non-boolean values");
 assert.match(api, /const locked = booleanValue\(body\.locked, "locked", true\)/, "Human lock writes must reject string booleans instead of reversing operator intent");
 
-assert.ok(html.includes('id="globalProduction"')); assert.ok(html.includes("creator-global-production-ui.mjs?v=3"), "Production must cache-bust Global UI changes");
+assert.ok(html.includes('id="globalProduction"')); assert.ok(html.includes("creator-global-production-ui.mjs?v=4"), "Production must cache-bust Global UI changes");
 assert.ok(html.includes("styles.css?v=2"), "Production must cache-bust Global layout changes");
 for (const label of ["Language Tracks", "Visual Master", "Variants", "Publish Packages", "Publications", "Analytics", "Learning", "最终发布确认"]) assert.ok(ui.includes(label), `Global UI path missing ${label}`);
 assert.match(ui, /AUTH_STORE_KEY = "gameup_session_v5"/, "Global UI must observe the shared Owner session identity");
@@ -119,17 +119,19 @@ assert.ok(ui.includes("✓ 已确认发布 · 撤回"), "The UI must name the re
 for (const unlockLabel of ["Voice / Timeline · 解锁", "Platform Lock · 解锁", "${label} · 解锁"]) assert.ok(ui.includes(unlockLabel), `Human gate UI missing explicit unlock copy: ${unlockLabel}`);
 assert.match(ui, /let refreshEpoch = 0;[\s\S]*epoch === refreshEpoch && currentProjectId\(\) === projectId/, "Late Global API responses must not overwrite a newly selected project");
 assert.match(ui, /if \(!projectId\)[\s\S]*root\.removeAttribute\("aria-busy"\)[\s\S]*if \(!loggedIn\(\)\)[\s\S]*root\.removeAttribute\("aria-busy"\)/, "Logged-out or projectless Global states must clear stale busy semantics");
+assert.match(ui, /catch \(error\)[\s\S]*if \(!loggedIn\(\)\) renderAuthNeeded\(\)/, "Expired Global sessions must return to the explicit login state in the same tab");
 assert.match(ui, /let mutationInFlight = false;[\s\S]*if \(mutationInFlight\) return;[\s\S]*mutationInFlight = true;[\s\S]*mutationInFlight = false/, "Global writes must suppress duplicate submissions while a mutation is in flight");
-assert.ok(portal.includes("creator-dashboard.mjs?v=3"), "Portal must cache-bust Creator Dashboard Global Production changes");
+assert.ok(portal.includes("creator-dashboard.mjs?v=4"), "Portal must cache-bust Creator Dashboard Global Production changes");
 assert.match(dashboard, /AUTH_STORE_KEY = "gameup_session_v5"[\s\S]*addEventListener\("storage"[\s\S]*loadDashboard\(\)/, "Creator Dashboard must recover after Owner login in another tab");
 assert.match(dashboard, /let loadEpoch = 0;[\s\S]*epoch !== loadEpoch/, "Late dashboard responses must not overwrite a newer refresh");
 assert.match(dashboard, /if \(!loggedIn\(\)\) \{ root\.removeAttribute\("aria-busy"\); return renderLogin\(\); \}/, "Logged-out Dashboard state must clear stale busy semantics");
-assert.match(serviceWorker, /gucc-static-v15[\s\S]*gucc-runtime-v15/, "Global Production offline assets require a fresh Service Worker cache generation");
+assert.match(dashboard, /catch \(error\)[\s\S]*if \(loggedIn\(\)\) renderError\(error\); else renderLogin\(\)/, "Expired Dashboard sessions must return to the login state in the same tab");
+assert.match(serviceWorker, /gucc-static-v16[\s\S]*gucc-runtime-v16/, "Global Production offline assets require a fresh Service Worker cache generation");
 for (const offlineAsset of [
   "creator-local-project-contract.js?v=1", "creator-timeline-contract.js?v=1", "creator-global-production-core.js?v=1",
   "creator-project-bootstrap-browser.js?v=1", "creator-timeline-browser.js?v=1", "creator-workspace-root.mjs?v=1",
-  "creator-file-observations.mjs?v=1", "creator-global-production-ui.mjs?v=3", "production-system/styles.css?v=2",
-  "creator-dashboard.mjs?v=3", "creator-dashboard.css?v=1",
+  "creator-file-observations.mjs?v=1", "creator-global-production-ui.mjs?v=4", "production-system/styles.css?v=2",
+  "creator-dashboard.mjs?v=4", "creator-dashboard.css?v=1",
 ]) assert.ok(serviceWorker.includes(offlineAsset), `Production offline shell missing ${offlineAsset}`);
 
 console.log(`Creator Global Production v1 contract tests passed (${migrationName} + ${gateMigrationName} + ${indexMigrationName}).`);

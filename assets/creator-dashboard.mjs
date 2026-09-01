@@ -98,7 +98,7 @@ async function loadDashboard() {
     if (epoch !== loadEpoch) return;
     const dashboard = attachGlobalProduction(buildCreatorDashboard(data, { localProjects: readLocalProjects(), now: new Date() }), data);
     renderDashboard(attachObservationSummaries(dashboard, data));
-  } catch (error) { if (epoch === loadEpoch) renderError(error); }
+  } catch (error) { if (epoch === loadEpoch) { if (loggedIn()) renderError(error); else renderLogin(); } }
   finally { if (epoch === loadEpoch) root.removeAttribute("aria-busy"); }
 }
 window.addEventListener("storage", (event) => { if (event.key === AUTH_STORE_KEY) loadDashboard(); });

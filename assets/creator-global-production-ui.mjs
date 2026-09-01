@@ -16,8 +16,10 @@ const statusClass = (value) => String(value || "").toLowerCase().replace(/[^a-z0
 
 function currentProjectId() {
   try {
+    const requestedProjectId = new URLSearchParams(location.search).get("project");
+    if (requestedProjectId) return requestedProjectId;
     const selectedProjectId = JSON.parse(localStorage.getItem(STORE_KEY) || "null")?.selectedProjectId;
-    return selectedProjectId || new URLSearchParams(location.search).get("project") || "";
+    return selectedProjectId || "";
   } catch { return new URLSearchParams(location.search).get("project") || ""; }
 }
 function loggedIn() { const session = getSession(); return Boolean(session?.access_token || session?.refresh_token); }
@@ -42,7 +44,7 @@ function renderAuthNeeded() {
 }
 function pill(value) { return `<span class="global-pill ${statusClass(value)}">${h(value || "DRAFT")}</span>`; }
 function projectLock(name, lockType, lockedAt) {
-  return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}">${lockedAt ? `✓ ${h(name)} · 解锁` : h(name)}</button>`;
+  return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}">${lockedAt ? `✓ ${h(name)} · 解锁` : `${h(name)} · 确认锁定`}</button>`;
 }
 function languageCard(track) {
   const artifacts = G.filesForScope(snapshot, "language_track", track.language_track_id); const timeline = G.timelineReadiness(track, artifacts);

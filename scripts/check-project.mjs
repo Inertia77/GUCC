@@ -218,7 +218,7 @@ for (const expected of [
   'id="projectList"',
   'data-action="sync-directory"',
   'src="./engine.js"',
-  'src="./app.js"'
+  'src="./app.js?v=2"'
 ]) {
   if (!productionSystemSource.includes(expected)) errors.push(`AI Video Production System 缺少关键工作流标记：${expected}`);
 }

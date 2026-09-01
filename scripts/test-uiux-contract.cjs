@@ -11,6 +11,7 @@ const workspaceFixes = read('assets/gucc-workspace-fixes-v1.css');
 const floatingDocks = read('assets/gucc-floating-docks-v1.css');
 const coverFixes = read('assets/gucc-cover-workspace-fixes-v1.css');
 const productionHtml = read('apps/video-workspace/production-system/index.html');
+const productionCss = read('apps/video-workspace/production-system/styles.css');
 const accessGuard = read('assets/access-guard.js');
 const portal = read('index.html');
 const dashboard = read('assets/creator-dashboard.mjs');
@@ -39,6 +40,8 @@ assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-gene
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
+assert.match(productionCss, /@media\(max-width:700px\)\{\.app-shell\{grid-template-columns:minmax\(0,1fr\)\}\.sidebar,\.project-list\{min-width:0\}\}/, 'Production phone layout must prevent the horizontal project rail from widening the page grid.');
+assert.match(productionCss, /\.button\.tiny\.primary\{color:#061014!important\}/, 'Production primary micro-actions must keep readable text on the mint/cyan surface.');
 assert.match(accessGuard, /creator-pipeline-ux\.mjs/, 'Creator pipeline UX integration must be bootstrapped on eligible pages.');
 assert.match(portal, /id="creatorDashboard"/, 'Portal must include the integrated Creator Dashboard.');
 assert.match(portal, /creator-dashboard\.mjs/, 'Portal must load the Creator Dashboard module.');

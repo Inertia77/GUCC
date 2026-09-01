@@ -22,6 +22,13 @@
   const currentProject = () => state.projects.find((project) => project.projectId === state.selectedProjectId) || null;
   const fileLabel = (key) => E.FILE_DEFINITIONS[key]?.filename || key;
 
+  function syncProjectQuery(projectId) {
+    const url = new URL(location.href);
+    if (projectId) url.searchParams.set("project", projectId);
+    else url.searchParams.delete("project");
+    if (url.href !== location.href) history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
   function loadStore() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
@@ -240,6 +247,7 @@
     if (index >= 0) state.projects[index] = project;
     else state.projects.push(project);
     state.selectedProjectId = project.projectId;
+    syncProjectQuery(state.selectedProjectId);
     save();
     render();
   }
@@ -264,6 +272,7 @@
         if (!confirm(`只删除浏览器内的“${project.name}”？磁盘目录不会受影响。`)) return;
         state.projects = state.projects.filter((item) => item.projectId !== project.projectId);
         state.selectedProjectId = state.projects[0]?.projectId || "";
+        syncProjectQuery(state.selectedProjectId);
       }
       save();
       render();
@@ -274,7 +283,7 @@
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (action) return runAction(action);
     const select = event.target.closest("[data-select-project]");
-    if (select) { state.selectedProjectId = select.dataset.selectProject; save(); render(); return; }
+    if (select) { state.selectedProjectId = select.dataset.selectProject; syncProjectQuery(state.selectedProjectId); save(); render(); return; }
     const tab = event.target.closest("[data-tab]");
     if (tab) { activeTab = tab.dataset.tab; render(); return; }
     const upload = event.target.closest("[data-upload-file]");
@@ -383,6 +392,7 @@
       state.projects.unshift(project);
     }
     state.selectedProjectId = project.projectId;
+    syncProjectQuery(state.selectedProjectId);
     $("#projectDialog").close();
     save();
     render();
@@ -399,6 +409,7 @@
         state.projects = raw.projects.map(E.normalizeProject);
         state.musicLibrary = Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [];
         state.selectedProjectId = raw.selectedProjectId || state.projects[0]?.projectId || "";
+        syncProjectQuery(state.selectedProjectId);
       } else importProject(raw);
       save();
       render();

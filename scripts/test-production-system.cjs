@@ -136,7 +136,9 @@ function testUiContract() {
   const engineJs = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "engine.js"), "utf8");
   assert(!indexHtml.includes("projectTypeSelect"), "Production Direct Create must not ask for Project Type");
   assert(!indexHtml.includes("projectTypeBadge"), "Production hero must not expose A/B/C/D badge");
+  assert.match(indexHtml, /<script src="\.\/app\.js\?v=2"><\/script>/, "Production must cache-bust project-selection deep-link changes");
   assert(!appJs.includes("E.PROJECT_TYPES[project.projectType]"), "Production UI must not branch on legacy type");
+  assert.match(appJs, /function syncProjectQuery[\s\S]*history\.replaceState[\s\S]*data-select-project[\s\S]*syncProjectQuery\(state\.selectedProjectId\)/, "Production project selection must keep the shareable ?project= deep link aligned with the visible project");
   assert.doesNotMatch(engineJs, /\b(?:const|let|var)\s+B_FLOW\b|\bB_FLOW\s*=/, "B_FLOW must not exist as a top-level workflow");
   assert.doesNotMatch(engineJs, /\b(?:const|let|var)\s+D_FLOW\b|\bD_FLOW\s*=/, "D_FLOW must not exist as a top-level workflow");
   assert(appJs.includes('data-music-mode="skip"') && appJs.includes('data-music-mode="existing"') && appJs.includes('data-music-mode="generate"'));

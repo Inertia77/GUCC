@@ -8,6 +8,8 @@ const root = path.join(__dirname, "..");
 const migrationsDir = path.join(root, "supabase", "migrations");
 const canonicalMigration = "20260831084516_creator_language_track_scoped_artifacts.sql";
 const migrationPath = path.join(migrationsDir, canonicalMigration);
+const globalMigrationName = fs.readdirSync(migrationsDir).find((name) => name.endsWith("_creator_global_production_v1.sql"));
+const globalMigrationPath = globalMigrationName ? path.join(migrationsDir, globalMigrationName) : "";
 const provisionalCandidatePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_migration_candidate.sql");
 const acceptancePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_acceptance.sql");
 const apiPath = path.join(root, "supabase", "functions", "creator-project-api", "index.ts");
@@ -20,6 +22,8 @@ assert.ok(fs.existsSync(migrationPath), `Canonical Production-synced migration m
 assert.ok(!fs.existsSync(provisionalCandidatePath), "Provisional WP_GLOB_002 migration candidate must not remain after Production assigns a version");
 
 const migration = fs.readFileSync(migrationPath, "utf8");
+assert.ok(globalMigrationPath && fs.existsSync(globalMigrationPath), "Global Production v1 migration must activate reserved child scopes");
+const globalMigration = fs.readFileSync(globalMigrationPath, "utf8");
 const acceptance = fs.readFileSync(acceptancePath, "utf8");
 const api = fs.readFileSync(apiPath, "utf8");
 const engine = fs.readFileSync(enginePath, "utf8");
@@ -71,22 +75,26 @@ lacks(/on conflict \(project_id, file_key\)/i, migration, "Legacy two-column con
 
 // API preserves Legacy/default projection and exposes future-facing reads additively.
 has(/artifact_scope_type: "project", artifact_scope_id: projectId/i, api, "fileRows() must explicitly write Project scope");
-has(/artifact_scope_type=eq\.project&artifact_scope_id=eq\.\$\{encodeURIComponent\(projectId\)\}&file_key=/i, api,
-  "ownedLogicalFile() must be Project-scope explicit");
+has(/async function ownedLogicalFile\([^)]*artifactScopeType = "project", artifactScopeId = projectId/i, api,
+  "ownedLogicalFile() must default Legacy calls to Project scope while accepting explicit child scope");
+has(/artifact_scope_type=eq\.\$\{encodeURIComponent\(artifactScopeType\)\}&artifact_scope_id=eq\.\$\{encodeURIComponent\(artifactScopeId\)\}/i, api,
+  "ownedLogicalFile() must resolve the full scoped Artifact identity");
 has(/creator_project_files\?owner_user_id=eq\.\$\{owner\}&artifact_scope_type=eq\.project/i, api,
   "dashboard files projection must remain Project-scope only");
 has(/creator_language_tracks\?project_id=eq\.\$\{projectFilter\}/i, api);
 has(/artifact_scope_type=neq\.project/i, api);
-has(/return \{ project, files, languageTracks, scopedArtifacts, events, releases, fileLocations, devices \}/i, api);
+has(/return \{ project, files, languageTracks, scopedArtifacts, events, releases, fileLocations, devices,/i, api);
 lacks(/projectId \? project : project/i, api, "Repository API source must not contain the superseded v7 parity drift");
 
 // No fake language suffixes in implementation.
 lacks(/AUDIO_MASTER_(?:ZH|JA|EN)|SUBTITLE_MASTER_(?:ZH|JA|EN)/i, migration + "\n" + api,
   "Artifact scope must not be simulated with language-suffixed file keys");
 
-// Current global workflow and local directories remain unchanged by this WP.
+// Legacy flow remains intact while Global Production activates child workflows additively.
 lacks(/LANGUAGE_SCRIPTING|JA_AUDIO_LOCKED|EN_TIMELINE_LOCKED|ZH_AUDIO_LOCKED/i, engine + "\n" + migration + "\n" + api);
-lacks(/02_SCRIPT\/(?:ZH|JA|EN)|03_AUDIO\/(?:ZH|JA|EN)|04_SUBTITLES\/(?:ZH|JA|EN)/i, migration + "\n" + api);
+has(/DRAFT','SCRIPTING','SCRIPT_LOCKED','AUDIO_PRODUCTION','AUDIO_LOCKED','TIMELINE_GENERATION','TIMELINE_LOCKED','READY/i, globalMigration);
+has(/artifact_scope_type = 'visual_master'/i, globalMigration);
+has(/artifact_scope_type = 'variant'/i, globalMigration);
 has(/Legacy\/default Project Timeline Compatibility Layer/i, contract);
 has(/Do not introduce `ZH\/`, `JA\/`, `EN\/` local folders yet/i, contract);
 

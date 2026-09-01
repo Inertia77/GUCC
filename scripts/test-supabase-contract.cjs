@@ -141,8 +141,13 @@ for (const event of ["FILE_FIRST_SEEN", "FILE_DISAPPEARED", "FILE_REAPPEARED", "
 }
 assert.doesNotMatch(creatorEdge, /FILE_SCANNED|FILE_PRESENT|FILE_LOCATION_UPDATED/);
 assert.match(creatorEdge, /Local observation path must match logical artifact contract/);
-assert.match(creatorEdge, /return \{ projects, files, releases, devices, fileLocations, serverTime:/);
+assert.match(creatorEdge, /return \{ projects, files, releases, devices, fileLocations, languageTracks, scopedArtifacts,/,
+  "Dashboard must preserve Legacy fields and add Global child state additively");
 assert.match(creatorEdge, /const deviceId = await touchDevice\(userId, body\);[\s\S]{0,500}rpc\/save_creator_project_revision/);
-assert.doesNotMatch(creatorEdge, /base64|multipart\/form-data|arrayBuffer\(\)|formData\(\)/i);
+assert.match(creatorEdge, /const FORBIDDEN_MEDIA_KEYS = new Set\(/,
+  "Creator API must explicitly reject media payload fields");
+assert.match(creatorEdge, /GLOBAL_METADATA_ACTIONS\.has\(action\).*assertMetadataOnly\(body\)/s,
+  "Creator Global writes must enforce the recursive metadata-only boundary");
+assert.doesNotMatch(creatorEdge, /multipart\/form-data|arrayBuffer\(\)|formData\(\)/i);
 
 console.log("Supabase contract regression tests passed.");

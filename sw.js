@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v12";
-const RUNTIME_CACHE = "gucc-runtime-v12";
+const STATIC_CACHE = "gucc-static-v13";
+const RUNTIME_CACHE = "gucc-runtime-v13";
 
 const APP_SHELL = [
   "./",
@@ -48,6 +48,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/game-themes.css",
   "./apps/command-center/styles/game-premium.css",
   "./apps/command-center/styles/interface-chrome.css",
+  "./apps/command-center/styles/responsive-layout.css",
   "./apps/command-center/src/main.js",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",

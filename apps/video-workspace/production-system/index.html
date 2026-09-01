@@ -68,6 +68,10 @@
 
         <section class="next-action panel accent-panel" id="nextActionCard"></section>
 
+        <section id="globalProduction" class="panel global-production" aria-live="polite">
+          <div class="global-loading">正在读取 Global Production…</div>
+        </section>
+
         <section class="locks panel">
           <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。Music 不单独锁定，最终音频以 Audio Lock 为确认点。</p></div>
           <div id="lockGrid" class="lock-grid"></div>
@@ -97,11 +101,13 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="../../../assets/creator-local-project-contract.js?v=1"></script>
   <script src="../../../assets/creator-timeline-contract.js?v=1"></script>
+  <script src="../../../assets/creator-global-production-core.js?v=1"></script>
   <script src="./engine.js"></script>
   <script src="./app.js"></script>
   <script src="../../../assets/creator-project-bootstrap-browser.js?v=1"></script>
   <script src="../../../assets/creator-timeline-browser.js?v=1"></script>
   <script type="module" src="../../../assets/creator-workspace-root.mjs?v=1"></script>
   <script type="module" src="../../../assets/creator-file-observations.mjs?v=1"></script>
+  <script type="module" src="../../../assets/creator-global-production-ui.mjs?v=1"></script>
 </body>
 </html>

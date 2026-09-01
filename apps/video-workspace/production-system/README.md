@@ -1,5 +1,7 @@
 # AI Video Production System v1
 
+现有 23-state Project workflow 是 Legacy/default compatibility layer。同一页面现已加入 additive **Global Production v1** 面板，用于独立 Language Tracks、真实音频 Timeline、统一 Visual Master、Variant composition、Publish Package、QA / Release、Publication、Analytics 与 Learning。完整契约见 [`docs/creator-global-production-v1.md`](../../../docs/creator-global-production-v1.md)。
+
 这是 GUCC Studio 里的模块化生产系统。它不替代原来的自由创作工作区，而是把已经确定要做的视频，按“立案 → 锁内容 → 锁脚本 → 锁音频 → 真实时间轴 → Storyboard → 素材补全 → Build → Review → 发布”推进。
 
 入口：
@@ -88,4 +90,3 @@ npm test
 ```bash
 node scripts/test-production-system.cjs
 ```
-

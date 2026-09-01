@@ -14,7 +14,8 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-search-ux-final', '../styles/game-os.css?v=3'],
   ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
   ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
-  ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1']
+  ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
+  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=1']
 ];
 
 const TAB_LOADERS = {
@@ -246,7 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initInterfaceThemeSync();
 
   // Feature CSS may be injected during initialization. Keep the neutral search UX
-  // first, game geometry second, physical material third, and shared interface chrome last.
+  // first, game geometry second, physical material third, shared chrome fourth,
+  // and the final responsive layout contract last.
   ensureFinalStyleSheets({ reorder: true });
   featuresReady = true;
 

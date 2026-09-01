@@ -1,0 +1,339 @@
+/* Final responsive layout pass for GUCC Command Center.
+   Purpose: keep the four primary work modes visually stable, remove layout jumps,
+   and make the same search/edit workflow feel intentional on desktop and phone. */
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body.command-center-page.gucc-enhanced main,
+body.command-center-page.gucc-enhanced .topbar {
+  width: min(1260px, calc(100vw - 32px)) !important;
+}
+
+/* --------------------------------------------------------------------------
+   PRIMARY MODE RAIL — four equal work modes + one compact utility mode
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced .tabs {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(82px, 104px) !important;
+  gap: 6px !important;
+  align-items: stretch !important;
+  padding: 6px !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs::before {
+  display: none !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs button:not(.tab-more) {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  justify-self: stretch !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.command-center-page.gucc-enhanced .tabs .tab-more {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  justify-self: stretch !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* The mechanism tab is inserted at runtime, so numbering must be owned by the
+   final layout layer rather than by the static HTML order. */
+body.command-center-page.gucc-enhanced #tab-characters::before { content: "01" !important; }
+body.command-center-page.gucc-enhanced #tab-parties::before { content: "02" !important; }
+body.command-center-page.gucc-enhanced #tab-mechanisms::before { content: "03" !important; }
+body.command-center-page.gucc-enhanced #tab-versions::before { content: "04" !important; }
+
+/* --------------------------------------------------------------------------
+   DESKTOP SEARCH WORKSPACE — stable height and aligned control rhythm
+   -------------------------------------------------------------------------- */
+@media (min-width: 1101px) {
+  body.command-center-page.gucc-enhanced :is(#characters, #parties, #mechanisms, #versions) > .filter-toolbar {
+    min-height: 104px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid {
+    display: grid !important;
+    grid-template-columns:
+      minmax(280px, 2.2fr)
+      minmax(165px, 1.05fr)
+      minmax(132px, .82fr)
+      minmax(132px, .82fr)
+      auto auto auto !important;
+    gap: 7px !important;
+    align-items: center !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid > *,
+  body.command-center-page.gucc-enhanced .game-filter,
+  body.command-center-page.gucc-enhanced .filter-grid .filter-keyword,
+  body.command-center-page.gucc-enhanced .filter-grid .filter-select {
+    min-width: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-guidance {
+    grid-column: 1 / span 5 !important;
+    justify-self: stretch;
+    width: 100% !important;
+    overflow: hidden;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-controls {
+    grid-column: 6 / -1 !important;
+    justify-self: end;
+    align-self: center !important;
+    margin-left: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid-simple {
+    grid-template-columns: minmax(360px, 2.4fr) minmax(190px, 1fr) auto auto auto !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid-simple .result-view-controls {
+    grid-column: 1 / -1 !important;
+    justify-self: end;
+  }
+
+  body.command-center-page.gucc-enhanced .editor {
+    width: min(920px, 74vw) !important;
+  }
+}
+
+/* Mid-size desktop / tablet landscape: keep the page dense without squeezing
+   search controls into unreadably narrow columns. */
+@media (min-width: 901px) and (max-width: 1100px) {
+  body.command-center-page.gucc-enhanced .tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 82px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-keyword {
+    grid-column: span 3 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .game-filter,
+  body.command-center-page.gucc-enhanced .filter-grid .mechanism-game-filter {
+    grid-column: span 3 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-select {
+    grid-column: span 2 !important;
+    width: 100% !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid > button {
+    grid-column: span 2 !important;
+    width: 100% !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-guidance,
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-controls {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons {
+    margin-left: auto;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid-simple .filter-keyword,
+  body.command-center-page.gucc-enhanced .filter-grid-simple .game-filter {
+    grid-column: span 3 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor {
+    width: min(820px, 86vw) !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   RESULTS — keep horizontal rhythm stable across all four work modes
+   -------------------------------------------------------------------------- */
+body.command-center-page.gucc-enhanced :is(#characterResults, #partyResults, #mechanismResults, #versionResults) {
+  width: 100%;
+  min-width: 0;
+}
+
+body.command-center-page.gucc-enhanced :is(#characterResults, #partyResults, #mechanismResults, #versionResults) > .item {
+  width: 100%;
+  min-width: 0;
+}
+
+body.command-center-page.gucc-enhanced .item-head {
+  min-width: 0;
+}
+
+body.command-center-page.gucc-enhanced .item .actions {
+  flex: 0 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   PHONE — one-hand search, stable five-slot mode rail, full-width card actions
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  body.command-center-page.gucc-enhanced main,
+  body.command-center-page.gucc-enhanced .topbar {
+    width: min(100% - 16px, 760px) !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 52px !important;
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs button:not(.tab-more),
+  body.command-center-page.gucc-enhanced .tabs .tab-more {
+    min-height: 44px !important;
+    padding-inline: 5px !important;
+    font-size: 14px !important;
+    white-space: nowrap;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs [role="tab"]::before {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar {
+    min-height: 0 !important;
+    padding: 21px 7px 7px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid,
+  body.command-center-page.gucc-enhanced .filter-grid-simple {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid > *,
+  body.command-center-page.gucc-enhanced .filter-grid-simple > * {
+    min-width: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-keyword,
+  body.command-center-page.gucc-enhanced .filter-grid-simple .filter-keyword {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid-simple .game-filter,
+  body.command-center-page.gucc-enhanced #mechanismSourceKind {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.command-center-page.gucc-enhanced :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn) {
+    grid-column: 1 / -1 !important;
+    min-height: 46px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid .filter-clear,
+  body.command-center-page.gucc-enhanced .filter-grid > button[id^="new"] {
+    min-height: 44px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-controls {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons {
+    width: 100% !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar .result-view-buttons button {
+    min-height: 44px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid :is(input, select),
+  body.command-center-page.gucc-enhanced .editor :is(input, textarea, select) {
+    font-size: 16px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .item .actions,
+  body.command-center-page.gucc-enhanced .item.is-collapsed .collapsible-actions {
+    width: 100% !important;
+    max-width: none !important;
+    grid-template-columns: minmax(64px, .85fr) minmax(96px, 1.25fr) minmax(64px, .85fr) !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-footer {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(96px, .65fr) !important;
+    gap: 7px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-footer button {
+    width: 100% !important;
+    min-height: 46px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  body.command-center-page.gucc-enhanced main,
+  body.command-center-page.gucc-enhanced .topbar {
+    width: calc(100% - 12px) !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 48px !important;
+    gap: 3px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .tabs button:not(.tab-more),
+  body.command-center-page.gucc-enhanced .tabs .tab-more {
+    padding-inline: 3px !important;
+    font-size: 13.5px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-toolbar {
+    border-left-width: 2px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .item {
+    padding-inline: 9px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .editor-body {
+    padding-inline: 9px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.command-center-page.gucc-enhanced .tabs [role="tab"]::after {
+    transition: none !important;
+  }
+}

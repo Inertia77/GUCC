@@ -332,6 +332,65 @@ body.command-center-page.gucc-enhanced .item .actions {
   }
 }
 
+/* Mobile query action rhythm: the shell-injected filter toggle used to occupy
+   a half row by itself because it precedes the full-width search button in DOM
+   order. Give primary/secondary actions an explicit visual order instead. */
+@media (max-width: 760px) {
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready,
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-keyword,
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-keyword {
+    grid-column: 1 / -1 !important;
+    order: 1 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn),
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn) {
+    grid-column: 1 / -1 !important;
+    order: 2 !important;
+    min-height: 48px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-mobile-toggle,
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-mobile-toggle {
+    grid-column: 1 !important;
+    order: 3 !important;
+    min-height: 44px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > button[id^="new"],
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > button[id^="new"] {
+    grid-column: 2 !important;
+    order: 3 !important;
+    min-height: 44px !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready.filters-expanded > :is(.game-filter, .filter-select, .filter-clear, .filter-guidance),
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready.filters-expanded > :is(.game-filter, .filter-select, .filter-clear, .filter-guidance) {
+    grid-column: 1 / -1 !important;
+    order: 4 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .result-view-controls,
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .result-view-controls {
+    grid-column: 1 / -1 !important;
+    order: 5 !important;
+  }
+
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-mobile-toggle,
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > button[id^="new"],
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-mobile-toggle,
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > button[id^="new"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body.command-center-page.gucc-enhanced .tabs [role="tab"]::after {
     transition: none !important;

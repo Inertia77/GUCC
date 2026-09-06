@@ -6,6 +6,8 @@ import { attachObservationSummaries } from "./creator-file-observation-core.mjs"
 
 const CREATOR_API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
 const root = document.getElementById("creatorDashboard");
+const AUTH_STORE_KEY = "gameup_session_v5";
+let loadEpoch = 0;
 
 function escapeHtml(value) {
   return String(value == null ? "" : value)
@@ -49,10 +51,31 @@ function renderProject(project) {
   return `<a class="creator-project-card health-${escapeHtml(project.health.code)}" href="${projectHref(project.projectId)}">
     <div class="creator-project-top"><span class="creator-health">${project.health.icon} ${escapeHtml(project.health.label)}</span><span class="creator-revision">r${project.revision || 0}</span></div>
     <h3>${escapeHtml(project.name)}</h3><p>${escapeHtml(project.game)}</p><p class="creator-topic">${escapeHtml(project.topic)}</p>
-    <div class="creator-stage"><strong>${escapeHtml(project.currentState)}</strong><span>${project.progress}%</span></div><div class="creator-progress"><span style="width:${project.progress}%"></span></div>
+    <div class="creator-stage"><strong>${escapeHtml(project.globalStage || project.currentState)}</strong><span>${project.globalStage ? `Global · Legacy ${escapeHtml(project.currentState)}` : `${project.progress}%`}</span></div><div class="creator-progress"><span style="width:${project.progress}%"></span></div>
     <div class="creator-project-meta"><span>${lockPills(project.locks)}</span><span>目标 ${escapeHtml(formatDate(project.targetPublishDate))} · 更新 ${escapeHtml(formatDate(project.updatedAt))}</span></div>
     <div class="creator-project-next"><small>唯一下一步</small><strong>${escapeHtml(project.nextAction)}</strong><span>下一步需要 · ${escapeHtml(requirements || "无需额外文件")}</span><span class="creator-project-health-note">项目状态 · ${escapeHtml(healthNote)}</span><span class="creator-project-health-note">物理文件 · ${escapeHtml(observationLine(project))}</span></div>
   </a>`;
+}
+function attachGlobalProduction(dashboard, data) {
+  const global = window.GuccCreatorGlobal; if (!global) return dashboard;
+  const byProject = new Map();
+  for (const row of data.projects || []) {
+    const projectId = row.project_id;
+    const scoped = { project: row };
+    for (const key of ["languageTracks", "scopedArtifacts", "visualMasters", "variants", "publishPackages", "publications", "metricSnapshots", "performanceReports", "learnings"]) scoped[key] = (data[key] || []).filter((item) => item.project_id === projectId);
+    byProject.set(projectId, global.globalSummary(scoped));
+  }
+  const enrich = (project) => {
+    const summary = byProject.get(project.projectId); if (!summary) return project;
+    return { ...project, globalProduction: summary, nextAction: summary.nextAction.title, actionReason: summary.nextAction.humanRequired ? "需要你的判断或人工确认" : `由 ${summary.nextAction.owner} 继续`, globalStage: summary.nextAction.stage };
+  };
+  dashboard.projects = dashboard.projects.map(enrich); dashboard.activeProjects = dashboard.activeProjects.map(enrich);
+  const enrichedById = new Map(dashboard.projects.map((project) => [project.projectId, project]));
+  dashboard.actions = dashboard.actions.map((item) => {
+    const project = enrichedById.get(item.projectId) || item.project; const action = project.globalProduction?.nextAction;
+    return action ? { ...item, project, kind: action.humanRequired ? "review" : "next", icon: action.humanRequired ? "◆" : "→", label: action.humanRequired ? "人工确认" : "Global 下一步", title: action.title, reason: action.humanRequired ? "系统已到达人类判断边界" : `${action.owner} 可继续`, score: item.score + 120 } : { ...item, project };
+  }).sort((a, b) => b.score - a.score);
+  return dashboard;
 }
 function renderDashboard(dashboard) {
   const actions = dashboard.actions.slice(0, 5); const projects = dashboard.activeProjects;
@@ -66,12 +89,17 @@ function renderDashboard(dashboard) {
 function renderLogin() { root.innerHTML = `<div class="creator-login-card"><div><p class="eyebrow">CREATOR OS</p><h2>我的创作</h2><p>登录 DB 后，这里会直接显示跨项目下一步、健康状态和截止日期。</p></div><a href="./apps/command-center/">登录并读取项目</a></div>`; }
 function renderError(error) { root.innerHTML = `<div class="creator-login-card creator-error"><div><p class="eyebrow">CREATOR DASHBOARD</p><h2>暂时无法读取项目</h2><p>${escapeHtml(error?.message || "未知错误")}</p></div><button id="creatorDashboardRetry" type="button">重试</button></div>`; document.getElementById("creatorDashboardRetry")?.addEventListener("click", loadDashboard); }
 async function loadDashboard() {
-  if (!root) return; if (!loggedIn()) return renderLogin(); root.setAttribute("aria-busy", "true"); root.innerHTML = `<div class="creator-loading">正在计算跨项目唯一下一步…</div>`;
+  if (!root) return;
+  const epoch = ++loadEpoch;
+  if (!loggedIn()) { root.removeAttribute("aria-busy"); return renderLogin(); }
+  root.setAttribute("aria-busy", "true"); root.innerHTML = `<div class="creator-loading">正在计算跨项目唯一下一步…</div>`;
   try {
     const data = await creatorApi("dashboard");
-    const dashboard = buildCreatorDashboard(data, { localProjects: readLocalProjects(), now: new Date() });
+    if (epoch !== loadEpoch) return;
+    const dashboard = attachGlobalProduction(buildCreatorDashboard(data, { localProjects: readLocalProjects(), now: new Date() }), data);
     renderDashboard(attachObservationSummaries(dashboard, data));
-  } catch (error) { renderError(error); }
-  finally { root.removeAttribute("aria-busy"); }
+  } catch (error) { if (epoch === loadEpoch) { if (loggedIn()) renderError(error); else renderLogin(); } }
+  finally { if (epoch === loadEpoch) root.removeAttribute("aria-busy"); }
 }
+window.addEventListener("storage", (event) => { if (event.key === AUTH_STORE_KEY) loadDashboard(); });
 loadDashboard();

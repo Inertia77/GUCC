@@ -3,9 +3,12 @@ import { getAccessToken, getSession } from "../apps/command-center/src/auth.js";
 
 const CREATOR_API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
 const PRODUCTION_STORAGE_KEY = "gucc_ai_video_production_v1";
+const AUTH_STORE_KEY = "gameup_session_v5";
 let cache = null;
 let cacheAt = 0;
-let applying = false;
+let pendingLoad = null;
+let sessionEpoch = 0;
+let renderEpoch = 0;
 
 function escapeHtml(value) {
   return String(value == null ? "" : value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -38,11 +41,18 @@ function relativeTime(value) {
   const seconds = Math.max(0, Math.round((Date.now() - time) / 1000));
   if (seconds < 60) return `${seconds}s ago`; if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`; if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`; return `${Math.floor(seconds / 86400)}d ago`;
 }
-async function loadData(force = false) {
-  const projectId = currentProjectId();
+async function loadData(projectId, session) {
   if (!loggedIn() || !projectId) return null;
-  if (!force && cache?.project?.project_id === projectId && Date.now() - cacheAt < 15000) return cache;
-  cache = await creatorApi("getProject", { projectId }); cacheAt = Date.now(); return cache;
+  if (cache?.project?.project_id === projectId && Date.now() - cacheAt < 15000) return cache;
+  if (pendingLoad?.projectId === projectId && pendingLoad.session === session) return pendingLoad.promise;
+  const request = { projectId, session, promise: null };
+  pendingLoad = request;
+  request.promise = creatorApi("getProject", { projectId }).then((data) => {
+    if (pendingLoad !== request || session !== sessionEpoch || !loggedIn() || currentProjectId() !== projectId) return null;
+    if (data.project?.project_id !== projectId) throw new Error("File observations response belongs to a different project");
+    cache = data; cacheAt = Date.now(); return data;
+  }).finally(() => { if (pendingLoad === request) pendingLoad = null; });
+  return request.promise;
 }
 function renderForRow(row, data) {
   const button = row.querySelector("[data-upload-file]"); const fileKey = button?.dataset.uploadFile; if (!fileKey) return;
@@ -63,15 +73,30 @@ function renderForRow(row, data) {
   else { const el = document.createElement("div"); el.className = "creator-observed-locations"; el.innerHTML = html; row.appendChild(el); }
 }
 async function apply() {
-  if (applying) return; const rows = [...document.querySelectorAll("#tabContent .file-row")]; if (!rows.length) return;
-  applying = true;
-  try { const data = await loadData(); if (data) rows.forEach((row) => renderForRow(row, data)); }
-  catch (error) { console.warn("Creator file observations unavailable", error); }
-  finally { applying = false; }
+  const epoch = ++renderEpoch; const projectId = currentProjectId(); const session = sessionEpoch;
+  if (!loggedIn()) {
+    cache = null; cacheAt = 0;
+    document.querySelectorAll("#tabContent .creator-observed-locations").forEach((node) => node.remove());
+    return;
+  }
+  if (!projectId || !document.querySelectorAll("#tabContent .file-row").length) return;
+  try {
+    const data = await loadData(projectId, session);
+    if (!data || epoch !== renderEpoch || session !== sessionEpoch || !loggedIn() || currentProjectId() !== projectId
+      || document.getElementById("projectTitle")?.dataset.projectId !== projectId) return;
+    // Resolve rows after I/O: a tab switch may have replaced the entire file list.
+    document.querySelectorAll("#tabContent .file-row").forEach((row) => renderForRow(row, data));
+  }
+  catch (error) { if (epoch === renderEpoch && session === sessionEpoch) console.warn("Creator file observations unavailable", error); }
 }
 
 injectStyles();
 const target = document.getElementById("tabContent");
 if (target) new MutationObserver(() => { void apply(); }).observe(target, { childList: true, subtree: true });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) { cacheAt = 0; void apply(); } });
+window.addEventListener("storage", (event) => {
+  if (event.key !== AUTH_STORE_KEY) return;
+  sessionEpoch += 1; cache = null; cacheAt = 0;
+  void apply();
+});
 void apply();

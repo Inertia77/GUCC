@@ -22,15 +22,25 @@
   const currentProject = () => state.projects.find((project) => project.projectId === state.selectedProjectId) || null;
   const fileLabel = (key) => E.FILE_DEFINITIONS[key]?.filename || key;
 
+  function syncProjectQuery(projectId) {
+    const url = new URL(location.href);
+    if (projectId) url.searchParams.set("project", projectId);
+    else url.searchParams.delete("project");
+    if (url.href !== location.href) history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
   function loadStore() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (raw && Array.isArray(raw.projects)) {
+        const requested = new URLSearchParams(location.search).get("project");
+        const selectedProjectId = [requested, raw.selectedProjectId, raw.projects[0]?.projectId]
+          .find((id) => raw.projects.some((project) => project.projectId === id)) || "";
         return {
           schemaVersion: E.SCHEMA_VERSION,
           projects: raw.projects.map(E.normalizeProject),
           musicLibrary: Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [],
-          selectedProjectId: raw.selectedProjectId || raw.projects[0]?.projectId || ""
+          selectedProjectId
         };
       }
     } catch (error) { console.warn("Production System store reset", error); }
@@ -64,6 +74,7 @@
   function render() {
     renderProjectList();
     const project = currentProject();
+    $("#projectTitle").dataset.projectId = project?.projectId || "";
     $("#emptyState").hidden = Boolean(project);
     $("#projectWorkspace").hidden = !project;
     if (!project) return;
@@ -82,7 +93,7 @@
 
   function renderProjectList() {
     $("#projectCount").textContent = state.projects.length;
-    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
+    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" aria-current="${project.projectId === state.selectedProjectId ? "true" : "false"}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
   }
 
   function renderNextAction(project) {
@@ -240,6 +251,7 @@
     if (index >= 0) state.projects[index] = project;
     else state.projects.push(project);
     state.selectedProjectId = project.projectId;
+    syncProjectQuery(state.selectedProjectId);
     save();
     render();
   }
@@ -264,6 +276,7 @@
         if (!confirm(`只删除浏览器内的“${project.name}”？磁盘目录不会受影响。`)) return;
         state.projects = state.projects.filter((item) => item.projectId !== project.projectId);
         state.selectedProjectId = state.projects[0]?.projectId || "";
+        syncProjectQuery(state.selectedProjectId);
       }
       save();
       render();
@@ -274,7 +287,7 @@
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (action) return runAction(action);
     const select = event.target.closest("[data-select-project]");
-    if (select) { state.selectedProjectId = select.dataset.selectProject; save(); render(); return; }
+    if (select) { state.selectedProjectId = select.dataset.selectProject; syncProjectQuery(state.selectedProjectId); save(); render(); return; }
     const tab = event.target.closest("[data-tab]");
     if (tab) { activeTab = tab.dataset.tab; render(); return; }
     const upload = event.target.closest("[data-upload-file]");
@@ -383,6 +396,7 @@
       state.projects.unshift(project);
     }
     state.selectedProjectId = project.projectId;
+    syncProjectQuery(state.selectedProjectId);
     $("#projectDialog").close();
     save();
     render();
@@ -399,6 +413,7 @@
         state.projects = raw.projects.map(E.normalizeProject);
         state.musicLibrary = Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [];
         state.selectedProjectId = raw.selectedProjectId || state.projects[0]?.projectId || "";
+        syncProjectQuery(state.selectedProjectId);
       } else importProject(raw);
       save();
       render();

@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070a10">
   <title>AI Video Production System｜GUCC</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/icons/gucc-icon.svg?v=5">
   <script src="../../../assets/access-guard.js" data-root="../../../" data-guard="true"></script>
   <link rel="stylesheet" href="../../../assets/gucc-theme.css">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=4">
 </head>
 <body class="gucc-enhanced production-system-page">
   <header class="topbar">
@@ -68,6 +69,10 @@
 
         <section class="next-action panel accent-panel" id="nextActionCard"></section>
 
+        <section id="globalProduction" class="panel global-production" aria-live="polite">
+          <div class="global-loading">正在读取 Global Production…</div>
+        </section>
+
         <section class="locks panel">
           <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。Music 不单独锁定，最终音频以 Audio Lock 为确认点。</p></div>
           <div id="lockGrid" class="lock-grid"></div>
@@ -97,11 +102,13 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="../../../assets/creator-local-project-contract.js?v=1"></script>
   <script src="../../../assets/creator-timeline-contract.js?v=1"></script>
+  <script src="../../../assets/creator-global-production-core.js?v=1"></script>
   <script src="./engine.js"></script>
-  <script src="./app.js"></script>
+  <script src="./app.js?v=3"></script>
   <script src="../../../assets/creator-project-bootstrap-browser.js?v=1"></script>
   <script src="../../../assets/creator-timeline-browser.js?v=1"></script>
   <script type="module" src="../../../assets/creator-workspace-root.mjs?v=1"></script>
-  <script type="module" src="../../../assets/creator-file-observations.mjs?v=1"></script>
+  <script type="module" src="../../../assets/creator-file-observations.mjs?v=2"></script>
+  <script type="module" src="../../../assets/creator-global-production-ui.mjs?v=7"></script>
 </body>
 </html>

@@ -22,7 +22,7 @@ function checkSyntax(file, extraArgs = []) {
   });
   checkedFiles += 1;
   if (result.status !== 0) {
-    errors.push(`${file}: ${result.stderr.trim() || result.stdout.trim()}`);
+    errors.push(`${file}: ${result.stderr?.trim() || result.stdout?.trim() || result.error?.message || `Node exited with status ${result.status}, signal ${result.signal}`}`);
   }
 }
 
@@ -42,7 +42,7 @@ function checkTypeScriptModule(file) {
   ], { encoding: 'utf8' });
   checkedFiles += 1;
   if (result.status !== 0) {
-    errors.push(`${file}: ${result.stderr.trim() || result.stdout.trim()}`);
+    errors.push(`${file}: ${result.stderr?.trim() || result.stdout?.trim() || result.error?.message || `Node exited with status ${result.status}, signal ${result.signal}`}`);
   }
 }
 
@@ -218,7 +218,7 @@ for (const expected of [
   'id="projectList"',
   'data-action="sync-directory"',
   'src="./engine.js"',
-  'src="./app.js"'
+  'src="./app.js?v=3"'
 ]) {
   if (!productionSystemSource.includes(expected)) errors.push(`AI Video Production System 缺少关键工作流标记：${expected}`);
 }

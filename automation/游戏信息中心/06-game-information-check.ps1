@@ -19,6 +19,7 @@ $pages = @(
     [pscustomobject]@{ Url = 'https://space.bilibili.com/3546978883472274/upload/video'; Label = '明日方舟终末地山团团 - 官方衍生品账号' }
     [pscustomobject]@{ Url = 'https://space.bilibili.com/3546636978489848/upload/video'; Label = '异环 - 主官方号' }
     [pscustomobject]@{ Url = 'https://space.bilibili.com/3546735515274028/upload/video'; Label = '咻啪的小背包 - 异环官方运营角色账号' }
+    [pscustomobject]@{ Url = 'https://space.bilibili.com/30973654/upload/video'; Label = '阴阳师 - 主官方号' }
 )
 
 Write-Host ''

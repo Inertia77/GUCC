@@ -17,7 +17,7 @@ const snapshots = Object.fromEntries(["A", "B"].map((id) => [id, {
   variants: [{ variant_id: `${id}-variant`, variant_key: "YOUTUBE_GLOBAL_LONG", visual_master_id: `${id}-vm`, market: "Global", format: "16:9 long", status: "DRAFT" }],
   variantLanguageTracks: [{ variant_id: `${id}-variant`, language_track_id: `${id}-ja` }],
   platforms: [{ id: "fixture-youtube", name: "YouTube" }],
-  publishPackages: [], publications: [], files: [], scopedArtifacts: [],
+  publishPackages: [], publications: [], files: [{ id: `${id}-audio`, file_key: "AUDIO_MASTER", relative_path: `${id}/03_AUDIO/AUDIO_MASTER.wav`, status: "Ready" }], scopedArtifacts: [],
 } ]));
 
 async function main() {
@@ -88,6 +88,24 @@ async function main() {
     assert.equal(await page.locator(".global-setup").getAttribute("open"), null);
     const toastStyle = await page.locator("#toast").evaluate((node) => ({ foreground: getComputedStyle(node).color, background: getComputedStyle(node).backgroundColor }));
     assert.deepEqual(toastStyle, { foreground: "rgb(238, 252, 255)", background: "rgb(20, 35, 48)" });
+
+    holdB = true; releaseB = null;
+    const beforeFiles = requests.length;
+    await page.locator('[data-tab="files"]').click();
+    for (let tries = 0; !releaseB && tries < 100; tries++) await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.ok(releaseB, "Files tab must request observations");
+    await page.locator('[data-tab="control"]').click();
+    await page.locator('[data-tab="files"]').click();
+    assert.equal(requests.length - beforeFiles, 1, "Repeated tab switching must reuse the pending observation read");
+    await page.locator('[data-select-project="A"]').click();
+    const audioObservation = page.locator('.file-row:has([data-upload-file="AUDIO_MASTER"]) .creator-observed-locations');
+    await audioObservation.filter({ hasText: "A/03_AUDIO/AUDIO_MASTER.wav" }).waitFor();
+    const staleResponse = page.waitForResponse((response) => response.request().postDataJSON()?.projectId === "B");
+    holdB = false; releaseB(); await staleResponse;
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    assert.match(await audioObservation.textContent(), /A\/03_AUDIO\/AUDIO_MASTER.wav/);
+    assert.doesNotMatch(await audioObservation.textContent(), /B\/03_AUDIO/);
+    await page.locator('[data-tab="control"]').click();
 
     await fs.mkdir(output, { recursive: true });
     const widths = [];

@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v20";
-const RUNTIME_CACHE = "gucc-runtime-v20";
+const STATIC_CACHE = "gucc-static-v21";
+const RUNTIME_CACHE = "gucc-runtime-v21";
 
 const APP_SHELL = [
   "./",
@@ -19,7 +19,7 @@ const APP_SHELL = [
   "./assets/creator-project-bootstrap-browser.js?v=1",
   "./assets/creator-timeline-browser.js?v=1",
   "./assets/creator-workspace-root.mjs?v=1",
-  "./assets/creator-file-observations.mjs?v=1",
+  "./assets/creator-file-observations.mjs?v=2",
   "./assets/creator-global-production-ui.mjs?v=7",
   "./assets/gucc-theme.css",
   "./assets/gucc-zzz.css",

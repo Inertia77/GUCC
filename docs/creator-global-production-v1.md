@@ -51,6 +51,10 @@ Accepted Learning is the only learning state exposed to the next-project feedbac
 
 The tool refuses to overwrite any existing formal Timeline output by default. Only after a human explicitly reopens the Voice / Timeline Lock may the operator rerun it with `--force`; the flag is never implied by automation.
 
+The WAV reader validates the declared RIFF boundary, complete padded chunks and complete sample frames. It supports PCM 8/16/24/32-bit and IEEE float 32/64-bit, including standard extensible subformat headers; compressed WAV, segmented `wavl`, duplicate `fmt`/`data`, empty audio and inconsistent rate/alignment fields fail closed. It never treats a truncated file as a shorter valid master. Container rules follow Microsoft's [RIFF description](https://learn.microsoft.com/en-us/windows/win32/xaudio2/resource-interchange-file-format--riff-), [WAVEFORMATEX](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatex) and [WAVEFORMATEXTENSIBLE](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ksmedia/ns-ksmedia-waveformatextensible).
+
+Timestamped ASR JSON must contain numeric, finite, non-negative `start`/`end` seconds or `startMs`/`endMs` milliseconds, string transcript text and unique segment IDs. Nulls, booleans and numeric strings are rejected instead of coerced; supplied numeric ID `0` is preserved. No timestamps are inferred from the script. Synthetic byte fixtures are used only in local tests; they are not production analysis evidence. Set `GUCC_AUDIO_FFPROBE_SMOKE=1` when running `test-creator-audio-analysis.cjs` to additionally compare a generated WAV fixture with an installed `ffprobe`.
+
 Example:
 
 ```powershell
@@ -82,6 +86,8 @@ Global Production now clears old controls while loading, verifies the rendered P
 - File observations now coalesce repeated reads, resolve rows after I/O, discard old project/session responses (including A → B → A), clear private annotations on logout and recover automatically on cross-tab login. `test-creator-file-observation-races.cjs` adds 7 isolated behavior cases to `npm test`; the real-browser regression also verifies rapid file-tab/project switches against delayed local responses.
 - Cache versions: Global UI `v7`, Production app `v3`, Production CSS `v4`, File observations `v2`, Service Worker static/runtime `v21`.
 - CI for `1734e9a`: [GUCC CI #619 success](https://github.com/Inertia77/GUCC/actions/runs/34037091077).
+- CI for `1b06782`: [GUCC CI #621 success](https://github.com/Inertia77/GUCC/actions/runs/34037331150).
+- 2026-09-07 audio-input regression: strict RIFF/format/frame validation, timestamp/identity validation and full CLI rejection behavior passed using local fixtures; the installed `ffprobe` independently agreed with the fixture duration. Invalid input left the source bytes and existing Timeline outputs unchanged. No production audio was analyzed or modified by these tests.
 - The real authenticated Owner-session visual smoke was completed on 2026-09-01 against `f0a68d7`; the isolated 2026-09-06 regression does **not** extend that claim to a new authenticated session. At resume, the in-app browser had no open tabs and port 8000 had no server. A fresh Owner-session final check remains separate from these automated results.
 - Production connectivity was checked read-only on 2026-09-06: still two projects. No production human gates, child fixtures, Auth users, emails or media were created/modified for this regression.
 

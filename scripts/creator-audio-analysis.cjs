@@ -11,15 +11,50 @@ function wavDurationMs(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length < 44 || buffer.toString("ascii", 0, 4) !== "RIFF" || buffer.toString("ascii", 8, 12) !== "WAVE") {
     throw new Error("AUDIO_MASTER is not a readable PCM/IEEE WAV file; use ffprobe-backed analysis for other formats");
   }
-  let offset = 12; let byteRate = 0; let dataBytes = 0;
-  while (offset + 8 <= buffer.length) {
+  // RIFF sizes exclude the eight-byte chunk header; odd chunks include a pad.
+  // Never silently shorten a damaged AUDIO_MASTER to the bytes left on disk.
+  const riffEnd = buffer.readUInt32LE(4) + 8;
+  if (riffEnd < 12 || riffEnd > buffer.length) throw new Error("AUDIO_MASTER WAV has a truncated or invalid RIFF container");
+  let offset = 12; let format = null; let dataBytes = null;
+  while (offset < riffEnd) {
+    if (offset + 8 > riffEnd) throw new Error("AUDIO_MASTER WAV has a truncated chunk header");
     const id = buffer.toString("ascii", offset, offset + 4); const size = buffer.readUInt32LE(offset + 4); const body = offset + 8;
-    if (id === "fmt " && size >= 16 && body + 16 <= buffer.length) byteRate = buffer.readUInt32LE(body + 8);
-    if (id === "data") { dataBytes = Math.min(size, Math.max(0, buffer.length - body)); break; }
-    offset = body + size + (size % 2);
+    const next = body + size + (size % 2);
+    if (next > riffEnd) throw new Error(`AUDIO_MASTER WAV has a truncated ${id} chunk or missing padding`);
+    if (id === "fmt ") {
+      if (format || size < 16) throw new Error("AUDIO_MASTER WAV has a duplicate or incomplete fmt chunk");
+      format = {
+        tag: buffer.readUInt16LE(body), channels: buffer.readUInt16LE(body + 2), sampleRate: buffer.readUInt32LE(body + 4),
+        byteRate: buffer.readUInt32LE(body + 8), blockAlign: buffer.readUInt16LE(body + 12), bits: buffer.readUInt16LE(body + 14),
+      };
+      if (format.tag === 0xfffe) {
+        if (size < 40 || buffer.readUInt16LE(body + 16) < 22 || 18 + buffer.readUInt16LE(body + 16) > size) {
+          throw new Error("AUDIO_MASTER WAV has an incomplete extensible format");
+        }
+        const validBits = buffer.readUInt16LE(body + 18);
+        if (!validBits || validBits > format.bits) throw new Error("AUDIO_MASTER WAV has invalid valid-bits precision");
+        const standardGuid = buffer.subarray(body + 28, body + 40).equals(Buffer.from("00001000800000aa00389b71", "hex"));
+        format.tag = standardGuid ? buffer.readUInt32LE(body + 24) : -1;
+      }
+    }
+    if (id === "data") {
+      if (dataBytes !== null) throw new Error("AUDIO_MASTER WAV has multiple data chunks; a single continuous master is required");
+      dataBytes = size;
+    }
+    if (id === "LIST" && size >= 4 && buffer.toString("ascii", body, body + 4) === "wavl") {
+      throw new Error("AUDIO_MASTER WAV uses a segmented wavl layout; a single continuous master is required");
+    }
+    offset = next;
   }
-  if (!byteRate || !dataBytes) throw new Error("AUDIO_MASTER WAV is missing fmt/data chunks");
-  return Math.round(dataBytes / byteRate * 1000);
+  if (!format || !dataBytes) throw new Error("AUDIO_MASTER WAV is missing fmt/data chunks or has no audio frames");
+  if (![1, 3].includes(format.tag)) throw new Error("AUDIO_MASTER WAV encoding is not PCM/IEEE float; use a verified uncompressed master");
+  const supportedBits = format.tag === 1 ? [8, 16, 24, 32] : [32, 64];
+  if (!format.channels || !format.sampleRate || !supportedBits.includes(format.bits)
+    || format.blockAlign !== format.channels * format.bits / 8 || format.byteRate !== format.sampleRate * format.blockAlign) {
+    throw new Error("AUDIO_MASTER WAV has inconsistent sample rate, precision, byte rate or block alignment");
+  }
+  if (dataBytes % format.blockAlign !== 0) throw new Error("AUDIO_MASTER WAV ends with an incomplete audio frame");
+  return Math.round(dataBytes / format.blockAlign / format.sampleRate * 1000);
 }
 
 function ffprobeDurationMs(audioPath, ffprobeBin = process.env.FFPROBE_BIN || "ffprobe") {
@@ -54,13 +89,26 @@ function alignmentScore(script, transcript) {
 
 function normalizeSegments(raw) {
   const source = Array.isArray(raw) ? raw : Array.isArray(raw?.segments) ? raw.segments : [];
+  const ids = new Set();
   return source.map((segment, index) => {
-    const milliseconds = segment.startMs != null || segment.endMs != null;
+    if (!segment || typeof segment !== "object" || Array.isArray(segment)) throw new Error(`ASR segment ${index + 1} must be an object`);
+    const milliseconds = Object.hasOwn(segment, "startMs") || Object.hasOwn(segment, "endMs");
+    const parseTime = (value, key) => {
+      if (typeof value !== "number" || !Number.isFinite(value) || value < 0) throw new Error(`ASR segment ${index + 1} ${key} must be a finite non-negative numeric timestamp`);
+      return Math.round(value * (milliseconds ? 1 : 1000));
+    };
+    if (segment.id != null && typeof segment.id !== "string" && !(typeof segment.id === "number" && Number.isFinite(segment.id))) {
+      throw new Error(`ASR segment ${index + 1} has an invalid identity`);
+    }
+    const id = segment.id == null ? `SEG_${String(index + 1).padStart(4, "0")}` : String(segment.id).trim();
+    if (!id || ids.has(id)) throw new Error(`ASR segment ${index + 1} has an empty or duplicate identity`);
+    ids.add(id);
+    if (typeof segment.text !== "string") throw new Error(`ASR segment ${index + 1} transcript text must be a string`);
     return {
-      id: String(segment.id || `SEG_${String(index + 1).padStart(4, "0")}`),
-      startMs: Math.round(Number(milliseconds ? segment.startMs : segment.start) * (milliseconds ? 1 : 1000)),
-      endMs: Math.round(Number(milliseconds ? segment.endMs : segment.end) * (milliseconds ? 1 : 1000)),
-      text: String(segment.text || "").trim(),
+      id,
+      startMs: parseTime(milliseconds ? segment.startMs : segment.start, milliseconds ? "startMs" : "start"),
+      endMs: parseTime(milliseconds ? segment.endMs : segment.end, milliseconds ? "endMs" : "end"),
+      text: segment.text.trim(),
       confidence: segment.confidence == null ? null : Number(segment.confidence),
       words: Array.isArray(segment.words) ? segment.words : [],
     };

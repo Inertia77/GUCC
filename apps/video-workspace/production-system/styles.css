@@ -8,4 +8,11 @@
 @media(max-width:1100px){.global-metrics{grid-template-columns:repeat(3,1fr)}.global-form-grid{grid-template-columns:repeat(2,minmax(220px,1fr))}}
 @media(max-width:700px){.global-next,.global-project-gates,.global-lane-head{display:block}.global-next>span{display:block;margin-top:8px}.global-project-gates .inline-actions{margin-top:9px}.global-metrics{grid-template-columns:repeat(2,1fr)}.global-form-grid{grid-template-columns:1fr}}
 body.gucc-enhanced.production-system-page .button.tiny.primary{color:#061014!important}
+/* Keep selection and notification semantics above the shared theme defaults. */
+body.gucc-enhanced.production-system-page .project-item{background:transparent!important;color:var(--gucc-text)!important;border-color:transparent!important;box-shadow:none!important}
+body.gucc-enhanced.production-system-page .project-item:hover{background:var(--ps-soft)!important}
+body.gucc-enhanced.production-system-page .project-item.active{background:rgba(116,243,255,.12)!important;border-color:rgba(116,243,255,.5)!important;box-shadow:inset 3px 0 var(--gucc-cyan)!important}
+body.gucc-enhanced.production-system-page .toast{background:#142330!important;color:#eefcff!important}
+body.gucc-enhanced.production-system-page .toast.error{background:#3c121e!important;color:#ffd9de!important;border-color:#ff9ca8!important}
+.global-card-head strong,.global-card-head small{overflow-wrap:anywhere}
 @media(max-width:700px){.app-shell{grid-template-columns:minmax(0,1fr)}.sidebar,.project-list{min-width:0}}

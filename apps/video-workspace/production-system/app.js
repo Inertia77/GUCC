@@ -33,11 +33,14 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (raw && Array.isArray(raw.projects)) {
+        const requested = new URLSearchParams(location.search).get("project");
+        const selectedProjectId = [requested, raw.selectedProjectId, raw.projects[0]?.projectId]
+          .find((id) => raw.projects.some((project) => project.projectId === id)) || "";
         return {
           schemaVersion: E.SCHEMA_VERSION,
           projects: raw.projects.map(E.normalizeProject),
           musicLibrary: Array.isArray(raw.musicLibrary) ? raw.musicLibrary : [],
-          selectedProjectId: raw.selectedProjectId || raw.projects[0]?.projectId || ""
+          selectedProjectId
         };
       }
     } catch (error) { console.warn("Production System store reset", error); }
@@ -71,6 +74,7 @@
   function render() {
     renderProjectList();
     const project = currentProject();
+    $("#projectTitle").dataset.projectId = project?.projectId || "";
     $("#emptyState").hidden = Boolean(project);
     $("#projectWorkspace").hidden = !project;
     if (!project) return;
@@ -89,7 +93,7 @@
 
   function renderProjectList() {
     $("#projectCount").textContent = state.projects.length;
-    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
+    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" aria-current="${project.projectId === state.selectedProjectId ? "true" : "false"}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
   }
 
   function renderNextAction(project) {

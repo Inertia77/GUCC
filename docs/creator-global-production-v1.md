@@ -71,4 +71,16 @@ The daily UI path is Portal → Creator Dashboard → Open Project → Global Pr
 
 ## Verification
 
+### 2026-09-06 resumed integration
+
+Synced `origin/main` through `716db12` into the existing PR #37 feature branch; the PR remains open and must not be merged automatically.
+
+Global Production now clears old controls while loading, verifies the rendered Project identity, and rechecks the captured snapshot/refresh epoch after obtaining an access token before sending a write. A project switch or session change cancels a queued write; late results cannot overwrite another project's UI or clear its busy state. Deep links select a locally available requested project before rendering. The active project is visually distinct and marked with `aria-current`; scoped notification colors override the shared theme's dark panel background.
+
+- `node scripts/test-creator-global-ui.cjs`: 14 isolated async behavior cases plus 3 real-app deep-link selection cases. Included in `npm test`.
+- `node scripts/test-creator-global-browser.cjs`: optional installed Edge/Chrome test (`GUCC_TEST_BROWSER` selects the Playwright channel). Every request is locally fulfilled or blocked; it does not reuse an Owner browser profile, connect to Supabase, or test Access Guard authentication. Covers actual DOM replacement, detached controls, an isolated language form write, active-project semantics, notification colors and responsive widths. Latest Edge `152.0.4191.66` run passed at 1440×900, 768×1024 and 390×844 with no page errors, external network attempts or horizontal overflow. Local screenshots: `tmp/global-browser-20260906/` (not committed).
+- Cache versions: Global UI `v7`, Production app `v3`, Production CSS `v4`, Service Worker static/runtime `v20`.
+- The real authenticated Owner-session visual smoke was completed on 2026-09-01 against `f0a68d7`; the isolated 2026-09-06 regression does **not** extend that claim to a new authenticated session. At resume, the in-app browser had no open tabs and port 8000 had no server. A fresh Owner-session final check remains separate from these automated results.
+- Production connectivity was checked read-only on 2026-09-06: still two projects. No production human gates, child fixtures, Auth users, emails or media were created/modified for this regression.
+
 The formal migration is paired with `supabase/sql/creator_global_production_v1_acceptance.sql`. The acceptance fixture creates one rollback-only synthetic project with ZH/JA/EN tracks, one Visual Master, four Variants/Channels/Packages, Initial/Retry/Repost Publications, analytics, a Performance Report and a human-accepted Learning. It also proves human-lock rejection, Release snapshot immutability, scoped artifact coexistence and Legacy prune safety before `ROLLBACK`.

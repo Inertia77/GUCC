@@ -9,6 +9,8 @@ const G = window.GuccCreatorGlobal;
 let snapshot = null;
 let loadingProjectId = "";
 let refreshEpoch = 0;
+let refreshInFlight = false;
+let waitingForProjectView = false;
 let mutationInFlight = false;
 
 const h = (value) => String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
@@ -23,8 +25,9 @@ function currentProjectId() {
   } catch { return new URLSearchParams(location.search).get("project") || ""; }
 }
 function loggedIn() { const session = getSession(); return Boolean(session?.access_token || session?.refresh_token); }
-async function api(action, payload = {}) {
+async function api(action, payload = {}, beforeRequest = () => {}) {
   const token = await getAccessToken();
+  beforeRequest();
   const response = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json", apikey: CONFIG.SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }, body: JSON.stringify({ action, ...payload }) });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || `Creator API ${response.status}`);
@@ -39,9 +42,23 @@ function renderAuthNeeded() {
   if (!root) return;
   loadingProjectId = "";
   snapshot = null;
-  root.removeAttribute("aria-busy");
+  updateBusy();
   root.innerHTML = `<div class="global-auth-needed"><p class="muted">登录 Command Center 后启用 Global Production 云状态与人工锁。</p><div class="inline-actions"><a class="button tiny primary" href="../../../apps/command-center/" target="_blank" rel="noopener">打开 Command Center 登录</a><button class="button tiny ghost" type="button" data-global-refresh>我已登录，重试</button></div></div>`;
 }
+function updateBusy() {
+  if (!root) return;
+  const busy = refreshInFlight || mutationInFlight;
+  root.inert = busy;
+  if (busy) root.setAttribute("aria-busy", "true");
+  else root.removeAttribute("aria-busy");
+}
+function mutationContext() { return { snapshot, epoch: refreshEpoch }; }
+function contextIsCurrent(context) {
+  const projectId = context.snapshot?.project?.project_id;
+  return Boolean(projectId && snapshot === context.snapshot && context.epoch === refreshEpoch
+    && projectId === currentProjectId() && title?.dataset.projectId === projectId && loggedIn());
+}
+function canMutate(context) { return !refreshInFlight && !mutationInFlight && contextIsCurrent(context); }
 function pill(value) { return `<span class="global-pill ${statusClass(value)}">${h(value || "DRAFT")}</span>`; }
 function projectLock(name, lockType, lockedAt) {
   return `<button class="button tiny ${lockedAt ? "ghost" : "primary"}" type="button" data-human-lock data-scope-type="project" data-scope-id="${h(snapshot.project.project_id)}" data-lock-type="${h(lockType)}" data-revision="${Number(snapshot.project.global_revision || 1)}" data-locked="${lockedAt ? "false" : "true"}">${lockedAt ? `✓ ${h(name)} · 解锁` : `${h(name)} · 确认锁定`}</button>`;
@@ -142,87 +159,132 @@ function learningReview() {
 async function refresh(force = false) {
   if (!root || !G) return;
   const projectId = currentProjectId();
-  if (!projectId) { refreshEpoch += 1; loadingProjectId = ""; snapshot = null; root.removeAttribute("aria-busy"); root.innerHTML = `<p class="muted">选择一个 Project 后读取 Global Production。</p>`; return; }
+  if (!projectId) { refreshEpoch += 1; refreshInFlight = false; loadingProjectId = ""; snapshot = null; updateBusy(); root.innerHTML = `<p class="muted">选择一个 Project 后读取 Global Production。</p>`; return; }
   if (!loggedIn()) {
     refreshEpoch += 1;
+    refreshInFlight = false;
     renderAuthNeeded();
     return;
   }
   if (loadingProjectId === projectId && !force) return;
   const epoch = ++refreshEpoch;
-  loadingProjectId = projectId; root.setAttribute("aria-busy", "true");
+  loadingProjectId = projectId;
+  snapshot = null;
+  waitingForProjectView = false;
+  refreshInFlight = true;
+  updateBusy();
+  root.innerHTML = `<p class="muted" role="status">正在读取当前项目的 Global Production…</p>`;
   try {
     const nextSnapshot = await api("getProject", { projectId });
-    if (epoch === refreshEpoch && currentProjectId() === projectId) { snapshot = nextSnapshot; render(); }
+    if (epoch === refreshEpoch && currentProjectId() === projectId && loggedIn()) {
+      if (nextSnapshot.project?.project_id !== projectId) throw new Error("云响应与当前项目不匹配，请重试。");
+      snapshot = nextSnapshot;
+      if (title?.dataset.projectId === projectId) render();
+      else {
+        waitingForProjectView = true;
+        root.innerHTML = `<p class="muted" role="status">正在同步项目视图；完成前不能修改云状态。</p>`;
+      }
+    }
   }
   catch (error) {
-    if (epoch === refreshEpoch) {
+    if (epoch === refreshEpoch && currentProjectId() === projectId) {
+      snapshot = null;
       if (!loggedIn()) renderAuthNeeded();
       else root.innerHTML = `<div class="global-error"><strong>Global Production 暂时不可用</strong><p>${h(error.message)}</p><button class="button tiny ghost" data-global-refresh>重试</button></div>`;
     }
   }
-  finally { if (epoch === refreshEpoch) root.removeAttribute("aria-busy"); }
+  finally {
+    if (epoch === refreshEpoch) {
+      refreshInFlight = false;
+      if (!loggedIn()) renderAuthNeeded();
+      updateBusy();
+    }
+  }
 }
-async function mutate(action, payload, success) {
-  if (mutationInFlight) return;
+async function mutate(action, payload, success, context) {
+  if (!canMutate(context)) return;
   mutationInFlight = true;
-  root?.setAttribute("aria-busy", "true");
-  try { await api(action, { projectId: snapshot.project.project_id, ...payload }); toast(success); await refresh(true); }
-  catch (error) { toast(error.message, true); }
-  finally { mutationInFlight = false; root?.removeAttribute("aria-busy"); }
+  updateBusy();
+  try {
+    await api(action, { ...payload, projectId: context.snapshot.project.project_id }, () => {
+      // Token refresh can yield while the user switches project or signs out.
+      if (!contextIsCurrent(context)) throw new Error("项目或登录状态已变化，本次操作未发送。请在当前项目重试。");
+    });
+    if (contextIsCurrent(context)) { toast(success); await refresh(true); }
+  }
+  catch (error) {
+    if (!loggedIn()) await refresh(true);
+    else if (contextIsCurrent(context)) toast(error.message, true);
+  }
+  finally { mutationInFlight = false; updateBusy(); }
 }
 
 root?.addEventListener("click", async (event) => {
+  if (!root.contains(event.target) || root.inert || event.target.closest("button")?.disabled) return;
   if (event.target.closest("[data-global-refresh]")) return refresh(true);
+  const context = mutationContext();
+  if (!canMutate(context)) return;
+  const submitMutation = (action, payload, success) => mutate(action, payload, success, context);
   const gate = event.target.closest("[data-human-lock]");
   if (gate) {
     const locking = gate.dataset.locked !== "false";
     if (!confirm(`${locking ? "确认设置" : "确认重新打开"} ${gate.dataset.lockType}？\n\n这是人工门禁，GUCC / AI 不会代替你点击。`)) return;
     const reason = prompt("记录这次人工决定的原因：", locking ? "Human reviewed and confirmed" : "Human explicitly reopened for revision"); if (!reason?.trim()) return;
-    return mutate("humanLock", { scopeType: gate.dataset.scopeType, scopeId: gate.dataset.scopeId, lockType: gate.dataset.lockType, expectedRevision: Number(gate.dataset.revision), locked: locking, reason, source: "human_ui", humanConfirmed: true }, "人工门禁已记录");
+    return submitMutation("humanLock", { scopeType: gate.dataset.scopeType, scopeId: gate.dataset.scopeId, lockType: gate.dataset.lockType, expectedRevision: Number(gate.dataset.revision), locked: locking, reason, source: "human_ui", humanConfirmed: true }, "人工门禁已记录");
   }
-  const qa = event.target.closest("[data-run-qa]"); if (qa) return mutate("runAiQa", { publishPackageId: qa.dataset.runQa, findings: [], modelMetadata: { runner: "gucc-ui-deterministic-v1" } }, "AI QA 已完成");
-  const createPublication = event.target.closest("[data-create-publication]"); if (createPublication) return mutate("savePublication", { publishPackageId: createPublication.dataset.createPublication, publicationMode: "INITIAL", status: "READY_TO_PUBLISH" }, "Publication 已建立；正式发布仍需你的最终确认");
+  const qa = event.target.closest("[data-run-qa]"); if (qa) return submitMutation("runAiQa", { publishPackageId: qa.dataset.runQa, findings: [], modelMetadata: { runner: "gucc-ui-deterministic-v1" } }, "AI QA 已完成");
+  const createPublication = event.target.closest("[data-create-publication]"); if (createPublication) return submitMutation("savePublication", { publishPackageId: createPublication.dataset.createPublication, publicationMode: "INITIAL", status: "READY_TO_PUBLISH" }, "Publication 已建立；正式发布仍需你的最终确认");
   const record = event.target.closest("[data-record-published]");
   if (record) {
     const publication = snapshot.publications.find((item) => item.publication_id === record.dataset.recordPublished); const postId = prompt("平台 Post ID：", publication.post_id || ""); if (!postId) return;
     const postUrl = prompt("正式作品 https URL：", publication.post_url || "https://"); if (!postUrl) return;
-    return mutate("savePublication", { publicationId: publication.publication_id, expectedRevision: Number(publication.revision), status: "PUBLISHED", postId, postUrl, publishedAt: new Date().toISOString() }, "正式发布记录已保存");
+    return submitMutation("savePublication", { publicationId: publication.publication_id, expectedRevision: Number(publication.revision), status: "PUBLISHED", postId, postUrl, publishedAt: new Date().toISOString() }, "正式发布记录已保存");
   }
   const copy = event.target.closest("[data-publication-copy]");
   if (copy) {
     const source = snapshot.publications.find((item) => item.publication_id === copy.dataset.publicationCopy); const mode = copy.dataset.mode;
-    return mutate("savePublication", { publishPackageId: source.publish_package_id, publicationMode: mode, status: "READY_TO_PUBLISH", [`${mode.toLowerCase()}OfPublicationId`]: source.publication_id }, `${mode} Publication 已建立`);
+    return submitMutation("savePublication", { publishPackageId: source.publish_package_id, publicationMode: mode, status: "READY_TO_PUBLISH", [`${mode.toLowerCase()}OfPublicationId`]: source.publication_id }, `${mode} Publication 已建立`);
   }
   const learning = event.target.closest("[data-learning-review]");
   if (learning) {
     if (!confirm(`${learning.dataset.decision === "ACCEPTED" ? "接受" : "拒绝"}这条 Learning Proposal？只有接受后才会反馈到后续项目。`)) return;
-    return mutate("reviewLearning", { learningId: learning.dataset.learningReview, decision: learning.dataset.decision, reviewNote: "Reviewed in GUCC Global Production UI", source: "human_ui", humanConfirmed: true }, "Learning 决定已记录");
+    return submitMutation("reviewLearning", { learningId: learning.dataset.learningReview, decision: learning.dataset.decision, reviewNote: "Reviewed in GUCC Global Production UI", source: "human_ui", humanConfirmed: true }, "Learning 决定已记录");
   }
 });
 
 root?.addEventListener("submit", async (event) => {
   const form = event.target.closest("[data-global-form]"); if (!form) return;
-  event.preventDefault(); const data = new FormData(form); const kind = form.dataset.globalForm;
-  if (kind === "language") return mutate("saveLanguageTrack", { trackKey: data.get("trackKey"), languageCode: data.get("languageCode"), label: data.get("label"), isSource: data.get("isSource") === "on", status: "DRAFT" }, "Language Track 已建立");
-  if (kind === "visual") return mutate("saveVisualMaster", { visualMasterKey: data.get("visualMasterKey"), label: data.get("label"), status: "DRAFT" }, "Visual Master 已建立");
+  event.preventDefault();
+  const context = mutationContext();
+  if (!root.contains(form) || !canMutate(context)) return;
+  const submitMutation = (action, payload, success) => mutate(action, payload, success, context);
+  const data = new FormData(form); const kind = form.dataset.globalForm;
+  if (kind === "language") return submitMutation("saveLanguageTrack", { trackKey: data.get("trackKey"), languageCode: data.get("languageCode"), label: data.get("label"), isSource: data.get("isSource") === "on", status: "DRAFT" }, "Language Track 已建立");
+  if (kind === "visual") return submitMutation("saveVisualMaster", { visualMasterKey: data.get("visualMasterKey"), label: data.get("label"), status: "DRAFT" }, "Visual Master 已建立");
   if (kind === "variant") {
     const languageTracks = data.getAll("languageTrackIds").map((languageTrackId) => ({ languageTrackId }));
-    return mutate("saveVariant", { variantKey: data.get("variantKey"), visualMasterId: data.get("visualMasterId"), market: data.get("market"), format: data.get("format"), status: "DRAFT", languageTracks }, "Variant Composition 已建立");
+    return submitMutation("saveVariant", { variantKey: data.get("variantKey"), visualMasterId: data.get("visualMasterId"), market: data.get("market"), format: data.get("format"), status: "DRAFT", languageTracks }, "Variant Composition 已建立");
   }
-  if (kind === "channel") return mutate("saveChannel", { platformId: data.get("platformId"), channelKey: data.get("channelKey"), name: data.get("name"), market: data.get("market") }, "Channel 已保存");
-  if (kind === "presentation") return mutate("savePlatformPresentation", { variantId: data.get("variantId"), platformId: data.get("platformId"), title: data.get("title"), description: data.get("description"), exportProfile: { source: "variant_manifest" } }, "Platform Presentation 已保存");
+  if (kind === "channel") return submitMutation("saveChannel", { platformId: data.get("platformId"), channelKey: data.get("channelKey"), name: data.get("name"), market: data.get("market") }, "Channel 已保存");
+  if (kind === "presentation") return submitMutation("savePlatformPresentation", { variantId: data.get("variantId"), platformId: data.get("platformId"), title: data.get("title"), description: data.get("description"), exportProfile: { source: "variant_manifest" } }, "Platform Presentation 已保存");
   if (kind === "package") {
     const variantId = String(data.get("variantId")); const artifact = form.elements.outputArtifactId.selectedOptions[0];
     if (artifact?.dataset.variant !== variantId) return toast("Variant Output 必须属于所选 Variant", true);
     const tracks = (snapshot.variantLanguageTracks || []).filter((item) => item.variant_id === variantId).map((item) => item.language_track_id);
     const presentationId = String(data.get("presentationId")); const channelId = String(data.get("channelId"));
-    return mutate("savePublishPackage", { packageKey: data.get("packageKey"), variantId, presentationId, channelId, packageManifest: { variantId, presentationId, channelId, languageTrackIds: tracks, outputArtifact: { scopeType: "variant", scopeId: variantId, fileKey: artifact.dataset.fileKey, relativePath: artifact.dataset.path, checksum: artifact.dataset.checksum }, exportProfile: { source: "platform_presentation" } } }, "Publish Package 已验证并保存");
+    return submitMutation("savePublishPackage", { packageKey: data.get("packageKey"), variantId, presentationId, channelId, packageManifest: { variantId, presentationId, channelId, languageTrackIds: tracks, outputArtifact: { scopeType: "variant", scopeId: variantId, fileKey: artifact.dataset.fileKey, relativePath: artifact.dataset.path, checksum: artifact.dataset.checksum }, exportProfile: { source: "platform_presentation" } } }, "Publish Package 已验证并保存");
   }
 });
 
 const title = document.getElementById("projectTitle");
-if (title) new MutationObserver(() => { const projectId = currentProjectId(); if (projectId !== loadingProjectId) refresh(true); }).observe(title, { childList: true });
+if (title) new MutationObserver(() => {
+  const projectId = currentProjectId();
+  if (projectId !== loadingProjectId) refresh(true);
+  else if (waitingForProjectView && !refreshInFlight && contextIsCurrent(mutationContext())) {
+    waitingForProjectView = false;
+    render();
+  }
+}).observe(title, { childList: true, attributes: true, attributeFilter: ["data-project-id"] });
 window.addEventListener("storage", (event) => {
   if (event.key !== AUTH_STORE_KEY) return;
   loadingProjectId = "";

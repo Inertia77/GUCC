@@ -9,7 +9,7 @@ const { chromium } = require("playwright-core");
 const E = require("../apps/video-workspace/production-system/engine.js");
 const repo = path.resolve(__dirname, "..");
 const origin = "https://gucc.test";
-const output = path.join(repo, "tmp", "global-browser-20260906");
+const output = path.join(repo, "tmp", "creator-global-browser");
 const snapshots = Object.fromEntries(["A", "B"].map((id) => [id, {
   project: { project_id: id, global_revision: 1 },
   languageTracks: [{ language_track_id: `${id}-ja`, track_key: "JA", language_code: "ja", revision: 1, status: "SCRIPTING" }],
@@ -21,17 +21,26 @@ const snapshots = Object.fromEntries(["A", "B"].map((id) => [id, {
 } ]));
 
 async function main() {
-  const browser = await chromium.launch({ channel: process.env.GUCC_TEST_BROWSER || "msedge", headless: true });
+  const channel = process.env.GUCC_TEST_BROWSER || (process.platform === "win32" ? "msedge" : undefined);
+  const browser = await chromium.launch({ ...(channel ? { channel } : {}), headless: true });
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
   const requests = [], failures = [], blocked = [];
-  let holdB = false, releaseB = null;
+  let holdB = false, releaseB = null, notifyHeldB = null;
+  function holdNextB() {
+    holdB = true; releaseB = null;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("Expected Project B request did not arrive")), 5000);
+      notifyHeldB = () => { clearTimeout(timer); resolve(); };
+    });
+  }
+  let page;
   try {
     await context.route("**/*", async (route) => {
       const url = new URL(route.request().url());
       if (url.origin === "https://api.gucc.test") {
         const body = route.request().postDataJSON(); requests.push(body);
         if (body.action === "getProject") {
-          if (body.projectId === "B" && holdB) await new Promise((resolve) => { releaseB = resolve; });
+          if (body.projectId === "B" && holdB) await new Promise((resolve) => { releaseB = resolve; notifyHeldB?.(); });
           return route.fulfill({ json: snapshots[body.projectId] });
         }
         if (body.action === "registerDevice") return route.fulfill({ json: { device: { device_id: "isolated-device" } } });
@@ -55,13 +64,13 @@ async function main() {
     });
     const projects = ["A", "B"].map((id) => ({ ...E.createProject({ name: `ISOLATED ${id} · Global Production` }), projectId: id }));
     await context.addInitScript((projects) => localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "B" })), projects);
-    const page = await context.newPage();
+    page = await context.newPage();
     page.on("pageerror", (error) => failures.push(error.message));
     await page.goto(`${origin}/apps/video-workspace/production-system/?project=A`);
     await page.locator('#globalProduction [data-human-lock][data-scope-id="A"]').first().waitFor();
     assert.equal(await page.locator("#projectTitle").getAttribute("data-project-id"), "A");
     const stale = await page.locator('#globalProduction [data-human-lock]').first().elementHandle();
-    holdB = true;
+    const selectedB = holdNextB();
     await page.locator('[data-select-project="B"]').click();
     await page.waitForFunction(() => document.getElementById("globalProduction").inert);
     assert.equal(await page.locator("#globalProduction [data-human-lock]").count(), 0);
@@ -69,7 +78,7 @@ async function main() {
     assert.equal(requests.filter((request) => request.action === "humanLock").length, 0);
     await page.waitForFunction(() => document.getElementById("projectTitle").dataset.projectId === "B");
     // Wait for the routed B request itself, not a guessed network delay.
-    for (let tries = 0; !releaseB && tries < 100; tries++) await new Promise((resolve) => setTimeout(resolve, 10));
+    await selectedB;
     assert.ok(releaseB, "Project B must request its own snapshot");
     holdB = false; releaseB();
     await page.locator('#globalProduction [data-human-lock][data-scope-id="B"]').first().waitFor();
@@ -89,10 +98,10 @@ async function main() {
     const toastStyle = await page.locator("#toast").evaluate((node) => ({ foreground: getComputedStyle(node).color, background: getComputedStyle(node).backgroundColor }));
     assert.deepEqual(toastStyle, { foreground: "rgb(238, 252, 255)", background: "rgb(20, 35, 48)" });
 
-    holdB = true; releaseB = null;
+    const observedB = holdNextB();
     const beforeFiles = requests.length;
     await page.locator('[data-tab="files"]').click();
-    for (let tries = 0; !releaseB && tries < 100; tries++) await new Promise((resolve) => setTimeout(resolve, 10));
+    await observedB;
     assert.ok(releaseB, "Files tab must request observations");
     await page.locator('[data-tab="control"]').click();
     await page.locator('[data-tab="files"]').click();
@@ -122,7 +131,11 @@ async function main() {
     assert.deepEqual(failures, []);
     assert.deepEqual(blocked, [], "Fixture test must not attempt external network access");
     console.log(JSON.stringify({ status: "PASS", browser: await browser.version(), scope: "isolated fixture; NOT authenticated owner-session", requests: requests.map((r) => ({ action: r.action, projectId: r.projectId })), widths, screenshots: output }, null, 2));
-  } finally { await context.close(); await browser.close(); }
+  } catch (error) {
+    await fs.mkdir(output, { recursive: true });
+    if (page && !page.isClosed()) await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {});
+    throw error;
+  } finally { releaseB?.(); await context.close(); await browser.close(); }
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

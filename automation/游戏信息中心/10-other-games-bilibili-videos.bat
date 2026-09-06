@@ -32,7 +32,6 @@ call :open "https://space.bilibili.com/3546390615559007/upload/video" "望月"
 call :open "https://space.bilibili.com/3546622923377024/upload/video" "星布谷地"
 call :open "https://space.bilibili.com/3546776462166987/upload/video" "Varsapura"
 call :open "https://space.bilibili.com/1606210274/upload/video" "女神异闻录：夜幕魅影"
-call :open "https://space.bilibili.com/30973654/upload/video" "阴阳师"
 
 REM ---------- 补充：知名二游与新游 ----------
 call :open "https://space.bilibili.com/27534330/upload/video" "崩坏3第一偶像爱酱"

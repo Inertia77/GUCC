@@ -303,7 +303,7 @@ export function productionToPublishState(existingState, project, rules) {
   return state;
 }
 
-export function mergeCloudProjects(localStore, remoteRows, engine, preferredProjectId = "") {
+export function mergeCloudProjects(localStore, remoteRows, engine, preferredProjectId = "", options = {}) {
   const store = localStore && Array.isArray(localStore.projects)
     ? { ...localStore, projects: [...localStore.projects] }
     : { schemaVersion: engine.SCHEMA_VERSION, projects: [], musicLibrary: [], selectedProjectId: "" };
@@ -311,7 +311,8 @@ export function mergeCloudProjects(localStore, remoteRows, engine, preferredProj
 
   for (const row of remoteRows || []) {
     const raw = row?.project_data;
-    if (!raw?.projectId) continue;
+    if (!raw?.projectId || (row.project_id && row.project_id !== raw.projectId)) continue;
+    if (row.revision != null && (!Number.isSafeInteger(row.revision) || row.revision < 0)) continue;
     const remote = attachCloudMetadata(engine.normalizeProject(raw, { source: "cloud_pull" }), row);
     const index = store.projects.findIndex((item) => item.projectId === remote.projectId);
     if (index < 0) {
@@ -326,8 +327,15 @@ export function mergeCloudProjects(localStore, remoteRows, engine, preferredProj
     const remoteTime = Date.parse(remote.updatedAt || row.updated_at || 0) || 0;
     const localRevision = Number(localCloud.revision || 0);
     const remoteRevision = Number(row.revision || 0);
+    // Revisioned cloud responses are ordered by revision, never client clocks.
+    // A delayed read cannot roll back either content or the next write's base.
+    if (localRevision > 0 && remoteRevision <= localRevision) continue;
     const baseCloudTime = Date.parse(localCloud.updatedAt || 0) || 0;
-    const localDirty = localRevision > 0 && localTime > baseCloudTime;
+    const knownDirty = options.isLocalDirty?.(localProject);
+    // Without a trusted content baseline, differing data requires review. Some
+    // editors and imported drafts do not advance updatedAt on every edit.
+    const localDirty = knownDirty ?? (localRevision > 0
+      && (localTime > baseCloudTime || summarizeProjectDiff(localProject, remote).length > 0));
 
     if (localRevision === 0 && remoteRevision >= 1) {
       const differences = summarizeProjectDiff(localProject, remote);

@@ -27,6 +27,7 @@ async function main() {
   const requests = [], failures = [], blocked = [];
   let holdB = false, releaseB = null, notifyHeldB = null;
   let allowProjectSave = false, releaseSave = null, notifyHeldSave = null;
+  let listRows = [], releaseList = null, notifyHeldList = null;
   const revisions = { A: 2, B: 2 };
   function holdNextB() {
     holdB = true; releaseB = null;
@@ -41,7 +42,10 @@ async function main() {
       const url = new URL(route.request().url());
       if (url.origin === "https://api.gucc.test") {
         const body = route.request().postDataJSON(); requests.push(body);
-        if (body.action === "listProjects") return route.fulfill({ json: { projects: [] } });
+        if (body.action === "listProjects") {
+          if (notifyHeldList) await new Promise((resolve) => { releaseList = resolve; notifyHeldList(); notifyHeldList = null; });
+          return route.fulfill({ json: { projects: listRows } });
+        }
         if (body.action === "saveProject" && allowProjectSave) {
           const id = body.projectData.projectId;
           if (id !== "A" || body.baseRevision !== revisions[id]) {
@@ -78,7 +82,7 @@ async function main() {
     const projects = ["A", "B"].map((id) => ({ ...E.createProject({ projectId: id, name: `ISOLATED ${id} · Global Production` }),
       integration: { cloud: { revision: 2 }, drive: { rootId: DRIVE_ROOT.id, rootUrl: DRIVE_ROOT.url, rootName: DRIVE_ROOT.name } } }));
     await context.addInitScript((projects) => {
-      localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "A" }));
+      if (!localStorage.getItem("gucc_ai_video_production_v1")) localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "A" }));
       // Capture only the bridge's five-second autosync tick, without sleeping or
       // accelerating unrelated UI clocks. Production module code stays unchanged.
       const originalInterval = window.setInterval;
@@ -173,6 +177,29 @@ async function main() {
     await page.locator('[data-select-project="A"]').click();
     await page.evaluate(() => window.fixtureAutosync());
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 2, "Acknowledged content and subsequent navigation must settle");
+
+    const cloudProject = structuredClone(requests.filter((r) => r.action === "saveProject").at(-1).projectData);
+    cloudProject.voiceMaster = "ISOLATED cloud changed independently";
+    listRows = [{ project_id: "A", project_data: cloudProject, revision: 5, updated_at: "2099-01-01T00:00:00.000Z" }];
+    const listHeld = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("Expected fixture pull did not arrive")), 5000);
+      notifyHeldList = () => { clearTimeout(timer); resolve(); };
+    });
+    await page.getByRole("button", { name: "拉取云端", exact: true }).click(); await listHeld;
+    await page.locator('[data-project-field="voiceMaster"]').fill("ISOLATED unblurred edit during pull");
+    releaseList();
+    await page.locator('[data-gcb-status]').filter({ hasText: "正在编辑" }).waitFor();
+    assert.equal(await page.locator('[data-project-field="voiceMaster"]').inputValue(), "ISOLATED unblurred edit during pull", "Pending pull must not reload away the active editor");
+    await page.locator('[data-project-field="voiceMaster"]').blur();
+    await page.getByRole("button", { name: "拉取云端", exact: true }).click();
+    await page.locator('[data-gcb-status]').filter({ hasText: "云端冲突待处理" }).waitFor();
+    await page.waitForFunction(() => typeof window.fixtureAutosync === "function");
+    const preserved = await page.evaluate(() => JSON.parse(localStorage.getItem("gucc_ai_video_production_v1")).projects.find((project) => project.projectId === "A"));
+    assert.equal(preserved.voiceMaster, "ISOLATED unblurred edit during pull");
+    assert.equal(preserved.integration.cloud.revision, 4);
+    assert.equal(preserved.integration.cloud.conflict.currentRevision, 5);
+    await page.evaluate(() => window.fixtureAutosync());
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 2, "Pull conflicts must never auto-save a resolution");
     await page.locator('[data-tab="control"]').click();
 
     await fs.mkdir(output, { recursive: true });
@@ -214,7 +241,7 @@ async function main() {
     await fs.mkdir(output, { recursive: true });
     if (page && !page.isClosed()) await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {});
     throw error;
-  } finally { releaseB?.(); releaseSave?.(); await context.close(); await browser.close(); }
+  } finally { releaseB?.(); releaseSave?.(); releaseList?.(); await context.close(); await browser.close(); }
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

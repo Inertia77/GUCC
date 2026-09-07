@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v23";
-const RUNTIME_CACHE = "gucc-runtime-v23";
+const STATIC_CACHE = "gucc-static-v24";
+const RUNTIME_CACHE = "gucc-runtime-v24";
 
 const APP_SHELL = [
   "./",
@@ -7,9 +7,10 @@ const APP_SHELL = [
   "./offline.html",
   "./manifest.webmanifest",
   "./assets/access-guard.js",
-  "./assets/access-guard.js?v=6",
+  "./assets/access-guard.js?v=7",
   "./assets/creator-pipeline-core.mjs",
-  "./assets/creator-pipeline-bridge.mjs?v=5",
+  "./assets/creator-pipeline-core.mjs?v=2",
+  "./assets/creator-pipeline-bridge.mjs?v=6",
   "./assets/creator-pipeline-ux.mjs?v=2",
   "./assets/creator-dashboard-core.mjs",
   "./assets/creator-dashboard.mjs?v=4",

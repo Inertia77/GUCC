@@ -21,7 +21,7 @@ async function main() {
   const Core = await import(pathToFileURL(path.join(__dirname, "../assets/creator-pipeline-core.mjs")));
   const Dashboard = await import(pathToFileURL(path.join(__dirname, "../assets/creator-dashboard-core.mjs")));
   function harness() {
-    const storage = new Map(), requests = [], intervals = [], nodes = [];
+    const storage = new Map(), requests = [], intervals = [], nodes = [], reloads = [];
     let owner = true, tokenGate;
     const projects = ["A", "B", "LOCAL"].map((id) => {
       const project = { ...E.createProject({ name: id }), projectId: id };
@@ -40,7 +40,7 @@ async function main() {
     const panel = node();
     const context = vm.createContext({ ...Core, ...Dashboard, console, structuredClone, URL, URLSearchParams,
       crypto: { randomUUID: () => "fixture-device" },
-      window: { GuccProductionEngine: E, location: { pathname: "/apps/video-workspace/production-system/", search: "?project=A", href: "https://isolated.invalid/apps/video-workspace/production-system/", reload() {} } },
+      window: { GuccProductionEngine: E, location: { pathname: "/apps/video-workspace/production-system/", search: "?project=A", href: "https://isolated.invalid/apps/video-workspace/production-system/", reload() { reloads.push(true); } } },
       document: { createElement: node, getElementById() { return null; }, head: node(), body: node() },
       localStorage: { getItem: (key) => storage.get(key) || null, setItem: (key, value) => storage.set(key, value), removeItem: (key) => storage.delete(key) },
       CONFIG: { SUPABASE_URL: "https://isolated.invalid", SUPABASE_ANON_KEY: "fixture" },
@@ -55,17 +55,94 @@ async function main() {
     vm.runInContext(source, context);
     const read = () => JSON.parse(storage.get(Core.PRODUCTION_STORAGE_KEY));
     const change = (fn) => { const store = read(); fn(store); storage.set(Core.PRODUCTION_STORAGE_KEY, JSON.stringify(store)); };
-    return { requests, panel, nodes, context, read, change,
+    return { requests, panel, nodes, context, read, change, reloads,
       edit(id, value) { change((s) => { s.projects.find((p) => p.projectId === id).topic = value; }); },
       select(id) { change((s) => { s.selectedProjectId = id; }); },
       project(id) { return read().projects.find((p) => p.projectId === id); },
       push: () => vm.runInContext('pushCurrentProject(panel, "auto")', context),
+      pull: (reload = false) => vm.runInContext(`pullCloudProjects(panel, window.GuccProductionEngine, ${reload})`, context),
+      remember(id) { vm.runInContext(`rememberSyncBase(${JSON.stringify(id)}, currentProductionStore().projects.find(p => p.projectId === ${JSON.stringify(id)}))`, context); },
+      base(id) { return vm.runInContext(`syncBase(${JSON.stringify(id)})`, context); },
       auto: () => intervals[0](),
       holdToken() { tokenGate = deferred(); return tokenGate; },
       auth(value) { owner = value; },
       answer(index, data = { revision: 3 }, status = 200) { requests[index].resolve({ ok: status === 200, status, async json() { return data; } }); },
       async start() { const starting = vm.runInContext("runProduction()", context); await tick(); this.answer(0, { projects: [] }); await starting; return this; },
     };
+  }
+
+  function row(project, revision = 3) {
+    return { project_id: project.projectId, project_data: project, revision, updated_at: "2099-01-01T00:00:00.000Z" };
+  }
+  {
+    const env = await harness().start(), remote = env.project("A"); env.remember("A");
+    remote.topic = "accepted cloud update";
+    const pulling = env.pull(); await tick(); await env.pull(); await env.push();
+    assert.equal(env.requests.length, 2, "Pull/pull and pull/push cannot overlap in this page");
+    env.answer(1, { projects: [row(remote)] }); assert.equal(await pulling, true);
+    assert.equal(env.project("A").topic, remote.topic);
+    assert.equal(env.project("A").integration.cloud.revision, 3);
+    await env.auto(); assert.equal(env.requests.length, 2, "Accepted cloud content is not a new local edit");
+    const saving = env.push(); await tick(); await env.pull();
+    assert.equal(env.requests.length, 3, "Push/pull cannot overlap in this page"); env.answer(2, { revision: 4 }); await saving;
+  }
+  for (const editTime of ["before", "during"]) {
+    const env = await harness().start(), remote = env.project("A"); env.remember("A");
+    const originalBase = JSON.stringify(env.base("A")), originalTime = env.project("A").updatedAt;
+    if (editTime === "before") env.edit("A", "unsynced field without timestamp change");
+    const pulling = env.pull(); await tick();
+    if (editTime === "during") env.edit("A", "unsynced field without timestamp change");
+    env.select("B"); remote.topic = "different cloud edit";
+    env.answer(1, { projects: [row(remote)] }); await pulling;
+    assert.equal(env.project("A").updatedAt, originalTime);
+    assert.equal(env.project("A").topic, "unsynced field without timestamp change");
+    assert.equal(env.project("A").integration.cloud.conflict.currentRevision, 3);
+    assert.equal(env.read().selectedProjectId, "B", "Pending pull cannot restore its original selection");
+    assert.equal(JSON.stringify(env.base("A")), originalBase, "Conflicts retain the original three-way merge base");
+    env.select("A"); await env.auto(); assert.equal(env.requests.length, 2);
+  }
+  for (const revision of [1, 2]) {
+    const env = await harness().start(), remote = env.project("A"); env.remember("A");
+    env.edit("A", "keep this pending edit"); remote.topic = "stale remote";
+    const pulling = env.pull(); await tick(); env.answer(1, { projects: [row(remote, revision)] }); await pulling;
+    assert.equal(env.project("A").topic, "keep this pending edit");
+    assert.equal(env.project("A").integration.cloud.revision, 2, "Client clocks never demote revisions");
+    assert.notEqual(env.base("A").topic, remote.topic);
+    const saving = env.auto(); await tick();
+    assert.equal(env.requests[2].body.baseRevision, 2, "Ignored pulls must not mark pending edits as synchronized"); env.answer(2); await saving;
+  }
+  {
+    const env = await harness().start(), remote = env.project("A");
+    const pulling = env.pull(); await tick();
+    env.change((s) => { s.projects = s.projects.filter((p) => p.projectId !== "A"); s.selectedProjectId = "B"; });
+    env.answer(1, { projects: [row(remote)] }); await pulling;
+    assert.equal(env.project("A"), undefined); assert.equal(env.read().selectedProjectId, "B"); assert.equal(env.base("A"), null);
+  }
+  for (const phase of ["token", "response"]) {
+    const env = await harness().start(), before = JSON.stringify(env.read());
+    const gate = phase === "token" ? env.holdToken() : null, pulling = env.pull(true); await tick();
+    env.auth(false);
+    if (gate) gate.resolve("expired-session");
+    else env.answer(1, { projects: [row({ ...env.project("A"), topic: "must not hydrate after logout" })] });
+    await pulling;
+    assert.equal(env.requests.length, phase === "token" ? 1 : 2);
+    assert.equal(JSON.stringify(env.read()), before); assert.equal(env.reloads.length, 0);
+  }
+  {
+    const env = await harness().start(), before = JSON.stringify(env.read()); env.remember("A");
+    const remote = { ...env.project("A"), topic: "remote" }, pulling = env.pull(true); await tick();
+    env.context.document.activeElement = { matches: () => true };
+    env.answer(1, { projects: [row(remote)] }); assert.equal(await pulling, false);
+    assert.equal(JSON.stringify(env.read()), before); assert.equal(env.reloads.length, 0, "Unblurred edits cannot be discarded by automatic reload");
+    env.context.document.activeElement = null;
+    const retry = env.pull(true); await tick(); env.answer(2, { projects: [row(remote)] }); await retry;
+    assert.equal(env.reloads.length, 1, "A later explicit retry can hydrate safely");
+  }
+  {
+    const env = await harness().start(), pulling = env.pull(); await tick(); env.answer(1, { projects: {} });
+    assert.equal(await pulling, false);
+    const retry = env.pull(); await tick(); env.answer(2, { projects: [] }); await retry;
+    assert.equal(env.requests.length, 3, "Failed pulls release the operation guard");
   }
 
   {
@@ -161,7 +238,7 @@ async function main() {
     assert.equal(edited.integration.cloud.conflict.currentRevision, 4, "Editor save must not clear unresolved conflicts");
     assert.equal(env.read().selectedProjectId, "A");
   }
-  console.log("Creator pipeline sync behavior tests passed: 15 isolated cases; no live API writes.");
+  console.log("Creator pipeline sync behavior tests passed: 25 isolated cases; no live API writes.");
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

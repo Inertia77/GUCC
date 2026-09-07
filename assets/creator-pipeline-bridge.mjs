@@ -12,7 +12,7 @@ import {
   buildReleasePrompt,
   productionToPublishState,
   mergeCloudProjects,
-} from "./creator-pipeline-core.mjs";
+} from "./creator-pipeline-core.mjs?v=2";
 import {
   attachCloudMetadata,
   mergeProjectVersions,
@@ -38,6 +38,7 @@ const DEVICE_ID_KEY = "gucc_creator_device_id_v1";
 const SYNC_BASES_KEY = "gucc_creator_sync_bases_v1";
 const productionBaselines = new Map();
 let projectPushInFlight = false;
+let projectPullInFlight = false;
 
 function productionSignature(project) {
   const clean = stripCloudMetadata(project);
@@ -314,7 +315,7 @@ async function importStudioHandoff(engine) {
 }
 
 async function pushCurrentProject(panel, reason = "auto", engine = window.GuccProductionEngine, options = {}) {
-  if (projectPushInFlight) return false;
+  if (projectPushInFlight || projectPullInFlight) return false;
   if (!loggedIn()) {
     setPanelStatus(panel, "local", "本地模式 · Command Center 登录后自动上云");
     return false;
@@ -388,27 +389,70 @@ async function pushCurrentProject(panel, reason = "auto", engine = window.GuccPr
 }
 
 async function pullCloudProjects(panel, engine, reloadOnChange = true) {
+  if (projectPullInFlight || projectPushInFlight) return false;
   if (!loggedIn()) {
     setPanelStatus(panel, "local", "本地模式 · Command Center 登录后自动上云");
     return false;
   }
+  projectPullInFlight = true;
+  const before = currentProductionStore();
+  const beforeProjects = new Map(before.projects.map((project) => [project.projectId, productionSignature(project)]));
   setPanelStatus(panel, "busy", "读取云端项目…");
   try {
-    const response = await creatorApi("listProjects");
-    const rows = response.projects || [];
-    const merged = mergeCloudProjects(currentProductionStore(), rows, engine, requestedProjectId());
-    rows.forEach((row) => row?.project_data?.projectId && rememberSyncBase(row.project_data.projectId, row.project_data));
+    const response = await creatorApi("listProjects", {}, () => {
+      if (!loggedIn()) throw new Error("登录状态已改变 · 本次拉取已取消");
+    });
+    if (!loggedIn()) {
+      setPanelStatus(panel, "local", "登录状态已改变 · 本次拉取已取消");
+      return false;
+    }
+    // An unblurred field has not reached localStorage yet. Keep the editor
+    // intact; a later deliberate pull can safely retry after local persistence.
+    if (document.activeElement?.matches?.("input, textarea, select") || document.activeElement?.isContentEditable) {
+      setPanelStatus(panel, "local", "正在编辑 · 云端拉取未应用，请保存输入后重试");
+      return false;
+    }
+    if (!Array.isArray(response.projects)) throw new Error("云端项目列表格式不正确");
+    const latest = currentProductionStore();
+    const currentIds = new Set(latest.projects.map((project) => project.projectId));
+    // Deletion during a pending read is not permission to resurrect the draft.
+    const rows = response.projects.filter((row) => !beforeProjects.has(row?.project_data?.projectId) || currentIds.has(row.project_data.projectId));
+    const merged = mergeCloudProjects(latest, rows, engine, latest.selectedProjectId || requestedProjectId(), {
+      isLocalDirty(project) {
+        const signature = productionSignature(project);
+        if (beforeProjects.has(project.projectId) && beforeProjects.get(project.projectId) !== signature) return true;
+        const base = syncBase(project.projectId);
+        return base ? productionSignature(base) !== signature : undefined;
+      },
+    });
+    if (merged.changed) writeJson(PRODUCTION_STORAGE_KEY, merged.store);
+    // A conflict is not an accepted sync. Preserve its original three-way base,
+    // and never bless an ignored/stale response as the next autosave baseline.
+    for (const row of rows) {
+      const project = merged.store.projects.find((item) => item.projectId === row?.project_data?.projectId);
+      if (!project || project.integration?.cloud?.conflict || (row.project_id && row.project_id !== project.projectId)
+        || !Number.isSafeInteger(row.revision) || row.revision < 1 || project.integration?.cloud?.revision !== row.revision) continue;
+      const remote = engine.normalizeProject(row.project_data, { source: "cloud_pull" });
+      if (productionSignature(project) !== productionSignature(remote)) continue;
+      rememberSyncBase(project.projectId, project);
+      productionBaselines.set(project.projectId, productionSignature(project));
+    }
+    const selected = merged.store.projects.find((project) => project.projectId === merged.store.selectedProjectId);
     if (merged.changed) {
-      writeJson(PRODUCTION_STORAGE_KEY, merged.store);
-      setPanelStatus(panel, "ok", "已合并云端最新状态");
-      if (reloadOnChange) setTimeout(() => window.location.reload(), 120);
+      setPanelStatus(panel, selected?.integration?.cloud?.conflict ? "error" : "ok",
+        selected?.integration?.cloud?.conflict ? "云端冲突待处理 · 自动同步已停止" : "已合并云端最新状态");
+      if (reloadOnChange) window.location.reload();
       return true;
     }
-    setPanelStatus(panel, "ok", "本地与云端一致");
+    const dirty = selected && syncBase(selected.projectId) && productionSignature(selected) !== productionSignature(syncBase(selected.projectId));
+    setPanelStatus(panel, selected?.integration?.cloud?.conflict ? "error" : dirty ? "local" : "ok",
+      selected?.integration?.cloud?.conflict ? "云端冲突待处理 · 自动同步已停止" : dirty ? "本地编辑已保留 · 等待同步" : "云端读取完成 · 本地草稿已保留");
     return false;
   } catch (error) {
     setPanelStatus(panel, "error", error.message || "读取云端失败");
     return false;
+  } finally {
+    projectPullInFlight = false;
   }
 }
 

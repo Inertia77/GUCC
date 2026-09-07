@@ -49,7 +49,7 @@ function checkTypeScriptModule(file) {
 function checkImports(file) {
   const source = readFileSync(file, 'utf8');
   for (const match of source.matchAll(/(?:from\s+|import\s*)['"](\.[^'"]+)['"]/g)) {
-    const target = resolve(dirname(file), match[1]);
+    const target = resolve(dirname(file), decodeURIComponent(match[1].split(/[?#]/, 1)[0]));
     if (!existsSync(target)) errors.push(`${file}: 找不到导入文件 ${match[1]}`);
   }
 }

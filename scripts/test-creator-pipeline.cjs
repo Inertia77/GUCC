@@ -148,6 +148,25 @@ const { pathToFileURL } = require('url');
   assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.kind, 'bootstrap');
   assert.equal(bootstrapProtected.store.projects[0].integration.cloud.conflict.currentRevision, 5);
 
+  const cleanRevisioned = { ...dirtyLocal, topic: 'unchanged base', updatedAt: '2026-08-25T00:00:00.000Z' };
+  for (const revision of [0, 6, 7]) {
+    const stale = Core.mergeCloudProjects({ ...local, projects: [cleanRevisioned] }, [{
+      project_id: project.projectId, project_data: { ...concurrentRemote, updatedAt: '2099-01-01T00:00:00.000Z' },
+      revision, updated_at: '2099-01-01T00:00:00.000Z',
+    }], Engine);
+    assert.equal(stale.changed, false, 'An equal/older cloud revision cannot replace content or bookkeeping');
+    assert.equal(stale.store.projects[0].integration.cloud.revision, 7);
+  }
+  const futureRow = { project_id: project.projectId, project_data: concurrentRemote, revision: 8, updated_at: concurrentRemote.updatedAt };
+  const noBase = Core.mergeCloudProjects({ ...local, projects: [cleanRevisioned] }, [futureRow], Engine);
+  assert.equal(noBase.store.projects[0].topic, 'unchanged base');
+  assert.equal(noBase.store.projects[0].integration.cloud.conflict.kind, 'concurrent', 'Unknown baselines require review instead of trusting timestamps');
+  const knownClean = Core.mergeCloudProjects({ ...local, projects: [cleanRevisioned] }, [futureRow], Engine, '', { isLocalDirty: () => false });
+  assert.equal(knownClean.store.projects[0].topic, concurrentRemote.topic);
+  for (const invalid of [{ ...futureRow, project_id: 'wrong-project' }, { ...futureRow, revision: '8' }, { ...futureRow, revision: -1 }]) {
+    assert.equal(Core.mergeCloudProjects({ ...local, projects: [cleanRevisioned] }, [invalid], Engine).changed, false);
+  }
+
   console.log('creator pipeline Phase 1.2 tests passed');
 })().catch((error) => {
   console.error(error);

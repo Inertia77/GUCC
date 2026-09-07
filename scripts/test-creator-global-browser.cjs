@@ -26,6 +26,8 @@ async function main() {
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
   const requests = [], failures = [], blocked = [];
   let holdB = false, releaseB = null, notifyHeldB = null;
+  let allowProjectSave = false, releaseSave = null, notifyHeldSave = null;
+  const revisions = { A: 2, B: 2 };
   function holdNextB() {
     holdB = true; releaseB = null;
     return new Promise((resolve, reject) => {
@@ -39,6 +41,16 @@ async function main() {
       const url = new URL(route.request().url());
       if (url.origin === "https://api.gucc.test") {
         const body = route.request().postDataJSON(); requests.push(body);
+        if (body.action === "listProjects") return route.fulfill({ json: { projects: [] } });
+        if (body.action === "saveProject" && allowProjectSave) {
+          const id = body.projectData.projectId;
+          if (id !== "A" || body.baseRevision !== revisions[id]) {
+            failures.push(`Invalid fixture save: ${id} / revision ${body.baseRevision}`);
+            return route.fulfill({ status: 409, json: { error: "Invalid fixture save" } });
+          }
+          if (!releaseSave) await new Promise((resolve) => { releaseSave = resolve; notifyHeldSave?.(); });
+          return route.fulfill({ json: { revision: ++revisions[id], project: { project_id: id } } });
+        }
         if (body.action === "getProject") {
           if (body.projectId === "B" && holdB) await new Promise((resolve) => { releaseB = resolve; notifyHeldB?.(); });
           return route.fulfill({ json: snapshots[body.projectId] });
@@ -52,7 +64,7 @@ async function main() {
       }
       if (url.origin !== origin) { blocked.push(url.origin); return route.abort(); }
       const module = (body) => route.fulfill({ contentType: "text/javascript", body });
-      if (url.pathname === "/assets/access-guard.js") return module("// Access Guard is isolated out of this local fixture test.");
+      if (url.pathname === "/assets/access-guard.js") return module('import("/assets/creator-pipeline-bridge.mjs"); // Real bridge with isolated Auth/network boundaries.');
       if (url.pathname === "/apps/command-center/src/config.js") return module('export const CONFIG = {SUPABASE_URL:"https://api.gucc.test",SUPABASE_ANON_KEY:"fixture"};');
       if (url.pathname === "/apps/command-center/src/auth.js") return module('export const getSession=()=>({access_token:"isolated"}); export const getAccessToken=async()=>"isolated";');
       const target = path.resolve(repo, `.${decodeURIComponent(url.pathname)}`, url.pathname.endsWith("/") ? "index.html" : "");
@@ -62,12 +74,21 @@ async function main() {
         return route.fulfill({ contentType, body: await fs.readFile(target) });
       } catch { failures.push(`Missing fixture asset: ${url.pathname}`); return route.fulfill({ status: 404, body: "Not found" }); }
     });
-    const projects = ["A", "B"].map((id) => ({ ...E.createProject({ name: `ISOLATED ${id} · Global Production` }), projectId: id }));
-    await context.addInitScript((projects) => localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "B" })), projects);
+    const { DRIVE_ROOT } = await import("../assets/creator-pipeline-core.mjs");
+    const projects = ["A", "B"].map((id) => ({ ...E.createProject({ name: `ISOLATED ${id} · Global Production` }), projectId: id,
+      integration: { cloud: { revision: 2 }, drive: { rootId: DRIVE_ROOT.id, rootUrl: DRIVE_ROOT.url, rootName: DRIVE_ROOT.name } } }));
+    await context.addInitScript((projects) => {
+      localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "A" }));
+      // Capture only the bridge's five-second autosync tick, without sleeping or
+      // accelerating unrelated UI clocks. Production module code stays unchanged.
+      const originalInterval = window.setInterval;
+      window.setInterval = (fn, ms, ...args) => ms === 5000 ? (window.fixtureAutosync = fn, 1) : originalInterval(fn, ms, ...args);
+    }, projects);
     page = await context.newPage();
     page.on("pageerror", (error) => failures.push(error.message));
     await page.goto(`${origin}/apps/video-workspace/production-system/?project=A`);
     await page.locator('#globalProduction [data-human-lock][data-scope-id="A"]').first().waitFor();
+    await page.waitForFunction(() => typeof window.fixtureAutosync === "function");
     assert.equal(await page.locator("#projectTitle").getAttribute("data-project-id"), "A");
     const stale = await page.locator('#globalProduction [data-human-lock]').first().elementHandle();
     const selectedB = holdNextB();
@@ -87,6 +108,15 @@ async function main() {
     assert.equal(await page.locator('.project-item[aria-current="true"]').getAttribute("data-select-project"), "B");
     const selection = await page.locator(".project-item").evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).backgroundColor));
     assert.notEqual(selection[0], selection[1], "Global theme must not mask the active project");
+    await page.evaluate(() => window.fixtureAutosync());
+    if (requests.some((r) => r.action === "saveProject")) {
+      const changed = (a, b, prefix = "") => Object.keys({ ...a, ...b }).flatMap((key) => {
+        const x = a?.[key], y = b?.[key], p = `${prefix}/${key}`;
+        return JSON.stringify(x) === JSON.stringify(y) ? [] : x && y && typeof x === "object" && typeof y === "object" ? changed(x, y, p) : [p];
+      });
+      console.error("Unexpected navigation changes:", changed(projects[1], requests.find((r) => r.action === "saveProject").projectData));
+    }
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 0, "Real bridge must not save merely because Project B was selected");
 
     await page.locator(".global-setup summary").click();
     await page.locator('[data-global-form="language"] [name="trackKey"]').fill("EN_FIXTURE");
@@ -104,6 +134,9 @@ async function main() {
     await observedB;
     assert.ok(releaseB, "Files tab must request observations");
     await page.locator('[data-tab="control"]').click();
+    await page.evaluate(() => window.fixtureAutosync());
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 0, "Files/tab/project navigation must remain read-only");
+
     await page.locator('[data-tab="files"]').click();
     assert.equal(requests.length - beforeFiles, 1, "Repeated tab switching must reuse the pending observation read");
     await page.locator('[data-select-project="A"]').click();
@@ -114,6 +147,31 @@ async function main() {
     await page.evaluate(() => new Promise(requestAnimationFrame));
     assert.match(await audioObservation.textContent(), /A\/03_AUDIO\/AUDIO_MASTER.wav/);
     assert.doesNotMatch(await audioObservation.textContent(), /B\/03_AUDIO/);
+    await page.locator('[data-tab="control"]').click();
+
+    allowProjectSave = true;
+    await page.locator('[data-tab="script"]').click();
+    const note = page.locator('[data-project-field="voiceMaster"]');
+    await note.fill("ISOLATED fixture first edit"); await note.blur();
+    const saveHeld = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("Expected fixture save did not arrive")), 5000);
+      notifyHeldSave = () => { clearTimeout(timer); resolve(); };
+    });
+    await page.evaluate(() => { window.fixtureSaving = window.fixtureAutosync(); });
+    await saveHeld;
+    assert.ok(releaseSave, "Real bridge must save an authored fixture edit");
+    await page.locator('[data-project-field="voiceMaster"]').fill("ISOLATED fixture newer edit while saving");
+    await page.locator('[data-select-project="B"]').click();
+    releaseSave(); await page.evaluate(() => window.fixtureSaving);
+    assert.equal(await page.locator("#projectTitle").getAttribute("data-project-id"), "B", "Late acknowledgement must not change selection");
+    await page.locator('[data-select-project="A"]').click();
+    assert.equal(await page.locator('[data-project-field="voiceMaster"]').inputValue(), "ISOLATED fixture newer edit while saving");
+    await page.evaluate(() => window.fixtureAutosync());
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 2);
+    await page.locator('[data-select-project="B"]').click();
+    await page.locator('[data-select-project="A"]').click();
+    await page.evaluate(() => window.fixtureAutosync());
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 2, "Acknowledged content and subsequent navigation must settle");
     await page.locator('[data-tab="control"]').click();
 
     await fs.mkdir(output, { recursive: true });
@@ -135,7 +193,7 @@ async function main() {
     await fs.mkdir(output, { recursive: true });
     if (page && !page.isClosed()) await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {});
     throw error;
-  } finally { releaseB?.(); await context.close(); await browser.close(); }
+  } finally { releaseB?.(); releaseSave?.(); await context.close(); await browser.close(); }
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

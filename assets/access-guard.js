@@ -47,7 +47,7 @@
     const eligible = pathname.includes('/apps/video-workspace/') || pathname.includes('/apps/publishing-console/');
     if (!eligible) return;
     if (!document.querySelector('script[data-gucc-creator-pipeline]')) {
-      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=4', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
+      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=5', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
     }
     if (!document.querySelector('script[data-gucc-creator-pipeline-ux]')) {
       const ux = document.createElement('script'); ux.type = 'module'; ux.src = new URL('assets/creator-pipeline-ux.mjs?v=1', rootHref).href; ux.dataset.guccCreatorPipelineUx = 'true'; document.head.appendChild(ux);

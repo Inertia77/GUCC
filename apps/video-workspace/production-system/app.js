@@ -50,6 +50,18 @@
   function save() {
     const el = $("#saveState");
     if (el) el.textContent = "保存中…";
+    // The async bridge updates storage after a save. Keep its acknowledged
+    // revision/conflict without replacing this editor's newer authored fields.
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      for (const project of state.projects) {
+        const cloud = stored?.projects?.find((item) => item.projectId === project.projectId)?.integration?.cloud;
+        if (cloud && Number(cloud.revision || 0) >= Number(project.integration?.cloud?.revision || 0)) {
+          project.integration ||= {};
+          project.integration.cloud = cloud;
+        }
+      }
+    } catch (error) { console.warn("Production cloud metadata unavailable", error); }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     if (el) requestAnimationFrame(() => { el.textContent = "已自动保存"; });
   }
@@ -93,7 +105,10 @@
 
   function renderProjectList() {
     $("#projectCount").textContent = state.projects.length;
-    $("#projectList").innerHTML = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" aria-current="${project.projectId === state.selectedProjectId ? "true" : "false"}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
+    const markup = state.projects.map((project) => `<button class="project-item ${project.projectId === state.selectedProjectId ? "active" : ""}" aria-current="${project.projectId === state.selectedProjectId ? "true" : "false"}" data-select-project="${h(project.projectId)}"><strong>${h(project.name)}</strong><span>${h(E.STATE_LABELS[project.currentState] || project.currentState)}</span></button>`).join("");
+    // A textarea focusout can occur between pointerdown and click on navigation.
+    // Do not detach unchanged controls and swallow that pending click/focus.
+    if ($("#projectList").innerHTML !== markup) $("#projectList").innerHTML = markup;
   }
 
   function renderNextAction(project) {
@@ -107,7 +122,8 @@
   }
 
   function renderTabs() {
-    $("#tabs").innerHTML = TABS.map(([key, label]) => `<button class="tab ${activeTab === key ? "active" : ""}" data-tab="${key}">${label}</button>`).join("");
+    const markup = TABS.map(([key, label]) => `<button class="tab ${activeTab === key ? "active" : ""}" data-tab="${key}">${label}</button>`).join("");
+    if ($("#tabs").innerHTML !== markup) $("#tabs").innerHTML = markup;
   }
 
   function renderTab(project) {

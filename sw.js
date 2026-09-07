@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v21";
-const RUNTIME_CACHE = "gucc-runtime-v21";
+const STATIC_CACHE = "gucc-static-v22";
+const RUNTIME_CACHE = "gucc-runtime-v22";
 
 const APP_SHELL = [
   "./",
@@ -7,8 +7,9 @@ const APP_SHELL = [
   "./offline.html",
   "./manifest.webmanifest",
   "./assets/access-guard.js",
+  "./assets/access-guard.js?v=5",
   "./assets/creator-pipeline-core.mjs",
-  "./assets/creator-pipeline-bridge.mjs",
+  "./assets/creator-pipeline-bridge.mjs?v=5",
   "./assets/creator-pipeline-ux.mjs",
   "./assets/creator-dashboard-core.mjs",
   "./assets/creator-dashboard.mjs?v=4",
@@ -80,7 +81,7 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/index.html",
   "./apps/video-workspace/production-system/styles.css?v=4",
   "./apps/video-workspace/production-system/engine.js",
-  "./apps/video-workspace/production-system/app.js?v=3",
+  "./apps/video-workspace/production-system/app.js?v=4",
   "./apps/cover-generator/",
   "./apps/cover-generator/index.html",
   "./apps/publishing-console/",

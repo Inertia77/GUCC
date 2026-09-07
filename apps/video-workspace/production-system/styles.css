@@ -16,3 +16,6 @@ body.gucc-enhanced.production-system-page .toast{background:#142330!important;co
 body.gucc-enhanced.production-system-page .toast.error{background:#3c121e!important;color:#ffd9de!important;border-color:#ff9ca8!important}
 .global-card-head strong,.global-card-head small{overflow-wrap:anywhere}
 @media(max-width:700px){.app-shell{grid-template-columns:minmax(0,1fr)}.sidebar,.project-list{min-width:0}}
+/* The action toolbar must not squeeze project identity into a narrow column. */
+.project-hero>div{min-width:0}.project-hero h2,.project-hero #projectMeta{overflow-wrap:anywhere}
+@media(max-width:1200px){.project-hero{grid-template-columns:minmax(0,1fr)}.hero-actions{justify-content:flex-start}}

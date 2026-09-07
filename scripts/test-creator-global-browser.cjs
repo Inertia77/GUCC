@@ -64,7 +64,7 @@ async function main() {
       }
       if (url.origin !== origin) { blocked.push(url.origin); return route.abort(); }
       const module = (body) => route.fulfill({ contentType: "text/javascript", body });
-      if (url.pathname === "/assets/access-guard.js") return module('import("/assets/creator-pipeline-bridge.mjs"); // Real bridge with isolated Auth/network boundaries.');
+      if (url.pathname === "/assets/access-guard.js") return module('import("/assets/creator-pipeline-bridge.mjs"); import("/assets/creator-pipeline-ux.mjs"); // Real bridge/UX with isolated Auth/network boundaries.');
       if (url.pathname === "/apps/command-center/src/config.js") return module('export const CONFIG = {SUPABASE_URL:"https://api.gucc.test",SUPABASE_ANON_KEY:"fixture"};');
       if (url.pathname === "/apps/command-center/src/auth.js") return module('export const getSession=()=>({access_token:"isolated"}); export const getAccessToken=async()=>"isolated";');
       const target = path.resolve(repo, `.${decodeURIComponent(url.pathname)}`, url.pathname.endsWith("/") ? "index.html" : "");
@@ -75,7 +75,7 @@ async function main() {
       } catch { failures.push(`Missing fixture asset: ${url.pathname}`); return route.fulfill({ status: 404, body: "Not found" }); }
     });
     const { DRIVE_ROOT } = await import("../assets/creator-pipeline-core.mjs");
-    const projects = ["A", "B"].map((id) => ({ ...E.createProject({ name: `ISOLATED ${id} · Global Production` }), projectId: id,
+    const projects = ["A", "B"].map((id) => ({ ...E.createProject({ projectId: id, name: `ISOLATED ${id} · Global Production` }),
       integration: { cloud: { revision: 2 }, drive: { rootId: DRIVE_ROOT.id, rootUrl: DRIVE_ROOT.url, rootName: DRIVE_ROOT.name } } }));
     await context.addInitScript((projects) => {
       localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify({ projects, musicLibrary: [], selectedProjectId: "A" }));
@@ -89,6 +89,7 @@ async function main() {
     await page.goto(`${origin}/apps/video-workspace/production-system/?project=A`);
     await page.locator('#globalProduction [data-human-lock][data-scope-id="A"]').first().waitFor();
     await page.waitForFunction(() => typeof window.fixtureAutosync === "function");
+    await page.locator('.gcb-integrated-host .gcb-inline').waitFor();
     assert.equal(await page.locator("#projectTitle").getAttribute("data-project-id"), "A");
     const stale = await page.locator('#globalProduction [data-human-lock]').first().elementHandle();
     const selectedB = holdNextB();
@@ -176,14 +177,34 @@ async function main() {
 
     await fs.mkdir(output, { recursive: true });
     const widths = [];
-    for (const [width, height] of [[1440, 900], [768, 1024], [390, 844]]) {
+    for (const [width, height] of [[1440, 900], [1024, 768], [768, 1024], [390, 844]]) {
       await page.setViewportSize({ width, height });
       await page.locator("#globalProduction").scrollIntoViewIfNeeded();
       const dimensions = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
       assert.equal(dimensions.scroll, dimensions.client, `Horizontal overflow at ${width}px`);
+      if (width <= 1200) {
+        const hero = await page.locator('.project-hero').evaluate((node) => ({
+          width: node.clientWidth, title: node.querySelector('h2').getBoundingClientRect().width,
+          titleBottom: node.querySelector('h2').getBoundingClientRect().bottom,
+          actionsTop: node.querySelector('.hero-actions').getBoundingClientRect().top,
+        }));
+        assert.ok(hero.title > hero.width * 0.75, `Project identity must not be squeezed by its toolbar at ${width}px`);
+        assert.ok(hero.actionsTop >= hero.titleBottom, `Project actions must stack below the identity at ${width}px`);
+      }
+      if (width <= 980) {
+        const bridge = await page.locator('#guccCreatorBridge').evaluate((node) => ({
+          width: node.clientWidth, title: node.querySelector('strong').getBoundingClientRect().width,
+          statusBottom: node.querySelector('.gcb-status').getBoundingClientRect().bottom,
+          actionsTop: node.querySelector('.gcb-row').getBoundingClientRect().top,
+        }));
+        assert.ok(bridge.title > bridge.width * 0.75, `Sync identity must remain readable at ${width}px`);
+        assert.ok(bridge.actionsTop >= bridge.statusBottom, `Sync actions must not squeeze the status at ${width}px`);
+      }
       assert.equal(await page.locator("[aria-labelledby]").evaluateAll((nodes) => nodes.filter((node) => node.getAttribute("aria-labelledby").split(/\s+/).some((id) => !document.getElementById(id))).length), 0);
       await page.screenshot({ path: path.join(output, `global-${width}.png`), fullPage: true });
       await page.locator("#globalProduction").screenshot({ path: path.join(output, `global-panel-${width}.png`) });
+      await page.locator(".project-hero").screenshot({ path: path.join(output, `project-hero-${width}.png`) });
+      await page.locator("#guccCreatorBridge").screenshot({ path: path.join(output, `sync-status-${width}.png`) });
       widths.push({ width, height, ...dimensions });
     }
     assert.deepEqual(failures, []);

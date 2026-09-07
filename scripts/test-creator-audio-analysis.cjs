@@ -72,6 +72,51 @@ assert.match(bundle.files.TIMELINE_SENTENCE, /AUDIO_CHECKSUM/);
 assert.match(bundle.files.TRANSCRIPT_ALIGNED, /"pauses"/);
 assert.match(bundle.files.ALIGNMENT_REPORT, /timing_provenance: real_audio/);
 
+const orderedScript = "首先选择角色，然后释放技能，最后观察伤害数字。";
+assert.equal(Audio.analyzeAlignment(orderedScript, "最后观察伤害数字，然后释放技能，首先选择角色。").accepted, false, "Reordered chapters must not pass by reusing the same character pairs");
+assert.equal(Audio.analyzeAlignment(orderedScript, orderedScript.repeat(12)).accepted, false, "Extra repeated speech must not score 100% merely by containing the script");
+assert.equal(Audio.analyzeAlignment("ＡＢＣ　１２３。", "abc 123").score, 1, "Unicode width and punctuation differences do not change spoken content");
+assert.equal(Audio.analyzeAlignment("𠮷".repeat(50) + "甲", "𠮷".repeat(50) + "乙").score, 1 - 1 / 51, "Character distance counts Unicode codepoints rather than surrogate halves");
+assert.equal(Audio.analyzeAlignment("", "some speech").reason, "missing_script_or_transcript");
+assert.equal(Audio.analyzeAlignment("a".repeat(40) + "b".repeat(40), "b".repeat(40) + "a".repeat(40), { maxCells: 1 }).reason, "comparison_budget_exceeded");
+assert.throws(() => Audio.analyzeAlignment("a", "a", { maxCells: Infinity }), /positive safe integer/);
+assert.equal(Audio.analyzeAlignment("a".repeat(10000) + "x" + "b".repeat(10000), "a".repeat(10000) + "y" + "b".repeat(10000)).editDistance, 1, "Common-edge trimming keeps long accurate transcripts inexpensive");
+
+// Independent full-matrix oracle for the bounded/adaptive production algorithm.
+function referenceDistance(a, b) {
+  const rows = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1));
+  for (let i = 0; i <= a.length; i++) rows[i][0] = i;
+  for (let j = 0; j <= b.length; j++) rows[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+    rows[i][j] = Math.min(rows[i - 1][j] + 1, rows[i][j - 1] + 1, rows[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  }
+  return rows[a.length][b.length];
+}
+let seed = 1701;
+const random = (max) => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % max; };
+for (let fixture = 0; fixture < 300; fixture++) {
+  const original = Array.from({ length: 20 + random(100) }, () => "abcdefgh"[random(8)]).join("");
+  const changed = Array.from(original);
+  for (let n = 0, mutations = random(20); n < mutations; n++) {
+    const at = random(changed.length), mode = random(3);
+    if (mode === 0) changed.splice(at, 0, "abcdefgh"[random(8)]);
+    if (mode === 1) changed.splice(at, 1);
+    if (mode === 2) changed[at] = "abcdefgh"[random(8)];
+  }
+  const text = changed.join(""), distance = referenceDistance(original, text);
+  const expectedScore = 1 - distance / Math.max(original.length, text.length);
+  const actual = Audio.analyzeAlignment(original, text);
+  assert.equal(actual.accepted, expectedScore >= 0.9, `Bounded alignment acceptance disagrees with reference fixture ${fixture}`);
+  if (actual.accepted) { assert.equal(actual.score, expectedScore); assert.equal(actual.editDistance, distance); }
+  else assert.equal(actual.score, null, "A rejected bounded comparison must not pretend to have computed an exact score");
+}
+
+const rejectedAlignment = Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "timestamped-local-asr", languageCode: "zh", segments, lockedScript: "这是完全不同的已锁定脚本" });
+assert.equal(rejectedAlignment.alignmentStatus, "REVIEW_REQUIRED");
+assert.match(rejectedAlignment.files.ALIGNMENT_REPORT, /alignment_reason:/);
+assert.match(rejectedAlignment.files.ALIGNMENT_REPORT, /alignment_score: not_computed/);
+assert.match(rejectedAlignment.files.SUBTITLE_MASTER, /00:00:01,900 --> 00:00:03,900/, "Rejected script comparison must never retime the ASR evidence");
+
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "", languageCode: "zh-CN", segments }), /ASR provider identity is required/);
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "timestamped-local-asr", languageCode: "zh-CN", segments: [{ startMs: 0, endMs: 3000, text: "one" }, { startMs: 2500, endMs: 3900, text: "overlap" }] }), /overlaps the previous/);
 assert.throws(() => Audio.buildTimelineBundle({ audioPath: "AUDIO_MASTER.wav", audioBuffer: wav, durationMs: 4000, provider: "script-estimate", languageCode: "zh-CN", segments }), /not estimated or synthetic timing/);
@@ -171,6 +216,14 @@ try {
   assert.equal(result.status, 0, result.stderr || result.error?.message);
   assert.equal(JSON.parse(result.stdout).duration_ms, 4000);
   assert.equal(JSON.parse(fs.readFileSync(path.join(cliOutput, Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED), "utf8")).segments[0].id, "0");
+  fs.writeFileSync(asrPath, JSON.stringify({ segments: [{ id: 0, start: 0, end: 3.9, text: "Isolated audio fixture ".repeat(12) }] }));
+  const reviewOutput = path.join(outputDir, "cli-review-required");
+  const review = spawnSync(process.execPath, [...args.slice(0, -1), reviewOutput], { encoding: "utf8" });
+  assert.equal(review.status, 0, review.stderr);
+  assert.equal(JSON.parse(review.stdout).status, "BLOCKED_REVIEW_REQUIRED");
+  assert.equal(JSON.parse(review.stdout).alignment_reason, "length_difference_exceeds_limit");
+  assert.equal(JSON.parse(review.stdout).alignment_score, null);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(reviewOutput, Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED), "utf8")).alignment.status, "REVIEW_REQUIRED");
   const originals = Object.values(Audio.OUTPUT_NAMES).map((name) => [name, fs.readFileSync(path.join(cliOutput, name))]);
   fs.writeFileSync(audioPath, wav.subarray(0, wav.length - 16));
   const damagedChecksum = Audio.audioChecksum(fs.readFileSync(audioPath));

@@ -76,16 +76,61 @@ function timestamp(ms, srt = false) {
 }
 function csvCell(value) { const text = String(value == null ? "" : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; }
 function csv(rows) { return `${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}\r\n`; }
-function normalizeText(value) { return String(value || "").toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, ""); }
-function alignmentScore(script, transcript) {
-  const expected = normalizeText(script); const actual = normalizeText(transcript);
-  if (!expected || !actual) return 0;
-  const grams = (value) => { const result = new Map(); for (let i = 0; i < Math.max(1, value.length - 1); i += 1) { const gram = value.slice(i, i + 2); result.set(gram, (result.get(gram) || 0) + 1); } return result; };
-  const left = grams(expected); const right = grams(actual); let overlap = 0; let total = 0;
-  for (const count of left.values()) total += count;
-  for (const [gram, count] of left) overlap += Math.min(count, right.get(gram) || 0);
-  return total ? overlap / total : 0;
+function normalizeText(value) { return String(value || "").normalize("NFKC").toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, ""); }
+const ALIGNMENT_THRESHOLD = 0.9;
+
+function analyzeAlignment(script, transcript, { maxCells = 20000000 } = {}) {
+  if (!Number.isSafeInteger(maxCells) || maxCells < 1) throw new Error("Alignment comparison budget must be a positive safe integer");
+  const expected = Array.from(normalizeText(script)); const actual = Array.from(normalizeText(transcript));
+  const size = Math.max(expected.length, actual.length);
+  const result = { method: "ordered_character_edit_distance_v1", threshold: ALIGNMENT_THRESHOLD,
+    expectedCharacters: expected.length, transcriptCharacters: actual.length, score: null, editDistance: null,
+    accepted: false, reason: "missing_script_or_transcript" };
+  if (!expected.length || !actual.length) return result;
+  const maxDistance = Math.floor(size * (1 - ALIGNMENT_THRESHOLD) + 1e-9);
+  if (Math.abs(expected.length - actual.length) > maxDistance) return { ...result, reason: "length_difference_exceeds_limit" };
+
+  // Trim equal edges, then widen a diagonal edit-distance band only as needed.
+  // Accurate long ASR transcripts stay cheap; adversarial input has a work cap.
+  let start = 0, endExpected = expected.length, endActual = actual.length;
+  while (start < endExpected && start < endActual && expected[start] === actual[start]) start++;
+  while (endExpected > start && endActual > start && expected[endExpected - 1] === actual[endActual - 1]) { endExpected--; endActual--; }
+  const a = expected.slice(start, endExpected), b = actual.slice(start, endActual);
+  const matched = (distance) => ({ ...result, score: 1 - distance / size, editDistance: distance, accepted: true, reason: "ordered_similarity_pass" });
+  if (!a.length || !b.length) {
+    const distance = Math.max(a.length, b.length);
+    return distance <= maxDistance ? matched(distance) : { ...result, reason: "edit_distance_exceeds_limit" };
+  }
+  let cells = 0, band = Math.min(maxDistance, Math.max(4, Math.abs(a.length - b.length)));
+  while (true) {
+    let previous = new Int32Array(b.length + 1), current = new Int32Array(b.length + 1);
+    previous.fill(band + 1);
+    for (let j = 0; j <= Math.min(b.length, band); j++) previous[j] = j;
+    let exceeded = false;
+    for (let i = 1; i <= a.length; i++) {
+      const first = Math.max(1, i - band), last = Math.min(b.length, i + band);
+      cells += Math.max(0, last - first + 1);
+      if (cells > maxCells) return { ...result, reason: "comparison_budget_exceeded" };
+      current[0] = i <= band ? i : band + 1;
+      if (first > 1) current[first - 1] = band + 1;
+      let minimum = current[0];
+      for (let j = first; j <= last; j++) {
+        current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        minimum = Math.min(minimum, current[j]);
+      }
+      if (last < b.length) current[last + 1] = band + 1;
+      [previous, current] = [current, previous];
+      if (minimum > band) { exceeded = true; break; }
+    }
+    if (!exceeded && previous[b.length] <= band) return matched(previous[b.length]);
+    if (band >= maxDistance) return { ...result, reason: "edit_distance_exceeds_limit" };
+    band = Math.min(maxDistance, Math.max(band + 1, band * 2));
+  }
 }
+
+// Numeric compatibility helper: rejected/budget-limited comparisons cannot be
+// treated as a passing score. Detailed callers use analyzeAlignment's reason.
+function alignmentScore(script, transcript) { return analyzeAlignment(script, transcript).score ?? 0; }
 
 function normalizeSegments(raw) {
   const source = Array.isArray(raw) ? raw : Array.isArray(raw?.segments) ? raw.segments : [];
@@ -119,14 +164,15 @@ function buildTimelineBundle({ audioPath, audioBuffer, durationMs, provider, lan
   const checksum = audioChecksum(audioBuffer); const normalized = normalizeSegments(segments); const transcript = normalized.map((segment) => segment.text).join(" ").trim();
   const validation = Global.validateAudioAnalysis({ durationMs, provider, audioChecksum: checksum, segments: normalized });
   if (!validation.valid) throw new Error(`REAL_AUDIO_ANALYSIS_BLOCKED: ${validation.errors.join("; ")}`);
-  const score = alignmentScore(lockedScript, transcript); const alignmentStatus = lockedScript ? (score >= 0.72 ? "VALID" : "REVIEW_REQUIRED") : "REVIEW_REQUIRED";
+  const alignment = analyzeAlignment(lockedScript, transcript); const score = alignment.score;
+  const alignmentStatus = alignment.accepted ? "VALID" : "REVIEW_REQUIRED";
   const pauses = normalized.slice(1).map((segment, index) => ({ afterSegmentId: normalized[index].id, startMs: normalized[index].endMs, endMs: segment.startMs, durationMs: segment.startMs - normalized[index].endMs })).filter((pause) => pause.durationMs >= 350);
   const provenance = { timing_provenance: "real_audio", provider, language_code: languageCode || "", audio_checksum: checksum, audio_filename: path.basename(audioPath), duration_ms: durationMs, analyzed_at: new Date().toISOString() };
   const subtitleMaster = `${normalized.map((segment, index) => `${index + 1}\n${timestamp(segment.startMs, true)} --> ${timestamp(segment.endMs, true)}\n${segment.text}`).join("\n\n")}\n`;
   const timelineSentence = csv([["ID", "START", "END", "DURATION_MS", "TEXT", "AUDIO_CHECKSUM"], ...normalized.map((segment) => [segment.id, timestamp(segment.startMs), timestamp(segment.endMs), segment.endMs - segment.startMs, segment.text, checksum])]);
-  const transcriptAligned = `${JSON.stringify({ schemaVersion: "gucc-real-audio-alignment-v1", provenance, alignment: { status: alignmentStatus, score }, segments: normalized, pauses }, null, 2)}\n`;
-  const alignmentReport = `# ALIGNMENT REPORT\n\n- timing_provenance: real_audio\n- provider: ${provider}\n- audio_checksum: ${checksum}\n- duration_ms: ${durationMs}\n- segment_count: ${normalized.length}\n- pause_count: ${pauses.length}\n- locked_script_alignment: ${alignmentStatus}\n- alignment_score: ${score.toFixed(4)}\n\n${alignmentStatus === "VALID" ? "Locked script and real-audio transcript are aligned." : "Human review is required before Voice / Timeline Lock."}\n`;
-  return { provenance, alignmentStatus, alignmentScore: score, segments: normalized, pauses, files: { SUBTITLE_MASTER: subtitleMaster, TIMELINE_SENTENCE: timelineSentence, TRANSCRIPT_ALIGNED: transcriptAligned, ALIGNMENT_REPORT: alignmentReport } };
+  const transcriptAligned = `${JSON.stringify({ schemaVersion: "gucc-real-audio-alignment-v1", provenance, alignment: { status: alignmentStatus, ...alignment }, segments: normalized, pauses }, null, 2)}\n`;
+  const alignmentReport = `# ALIGNMENT REPORT\n\n- timing_provenance: real_audio\n- provider: ${provider}\n- audio_checksum: ${checksum}\n- duration_ms: ${durationMs}\n- segment_count: ${normalized.length}\n- pause_count: ${pauses.length}\n- locked_script_alignment: ${alignmentStatus}\n- alignment_method: ${alignment.method}\n- alignment_threshold: ${alignment.threshold}\n- alignment_score: ${score == null ? "not_computed" : score.toFixed(4)}\n- alignment_reason: ${alignment.reason}\n\n${alignmentStatus === "VALID" ? "Ordered text similarity passed. Human review must still verify numbers, names, omissions and meaning before Voice / Timeline Lock." : "Human review is required before Voice / Timeline Lock."}\n\nThis text comparison does not infer or retime any ASR timestamps.\n`;
+  return { provenance, alignmentStatus, alignmentScore: score, alignment, segments: normalized, pauses, files: { SUBTITLE_MASTER: subtitleMaster, TIMELINE_SENTENCE: timelineSentence, TRANSCRIPT_ALIGNED: transcriptAligned, ALIGNMENT_REPORT: alignmentReport } };
 }
 
 function runWhisper(audioPath, outputDir, languageCode, whisperBin = process.env.WHISPER_BIN || "whisper") {
@@ -213,11 +259,11 @@ function main(argv = process.argv.slice(2)) {
   const lockedScript = args.script ? fs.readFileSync(path.resolve(String(args.script)), "utf8") : "";
   const bundle = buildTimelineBundle({ audioPath, audioBuffer, durationMs, provider: String(args.provider || (args.asr ? "external_timestamped_asr" : "openai_whisper_local")), languageCode: String(args.language || ""), segments: asr, lockedScript });
   writeTimelineFiles(outputDir, bundle.files, { force: args.force === true });
-  process.stdout.write(`${JSON.stringify({ status: bundle.alignmentStatus === "VALID" ? "READY_FOR_HUMAN_TIMELINE_LOCK" : "BLOCKED_REVIEW_REQUIRED", ...bundle.provenance, alignment_score: bundle.alignmentScore }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ status: bundle.alignmentStatus === "VALID" ? "READY_FOR_HUMAN_TIMELINE_LOCK" : "BLOCKED_REVIEW_REQUIRED", ...bundle.provenance, alignment_score: bundle.alignmentScore, alignment_method: bundle.alignment.method, alignment_reason: bundle.alignment.reason }, null, 2)}\n`);
 }
 
 if (require.main === module) {
   try { main(); } catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
 }
 
-module.exports = { OUTPUT_NAMES, wavDurationMs, ffprobeDurationMs, audioDurationMs, audioChecksum, timestamp, normalizeSegments, alignmentScore, buildTimelineBundle, writeTimelineFiles, runWhisper, main };
+module.exports = { OUTPUT_NAMES, wavDurationMs, ffprobeDurationMs, audioDurationMs, audioChecksum, timestamp, normalizeSegments, analyzeAlignment, alignmentScore, buildTimelineBundle, writeTimelineFiles, runWhisper, main };

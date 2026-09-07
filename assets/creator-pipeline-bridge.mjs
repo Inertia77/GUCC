@@ -219,52 +219,100 @@ function setPanelStatus(panel, mode, text) {
 function replaceLocalProject(project) {
   const store = currentProductionStore();
   const index = store.projects.findIndex((item) => item.projectId === project.projectId);
-  if (index >= 0) store.projects[index] = project;
-  else store.projects.push(project);
-  store.selectedProjectId = project.projectId;
+  if (index < 0 || store.selectedProjectId !== project.projectId) return false;
+  store.projects[index] = project;
   writeJson(PRODUCTION_STORAGE_KEY, store);
+  return true;
+}
+
+function reloadProductionStore() {
+  const projectId = currentProductionStore().selectedProjectId;
+  const url = new URL(window.location.href);
+  if (projectId) url.searchParams.set("project", projectId);
+  else url.searchParams.delete("project");
+  window.history.replaceState(null, "", url.href);
+  window.location.reload();
 }
 
 function showConflictDialog(panel, engine, localProject, conflict) {
   document.querySelector(".gcb-conflict-dialog")?.remove();
   const remoteRow = conflict?.project || {};
-  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data || {}, { source: "cloud_conflict_remote" }), remoteRow);
+  const currentRevision = conflict?.currentRevision ?? remoteRow.revision;
+  if (!Number.isSafeInteger(currentRevision) || currentRevision <= Number(localProject.integration?.cloud?.revision || 0)
+    || remoteRow.revision !== currentRevision || remoteRow.project_id !== localProject.projectId
+    || remoteRow.project_data?.projectId !== localProject.projectId) {
+    setPanelStatus(panel, "error", "冲突快照不完整或项目不匹配 · 未应用任何选择");
+    return;
+  }
+  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data, { source: "cloud_conflict_remote" }), remoteRow);
+  const expectedLocal = stableStringify(localProject);
+  const base = syncBase(localProject.projectId);
+  const expectedBase = stableStringify(base);
   const differences = summarizeProjectDiff(localProject, remote);
   const dialog = document.createElement("dialog");
   dialog.className = "gcb-conflict-dialog";
+  dialog.setAttribute("aria-label", "云端版本冲突处理");
   dialog.innerHTML = `<div class="gcb-conflict-inner"><p class="eyebrow">REVISION CONFLICT · r${h(conflict.currentRevision || remoteRow.revision || 0)}</p><h2>云端已有更新版本</h2><p>后台自动同步已经停止。下面列出本机与云端不同的区域；任何选择都必须由你明确点击。</p><div class="gcb-conflict-list">${differences.length ? differences.map((item) => `<span>${h(item.label)}</span>`).join("") : "<span>仅同步元数据不同</span>"}</div><div class="gcb-conflict-actions"><button type="button" data-choice="remote">保留云端</button><button class="danger" type="button" data-choice="local">保留本地</button><button type="button" data-choice="merge">尝试合并</button><button type="button" data-choice="cancel">暂不处理</button></div></div>`;
   document.body.appendChild(dialog);
 
+  let resolving = false;
   const close = () => { dialog.close(); dialog.remove(); };
   dialog.addEventListener("click", async (event) => {
     const choice = event.target.closest("[data-choice]")?.dataset.choice;
-    if (!choice) return;
+    if (resolving || !dialog.isConnected || !["remote", "local", "merge", "cancel"].includes(choice)) return;
     if (choice === "cancel") return close();
-    if (choice === "remote") {
-      replaceLocalProject(remote);
-      rememberSyncBase(remote.projectId, remote);
+    if (projectPushInFlight || projectPullInFlight) {
+      setPanelStatus(panel, "busy", "同步请求尚未结束 · 请稍后重新检查冲突");
+      return;
+    }
+    const latestStore = currentProductionStore();
+    const latest = latestStore.projects.find((project) => project.projectId === localProject.projectId);
+    if (!loggedIn() || latestStore.selectedProjectId !== localProject.projectId
+      || !latest || stableStringify(latest) !== expectedLocal || stableStringify(syncBase(localProject.projectId)) !== expectedBase) {
+      setPanelStatus(panel, "error", "项目、稿件或登录状态已变化 · 旧冲突选择已取消，请重新检查");
       close();
-      window.location.reload();
+      reloadProductionStore();
       return;
     }
-    const currentRevision = Number(conflict.currentRevision || remoteRow.revision || 0);
-    if (choice === "local") {
-      replaceLocalProject(attachCloudMetadata(stripCloudMetadata(localProject), remoteRow));
+    let candidate = choice === "remote" ? remote : attachCloudMetadata(stripCloudMetadata(localProject), remoteRow);
+    if (choice === "merge") {
+      if (!base) {
+        window.alert("缺少共同同步基线，无法安全自动合并。请比较两侧内容后明确选择保留本地或云端。");
+        return;
+      }
+      const result = mergeProjectVersions(base, localProject, remote);
+      if (result.conflicts.length) {
+        window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
+        return;
+      }
+      candidate = attachCloudMetadata(engine.normalizeProject(result.merged, { source: "cloud_conflict_merge" }), remoteRow);
+    }
+    const workflow = validateProjectWorkflow(engine, candidate);
+    if (!workflow.valid) {
+      window.alert(`所选版本的工作流状态不合法，未应用：\n${workflow.errors.join("\n")}`);
+      return;
+    }
+    resolving = true;
+    dialog.setAttribute("aria-busy", "true");
+    dialog.querySelectorAll("[data-choice]").forEach((button) => { button.disabled = true; });
+    let replaced = false;
+    try {
+      replaced = replaceLocalProject(candidate);
+      if (!replaced) return;
+      if (choice === "remote") rememberSyncBase(remote.projectId, remote);
+      else await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true, suppressConflictDialog: true });
+    } catch (error) {
+      setPanelStatus(panel, "error", error.message || "冲突选择保存失败");
+    } finally {
       close();
-      await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
-      return;
+      // The editor keeps an in-memory project. Reload the latest persisted
+      // result after resolution, including failed/late saves, before editing it.
+      if (replaced) reloadProductionStore();
     }
-    const result = mergeProjectVersions(syncBase(localProject.projectId), localProject, remote);
-    if (result.conflicts.length) {
-      window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
-      return;
-    }
-    replaceLocalProject(attachCloudMetadata(engine.normalizeProject(result.merged, { source: "cloud_conflict_merge" }), remoteRow));
-    close();
-    await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
   });
-  dialog.addEventListener("cancel", close, { once: true });
+  dialog.addEventListener("cancel", (event) => { event.preventDefault(); if (!resolving) close(); });
   dialog.showModal();
+  dialog.querySelector('[data-choice="cancel"]').focus();
 }
 
 function actionButton(label, primary = false) {
@@ -377,7 +425,7 @@ async function pushCurrentProject(panel, reason = "auto", engine = window.GuccPr
       writeJson(PRODUCTION_STORAGE_KEY, latestStore);
       if (stillSelected()) {
         setPanelStatus(panel, "error", "云端已有新版本 · 自动同步已停止");
-        if (reason === "manual" && engine) showConflictDialog(panel, engine, latest, conflict);
+        if (reason === "manual" && engine && !options.suppressConflictDialog) showConflictDialog(panel, engine, latest, conflict);
       }
       return false;
     }
@@ -441,7 +489,7 @@ async function pullCloudProjects(panel, engine, reloadOnChange = true) {
     if (merged.changed) {
       setPanelStatus(panel, selected?.integration?.cloud?.conflict ? "error" : "ok",
         selected?.integration?.cloud?.conflict ? "云端冲突待处理 · 自动同步已停止" : "已合并云端最新状态");
-      if (reloadOnChange) window.location.reload();
+      if (reloadOnChange) reloadProductionStore();
       return true;
     }
     const dirty = selected && syncBase(selected.projectId) && productionSignature(selected) !== productionSignature(syncBase(selected.projectId));

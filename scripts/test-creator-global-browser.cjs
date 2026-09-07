@@ -200,6 +200,34 @@ async function main() {
     assert.equal(preserved.integration.cloud.conflict.currentRevision, 5);
     await page.evaluate(() => window.fixtureAutosync());
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 2, "Pull conflicts must never auto-save a resolution");
+
+    await page.getByRole("button", { name: "立即云同步", exact: true }).click();
+    const conflictDialog = page.getByRole("dialog", { name: "云端版本冲突处理" });
+    await conflictDialog.waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.choice), "cancel", "Initial keyboard focus must not select an overwrite");
+    await fs.mkdir(output, { recursive: true });
+    for (const [width, height] of [[1440, 900], [768, 1024], [390, 844]]) {
+      await page.setViewportSize({ width, height });
+      const layout = await conflictDialog.evaluate((dialog) => ({ client: dialog.clientWidth, scroll: dialog.scrollWidth,
+        actions: [...dialog.querySelectorAll('[data-choice]')].map((button) => ({ left: button.getBoundingClientRect().left, right: button.getBoundingClientRect().right })) }));
+      assert.equal(layout.scroll, layout.client, `Conflict dialog overflow at ${width}px`);
+      assert.ok(layout.actions.every((action) => action.left >= 0 && action.right <= width), "Every explicit conflict choice must stay reachable");
+      await conflictDialog.screenshot({ path: path.join(output, `conflict-${width}.png`) });
+    }
+    await page.evaluate(() => {
+      const store = JSON.parse(localStorage.getItem("gucc_ai_video_production_v1"));
+      store.projects.find((project) => project.projectId === "A").voiceMaster = "ISOLATED newer edit while conflict modal is open";
+      localStorage.setItem("gucc_ai_video_production_v1", JSON.stringify(store));
+    });
+    await conflictDialog.getByRole("button", { name: "保留云端", exact: true }).click();
+    await page.waitForFunction(() => typeof window.fixtureAutosync === "function" && !document.querySelector('.gcb-conflict-dialog'));
+    await page.locator('[data-tab="script"]').click();
+    assert.equal(await page.locator('[data-project-field="voiceMaster"]').inputValue(), "ISOLATED newer edit while conflict modal is open", "Stale overwrite choices must reload the newest local draft without applying the old remote snapshot");
+    assert.equal(requests.filter((r) => r.action === "saveProject").length, 2);
+    await page.getByRole("button", { name: "立即云同步", exact: true }).click();
+    await conflictDialog.waitFor();
+    await page.keyboard.press("Escape");
+    assert.equal(await conflictDialog.count(), 0, "Escape cancels an idle conflict dialog without choosing a version");
     await page.locator('[data-tab="control"]').click();
 
     await fs.mkdir(output, { recursive: true });

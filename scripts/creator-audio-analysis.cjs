@@ -153,7 +153,54 @@ function writeTimelineFiles(outputDir, files, { force = false, fsModule = fs } =
   if (existing.length && !force) {
     throw new Error(`TIMELINE_OUTPUT_EXISTS: ${existing.map((item) => item.filename).join(", ")}. Reopen the human Voice / Timeline Lock explicitly, then rerun with --force.`);
   }
-  for (const output of outputs) fsModule.writeFileSync(output.target, output.content, "utf8");
+  if (force) {
+    for (const output of outputs) fsModule.writeFileSync(output.target, output.content, "utf8");
+  } else {
+    // The preflight above is for a helpful error only. Exclusive opens enforce
+    // no-overwrite even if another process creates a target after that check.
+    // Reserve every target before writing, so a collision cannot leave a mixed
+    // bundle. Keep handles open while cleaning up to identify our own files.
+    const created = [];
+    let failure = null;
+    try {
+      for (const output of outputs) {
+        const entry = { ...output, fd: fsModule.openSync(output.target, "wx") };
+        created.push(entry);
+        entry.identity = fsModule.fstatSync(entry.fd);
+      }
+      for (const output of created) {
+        fsModule.writeFileSync(output.fd, output.content, "utf8");
+        fsModule.fsyncSync(output.fd);
+      }
+    } catch (error) {
+      const unresolved = [];
+      for (const output of created) {
+        try {
+          const current = fsModule.lstatSync(output.target);
+          if (output.identity && current.isFile() && current.dev === output.identity.dev && current.ino === output.identity.ino) {
+            fsModule.unlinkSync(output.target);
+          } else unresolved.push(output.filename);
+        } catch (cleanupError) {
+          if (cleanupError.code !== "ENOENT") unresolved.push(output.filename);
+        }
+      }
+      const detail = unresolved.length ? ` Paths changed or cleanup failed; inspect without overwriting: ${unresolved.join(", ")}.` : " Newly created partial outputs were removed.";
+      const message = error.code === "EEXIST" ? "TIMELINE_OUTPUT_EXISTS: a target appeared during creation; existing content was not overwritten." : `TIMELINE_OUTPUT_WRITE_FAILED: ${error.message}`;
+      failure = new Error(`${message}${detail}`, { cause: error });
+      throw failure;
+    } finally {
+      const closeErrors = [];
+      for (const output of created) {
+        try { fsModule.closeSync(output.fd); }
+        catch (error) { closeErrors.push(`${output.filename}: ${error.message}`); }
+      }
+      if (closeErrors.length) {
+        const detail = ` TIMELINE_OUTPUT_CLOSE_FAILED: ${closeErrors.join("; ")}`;
+        if (failure) failure.message += detail;
+        else throw new Error(detail.trim());
+      }
+    }
+  }
   return outputs.map((item) => item.target);
 }
 

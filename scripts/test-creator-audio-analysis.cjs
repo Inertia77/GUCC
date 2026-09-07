@@ -99,6 +99,64 @@ try {
   Audio.writeTimelineFiles(outputDir, forced, { force: true });
   assert.match(fs.readFileSync(path.join(outputDir, Audio.OUTPUT_NAMES.ALIGNMENT_REPORT), "utf8"), /forced revision/);
 
+  const raceDir = path.join(outputDir, "exclusive-create-race"); fs.mkdirSync(raceDir);
+  let opens = 0;
+  const racingFs = { ...fs, openSync(target, flags) {
+    if (++opens === 3) fs.writeFileSync(target, "created concurrently; must survive");
+    return fs.openSync(target, flags);
+  } };
+  assert.throws(() => Audio.writeTimelineFiles(raceDir, bundle.files, { fsModule: racingFs }), /TIMELINE_OUTPUT_EXISTS/);
+  assert.deepEqual(fs.readdirSync(raceDir), [Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED], "A late collision removes only this invocation's empty reservations");
+  assert.equal(fs.readFileSync(path.join(raceDir, Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED), "utf8"), "created concurrently; must survive");
+
+  const failedDir = path.join(outputDir, "partial-write-failure"); fs.mkdirSync(failedDir);
+  let writes = 0;
+  const failingFs = { ...fs, writeFileSync(fd, content, encoding) {
+    if (++writes === 2) { fs.writeSync(fd, "partial"); throw new Error("isolated disk-full failure"); }
+    return fs.writeFileSync(fd, content, encoding);
+  } };
+  assert.throws(() => Audio.writeTimelineFiles(failedDir, bundle.files, { fsModule: failingFs }), /TIMELINE_OUTPUT_WRITE_FAILED.*disk-full/);
+  assert.deepEqual(fs.readdirSync(failedDir), [], "Caught mid-write failure must not leave a plausible partial Timeline bundle");
+
+  const replacedDir = path.join(outputDir, "replaced-path-failure"); fs.mkdirSync(replacedDir);
+  let replacedWrites = 0;
+  const replacingFs = { ...fs, writeFileSync(fd, content, encoding) {
+    if (++replacedWrites === 1) {
+      const target = path.join(replacedDir, Audio.OUTPUT_NAMES.SUBTITLE_MASTER);
+      fs.unlinkSync(target); fs.writeFileSync(target, "concurrent replacement");
+    } else throw new Error("isolated late write failure");
+    return fs.writeFileSync(fd, content, encoding);
+  } };
+  assert.throws(() => Audio.writeTimelineFiles(replacedDir, bundle.files, { fsModule: replacingFs }), /Paths changed or cleanup failed/);
+  assert.deepEqual(fs.readdirSync(replacedDir), [Audio.OUTPUT_NAMES.SUBTITLE_MASTER]);
+  assert.equal(fs.readFileSync(path.join(replacedDir, Audio.OUTPUT_NAMES.SUBTITLE_MASTER), "utf8"), "concurrent replacement", "Failure cleanup must never remove a replacement owned by another writer");
+
+  const flushDir = path.join(outputDir, "flush-failure"); fs.mkdirSync(flushDir);
+  assert.throws(() => Audio.writeTimelineFiles(flushDir, bundle.files, { fsModule: { ...fs, fsyncSync() { throw new Error("isolated flush failure"); } } }), /flush failure/);
+  assert.deepEqual(fs.readdirSync(flushDir), []);
+
+  const symlinkDir = path.join(outputDir, "dangling-link-race"); fs.mkdirSync(symlinkDir);
+  const absentTarget = path.join(outputDir, "must-not-be-created.txt");
+  let symlinkAvailable = true;
+  try { fs.symlinkSync(absentTarget, path.join(symlinkDir, Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED), "file"); }
+  catch (error) {
+    if (process.platform !== "win32" || error.code !== "EPERM") throw error;
+    symlinkAvailable = false;
+    console.log("Dangling file-symlink regression skipped: Windows does not grant symlink creation to this process.");
+  }
+  if (symlinkAvailable) {
+    assert.throws(() => Audio.writeTimelineFiles(symlinkDir, bundle.files), /TIMELINE_OUTPUT_EXISTS/);
+    assert.equal(fs.existsSync(absentTarget), false, "Exclusive creation must not follow a dangling symlink");
+    assert.deepEqual(fs.readdirSync(symlinkDir), [Audio.OUTPUT_NAMES.TRANSCRIPT_ALIGNED]);
+  }
+
+  const closingDir = path.join(outputDir, "close-failure"); fs.mkdirSync(closingDir);
+  let closes = 0;
+  assert.throws(() => Audio.writeTimelineFiles(closingDir, bundle.files, { fsModule: { ...fs, closeSync(fd) {
+    fs.closeSync(fd); if (++closes === 1) throw new Error("isolated close failure");
+  } } }), /TIMELINE_OUTPUT_CLOSE_FAILED/);
+  assert.equal(closes, 4, "One descriptor close failure must not prevent closing the rest");
+
   // Full CLI boundary: these are generated test bytes, never a real production master.
   const audioPath = path.join(outputDir, "fixture.wav");
   const asrPath = path.join(outputDir, "fixture-asr.json");

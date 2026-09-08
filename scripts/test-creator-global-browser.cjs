@@ -192,11 +192,15 @@ async function main() {
     await page.getByRole("button", { name: "拉取云端", exact: true }).click(); await listHeld;
     await page.locator('[data-project-field="voiceMaster"]').fill("ISOLATED unblurred edit during pull");
     releaseList();
-    await page.locator('[data-gcb-status]').filter({ hasText: "正在编辑" }).waitFor();
+    const friendlyDirty = page.locator('[data-gcb-status]').filter({ hasText: "● 本地有修改 · 正在同步" });
+    await friendlyDirty.waitFor();
+    assert.match(await friendlyDirty.getAttribute("title"), /编辑|本地/, "Friendly sync status must retain the underlying diagnostic in its title");
     assert.equal(await page.locator('[data-project-field="voiceMaster"]').inputValue(), "ISOLATED unblurred edit during pull", "Pending pull must not reload away the active editor");
     await page.locator('[data-project-field="voiceMaster"]').blur();
     await page.getByRole("button", { name: "拉取云端", exact: true }).click();
-    await page.locator('[data-gcb-status]').filter({ hasText: "云端冲突待处理" }).waitFor();
+    const friendlyConflict = page.locator('[data-gcb-status]').filter({ hasText: "⚠ 冲突需要处理" });
+    await friendlyConflict.waitFor();
+    assert.match(await friendlyConflict.getAttribute("title"), /冲突/, "Friendly conflict status must retain the underlying diagnostic in its title");
     await page.waitForFunction(() => typeof window.fixtureAutosync === "function");
     const preserved = await page.evaluate(() => JSON.parse(localStorage.getItem("gucc_ai_video_production_v1")).projects.find((project) => project.projectId === "A"));
     assert.equal(preserved.voiceMaster, "ISOLATED unblurred edit during pull");

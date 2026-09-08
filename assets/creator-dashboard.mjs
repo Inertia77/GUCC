@@ -1,4 +1,5 @@
-import "./creator-ux-simplification-v1.mjs";
+import "./creator-ux-simplification-v1.mjs?v=1";
+import "./creator-ux-simplification-v1-closeout.mjs?v=1";
 import { CONFIG } from "../apps/command-center/src/config.js";
 import { getAccessToken, getSession } from "../apps/command-center/src/auth.js";
 import { PRODUCTION_STORAGE_KEY } from "./creator-pipeline-core.mjs";

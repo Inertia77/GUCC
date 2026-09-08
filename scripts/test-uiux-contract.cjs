@@ -16,7 +16,9 @@ const accessGuard = read('assets/access-guard.js');
 const portal = read('index.html');
 const dashboard = read('assets/creator-dashboard.mjs');
 const creatorUx = read('assets/creator-ux-simplification-v1.mjs');
+const creatorUxCloseout = read('assets/creator-ux-simplification-v1-closeout.mjs');
 const serviceWorker = read('sw.js');
+const uxBrowser = read('scripts/test-creator-ux-browser.cjs');
 
 assert.match(shell, /production:\s*\{/m, 'Global shell must expose Production as a creator destination.');
 assert.match(shell, /items:\s*\[childRoutes\.workspace, childRoutes\.production, childRoutes\.cover, childRoutes\.publish\]/, 'Creator menu must follow Studio → Production → Cover → Publish.');
@@ -43,6 +45,7 @@ assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/,
 assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
 assert.match(productionHtml, /creator-ux-simplification-v1\.mjs\?v=1/, 'Production must load the Creator UX simplification layer.');
+assert.match(productionHtml, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Production must load the Creator UX closeout refinements.');
 assert.match(productionCss, /@media\(max-width:700px\)\{\.app-shell\{grid-template-columns:minmax\(0,1fr\)\}\.sidebar,\.project-list\{min-width:0\}\}/, 'Production phone layout must prevent the horizontal project rail from widening the page grid.');
 assert.match(productionCss, /\.button\.tiny\.primary\{color:#061014!important\}/, 'Production primary micro-actions must keep readable text on the mint/cyan surface.');
 assert.match(accessGuard, /creator-pipeline-ux\.mjs/, 'Creator pipeline UX integration must be bootstrapped on eligible pages.');
@@ -50,7 +53,8 @@ assert.match(portal, /id="creatorDashboard"/, 'Portal must include the integrate
 assert.match(portal, /creator-dashboard\.mjs/, 'Portal must load the Creator Dashboard module.');
 assert.match(dashboard, /buildCreatorDashboard/, 'Creator Dashboard must use the shared health and action queue core.');
 assert.match(dashboard, /\?project=/, 'Creator Dashboard project links must deep-link to the selected project.');
-assert.match(dashboard, /creator-ux-simplification-v1\.mjs/, 'Portal dashboard must share the same Creator UX simplification layer as Production.');
+assert.match(dashboard, /creator-ux-simplification-v1\.mjs\?v=1/, 'Portal dashboard must share the same Creator UX simplification layer as Production.');
+assert.match(dashboard, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Portal dashboard must load the same Creator UX closeout refinements as Production.');
 
 assert.match(creatorUx, /creator-top-action/, 'Portal must visually promote exactly the ranked Top 1 action.');
 assert.match(creatorUx, /creator-next-queue/, 'Secondary dashboard actions must be progressively disclosed under Next.');
@@ -67,7 +71,25 @@ assert.match(creatorUx, /同步详情/, 'Manual sync controls must be progressiv
 assert.match(creatorUx, /min-height:44px/, 'Touch targets must retain a 44px minimum in the simplified UI.');
 assert.match(creatorUx, /font-size:16px!important/, 'Production phone inputs must avoid sub-16px focus zoom.');
 assert.doesNotMatch(creatorUx, /creatorApi\(|saveProject\(|humanLock\s*\(/, 'The UX simplification layer must not introduce its own persistence or human-lock mutation path.');
-assert.match(serviceWorker, /gucc-static-v26/, 'PWA cache must advance when the Creator UX shell changes.');
+
+assert.match(creatorUxCloseout, /Legacy Workflow Detail/, 'Legacy compatibility state and gates must remain available only through Advanced disclosure.');
+assert.match(creatorUxCloseout, /\[data-human-lock\]:not\(\.ux-primary-action\)/, 'Default Global view must hide non-current Human Gates.');
+assert.match(creatorUxCloseout, /\[data-create-publication\]/, 'Production must suppress Publication execution controls even when advanced Global detail is open.');
+assert.match(creatorUxCloseout, /Raw language identity must not|LANGUAGE_NAMES|日语版/, 'Technical language identity must be demoted behind a human-facing label.');
+assert.match(creatorUxCloseout, /ux-setup-scoped/, 'Global Setup must disclose only forms relevant to the current stage by default.');
+assert.match(creatorUxCloseout, /○ 仅本地 · 登录后同步/, 'Unauthenticated local mode must not be mislabeled as a dirty sync state.');
+assert.match(creatorUxCloseout, /当前阶段 ·/, 'Production hero must expose a friendly current stage.');
+assert.doesNotMatch(creatorUxCloseout, /creatorApi\(|saveProject\(|humanLock\s*\(/, 'Closeout refinements must remain presentation-only and introduce no persistence/gate mutation path.');
+
+assert.match(uxBrowser, /390, 844/, 'Creator UX browser acceptance must cover 390×844.');
+assert.match(uxBrowser, /768, 1024/, 'Creator UX browser acceptance must cover 768×1024.');
+assert.match(uxBrowser, /1440, 900/, 'Creator UX browser acceptance must cover 1440×900.');
+assert.match(uxBrowser, /Human Gate must never auto-fire/, 'Creator UX browser acceptance must protect human-only gates.');
+assert.match(uxBrowser, /first fold/, 'Creator UX browser acceptance must verify current-task-first mobile hierarchy.');
+assert.match(uxBrowser, /saveProject/, 'Creator UX browser acceptance must prove read/navigation smoke creates no Project write.');
+
+assert.match(serviceWorker, /gucc-static-v27/, 'PWA cache must advance when the Creator UX closeout shell changes.');
 assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator UX simplification must remain available in the offline app shell.');
+assert.match(serviceWorker, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Creator UX closeout refinements must remain available in the offline app shell.');
 
 console.log('UIUX contract checks passed.');

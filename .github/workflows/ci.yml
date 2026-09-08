@@ -37,6 +37,9 @@ jobs:
       - name: Install isolated Chromium
         run: node node_modules/playwright-core/cli.js install --with-deps --only-shell chromium
 
+      - name: Run Creator current-task UX regression
+        run: node scripts/test-creator-ux-browser.cjs
+
       - name: Run isolated Creator browser regression
         run: node scripts/test-creator-global-browser.cjs
 
@@ -45,6 +48,8 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: creator-global-browser-${{ github.run_id }}
-          path: tmp/creator-global-browser/
+          path: |
+            tmp/creator-global-browser/
+            tmp/creator-ux-browser/
           if-no-files-found: ignore
           retention-days: 7

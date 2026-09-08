@@ -125,6 +125,15 @@ function injectStyles() {
         font-size: 10px !important;
       }
 
+      body.production-system-page .gcb-integrated-host .gcb-inline .ux-sync-details {
+        grid-column: 1 !important;
+        grid-row: 3 !important;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 5px;
+        min-width: 0;
+      }
+
       .gcb-integrated-host .gcb-inline .gcb-row {
         grid-column: 1;
         grid-row: 3;

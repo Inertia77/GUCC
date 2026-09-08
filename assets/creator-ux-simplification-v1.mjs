@@ -74,7 +74,7 @@ function css() {
     body.production-system-page #globalProduction:not(.ux-show-full) [data-record-published],
     body.production-system-page #globalProduction:not(.ux-show-full) [data-publication-copy],
     body.production-system-page #globalProduction:not(.ux-show-full) [data-scope-type="publication"]{display:none!important}
-    body.production-system-page .ux-identity-source{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:0!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important;clip-path:inset(50%)!important}
+    body.production-system-page .ux-identity-source{display:none!important}
     body.production-system-page .ux-identity-settings{margin-top:8px;border-top:1px dashed rgba(255,255,255,.10);padding-top:7px}
     body.production-system-page .ux-identity-settings>summary{cursor:pointer;color:var(--gucc-muted);font-size:11px;font-weight:750}
     body.production-system-page .ux-identity-settings label{margin-top:8px}

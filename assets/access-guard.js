@@ -47,10 +47,10 @@
     const eligible = pathname.includes('/apps/video-workspace/') || pathname.includes('/apps/publishing-console/');
     if (!eligible) return;
     if (!document.querySelector('script[data-gucc-creator-pipeline]')) {
-      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=4', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
+      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=7', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
     }
     if (!document.querySelector('script[data-gucc-creator-pipeline-ux]')) {
-      const ux = document.createElement('script'); ux.type = 'module'; ux.src = new URL('assets/creator-pipeline-ux.mjs?v=1', rootHref).href; ux.dataset.guccCreatorPipelineUx = 'true'; document.head.appendChild(ux);
+      const ux = document.createElement('script'); ux.type = 'module'; ux.src = new URL('assets/creator-pipeline-ux.mjs?v=2', rootHref).href; ux.dataset.guccCreatorPipelineUx = 'true'; document.head.appendChild(ux);
     }
     if (pathname.includes('/apps/video-workspace/production-system/') && !document.querySelector('script[data-gucc-creator-archive-ui]')) {
       const archive = document.createElement('script'); archive.type = 'module'; archive.src = new URL('assets/creator-archive-ui.mjs?v=1', rootHref).href; archive.dataset.guccCreatorArchiveUi = 'true'; document.head.appendChild(archive);

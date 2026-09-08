@@ -101,7 +101,7 @@ function injectStyles() {
       display: none !important;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 980px) {
       .gcb-integrated-host .gucc-creator-bridge.gcb-inline {
         grid-template-columns: minmax(0, 1fr) !important;
         grid-template-rows: auto auto auto !important;
@@ -120,10 +120,18 @@ function injectStyles() {
         grid-column: 1;
         grid-row: 2;
         max-width: calc(100% - 26px);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        overflow-wrap: anywhere;
+        white-space: normal;
         font-size: 10px !important;
+      }
+
+      body.production-system-page .gcb-integrated-host .gcb-inline .ux-sync-details {
+        grid-column: 1 !important;
+        grid-row: 3 !important;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 5px;
+        min-width: 0;
       }
 
       .gcb-integrated-host .gcb-inline .gcb-row {

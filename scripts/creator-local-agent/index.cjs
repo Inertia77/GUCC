@@ -147,7 +147,7 @@ async function scan(runtime) {
   for (const project of discovery.projects) {
     try {
       const cloud = await client.getProject(project.projectId);
-      const logicalFiles = Array.isArray(cloud.files) ? cloud.files : [];
+      const logicalFiles = [...(Array.isArray(cloud.files) ? cloud.files : []), ...(Array.isArray(cloud.scopedArtifacts) ? cloud.scopedArtifacts : [])];
       contracts.set(project.projectId, { project, logicalFiles });
       const previous = previousForDevice(cloud.fileLocations, config.deviceId);
       const observed = await Core.observeProject({

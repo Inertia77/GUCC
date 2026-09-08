@@ -5,8 +5,9 @@ const fs = require("node:fs");
 const fsp = fs.promises;
 const os = require("node:os");
 const path = require("node:path");
+const Global = require("../../assets/creator-global-production-core.js");
 
-const AGENT_VERSION = "2.0.1-phase2a2";
+const AGENT_VERSION = "3.0.0-global-production-v1";
 const DEFAULT_HASH_LIMIT_BYTES = 128 * 1024 * 1024;
 const DEFAULT_DEBOUNCE_MS = 1500;
 const DEFAULT_RECONCILE_MS = 15 * 60 * 1000;
@@ -172,7 +173,7 @@ async function sha256File(filePath, fsModule = fs) {
   });
 }
 
-function cacheKey(projectId, fileKey) { return `${projectId}::${fileKey}`; }
+function cacheKey(projectId, logicalFile) { return Global.scopedCacheKey(projectId, logicalFile); }
 
 async function observeLogicalArtifact(params) {
   const {
@@ -181,6 +182,9 @@ async function observeLogicalArtifact(params) {
   } = params;
   const fileKey = String(logicalFile.file_key || logicalFile.fileKey || "").trim();
   if (!fileKey) throw new Error("Logical artifact is missing file_key");
+  const scopeType = String(logicalFile.artifact_scope_type || logicalFile.artifactScopeType || "project").trim() || "project";
+  const scopeId = String(logicalFile.artifact_scope_id || logicalFile.artifactScopeId || (scopeType === "project" ? project.projectId : "")).trim();
+  if (!scopeId) throw new Error("Logical artifact is missing artifact_scope_id");
   const relativePath = normalizeRelativePath(logicalFile.relative_path || logicalFile.relativePath);
   const projectRoot = path.resolve(project.projectRoot);
   const absolutePath = path.resolve(projectRoot, ...relativePath.split("/"));
@@ -205,7 +209,7 @@ async function observeLogicalArtifact(params) {
     const prior = previousLocation || null;
     const availability = prior && ["present", "missing"].includes(String(prior.availability)) ? "missing" : "unknown";
     return {
-      fileKey, relativePath, filename: path.basename(relativePath), availability,
+      fileKey, artifactScopeType: scopeType, artifactScopeId: scopeId, relativePath, filename: path.basename(relativePath), availability,
       sizeBytes: null, mimeType: mimeTypeFor(relativePath), checksum: null, fileModifiedAt: null, observedAt,
       metadata: { observer: "creator-local-agent", agentVersion: AGENT_VERSION, hashStrategy: "not-applicable" },
       changedLocally: prior ? String(prior.availability) !== availability : availability !== "unknown",
@@ -219,7 +223,7 @@ async function observeLogicalArtifact(params) {
     throw new Error(`Artifact resolves outside the project/Workspace Root: ${relativePath}`);
   }
 
-  const key = cacheKey(project.projectId, fileKey);
+  const key = cacheKey(project.projectId, logicalFile);
   const cached = cache?.files?.[key] || null;
   const sizeBytes = stat.size;
   const mtimeMs = Math.trunc(stat.mtimeMs);
@@ -241,7 +245,7 @@ async function observeLogicalArtifact(params) {
   if (cache?.files) cache.files[key] = { sizeBytes, mtimeMs, checksum, lastObservedAt: observedAt };
 
   const next = {
-    fileKey, relativePath, filename: path.basename(relativePath), availability: "present", sizeBytes,
+    fileKey, artifactScopeType: scopeType, artifactScopeId: scopeId, relativePath, filename: path.basename(relativePath), availability: "present", sizeBytes,
     mimeType: mimeTypeFor(relativePath), checksum, fileModifiedAt: new Date(stat.mtimeMs).toISOString(), observedAt,
     metadata: { observer: "creator-local-agent", agentVersion: AGENT_VERSION, hashStrategy, mtimeMs }, rehashed,
   };
@@ -298,6 +302,7 @@ function parentDirsForLogicalFiles(projectRoot, logicalFiles) {
 
 module.exports = {
   AGENT_VERSION, DEFAULT_HASH_LIMIT_BYTES, DEFAULT_DEBOUNCE_MS, DEFAULT_RECONCILE_MS, CONFIG_DIR, CONFIG_PATH, CACHE_PATH,
+  cacheKey,
   normalizeRelativePath, isPathInside, stableDeviceId, ensureConfigDir, loadConfig, saveConfig, loadHashCache, saveHashCache,
   validateWorkspaceRoot, discoverProjects, mimeTypeFor, sha256File, observeLogicalArtifact, observeProject,
   createDebouncedScheduler, parentDirsForLogicalFiles,

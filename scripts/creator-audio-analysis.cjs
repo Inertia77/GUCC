@@ -1,0 +1,269 @@
+"use strict";
+
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
+const Global = require("../assets/creator-global-production-core.js");
+const OUTPUT_NAMES = Object.freeze({ SUBTITLE_MASTER: "SUBTITLE_MASTER.srt", TIMELINE_SENTENCE: "TIMELINE_SENTENCE.csv", TRANSCRIPT_ALIGNED: "TRANSCRIPT_ALIGNED.json", ALIGNMENT_REPORT: "ALIGNMENT_REPORT.md" });
+
+function wavDurationMs(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 44 || buffer.toString("ascii", 0, 4) !== "RIFF" || buffer.toString("ascii", 8, 12) !== "WAVE") {
+    throw new Error("AUDIO_MASTER is not a readable PCM/IEEE WAV file; use ffprobe-backed analysis for other formats");
+  }
+  // RIFF sizes exclude the eight-byte chunk header; odd chunks include a pad.
+  // Never silently shorten a damaged AUDIO_MASTER to the bytes left on disk.
+  const riffEnd = buffer.readUInt32LE(4) + 8;
+  if (riffEnd < 12 || riffEnd > buffer.length) throw new Error("AUDIO_MASTER WAV has a truncated or invalid RIFF container");
+  let offset = 12; let format = null; let dataBytes = null;
+  while (offset < riffEnd) {
+    if (offset + 8 > riffEnd) throw new Error("AUDIO_MASTER WAV has a truncated chunk header");
+    const id = buffer.toString("ascii", offset, offset + 4); const size = buffer.readUInt32LE(offset + 4); const body = offset + 8;
+    const next = body + size + (size % 2);
+    if (next > riffEnd) throw new Error(`AUDIO_MASTER WAV has a truncated ${id} chunk or missing padding`);
+    if (id === "fmt ") {
+      if (format || size < 16) throw new Error("AUDIO_MASTER WAV has a duplicate or incomplete fmt chunk");
+      format = {
+        tag: buffer.readUInt16LE(body), channels: buffer.readUInt16LE(body + 2), sampleRate: buffer.readUInt32LE(body + 4),
+        byteRate: buffer.readUInt32LE(body + 8), blockAlign: buffer.readUInt16LE(body + 12), bits: buffer.readUInt16LE(body + 14),
+      };
+      if (format.tag === 0xfffe) {
+        if (size < 40 || buffer.readUInt16LE(body + 16) < 22 || 18 + buffer.readUInt16LE(body + 16) > size) {
+          throw new Error("AUDIO_MASTER WAV has an incomplete extensible format");
+        }
+        const validBits = buffer.readUInt16LE(body + 18);
+        if (!validBits || validBits > format.bits) throw new Error("AUDIO_MASTER WAV has invalid valid-bits precision");
+        const standardGuid = buffer.subarray(body + 28, body + 40).equals(Buffer.from("00001000800000aa00389b71", "hex"));
+        format.tag = standardGuid ? buffer.readUInt32LE(body + 24) : -1;
+      }
+    }
+    if (id === "data") {
+      if (dataBytes !== null) throw new Error("AUDIO_MASTER WAV has multiple data chunks; a single continuous master is required");
+      dataBytes = size;
+    }
+    if (id === "LIST" && size >= 4 && buffer.toString("ascii", body, body + 4) === "wavl") {
+      throw new Error("AUDIO_MASTER WAV uses a segmented wavl layout; a single continuous master is required");
+    }
+    offset = next;
+  }
+  if (!format || !dataBytes) throw new Error("AUDIO_MASTER WAV is missing fmt/data chunks or has no audio frames");
+  if (![1, 3].includes(format.tag)) throw new Error("AUDIO_MASTER WAV encoding is not PCM/IEEE float; use a verified uncompressed master");
+  const supportedBits = format.tag === 1 ? [8, 16, 24, 32] : [32, 64];
+  if (!format.channels || !format.sampleRate || !supportedBits.includes(format.bits)
+    || format.blockAlign !== format.channels * format.bits / 8 || format.byteRate !== format.sampleRate * format.blockAlign) {
+    throw new Error("AUDIO_MASTER WAV has inconsistent sample rate, precision, byte rate or block alignment");
+  }
+  if (dataBytes % format.blockAlign !== 0) throw new Error("AUDIO_MASTER WAV ends with an incomplete audio frame");
+  return Math.round(dataBytes / format.blockAlign / format.sampleRate * 1000);
+}
+
+function ffprobeDurationMs(audioPath, ffprobeBin = process.env.FFPROBE_BIN || "ffprobe") {
+  const result = spawnSync(ffprobeBin, ["-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", audioPath], { encoding: "utf8" });
+  if (result.status !== 0) throw new Error(`Unable to read AUDIO_MASTER duration with ffprobe: ${String(result.stderr || result.error?.message || "ffprobe unavailable").trim()}`);
+  const seconds = Number(String(result.stdout || "").trim());
+  if (!Number.isFinite(seconds) || seconds <= 0) throw new Error("ffprobe returned an invalid AUDIO_MASTER duration");
+  return Math.round(seconds * 1000);
+}
+
+function audioDurationMs(audioPath, buffer = fs.readFileSync(audioPath)) {
+  return path.extname(audioPath).toLowerCase() === ".wav" ? wavDurationMs(buffer) : ffprobeDurationMs(audioPath);
+}
+
+function audioChecksum(buffer) { return `sha256:${crypto.createHash("sha256").update(buffer).digest("hex")}`; }
+function timestamp(ms, srt = false) {
+  const safe = Math.max(0, Math.round(Number(ms) || 0)); const hours = Math.floor(safe / 3600000); const minutes = Math.floor(safe % 3600000 / 60000); const seconds = Math.floor(safe % 60000 / 1000); const millis = safe % 1000;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}${srt ? "," : "."}${String(millis).padStart(3, "0")}`;
+}
+function csvCell(value) { const text = String(value == null ? "" : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; }
+function csv(rows) { return `${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}\r\n`; }
+function normalizeText(value) { return String(value || "").normalize("NFKC").toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, ""); }
+const ALIGNMENT_THRESHOLD = 0.9;
+
+function analyzeAlignment(script, transcript, { maxCells = 20000000 } = {}) {
+  if (!Number.isSafeInteger(maxCells) || maxCells < 1) throw new Error("Alignment comparison budget must be a positive safe integer");
+  const expected = Array.from(normalizeText(script)); const actual = Array.from(normalizeText(transcript));
+  const size = Math.max(expected.length, actual.length);
+  const result = { method: "ordered_character_edit_distance_v1", threshold: ALIGNMENT_THRESHOLD,
+    expectedCharacters: expected.length, transcriptCharacters: actual.length, score: null, editDistance: null,
+    accepted: false, reason: "missing_script_or_transcript" };
+  if (!expected.length || !actual.length) return result;
+  const maxDistance = Math.floor(size * (1 - ALIGNMENT_THRESHOLD) + 1e-9);
+  if (Math.abs(expected.length - actual.length) > maxDistance) return { ...result, reason: "length_difference_exceeds_limit" };
+
+  // Trim equal edges, then widen a diagonal edit-distance band only as needed.
+  // Accurate long ASR transcripts stay cheap; adversarial input has a work cap.
+  let start = 0, endExpected = expected.length, endActual = actual.length;
+  while (start < endExpected && start < endActual && expected[start] === actual[start]) start++;
+  while (endExpected > start && endActual > start && expected[endExpected - 1] === actual[endActual - 1]) { endExpected--; endActual--; }
+  const a = expected.slice(start, endExpected), b = actual.slice(start, endActual);
+  const matched = (distance) => ({ ...result, score: 1 - distance / size, editDistance: distance, accepted: true, reason: "ordered_similarity_pass" });
+  if (!a.length || !b.length) {
+    const distance = Math.max(a.length, b.length);
+    return distance <= maxDistance ? matched(distance) : { ...result, reason: "edit_distance_exceeds_limit" };
+  }
+  let cells = 0, band = Math.min(maxDistance, Math.max(4, Math.abs(a.length - b.length)));
+  while (true) {
+    let previous = new Int32Array(b.length + 1), current = new Int32Array(b.length + 1);
+    previous.fill(band + 1);
+    for (let j = 0; j <= Math.min(b.length, band); j++) previous[j] = j;
+    let exceeded = false;
+    for (let i = 1; i <= a.length; i++) {
+      const first = Math.max(1, i - band), last = Math.min(b.length, i + band);
+      cells += Math.max(0, last - first + 1);
+      if (cells > maxCells) return { ...result, reason: "comparison_budget_exceeded" };
+      current[0] = i <= band ? i : band + 1;
+      if (first > 1) current[first - 1] = band + 1;
+      let minimum = current[0];
+      for (let j = first; j <= last; j++) {
+        current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        minimum = Math.min(minimum, current[j]);
+      }
+      if (last < b.length) current[last + 1] = band + 1;
+      [previous, current] = [current, previous];
+      if (minimum > band) { exceeded = true; break; }
+    }
+    if (!exceeded && previous[b.length] <= band) return matched(previous[b.length]);
+    if (band >= maxDistance) return { ...result, reason: "edit_distance_exceeds_limit" };
+    band = Math.min(maxDistance, Math.max(band + 1, band * 2));
+  }
+}
+
+// Numeric compatibility helper: rejected/budget-limited comparisons cannot be
+// treated as a passing score. Detailed callers use analyzeAlignment's reason.
+function alignmentScore(script, transcript) { return analyzeAlignment(script, transcript).score ?? 0; }
+
+function normalizeSegments(raw) {
+  const source = Array.isArray(raw) ? raw : Array.isArray(raw?.segments) ? raw.segments : [];
+  const ids = new Set();
+  return source.map((segment, index) => {
+    if (!segment || typeof segment !== "object" || Array.isArray(segment)) throw new Error(`ASR segment ${index + 1} must be an object`);
+    const milliseconds = Object.hasOwn(segment, "startMs") || Object.hasOwn(segment, "endMs");
+    const parseTime = (value, key) => {
+      if (typeof value !== "number" || !Number.isFinite(value) || value < 0) throw new Error(`ASR segment ${index + 1} ${key} must be a finite non-negative numeric timestamp`);
+      return Math.round(value * (milliseconds ? 1 : 1000));
+    };
+    if (segment.id != null && typeof segment.id !== "string" && !(typeof segment.id === "number" && Number.isFinite(segment.id))) {
+      throw new Error(`ASR segment ${index + 1} has an invalid identity`);
+    }
+    const id = segment.id == null ? `SEG_${String(index + 1).padStart(4, "0")}` : String(segment.id).trim();
+    if (!id || ids.has(id)) throw new Error(`ASR segment ${index + 1} has an empty or duplicate identity`);
+    ids.add(id);
+    if (typeof segment.text !== "string") throw new Error(`ASR segment ${index + 1} transcript text must be a string`);
+    return {
+      id,
+      startMs: parseTime(milliseconds ? segment.startMs : segment.start, milliseconds ? "startMs" : "start"),
+      endMs: parseTime(milliseconds ? segment.endMs : segment.end, milliseconds ? "endMs" : "end"),
+      text: segment.text.trim(),
+      confidence: segment.confidence == null ? null : Number(segment.confidence),
+      words: Array.isArray(segment.words) ? segment.words : [],
+    };
+  });
+}
+
+function buildTimelineBundle({ audioPath, audioBuffer, durationMs, provider, languageCode, segments, lockedScript = "" }) {
+  const checksum = audioChecksum(audioBuffer); const normalized = normalizeSegments(segments); const transcript = normalized.map((segment) => segment.text).join(" ").trim();
+  const validation = Global.validateAudioAnalysis({ durationMs, provider, audioChecksum: checksum, segments: normalized });
+  if (!validation.valid) throw new Error(`REAL_AUDIO_ANALYSIS_BLOCKED: ${validation.errors.join("; ")}`);
+  const alignment = analyzeAlignment(lockedScript, transcript); const score = alignment.score;
+  const alignmentStatus = alignment.accepted ? "VALID" : "REVIEW_REQUIRED";
+  const pauses = normalized.slice(1).map((segment, index) => ({ afterSegmentId: normalized[index].id, startMs: normalized[index].endMs, endMs: segment.startMs, durationMs: segment.startMs - normalized[index].endMs })).filter((pause) => pause.durationMs >= 350);
+  const provenance = { timing_provenance: "real_audio", provider, language_code: languageCode || "", audio_checksum: checksum, audio_filename: path.basename(audioPath), duration_ms: durationMs, analyzed_at: new Date().toISOString() };
+  const subtitleMaster = `${normalized.map((segment, index) => `${index + 1}\n${timestamp(segment.startMs, true)} --> ${timestamp(segment.endMs, true)}\n${segment.text}`).join("\n\n")}\n`;
+  const timelineSentence = csv([["ID", "START", "END", "DURATION_MS", "TEXT", "AUDIO_CHECKSUM"], ...normalized.map((segment) => [segment.id, timestamp(segment.startMs), timestamp(segment.endMs), segment.endMs - segment.startMs, segment.text, checksum])]);
+  const transcriptAligned = `${JSON.stringify({ schemaVersion: "gucc-real-audio-alignment-v1", provenance, alignment: { status: alignmentStatus, ...alignment }, segments: normalized, pauses }, null, 2)}\n`;
+  const alignmentReport = `# ALIGNMENT REPORT\n\n- timing_provenance: real_audio\n- provider: ${provider}\n- audio_checksum: ${checksum}\n- duration_ms: ${durationMs}\n- segment_count: ${normalized.length}\n- pause_count: ${pauses.length}\n- locked_script_alignment: ${alignmentStatus}\n- alignment_method: ${alignment.method}\n- alignment_threshold: ${alignment.threshold}\n- alignment_score: ${score == null ? "not_computed" : score.toFixed(4)}\n- alignment_reason: ${alignment.reason}\n\n${alignmentStatus === "VALID" ? "Ordered text similarity passed. Human review must still verify numbers, names, omissions and meaning before Voice / Timeline Lock." : "Human review is required before Voice / Timeline Lock."}\n\nThis text comparison does not infer or retime any ASR timestamps.\n`;
+  return { provenance, alignmentStatus, alignmentScore: score, alignment, segments: normalized, pauses, files: { SUBTITLE_MASTER: subtitleMaster, TIMELINE_SENTENCE: timelineSentence, TRANSCRIPT_ALIGNED: transcriptAligned, ALIGNMENT_REPORT: alignmentReport } };
+}
+
+function runWhisper(audioPath, outputDir, languageCode, whisperBin = process.env.WHISPER_BIN || "whisper") {
+  const args = [audioPath, "--output_dir", outputDir, "--output_format", "json", "--word_timestamps", "True"];
+  if (languageCode) args.push("--language", languageCode);
+  const result = spawnSync(whisperBin, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  if (result.status !== 0) throw new Error(`LOCAL_ASR_REQUIRED: Whisper did not produce timestamped transcription (${String(result.stderr || result.error?.message || "unavailable").trim()})`);
+  const outputPath = path.join(outputDir, `${path.parse(audioPath).name}.json`);
+  if (!fs.existsSync(outputPath)) throw new Error("LOCAL_ASR_REQUIRED: Whisper JSON output was not found");
+  return JSON.parse(fs.readFileSync(outputPath, "utf8"));
+}
+
+function parseArgs(argv) {
+  const result = {};
+  for (let i = 0; i < argv.length; i += 1) if (argv[i].startsWith("--")) { const key = argv[i].slice(2); const next = argv[i + 1]; result[key] = next && !next.startsWith("--") ? (i += 1, next) : true; }
+  return result;
+}
+
+function writeTimelineFiles(outputDir, files, { force = false, fsModule = fs } = {}) {
+  const outputs = Object.entries(OUTPUT_NAMES).map(([key, filename]) => ({ key, filename, target: path.join(outputDir, filename), content: files[key] }));
+  const missing = outputs.filter((item) => typeof item.content !== "string").map((item) => item.key);
+  if (missing.length) throw new Error(`TIMELINE_BUNDLE_INCOMPLETE: missing ${missing.join(", ")}`);
+  const existing = outputs.filter((item) => fsModule.existsSync(item.target));
+  if (existing.length && !force) {
+    throw new Error(`TIMELINE_OUTPUT_EXISTS: ${existing.map((item) => item.filename).join(", ")}. Reopen the human Voice / Timeline Lock explicitly, then rerun with --force.`);
+  }
+  if (force) {
+    for (const output of outputs) fsModule.writeFileSync(output.target, output.content, "utf8");
+  } else {
+    // The preflight above is for a helpful error only. Exclusive opens enforce
+    // no-overwrite even if another process creates a target after that check.
+    // Reserve every target before writing, so a collision cannot leave a mixed
+    // bundle. Keep handles open while cleaning up to identify our own files.
+    const created = [];
+    let failure = null;
+    try {
+      for (const output of outputs) {
+        const entry = { ...output, fd: fsModule.openSync(output.target, "wx") };
+        created.push(entry);
+        entry.identity = fsModule.fstatSync(entry.fd);
+      }
+      for (const output of created) {
+        fsModule.writeFileSync(output.fd, output.content, "utf8");
+        fsModule.fsyncSync(output.fd);
+      }
+    } catch (error) {
+      const unresolved = [];
+      for (const output of created) {
+        try {
+          const current = fsModule.lstatSync(output.target);
+          if (output.identity && current.isFile() && current.dev === output.identity.dev && current.ino === output.identity.ino) {
+            fsModule.unlinkSync(output.target);
+          } else unresolved.push(output.filename);
+        } catch (cleanupError) {
+          if (cleanupError.code !== "ENOENT") unresolved.push(output.filename);
+        }
+      }
+      const detail = unresolved.length ? ` Paths changed or cleanup failed; inspect without overwriting: ${unresolved.join(", ")}.` : " Newly created partial outputs were removed.";
+      const message = error.code === "EEXIST" ? "TIMELINE_OUTPUT_EXISTS: a target appeared during creation; existing content was not overwritten." : `TIMELINE_OUTPUT_WRITE_FAILED: ${error.message}`;
+      failure = new Error(`${message}${detail}`, { cause: error });
+      throw failure;
+    } finally {
+      const closeErrors = [];
+      for (const output of created) {
+        try { fsModule.closeSync(output.fd); }
+        catch (error) { closeErrors.push(`${output.filename}: ${error.message}`); }
+      }
+      if (closeErrors.length) {
+        const detail = ` TIMELINE_OUTPUT_CLOSE_FAILED: ${closeErrors.join("; ")}`;
+        if (failure) failure.message += detail;
+        else throw new Error(detail.trim());
+      }
+    }
+  }
+  return outputs.map((item) => item.target);
+}
+
+function main(argv = process.argv.slice(2)) {
+  const args = parseArgs(argv); const audioPath = path.resolve(String(args.audio || "")); const outputDir = path.resolve(String(args.output || path.dirname(audioPath)));
+  if (!args.audio || !fs.existsSync(audioPath)) throw new Error("--audio must identify the real local AUDIO_MASTER");
+  fs.mkdirSync(outputDir, { recursive: true });
+  const audioBuffer = fs.readFileSync(audioPath); const durationMs = audioDurationMs(audioPath, audioBuffer);
+  const asr = args.asr ? JSON.parse(fs.readFileSync(path.resolve(String(args.asr)), "utf8")) : runWhisper(audioPath, outputDir, String(args.language || ""));
+  const lockedScript = args.script ? fs.readFileSync(path.resolve(String(args.script)), "utf8") : "";
+  const bundle = buildTimelineBundle({ audioPath, audioBuffer, durationMs, provider: String(args.provider || (args.asr ? "external_timestamped_asr" : "openai_whisper_local")), languageCode: String(args.language || ""), segments: asr, lockedScript });
+  writeTimelineFiles(outputDir, bundle.files, { force: args.force === true });
+  process.stdout.write(`${JSON.stringify({ status: bundle.alignmentStatus === "VALID" ? "READY_FOR_HUMAN_TIMELINE_LOCK" : "BLOCKED_REVIEW_REQUIRED", ...bundle.provenance, alignment_score: bundle.alignmentScore, alignment_method: bundle.alignment.method, alignment_reason: bundle.alignment.reason }, null, 2)}\n`);
+}
+
+if (require.main === module) {
+  try { main(); } catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
+}
+
+module.exports = { OUTPUT_NAMES, wavDurationMs, ffprobeDurationMs, audioDurationMs, audioChecksum, timestamp, normalizeSegments, analyzeAlignment, alignmentScore, buildTimelineBundle, writeTimelineFiles, runWhisper, main };

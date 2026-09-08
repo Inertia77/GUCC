@@ -12,11 +12,12 @@ import {
   buildReleasePrompt,
   productionToPublishState,
   mergeCloudProjects,
-} from "./creator-pipeline-core.mjs";
+} from "./creator-pipeline-core.mjs?v=2";
 import {
   attachCloudMetadata,
   mergeProjectVersions,
   stripCloudMetadata,
+  stableStringify,
   summarizeProjectDiff,
 } from "./creator-dashboard-core.mjs";
 
@@ -35,6 +36,20 @@ const FIELD_IDS = [
 ];
 const DEVICE_ID_KEY = "gucc_creator_device_id_v1";
 const SYNC_BASES_KEY = "gucc_creator_sync_bases_v1";
+const productionBaselines = new Map();
+let projectPushInFlight = false;
+let projectPullInFlight = false;
+
+function productionSignature(project) {
+  const clean = stripCloudMetadata(project);
+  // Render regenerates derived artifacts and older drafts may lack default
+  // Drive metadata. Compare canonical content without treating either as edits.
+  ensureDriveRoot(clean);
+  window.GuccProductionEngine?.refreshGeneratedFiles?.(clean);
+  // This generated echo includes cloud bookkeeping; it is not an authored edit.
+  if (clean.files?.PROJECT_DATA) delete clean.files.PROJECT_DATA.content;
+  return stableStringify(clean);
+}
 
 const page = (() => {
   const path = window.location.pathname;
@@ -141,8 +156,9 @@ function ensureDriveRoot(project) {
   return changed;
 }
 
-async function creatorApi(action, payload = {}) {
+async function creatorApi(action, payload = {}, beforeRequest = () => {}) {
   const token = await getAccessToken();
+  beforeRequest();
   const response = await fetch(CREATOR_API, {
     method: "POST",
     headers: {
@@ -203,52 +219,100 @@ function setPanelStatus(panel, mode, text) {
 function replaceLocalProject(project) {
   const store = currentProductionStore();
   const index = store.projects.findIndex((item) => item.projectId === project.projectId);
-  if (index >= 0) store.projects[index] = project;
-  else store.projects.push(project);
-  store.selectedProjectId = project.projectId;
+  if (index < 0 || store.selectedProjectId !== project.projectId) return false;
+  store.projects[index] = project;
   writeJson(PRODUCTION_STORAGE_KEY, store);
+  return true;
+}
+
+function reloadProductionStore() {
+  const projectId = currentProductionStore().selectedProjectId;
+  const url = new URL(window.location.href);
+  if (projectId) url.searchParams.set("project", projectId);
+  else url.searchParams.delete("project");
+  window.history.replaceState(null, "", url.href);
+  window.location.reload();
 }
 
 function showConflictDialog(panel, engine, localProject, conflict) {
   document.querySelector(".gcb-conflict-dialog")?.remove();
   const remoteRow = conflict?.project || {};
-  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data || {}, { source: "cloud_conflict_remote" }), remoteRow);
+  const currentRevision = conflict?.currentRevision ?? remoteRow.revision;
+  if (!Number.isSafeInteger(currentRevision) || currentRevision <= Number(localProject.integration?.cloud?.revision || 0)
+    || remoteRow.revision !== currentRevision || remoteRow.project_id !== localProject.projectId
+    || remoteRow.project_data?.projectId !== localProject.projectId) {
+    setPanelStatus(panel, "error", "冲突快照不完整或项目不匹配 · 未应用任何选择");
+    return;
+  }
+  const remote = attachCloudMetadata(engine.normalizeProject(remoteRow.project_data, { source: "cloud_conflict_remote" }), remoteRow);
+  const expectedLocal = stableStringify(localProject);
+  const base = syncBase(localProject.projectId);
+  const expectedBase = stableStringify(base);
   const differences = summarizeProjectDiff(localProject, remote);
   const dialog = document.createElement("dialog");
   dialog.className = "gcb-conflict-dialog";
+  dialog.setAttribute("aria-label", "云端版本冲突处理");
   dialog.innerHTML = `<div class="gcb-conflict-inner"><p class="eyebrow">REVISION CONFLICT · r${h(conflict.currentRevision || remoteRow.revision || 0)}</p><h2>云端已有更新版本</h2><p>后台自动同步已经停止。下面列出本机与云端不同的区域；任何选择都必须由你明确点击。</p><div class="gcb-conflict-list">${differences.length ? differences.map((item) => `<span>${h(item.label)}</span>`).join("") : "<span>仅同步元数据不同</span>"}</div><div class="gcb-conflict-actions"><button type="button" data-choice="remote">保留云端</button><button class="danger" type="button" data-choice="local">保留本地</button><button type="button" data-choice="merge">尝试合并</button><button type="button" data-choice="cancel">暂不处理</button></div></div>`;
   document.body.appendChild(dialog);
 
+  let resolving = false;
   const close = () => { dialog.close(); dialog.remove(); };
   dialog.addEventListener("click", async (event) => {
     const choice = event.target.closest("[data-choice]")?.dataset.choice;
-    if (!choice) return;
+    if (resolving || !dialog.isConnected || !["remote", "local", "merge", "cancel"].includes(choice)) return;
     if (choice === "cancel") return close();
-    if (choice === "remote") {
-      replaceLocalProject(remote);
-      rememberSyncBase(remote.projectId, remote);
+    if (projectPushInFlight || projectPullInFlight) {
+      setPanelStatus(panel, "busy", "同步请求尚未结束 · 请稍后重新检查冲突");
+      return;
+    }
+    const latestStore = currentProductionStore();
+    const latest = latestStore.projects.find((project) => project.projectId === localProject.projectId);
+    if (!loggedIn() || latestStore.selectedProjectId !== localProject.projectId
+      || !latest || stableStringify(latest) !== expectedLocal || stableStringify(syncBase(localProject.projectId)) !== expectedBase) {
+      setPanelStatus(panel, "error", "项目、稿件或登录状态已变化 · 旧冲突选择已取消，请重新检查");
       close();
-      window.location.reload();
+      reloadProductionStore();
       return;
     }
-    const currentRevision = Number(conflict.currentRevision || remoteRow.revision || 0);
-    if (choice === "local") {
-      replaceLocalProject(attachCloudMetadata(stripCloudMetadata(localProject), remoteRow));
+    let candidate = choice === "remote" ? remote : attachCloudMetadata(stripCloudMetadata(localProject), remoteRow);
+    if (choice === "merge") {
+      if (!base) {
+        window.alert("缺少共同同步基线，无法安全自动合并。请比较两侧内容后明确选择保留本地或云端。");
+        return;
+      }
+      const result = mergeProjectVersions(base, localProject, remote);
+      if (result.conflicts.length) {
+        window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
+        return;
+      }
+      candidate = attachCloudMetadata(engine.normalizeProject(result.merged, { source: "cloud_conflict_merge" }), remoteRow);
+    }
+    const workflow = validateProjectWorkflow(engine, candidate);
+    if (!workflow.valid) {
+      window.alert(`所选版本的工作流状态不合法，未应用：\n${workflow.errors.join("\n")}`);
+      return;
+    }
+    resolving = true;
+    dialog.setAttribute("aria-busy", "true");
+    dialog.querySelectorAll("[data-choice]").forEach((button) => { button.disabled = true; });
+    let replaced = false;
+    try {
+      replaced = replaceLocalProject(candidate);
+      if (!replaced) return;
+      if (choice === "remote") rememberSyncBase(remote.projectId, remote);
+      else await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true, suppressConflictDialog: true });
+    } catch (error) {
+      setPanelStatus(panel, "error", error.message || "冲突选择保存失败");
+    } finally {
       close();
-      await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
-      return;
+      // The editor keeps an in-memory project. Reload the latest persisted
+      // result after resolution, including failed/late saves, before editing it.
+      if (replaced) reloadProductionStore();
     }
-    const result = mergeProjectVersions(syncBase(localProject.projectId), localProject, remote);
-    if (result.conflicts.length) {
-      window.alert(`以下区域双方都改过，无法安全自动合并：\n${result.conflicts.map((item) => `- ${item.label}`).join("\n")}\n\n请先保留一侧，再手工补回另一侧内容。`);
-      return;
-    }
-    replaceLocalProject(attachCloudMetadata(engine.normalizeProject(result.merged, { source: "cloud_conflict_merge" }), remoteRow));
-    close();
-    await pushCurrentProject(panel, "manual", engine, { baseRevision: currentRevision, bypassConflict: true });
   });
-  dialog.addEventListener("cancel", close, { once: true });
+  dialog.addEventListener("cancel", (event) => { event.preventDefault(); if (!resolving) close(); });
   dialog.showModal();
+  dialog.querySelector('[data-choice="cancel"]').focus();
 }
 
 function actionButton(label, primary = false) {
@@ -299,6 +363,7 @@ async function importStudioHandoff(engine) {
 }
 
 async function pushCurrentProject(panel, reason = "auto", engine = window.GuccProductionEngine, options = {}) {
+  if (projectPushInFlight || projectPullInFlight) return false;
   if (!loggedIn()) {
     setPanelStatus(panel, "local", "本地模式 · Command Center 登录后自动上云");
     return false;
@@ -318,54 +383,124 @@ async function pushCurrentProject(panel, reason = "auto", engine = window.GuccPr
     return false;
   }
   if (ensureDriveRoot(project)) writeJson(PRODUCTION_STORAGE_KEY, store);
+  projectPushInFlight = true;
+  const stillSelected = () => {
+    const latest = currentProductionStore();
+    return latest.selectedProjectId === project.projectId && latest.projects.some((item) => item.projectId === project.projectId);
+  };
   setPanelStatus(panel, "busy", "同步中…");
   try {
     const baseRevision = options.baseRevision ?? project.integration?.cloud?.revision ?? 0;
-    const result = await creatorApi("saveProject", { projectData: project, reason, baseRevision, deviceId: deviceId() });
+    const result = await creatorApi("saveProject", { projectData: project, reason, baseRevision, deviceId: deviceId() }, () => {
+      if (!loggedIn() || !stillSelected()) throw new Error("项目或登录状态已改变 · 本次同步已取消");
+    });
     const row = { ...(result.project || {}), revision: result.revision || result.project?.revision };
-    const synced = attachCloudMetadata(project, row);
-    replaceLocalProject(synced);
-    rememberSyncBase(project.projectId, synced);
-    setPanelStatus(panel, "ok", `云端已同步 · r${result.revision} · ${project.currentState}`);
+    if (!Number.isInteger(row.revision) || row.revision <= Number(baseRevision)
+      || (row.project_id && row.project_id !== project.projectId)) throw new Error("云同步响应的项目 / 修订号不匹配");
+    const latestStore = currentProductionStore();
+    const index = latestStore.projects.findIndex((item) => item.projectId === project.projectId);
+    if (index < 0) return false;
+    const latest = latestStore.projects[index];
+    if (Number(latest.integration?.cloud?.revision || 0) > row.revision) return false;
+    // Only bookkeeping belongs to this response. Authored edits and selection
+    // may have changed while the network was pending, including project removal.
+    latestStore.projects[index] = attachCloudMetadata(latest, row);
+    writeJson(PRODUCTION_STORAGE_KEY, latestStore);
+    rememberSyncBase(project.projectId, project);
+    productionBaselines.set(project.projectId, productionSignature(project));
+    if (stillSelected()) {
+      const dirty = productionSignature(latest) !== productionSignature(project);
+      setPanelStatus(panel, dirty ? "busy" : "ok", dirty ? "新编辑已保存在本地 · 等待下一次同步" : `云端已同步 · r${row.revision} · ${project.currentState}`);
+    }
     return true;
   } catch (error) {
     if (error.status === 409 && error.payload?.error === "REVISION_CONFLICT") {
       const conflict = { ...(error.payload.conflict || {}), detectedAt: new Date().toISOString() };
-      project.integration ||= {};
-      project.integration.cloud ||= {};
-      project.integration.cloud.conflict = conflict;
-      writeJson(PRODUCTION_STORAGE_KEY, store);
-      setPanelStatus(panel, "error", "云端已有新版本 · 自动同步已停止");
-      if (reason === "manual" && engine) showConflictDialog(panel, engine, project, conflict);
+      const latestStore = currentProductionStore();
+      const latest = latestStore.projects.find((item) => item.projectId === project.projectId);
+      if (!latest || Number(latest.integration?.cloud?.revision || 0) > Number(project.integration?.cloud?.revision || 0)) return false;
+      latest.integration ||= {};
+      latest.integration.cloud ||= {};
+      latest.integration.cloud.conflict = conflict;
+      writeJson(PRODUCTION_STORAGE_KEY, latestStore);
+      if (stillSelected()) {
+        setPanelStatus(panel, "error", "云端已有新版本 · 自动同步已停止");
+        if (reason === "manual" && engine && !options.suppressConflictDialog) showConflictDialog(panel, engine, latest, conflict);
+      }
       return false;
     }
-    setPanelStatus(panel, loggedIn() ? "error" : "local", error.message || "云同步失败");
+    if (stillSelected()) setPanelStatus(panel, loggedIn() ? "error" : "local", error.message || "云同步失败");
     return false;
+  } finally {
+    projectPushInFlight = false;
   }
 }
 
 async function pullCloudProjects(panel, engine, reloadOnChange = true) {
+  if (projectPullInFlight || projectPushInFlight) return false;
   if (!loggedIn()) {
     setPanelStatus(panel, "local", "本地模式 · Command Center 登录后自动上云");
     return false;
   }
+  projectPullInFlight = true;
+  const before = currentProductionStore();
+  const beforeProjects = new Map(before.projects.map((project) => [project.projectId, productionSignature(project)]));
   setPanelStatus(panel, "busy", "读取云端项目…");
   try {
-    const response = await creatorApi("listProjects");
-    const rows = response.projects || [];
-    const merged = mergeCloudProjects(currentProductionStore(), rows, engine, requestedProjectId());
-    rows.forEach((row) => row?.project_data?.projectId && rememberSyncBase(row.project_data.projectId, row.project_data));
+    const response = await creatorApi("listProjects", {}, () => {
+      if (!loggedIn()) throw new Error("登录状态已改变 · 本次拉取已取消");
+    });
+    if (!loggedIn()) {
+      setPanelStatus(panel, "local", "登录状态已改变 · 本次拉取已取消");
+      return false;
+    }
+    // An unblurred field has not reached localStorage yet. Keep the editor
+    // intact; a later deliberate pull can safely retry after local persistence.
+    if (document.activeElement?.matches?.("input, textarea, select") || document.activeElement?.isContentEditable) {
+      setPanelStatus(panel, "local", "正在编辑 · 云端拉取未应用，请保存输入后重试");
+      return false;
+    }
+    if (!Array.isArray(response.projects)) throw new Error("云端项目列表格式不正确");
+    const latest = currentProductionStore();
+    const currentIds = new Set(latest.projects.map((project) => project.projectId));
+    // Deletion during a pending read is not permission to resurrect the draft.
+    const rows = response.projects.filter((row) => !beforeProjects.has(row?.project_data?.projectId) || currentIds.has(row.project_data.projectId));
+    const merged = mergeCloudProjects(latest, rows, engine, latest.selectedProjectId || requestedProjectId(), {
+      isLocalDirty(project) {
+        const signature = productionSignature(project);
+        if (beforeProjects.has(project.projectId) && beforeProjects.get(project.projectId) !== signature) return true;
+        const base = syncBase(project.projectId);
+        return base ? productionSignature(base) !== signature : undefined;
+      },
+    });
+    if (merged.changed) writeJson(PRODUCTION_STORAGE_KEY, merged.store);
+    // A conflict is not an accepted sync. Preserve its original three-way base,
+    // and never bless an ignored/stale response as the next autosave baseline.
+    for (const row of rows) {
+      const project = merged.store.projects.find((item) => item.projectId === row?.project_data?.projectId);
+      if (!project || project.integration?.cloud?.conflict || (row.project_id && row.project_id !== project.projectId)
+        || !Number.isSafeInteger(row.revision) || row.revision < 1 || project.integration?.cloud?.revision !== row.revision) continue;
+      const remote = engine.normalizeProject(row.project_data, { source: "cloud_pull" });
+      if (productionSignature(project) !== productionSignature(remote)) continue;
+      rememberSyncBase(project.projectId, project);
+      productionBaselines.set(project.projectId, productionSignature(project));
+    }
+    const selected = merged.store.projects.find((project) => project.projectId === merged.store.selectedProjectId);
     if (merged.changed) {
-      writeJson(PRODUCTION_STORAGE_KEY, merged.store);
-      setPanelStatus(panel, "ok", "已合并云端最新状态");
-      if (reloadOnChange) setTimeout(() => window.location.reload(), 120);
+      setPanelStatus(panel, selected?.integration?.cloud?.conflict ? "error" : "ok",
+        selected?.integration?.cloud?.conflict ? "云端冲突待处理 · 自动同步已停止" : "已合并云端最新状态");
+      if (reloadOnChange) reloadProductionStore();
       return true;
     }
-    setPanelStatus(panel, "ok", "本地与云端一致");
+    const dirty = selected && syncBase(selected.projectId) && productionSignature(selected) !== productionSignature(syncBase(selected.projectId));
+    setPanelStatus(panel, selected?.integration?.cloud?.conflict ? "error" : dirty ? "local" : "ok",
+      selected?.integration?.cloud?.conflict ? "云端冲突待处理 · 自动同步已停止" : dirty ? "本地编辑已保留 · 等待同步" : "云端读取完成 · 本地草稿已保留");
     return false;
   } catch (error) {
     setPanelStatus(panel, "error", error.message || "读取云端失败");
     return false;
+  } finally {
+    projectPullInFlight = false;
   }
 }
 
@@ -408,20 +543,26 @@ async function runProduction() {
       setPanelStatus(panel, "error", `工作流状态不合法 · ${workflow.errors.join(" / ")}`);
       return;
     }
-    await pushCurrentProject(panel, "manual", engine);
-    writeJson(PUBLISH_HANDOFF_KEY, { project, releasePackage: releasePackageFromProject(project), createdAt: new Date().toISOString() });
+    const saved = await pushCurrentProject(panel, "manual", engine);
+    const latest = currentProductionProject();
+    if (!saved || latest?.projectId !== project.projectId) return;
+    if (productionSignature(latest) !== productionBaselines.get(project.projectId)) {
+      setPanelStatus(panel, "busy", "项目有新编辑 · 同步完成后再交接发布");
+      return;
+    }
+    writeJson(PUBLISH_HANDOFF_KEY, { project: latest, releasePackage: releasePackageFromProject(latest), createdAt: new Date().toISOString() });
     window.location.href = publishConsoleUrl();
   });
 
-  await pullCloudProjects(panel, engine, true);
-  let lastSynced = JSON.stringify(currentProductionProject() || null);
+  // Navigation is not an edit. Remember every existing project's own content,
+  // including local-only drafts; opening this page must not publish those drafts.
+  currentProductionStore().projects.forEach((project) => productionBaselines.set(project.projectId, productionSignature(project)));
+  if (await pullCloudProjects(panel, engine, true)) return; // Reload is pending.
   setInterval(async () => {
     const project = currentProductionProject();
     if (!project) return;
-    const serialized = JSON.stringify(project);
-    if (serialized === lastSynced) return;
-    const ok = await pushCurrentProject(panel, "auto", engine);
-    if (ok) lastSynced = JSON.stringify(currentProductionProject() || null);
+    if (productionSignature(project) === productionBaselines.get(project.projectId)) return;
+    await pushCurrentProject(panel, "auto", engine);
   }, 5000);
 }
 

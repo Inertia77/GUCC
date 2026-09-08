@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v13";
-const RUNTIME_CACHE = "gucc-runtime-v13";
+const STATIC_CACHE = "gucc-static-v26";
+const RUNTIME_CACHE = "gucc-runtime-v26";
 
 const APP_SHELL = [
   "./",
@@ -7,12 +7,24 @@ const APP_SHELL = [
   "./offline.html",
   "./manifest.webmanifest",
   "./assets/access-guard.js",
+  "./assets/access-guard.js?v=8",
   "./assets/creator-pipeline-core.mjs",
-  "./assets/creator-pipeline-bridge.mjs",
-  "./assets/creator-pipeline-ux.mjs",
+  "./assets/creator-pipeline-core.mjs?v=2",
+  "./assets/creator-pipeline-bridge.mjs?v=7",
+  "./assets/creator-pipeline-ux.mjs?v=2",
   "./assets/creator-dashboard-core.mjs",
-  "./assets/creator-dashboard.mjs",
-  "./assets/creator-dashboard.css",
+  "./assets/creator-dashboard.mjs?v=4",
+  "./assets/creator-dashboard.css?v=1",
+  "./assets/creator-ux-simplification-v1.mjs?v=1",
+  "./assets/creator-ux-simplification-v1-closeout.mjs?v=1",
+  "./assets/creator-local-project-contract.js?v=1",
+  "./assets/creator-timeline-contract.js?v=1",
+  "./assets/creator-global-production-core.js?v=1",
+  "./assets/creator-project-bootstrap-browser.js?v=1",
+  "./assets/creator-timeline-browser.js?v=1",
+  "./assets/creator-workspace-root.mjs?v=1",
+  "./assets/creator-file-observations.mjs?v=2",
+  "./assets/creator-global-production-ui.mjs?v=7",
   "./assets/gucc-theme.css",
   "./assets/gucc-zzz.css",
   "./assets/gucc-shell-nav-v2.css",
@@ -70,9 +82,9 @@ const APP_SHELL = [
   "./apps/video-workspace/ai-prompts.js",
   "./apps/video-workspace/production-system/",
   "./apps/video-workspace/production-system/index.html",
-  "./apps/video-workspace/production-system/styles.css",
+  "./apps/video-workspace/production-system/styles.css?v=5",
   "./apps/video-workspace/production-system/engine.js",
-  "./apps/video-workspace/production-system/app.js",
+  "./apps/video-workspace/production-system/app.js?v=4",
   "./apps/cover-generator/",
   "./apps/cover-generator/index.html",
   "./apps/publishing-console/",

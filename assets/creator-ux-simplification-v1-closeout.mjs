@@ -275,10 +275,11 @@ function humanizeCanonical(root) {
 }
 
 function relevantForms(code) {
-  if (code === "LOCALIZATION") return ["language"];
-  if (code === "VISUAL_MASTER") return ["visual"];
-  if (code === "VARIANT") return ["variant"];
-  if (code === "PUBLISH_PACKAGE") return ["channel", "presentation", "package"];
+  const stage = String(code || "").toUpperCase();
+  if (["LOCALIZATION", "LANGUAGE_SCRIPT", "REAL_AUDIO_TIMELINE", "VOICE_TIMELINE_LOCK"].includes(stage)) return ["language"];
+  if (["VISUAL_MASTER", "VISUAL_MASTER_LOCK", "AI_DIRECTOR", "CODEX_PRODUCTION"].includes(stage)) return ["visual"];
+  if (stage === "VARIANT") return ["variant"];
+  if (["PUBLISH_PACKAGE", "PLATFORM_VARIANT_LOCK", "AI_QA", "HUMAN_FINAL_REVIEW", "RELEASE_LOCK"].includes(stage)) return ["channel", "presentation", "package"];
   return [];
 }
 

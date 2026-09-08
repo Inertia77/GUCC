@@ -211,6 +211,7 @@ async function main() {
     await page.evaluate(() => window.fixtureAutosync());
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 2, "Pull conflicts must never auto-save a resolution");
 
+    if ((await syncDetails.getAttribute("open")) === null) await syncDetails.locator("summary").click();
     await page.getByRole("button", { name: "立即云同步", exact: true }).click();
     const conflictDialog = page.getByRole("dialog", { name: "云端版本冲突处理" });
     await conflictDialog.waitFor();

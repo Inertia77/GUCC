@@ -1,176 +1,104 @@
 # GUCC
 
-GUCC 是我的 GameUp Creator Command Center：一个放在 GitHub Pages 上的个人游戏内容工作台，包含数据管理、视频项目工作台、封面生成器、资料库、Prompt 库和剧情资料库。
+GUCC（GameUp Creator Command Center）是一个运行在 GitHub Pages + 本地工具 + Supabase 上的个人游戏内容创作系统。仓库同时保存浏览器应用、Creator OS、发布工具、数据/参考资料和开发脚本。
 
-## 快速启动
+> 日常使用看 UI 与用户手册；开发看 Repository Map；历史设计只看 `archive/`，不要把历史文档当成当前 Production reality。
 
-本地统一使用 `localhost:8000`。Command Center 的 Supabase CORS 默认允许 `http://localhost:8000`，不要用 `127.0.0.1:8000` 测后端。
+## 我现在要去哪里？
+
+| 目标 | 入口 |
+|---|---|
+| 打开 GUCC | <https://inertia77.github.io/GUCC/> |
+| 开始 / 继续制作视频 | [`docs/creator-os-user-guide.md`](docs/creator-os-user-guide.md) |
+| 了解当前 Creator OS 架构 | [`docs/architecture/creator-os-overview.md`](docs/architecture/creator-os-overview.md) |
+| 查看完整仓库结构与 Source of Truth | [`docs/repository-map.md`](docs/repository-map.md) |
+| 配置 / 排查 Command Center | [`docs/supabase-setup.html`](docs/supabase-setup.html) |
+| 查看历史设计与审计记录 | [`archive/README.md`](archive/README.md) |
+
+## Repository Structure
+
+```text
+GUCC/
+├─ apps/          # 浏览器应用；稳定 GitHub Pages URL
+├─ assets/        # 共享 runtime 资产、Creator OS 模块与创作素材
+├─ automation/    # 本地自动化 / 批处理工作流
+├─ data/          # 导入源、数据快照与 schema 说明
+├─ docs/          # 当前用户、架构、运维与参考文档
+├─ reference/     # Prompt / Resource / Story 等可浏览资料库
+├─ scripts/       # 检查、测试、Local Agent、Publisher Assistant 等
+├─ supabase/      # Functions、migrations、SQL；Production 基础设施
+├─ archive/       # 退出 current source-of-truth 的历史文档
+├─ index.html     # GUCC Portal
+├─ manifest.webmanifest
+├─ offline.html
+└─ sw.js          # PWA / cache contract
+```
+
+详细分类、删除边界和 Source of Truth 见 [`docs/repository-map.md`](docs/repository-map.md)。
+
+## Active Applications
+
+| 应用 | 稳定路径 | 作用 |
+|---|---|---|
+| Command Center | `apps/command-center/` | 游戏资料与结构化数据管理 |
+| GUCC WorkSpace / Studio | `apps/video-workspace/` | 选题、草稿与 Creator 项目入口 |
+| Production System / Creator OS | `apps/video-workspace/production-system/` | Production、Global Production、Files 等 |
+| Cover Generator | `apps/cover-generator/` | 多比例封面生成 |
+| Publish Console | `apps/publishing-console/` | 发布准备、执行记录与数据复盘 |
+
+### Compatibility / Legacy Routes
+
+`apps/gameup-command-center/` 是旧公开 URL 的 **Compatibility Route**，只负责跳转到 `apps/command-center/`。它不是第二套 Command Center，也不是新的 source of truth。旧 URL 是否仍被书签或外部链接使用无法完全证明，因此该薄层继续保留。
+
+## Current Source of Truth
+
+- **日常操作**：current main UI + [`docs/creator-os-user-guide.md`](docs/creator-os-user-guide.md)。
+- **Creator OS 当前架构**：[`docs/architecture/creator-os-overview.md`](docs/architecture/creator-os-overview.md) 与 [`docs/architecture/creator-global-production-v1.md`](docs/architecture/creator-global-production-v1.md)。
+- **创作 / Human Gate 规则**：[`docs/architecture/creator-constitution.md`](docs/architecture/creator-constitution.md)。
+- **程序、Prompt、测试与基础设施定义**：GitHub current main。
+- **Content Project Root 状态、History、Identity、Metadata**：Supabase。
+- **真实视频、音频、录屏、剪辑工程与大型素材**：Local machine。
+- **Google Drive Lightweight Project Archive is implemented.** 它只保存轻量项目知识文件，不接管大型媒体。
+- **Platform ≠ Channel**：Platform 是产品字典，Channel 是具体账号 / 市场 / 语言策略。
+- **历史实现说明**：`archive/`，仅用于追溯，不覆盖 current reality。
+
+## 本地开发
+
+统一使用 `localhost:8000`：
 
 ```powershell
 cd C:\path\to\GUCC
 python -m http.server 8000
 ```
 
-打开：
-
-```text
-http://localhost:8000/
-```
-
-也可以直接用：
+或：
 
 ```powershell
 .\scripts\serve-windows.bat
 ```
 
-线上入口：
-
-```text
-https://inertia77.github.io/GUCC/
-```
-
-## Access Key
-
-Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
-
-- 当前口令：`GUCC-2026`
-- 保存位置：浏览器 `localStorage`，key 为 `gucc_access_hash_v2`
-- 行为：同一个浏览器输入一次后会长期记住，点击 Portal 右上角锁定入口会清除
-- 修改口令：改 `assets/access-guard.js` 里的 `ACCESS_HASH`
-
-生成新 hash 的 PowerShell 示例：
+常用检查：
 
 ```powershell
-[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('NEW_PASS'))).Replace('-','').ToLower()
-```
-
-注意：这是 GitHub Pages 静态站点的前端门禁，能挡住日常误入和直接打开 HTML app，但不是服务器级私有权限。真正的数据安全仍然依赖 Supabase Auth、Edge Function 和数据库权限。
-
-## Portal 入口
-
-| 页面 | 路径 | 用途 |
-|---|---|---|
-| GameUp Command Center | `apps/command-center/` | 查询和维护角色、配队、版本、资源链接 |
-| GUCC WorkSpace | `apps/video-workspace/` | 视频项目模板、WIP/DONE Markdown 与 JSON |
-| AI Video Production System | `apps/video-workspace/production-system/` | Audio-Locked 状态机、阶段 Prompt、素材、Storyboard 与 Review |
-| Cover Generator | `apps/cover-generator/` | 多比例视频封面生成 |
-| Publish Console | `apps/publishing-console/` | 分平台发布单、预检、执行记录与数据复盘 |
-| AI Prompt Library | `reference/ai-prompts.html` | 公告整理、兑换码、前瞻、SQL、剧情资料维护 Prompt |
-| Story Library | `reference/story-library.html` | 网页阅读剧情资料库 Markdown |
-| Resource Library | `reference/resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
-| Setup Guide | `docs/supabase-setup.html` | Command Center 部署说明 |
-
-## 项目结构
-
-```text
-GUCC/
-├─ apps/                         # 可直接打开的应用
-│  ├─ command-center/             # Supabase 数据管理前端
-│  ├─ video-workspace/            # 视频项目工作台（含 production-system）
-│  ├─ cover-generator/            # 封面生成器
-│  └─ publishing-console/         # 发布与复盘控制台
-├─ assets/                        # 图标、素材、封面背景、PSD 模板、门禁脚本
-├─ automation/                    # 本地辅助批处理和资料工作流
-├─ data/                          # 数据库结构、导入 CSV、备份说明
-├─ docs/                          # 部署和操作文档
-├─ reference/                     # Prompt、资料库、剧情库、查询手册
-├─ scripts/                       # 本地启动、项目检查、Edge Function 测试
-├─ supabase/                      # Supabase SQL 和 Edge Function
-└─ index.html                     # GUCC Portal
-```
-
-## Command Center
-
-Command Center 的数据路径：
-
-```text
-GitHub Pages / local static page
-  -> Supabase Auth
-  -> Supabase Edge Function: gameup-api
-  -> PostgreSQL JSONB RPC
-```
-
-前端公开配置只放：
-
-```text
-SUPABASE_URL
-SUPABASE_ANON_KEY
-EDGE_FUNCTION_NAME
-```
-
-不要把 `service_role`、数据库密码、JWT secret 放进仓库。部署细节见 [docs/supabase-setup.html](docs/supabase-setup.html)。
-
-## Creator Identity 与存储边界
-
-Creator Project 的正式语义是 **Content Project Root**，不是“一条 Project 永远只对应一个视频文件”。当前 `VIDEO_V1` 只是 Legacy/default final master artifact；未来同一个 Content Project Root 可以产生多个 Distribution Variant，再通过不同 Channel 形成多个 Publication。
-
-正式身份关系是：
-
-```text
-Content Project Root
-  → Distribution Variant
-  → Channel
-  → Publication instance
-```
-
-`platforms` 只是 **Platform Dictionary**；Platform ≠ Channel。比如 TikTok JP 与 TikTok Global 应是两个 Channel，并共同通过 `platform_id` 指向同一个 TikTok Platform，而不是创建两个 Platform。
-
-长期存储边界保持：
-
-```text
-Local machine  = Large Media + active production files
-Supabase       = State + History + Identity + Metadata
-Google Drive   = Lightweight Project Archive
-```
-
-Google Drive Lightweight Project Archive **已经实现**，不是待开发能力；它只归档轻量 `.md/.json/.srt/.csv/.txt/.vtt` 等项目知识文件，不接管视频、音频、游戏录屏或剪辑工程大文件。详见 [docs/creator-archive-runtime-setup.md](docs/creator-archive-runtime-setup.md)。
-
-Distribution Identity、未来 Artifact Scope 与 child-state 边界见 [docs/creator-distribution-identity-v0.1.md](docs/creator-distribution-identity-v0.1.md)。
-
-## Creator Project 本地 Workspace
-
-Production 中的 Creator Project 以 Project ID 作为本机目录身份。日常直接点击：
-
-```text
-创建 / 同步本地 Workspace
-```
-
-新目录使用 `<SafeProjectName>_<ShortProjectId>`；如果旧目录中的 `00_CONTROL/PROJECT_DATA.json.projectId` 已匹配，则继续复用旧目录，不自动改名或复制。
-
-浏览器不可用时可以显式执行：
-
-```powershell
-npm.cmd run creator:agent -- --bootstrap-project <projectId>
-```
-
-Publish Console 会继续使用同一个 `creatorProjectId` 自动发现 `09_FINAL` 成片与 `10_RELEASE` 可选封面；多个候选会显示 Ambiguous，不按修改时间猜。本机绝对路径仅发送给 `127.0.0.1` 的 Publisher Assistant，不进入 Supabase / Drive payload。
-
-完整操作与安全边界见 [docs/creator-local-project-workspace.md](docs/creator-local-project-workspace.md)。
-
-## 视频发布与复盘
-
-推荐流程是：WorkSpace 导出项目 JSON → Publish Console 自动拆分六个平台发布包并预检 → 本机助手一键上传视频、封面并填表 → 在各平台页面最终检查和发布 → 定时登记数据快照并导出 AI 复盘包。
-
-首次运行 `npm install`，以后双击 `scripts/start-publishing-console.bat` 即可同时启动控制台和本机发布助手。
-
-完整操作说明见 [apps/publishing-console/README.md](apps/publishing-console/README.md)。
-
-## 常用命令
-
-```powershell
-python -m http.server 8000
-node scripts/check-project.mjs
+npm ci
 npm test
+node scripts/test-creator-ux-browser.cjs
+node scripts/test-creator-global-browser.cjs
+```
+
+Creator 本地工具：
+
+```powershell
 npm run publisher:assistant
 npm.cmd run creator:agent -- --bootstrap-project <projectId>
-.\scripts\test-edge-function.ps1
+npm run creator:archive
 ```
 
-## 维护规则
+## Repository Safety Rules
 
-1. 入口路径保持稳定，页面刷新用 query string 管缓存，不改目录名。
-2. 新的 HTML 入口要加 `assets/access-guard.js`。
-3. Prompt 和资料型内容优先放 `reference/`。
-4. Supabase SQL 统一放 `supabase/sql/`，不要散落在根目录。
-5. 新增图标或素材放 `assets/`，大文件只放真正复用的版本。
-6. 改完前端入口后运行 `node scripts/check-project.mjs`。
+1. GitHub Pages 的现有 public URL 是兼容合同；不要为目录美观随意改 app 路径。
+2. Runtime 文件移动必须同步检查 HTML `href/src`、JS imports、Service Worker precache、测试和文档引用。
+3. Supabase migration history 是基础设施历史，不等于 repository archive；不要重排或重写 migration。
+4. `archive/` 不参与 active runtime，不应成为 current docs 的 source of truth。
+5. 新增用户操作说明时，优先更新 `docs/creator-os-user-guide.md`，不要再创建一份“final/new/v2”用户手册。
+6. 修改前端入口后至少运行 `npm test` 和对应 browser regressions。

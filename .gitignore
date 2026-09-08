@@ -10,3 +10,6 @@ node_modules/
 .pnpm-store/
 supabase/.temp/
 GameUp/
+coverage/
+playwright-report/
+test-results/

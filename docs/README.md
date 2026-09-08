@@ -1,33 +1,44 @@
-# Docs
+# GUCC Docs
 
-部署、操作与系统说明文档区。
+这里放 **当前有效** 的用户、架构、运维和参考文档。历史 Phase / 审计 / 已被替代的设计不再与 current docs 混放；它们统一进入 [`../archive/README.md`](../archive/README.md)。
 
-## Creator OS
+## 先从这里开始
 
-**如果只是想“开始做视频”，先读：[`creator-os-user-guide.md`](./creator-os-user-guide.md)。**
+如果只是想开始或继续制作视频，直接读：
 
-| 文档 | 用途 |
-|---|---|
-| [`creator-os-user-guide.md`](./creator-os-user-guide.md) | **面向日常使用者，优先阅读。** 从第一次打开 GUCC、新建项目、脚本、音频、字幕、素材、剪辑，到发布与复盘的实际操作手册 |
-| [`ai-video-production/UNIFIED_PIPELINE.md`](./ai-video-production/UNIFIED_PIPELINE.md) | Creator OS 工作流 / 架构参考；日常操作以用户指南和 current main UI 为准 |
-| [`creator-global-production-v1.md`](./creator-global-production-v1.md) | Global Production 技术说明：Language Track、Visual Master、Variant、Package、Publication、Analytics / Learning 等 |
-| [`creator-local-agent.md`](./creator-local-agent.md) | Local Agent 详细说明：本地文件观察、设备身份、扫描与安全边界 |
-| [`creator-local-project-workspace.md`](./creator-local-project-workspace.md) | 本地 Workspace 说明：项目目录、bootstrap、Projection、Final Video / Cover discovery |
-| [`ai-video-production/CREATOR_CONSTITUTION.md`](./ai-video-production/CREATOR_CONSTITUTION.md) | Creator OS 的创作规则、Human Gate 与安全边界 |
+**[`creator-os-user-guide.md`](./creator-os-user-guide.md)**
 
-用户手册回答“**我现在点哪里、填什么、接下来做什么**”；其余文档主要用于理解工作流、技术边界和排查细节。
+它是 Creator OS 的日常操作第一入口；实际按钮、流程和可执行步骤以 current main UI + 这份用户手册为准。
 
-## 部署与系统操作
+## Current Architecture
 
-| 文件 | 用途 |
-|---|---|
-| `supabase-setup.html` | Command Center 的 Supabase、GitHub Pages、本地测试部署指南 |
+- [`architecture/creator-os-overview.md`](./architecture/creator-os-overview.md) — 当前 Creator OS 总体结构与 Source of Truth。
+- [`architecture/creator-global-production-v1.md`](./architecture/creator-global-production-v1.md) — Global Production v1 技术契约。
+- [`architecture/creator-constitution.md`](./architecture/creator-constitution.md) — 创作约束、Human Gate 与安全边界。
 
-`supabase-setup.html` 已接入 GUCC Access Key，直接打开也会先检查门禁。
+## Operations
 
-## 维护规则
+- [`operations/creator-local-agent.md`](./operations/creator-local-agent.md) — Local Agent。
+- [`operations/creator-local-project-workspace.md`](./operations/creator-local-project-workspace.md) — 本地 Workspace / bootstrap / discovery。
+- [`operations/creator-archive-runtime-setup.md`](./operations/creator-archive-runtime-setup.md) — Google Drive Lightweight Project Archive runtime setup。
+- [`supabase-setup.html`](./supabase-setup.html) — Command Center 的 Supabase / GitHub Pages / 本地测试部署说明。该 URL 保持稳定。
 
-- 文档文件名使用描述性 kebab-case。
-- 旧文档由 Git 历史保留，不要复制 `final`、`new`、`copy` 这类版本名。
-- 新增 HTML 文档时同步加入 `scripts/check-project.mjs` 的入口检查。
-- Creator OS 日常操作说明必须以 current main 的真实 UI / runtime 为准；架构文档和历史实现说明不能覆盖 Production reality。
+## Reference
+
+- [`reference/onmyoji-integration.md`](./reference/onmyoji-integration.md) — 阴阳师集成记录与参考。
+- [`reference/foundation-contracts/`](./reference/foundation-contracts/) — test-pinned historical compatibility contracts；不是 current architecture。
+- [`repository-map.md`](./repository-map.md) — 全仓库目录分类、active/compatibility/archive 边界和删除规则。
+
+## Historical Documentation
+
+Creator OS Phase 1 / 2A / 2C2 与 2026-08-25 UI/UX audit 已移至 [`../archive/`](../archive/)。WP_GLOB_001 / WP_GLOB_002 foundation 与旧 Unified Pipeline 仍被回归测试作为兼容契约读取，因此归入 [`reference/foundation-contracts/`](./reference/foundation-contracts/)；它们不是 current architecture。
+
+这些历史内容可以用于追溯“当时为什么这么设计”，但**不能覆盖 current main runtime、当前用户手册或当前架构文档**。
+
+## 文档规则
+
+- Current docs 使用描述性 kebab-case；不要创建 `final`、`new`、`copy`、`v2-final` 一类副本。
+- 用户操作的 source of truth：current UI + `creator-os-user-guide.md`。
+- 当前技术架构的入口：`architecture/creator-os-overview.md`。
+- 历史阶段记录：`archive/`。
+- 新增 HTML public page 时，同步检查 Access Guard 与 `scripts/check-project.mjs`。

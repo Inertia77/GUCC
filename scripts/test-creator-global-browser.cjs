@@ -262,11 +262,18 @@ async function main() {
       }
       if (width <= 980) {
         const bridge = await page.locator('#guccCreatorBridge').evaluate((node) => ({
-          width: node.clientWidth, title: node.querySelector('strong').getBoundingClientRect().width,
+          width: node.clientWidth,
+          title: node.querySelector('strong').getBoundingClientRect().width,
+          titleDisplay: getComputedStyle(node.querySelector('strong')).display,
+          status: node.querySelector('.gcb-status').getBoundingClientRect().width,
           statusBottom: node.querySelector('.gcb-status').getBoundingClientRect().bottom,
           actionsTop: node.querySelector('.gcb-row').getBoundingClientRect().top,
         }));
-        assert.ok(bridge.title > bridge.width * 0.75, `Sync identity must remain readable at ${width}px`);
+        if (width > 700) assert.ok(bridge.title > bridge.width * 0.75, `Sync identity must remain readable at ${width}px`);
+        else {
+          assert.equal(bridge.titleDisplay, "none", `Phone UX intentionally suppresses the redundant sync title at ${width}px`);
+          assert.ok(bridge.status > bridge.width * 0.75, `Friendly sync status must remain readable at ${width}px`);
+        }
         assert.ok(bridge.actionsTop >= bridge.statusBottom, `Sync actions must not squeeze the status at ${width}px`);
       }
       assert.equal(await page.locator("[aria-labelledby]").evaluateAll((nodes) => nodes.filter((node) => node.getAttribute("aria-labelledby").split(/\s+/).some((id) => !document.getElementById(id))).length), 0);

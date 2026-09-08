@@ -185,6 +185,10 @@ async function main() {
       const timer = setTimeout(() => reject(new Error("Expected fixture pull did not arrive")), 5000);
       notifyHeldList = () => { clearTimeout(timer); resolve(); };
     });
+    const syncDetails = page.locator(".ux-sync-details");
+    assert.equal(await syncDetails.getAttribute("open"), null, "Manual sync controls must be collapsed by default");
+    await syncDetails.locator("summary").click();
+    assert.notEqual(await syncDetails.getAttribute("open"), null, "Manual sync requires explicit Sync details disclosure");
     await page.getByRole("button", { name: "拉取云端", exact: true }).click(); await listHeld;
     await page.locator('[data-project-field="voiceMaster"]').fill("ISOLATED unblurred edit during pull");
     releaseList();
@@ -224,6 +228,9 @@ async function main() {
     await page.locator('[data-tab="script"]').click();
     assert.equal(await page.locator('[data-project-field="voiceMaster"]').inputValue(), "ISOLATED newer edit while conflict modal is open", "Stale overwrite choices must reload the newest local draft without applying the old remote snapshot");
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 2);
+    const syncDetailsAfterReload = page.locator(".ux-sync-details");
+    assert.equal(await syncDetailsAfterReload.getAttribute("open"), null, "Reload must restore Sync details to its collapsed default");
+    await syncDetailsAfterReload.locator("summary").click();
     await page.getByRole("button", { name: "立即云同步", exact: true }).click();
     await conflictDialog.waitFor();
     await page.keyboard.press("Escape");

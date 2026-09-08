@@ -123,12 +123,14 @@ async function main() {
     }
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 0, "Real bridge must not save merely because Project B was selected");
 
-    await page.locator(".global-setup summary").click();
-    await page.locator('[data-global-form="language"] [name="trackKey"]').fill("EN_FIXTURE");
+    await page.locator(".global-setup > summary").click();
+    assert.equal(await page.locator('[data-global-form="language"] [name="trackKey"]').isVisible(), false, "Raw Language Track identity remains hidden in default setup");
     await page.locator('[data-global-form="language"] [name="languageCode"]').fill("en");
     await page.locator('[data-global-form="language"] button[type="submit"]').click();
     await page.waitForFunction(() => !document.getElementById("globalProduction").inert);
-    assert.equal(requests.filter((request) => request.action === "saveLanguageTrack").length, 1);
+    const languageSaves = requests.filter((request) => request.action === "saveLanguageTrack");
+    assert.equal(languageSaves.length, 1);
+    assert.equal(languageSaves[0].trackKey, "EN", "Hidden identity must be derived deterministically from the human language choice");
     assert.equal(await page.locator(".global-setup").getAttribute("open"), null);
     const toastStyle = await page.locator("#toast").evaluate((node) => ({ foreground: getComputedStyle(node).color, background: getComputedStyle(node).backgroundColor }));
     assert.deepEqual(toastStyle, { foreground: "rgb(238, 252, 255)", background: "rgb(20, 35, 48)" });

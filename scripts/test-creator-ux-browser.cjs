@@ -90,14 +90,15 @@ async function main() {
     assert.match(await language.getAttribute("title"), /JA/, "Raw language identity must remain available as secondary technical detail");
 
     const setup = page.locator(".global-setup");
-    await setup.locator("summary").click();
+    const setupSummary = setup.locator(":scope > summary");
+    await setupSummary.click();
     await page.locator('[data-global-form="language"] .ux-identity-settings').waitFor();
     assert.equal(await page.locator('[data-global-form="language"] [name="trackKey"]').isVisible(), false, "Raw language identity input must be hidden from default setup");
     assert.equal(await page.locator('[data-global-form="language"] .ux-identity-settings').getAttribute("open"), null, "Raw identity override must default collapsed");
     assert.equal(await page.locator('[data-global-form="visual"]:visible').count(), 0, "Non-current Global setup forms must be progressively disclosed");
     const languageCode = page.locator('[data-global-form="language"] [name="languageCode"]');
     assert.equal(await languageCode.isVisible(), true, "Human language choice must remain directly editable");
-    await setup.locator("summary").click();
+    await setupSummary.click();
 
     assert.equal(await page.locator("#globalProduction [data-create-publication]:visible").count(), 0, "Production must not expose Publication creation execution");
     assert.equal(await page.locator("#globalProduction [data-record-published]:visible").count(), 0, "Production must not expose published-record execution");
@@ -128,10 +129,10 @@ async function main() {
           const rect = await page.locator(selector).first().boundingBox();
           assert.ok(rect && rect.y >= 0 && rect.y + rect.height <= height, `${selector} must be in the 390×844 first fold`);
         }
-        await setup.locator("summary").click();
+        await setupSummary.click();
         const fontSize = await languageCode.evaluate((input) => parseFloat(getComputedStyle(input).fontSize));
         assert.ok(fontSize >= 16, "Phone form controls must use at least 16px input text");
-        await setup.locator("summary").click();
+        await setupSummary.click();
       }
       await page.screenshot({ path: path.join(output, `current-task-first-${width}.png`), fullPage: false });
       await page.screenshot({ path: path.join(output, `global-${width}.png`), fullPage: true });

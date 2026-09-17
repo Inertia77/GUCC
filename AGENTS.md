@@ -15,7 +15,7 @@ These rules apply to work inside an AI Video Production System project directory
 9. When an asset is missing, stop that shot safely, keep the timeline valid, and report the exact required replacement.
 10. Update `BUILD_REPORT.md`, `QC_REPORT.md`, `MISSING_ASSET_REPORT.md`, and `STATUS.md` with actual outputs. A chat response alone is not a production handoff.
 
-The full creative constraints live in `docs/ai-video-production/CREATOR_CONSTITUTION.md`.
+The full creative constraints live in `docs/architecture/creator-constitution.md`.
 
 ## Production Auth and Database Safety
 

@@ -13,7 +13,7 @@ const driftedFkIndexes = "20260831134500_creator_distribution_identity_fk_indexe
 const migrationPath = path.join(migrationsDir, canonicalFoundation);
 const fkIndexMigrationPath = path.join(migrationsDir, canonicalFkIndexes);
 const acceptancePath = path.join(root, "supabase", "sql", "wp_glob_001_distribution_identity_acceptance.sql");
-const contractPath = path.join(root, "docs", "creator-distribution-identity-v0.1.md");
+const contractPath = path.join(root, "docs", "reference", "foundation-contracts", "creator-distribution-identity-v0.1.md");
 const readmePath = path.join(root, "README.md");
 
 assert.ok(fs.existsSync(migrationPath), `Canonical Production-synced migration missing: ${canonicalFoundation}`);

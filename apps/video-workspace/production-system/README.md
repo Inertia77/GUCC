@@ -1,8 +1,8 @@
-# AI Video Production System v1
+# AI Video Production System / Creator OS
 
-现有 23-state Project workflow 是 Legacy/default compatibility layer。同一页面现已加入 additive **Global Production v1** 面板，用于独立 Language Tracks、真实音频 Timeline、统一 Visual Master、Variant composition、Publish Package、QA / Release、Publication、Analytics 与 Learning。完整契约见 [`docs/creator-global-production-v1.md`](../../../docs/creator-global-production-v1.md)。
+**Status: ACTIVE_RUNTIME**
 
-这是 GUCC Studio 里的模块化生产系统。它不替代原来的自由创作工作区，而是把已经确定要做的视频，按“立案 → 锁内容 → 锁脚本 → 锁音频 → 真实时间轴 → Storyboard → 素材补全 → Build → Review → 发布”推进。
+Production System 是 GUCC Creator OS 的正式制作界面。日常使用请先看 [`docs/creator-os-user-guide.md`](../../../docs/creator-os-user-guide.md)；本 README 只保留开发者需要的 runtime 边界。
 
 入口：
 
@@ -10,82 +10,53 @@
 http://localhost:8000/apps/video-workspace/production-system/
 ```
 
-## 第一次使用
+## Current Model
 
-1. 点击“新建项目”，选择项目类型：
-   - A：角色全方位攻略，不含音乐生成阶段。
-   - B：Suno 歌曲 / 音乐视频，包含 Music Draft 和 Music Lock。
-   - C：游戏底层机制系列，不含音乐生成阶段。
-   - D：独立音乐资产与发行。
-2. 首页顶部只看“唯一下一步”。缺输入或未满足 Lock 时，系统会显示缺口并禁止前进。
-3. 在 Prompt 页复制当前阶段 Prompt 给 ChatGPT、Suno 或 Codex。Prompt 已包含 Role、Goal、State、Inputs、Locks、Task、Rules、Outputs、Handoff 和 Do Not。
-4. AI 产出的标准文件在“文件”页登记。Markdown / JSON / CSV / SRT 会写入项目备份；音视频只记录名称和大小，不会塞进 `localStorage`。
-5. 完整口播放进“脚本 / TTS”，在强音画绑定处写 `[AV:UI]`、`[AV:NUMBER]`、`[AV:COMPARE]` 等标记，再生成 TTS Chunks。
-6. 导入真实 `AUDIO_MASTER.wav` 后才能点 Audio Lock。Audio Lock 之前，系统不允许进入精确时间轴。
-7. 登记真实 `SUBTITLE_MASTER.srt`，再制作 Timed Storyboard。所有 Must 素材和生产文件齐备后，才能进入 Production Ready。
-8. V0 复盘时用时间码 Review Note，不再截图后手工拼给 AI；Revision Prompt 会直接引用这些记录。
+现有 23-state Project workflow 继续作为 **Legacy/default compatibility layer**。Global Production v1 已作为 additive production layer 落地，包括：
 
-## 一键保存到真实项目目录
+- Language Track child workflow / locks / scoped artifacts
+- real-audio Timeline
+- Visual Master / semantic projections
+- Distribution Variant / Platform Presentation
+- Publish Package / QA / Release
+- Publication
+- Analytics / Learning
 
-点击“同步到目录”，选择一个磁盘父目录。系统会建立：
+当前技术契约：
 
-```text
-项目名/
-├─ 00_CONTROL/
-├─ 01_RESEARCH/
-├─ 02_SCRIPT/TTS_CHUNKS/
-├─ 03_AUDIO/
-├─ 04_SUBTITLES/
-├─ 05_ASSETS/{GAMEPLAY,UI,CHARACTER,BUILD,GRAPHICS,MUSIC,SFX}/
-├─ 06_EDIT_PLAN/
-├─ 07_CODEX_BUILD/
-├─ 08_REVIEW/
-├─ 09_FINAL/
-└─ 10_RELEASE/
-```
+- [`docs/architecture/creator-os-overview.md`](../../../docs/architecture/creator-os-overview.md)
+- [`docs/architecture/creator-global-production-v1.md`](../../../docs/architecture/creator-global-production-v1.md)
 
-当前同步会写入系统掌握的文本文件、索引、状态、Prompt 上下文和 TTS 分块。浏览器无法凭文件名复制本地大型音视频，所以音视频需要放进对应目录后再在页面登记。Chrome / Edge 的 File System Access API 支持这项能力；不支持时使用“导出项目”JSON。
+新项目不再要求用户选择旧 A/B/C/D workflow；旧值仅作为 Legacy Metadata / compatibility data。不要从旧 Phase README 推导 current UI。
 
-“读取项目目录”会读取 `00_CONTROL/PROJECT_DATA.json`，可在另一台设备或清理浏览器数据后恢复项目。
+## Production Safety
 
-## 数据与备份
+- Human Gate 不由自动化越过。
+- Large media stays local；Supabase 保存 state / history / identity / metadata。
+- Google Drive 只做 Lightweight Project Archive。
+- `AUDIO_MASTER` / subtitle / timeline 等 scoped artifact 必须遵循 current Global Production contract。
+- Publish Console 仍负责真实平台执行、最终检查与 metrics 录入；公开发布需要用户最终确认。
 
-- 自动保存键：`gucc_ai_video_production_v1`
-- “导出项目”：单项目结构化 JSON。
-- “备份系统”：全部项目和 Music Library。
-- `PROJECT_DATA.json` 不会递归包含自身内容，反复同步不会无限膨胀。
-- 删除浏览器项目不会删除已经同步到磁盘的目录。
+## Local Workspace
 
-## 生产锁
+Project workspace 的 current 规则见：
 
-- Content Lock：核心结论、范围和叙事顺序确定。
-- Script Lock：必须已有 `VOICE_MASTER.md`。
-- Music Lock：B / D 必须已有 `MUSIC_MASTER.wav`。
-- Audio Lock：必须已有真实 `AUDIO_MASTER.wav`；它是绝对主时间轴。
-- Picture Lock：必须已有 `VIDEO_V1.mp4`。
+- [`docs/operations/creator-local-project-workspace.md`](../../../docs/operations/creator-local-project-workspace.md)
+- [`docs/operations/creator-local-agent.md`](../../../docs/operations/creator-local-agent.md)
 
-Lock 可以重新打开，但会写入项目历史。不要用“强制跳阶段”代替缺失文件。
+Global child scopes 会按 Language Track / Visual Master / Variant 创建动态目录；不要再把旧的固定目录示例当成完整 current model。
 
-## 目录内文件职责
+## Verification
 
-- `00_CONTROL/STATUS.md`：唯一阶段状态和下一动作。
-- `00_CONTROL/PROJECT_DATA.json`：工作台恢复数据。
-- `02_SCRIPT/VOICE_MASTER.md`：锁定口播。
-- `02_SCRIPT/TTS_MANIFEST.csv`：自然语义分块清单。
-- `04_SUBTITLES/SUBTITLE_MASTER.srt`：字幕唯一时间源。
-- `06_EDIT_PLAN/ASSET_INDEX.csv`：素材状态与优先级。
-- `06_EDIT_PLAN/EDIT_BLUEPRINT.csv`：剪辑结构唯一基准。
-- `08_REVIEW/REVIEW_NOTES.md`：带时间码的修订依据。
-
-## 本地验证
-
-在仓库根目录运行：
+仓库根目录：
 
 ```bash
 npm test
+node scripts/test-creator-ux-browser.cjs
+node scripts/test-creator-global-browser.cjs
 ```
 
-生产系统的纯逻辑测试也可单独运行：
+Production System 纯逻辑测试：
 
 ```bash
 node scripts/test-production-system.cjs

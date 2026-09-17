@@ -14,9 +14,9 @@ const provisionalCandidatePath = path.join(root, "supabase", "sql", "wp_glob_002
 const acceptancePath = path.join(root, "supabase", "sql", "wp_glob_002_language_track_scope_acceptance.sql");
 const apiPath = path.join(root, "supabase", "functions", "creator-project-api", "index.ts");
 const enginePath = path.join(root, "apps", "video-workspace", "production-system", "engine.js");
-const contractPath = path.join(root, "docs", "creator-language-track-artifact-scope-v0.1.md");
-const distributionPath = path.join(root, "docs", "creator-distribution-identity-v0.1.md");
-const unifiedPath = path.join(root, "docs", "ai-video-production", "UNIFIED_PIPELINE.md");
+const contractPath = path.join(root, "docs", "reference", "foundation-contracts", "creator-language-track-artifact-scope-v0.1.md");
+const distributionPath = path.join(root, "docs", "reference", "foundation-contracts", "creator-distribution-identity-v0.1.md");
+const unifiedPath = path.join(root, "docs", "reference", "foundation-contracts", "unified-pipeline-phase-1-2.md");
 
 assert.ok(fs.existsSync(migrationPath), `Canonical Production-synced migration missing: ${canonicalMigration}`);
 assert.ok(!fs.existsSync(provisionalCandidatePath), "Provisional WP_GLOB_002 migration candidate must not remain after Production assigns a version");

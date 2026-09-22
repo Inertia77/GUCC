@@ -131,7 +131,7 @@ assert.match(dashboard, /AUTH_STORE_KEY = "gameup_session_v5"[\s\S]*addEventList
 assert.match(dashboard, /let loadEpoch = 0;[\s\S]*epoch !== loadEpoch/, "Late dashboard responses must not overwrite a newer refresh");
 assert.match(dashboard, /if \(!loggedIn\(\)\) \{ root\.removeAttribute\("aria-busy"\); return renderLogin\(\); \}/, "Logged-out Dashboard state must clear stale busy semantics");
 assert.match(dashboard, /catch \(error\)[\s\S]*if \(loggedIn\(\)\) renderError\(error\); else renderLogin\(\)/, "Expired Dashboard sessions must return to the login state in the same tab");
-assert.match(serviceWorker, /gucc-static-v26[\s\S]*gucc-runtime-v26/, "Global Production offline assets require a fresh Service Worker cache generation");
+assert.match(serviceWorker, /gucc-static-v27[\s\S]*gucc-runtime-v27/, "Global Production offline assets require a fresh Service Worker cache generation");
 for (const offlineAsset of [
   "creator-local-project-contract.js?v=1", "creator-timeline-contract.js?v=1", "creator-global-production-core.js?v=1",
   "creator-project-bootstrap-browser.js?v=1", "creator-timeline-browser.js?v=1", "creator-workspace-root.mjs?v=1",

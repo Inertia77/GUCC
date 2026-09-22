@@ -6,9 +6,10 @@
     '鸣': { name: '鸣潮', short: '鸣潮' },
     '绝': { name: '绝区零', short: '绝区零' },
     '终': { name: '明日方舟：终末地', short: '终末地' },
-    '异': { name: '异环', short: '异环' }
+    '异': { name: '异环', short: '异环' },
+    '阴': { name: '阴阳师', short: '阴阳师' }
   };
-  const GAME_ORDER = ['崩', '鸣', '绝', '终', '异'];
+  const GAME_ORDER = ['崩', '鸣', '绝', '终', '异', '阴'];
   const gameRank = (key) => {
     const rank = GAME_ORDER.indexOf(key);
     return rank === -1 ? GAME_ORDER.length : rank;
@@ -59,6 +60,11 @@
     {
       key: '异', description: '官方动态入口', routes: [
         ['Bilibili 官方图文公告', 'https://space.bilibili.com/3546636978489848/upload/opus', '官方动态', '公告']
+      ]
+    },
+    {
+      key: '阴', description: '网易《阴阳师》官方入口', routes: [
+        ['阴阳师官网', 'https://yys.163.com/', '官方角色、版本与公告入口', '官方']
       ]
     }
   ];
@@ -123,7 +129,7 @@
     stopped_or_not_recommended_for_new_data: '已停更', live_data_only_or_restricted: '仅正式服/受限'
   };
 
-  const state = { view: 'official', game: 'all', query: '', queryRaw: '', sites: [] };
+  const state = { view: 'projects', game: 'all', query: '', queryRaw: '', sites: [] };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
@@ -133,7 +139,9 @@
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view');
     const game = params.get('game');
-    state.view = ['intel', 'official', 'projects'].includes(view) ? view : 'official';
+    state.view = ['intel', 'official', 'projects'].includes(view)
+      ? view
+      : (game && (game === 'all' || Object.hasOwn(games, game)) ? 'official' : 'projects');
     state.game = game === 'all' || Object.hasOwn(games, game) ? game : 'all';
     state.queryRaw = params.get('q') || '';
     state.query = normalize(state.queryRaw.trim());
@@ -141,9 +149,9 @@
 
   function syncUrl() {
     const url = new URL(window.location.href);
-    if (state.view === 'official') url.searchParams.delete('view');
+    if (state.view === 'projects') url.searchParams.delete('view');
     else url.searchParams.set('view', state.view);
-    if (state.game === 'all') url.searchParams.delete('game');
+    if (state.view === 'projects' || state.game === 'all') url.searchParams.delete('game');
     else url.searchParams.set('game', state.game);
     if (state.queryRaw) url.searchParams.set('q', state.queryRaw);
     else url.searchParams.delete('q');
@@ -163,6 +171,17 @@
     const gameFilters = $('#gameFilters');
     if (gameFilters) gameFilters.hidden = projectsMode;
     $('.atlas-toolbar')?.classList.toggle('is-projects-view', projectsMode);
+    const researchNote = $('.research-note');
+    if (researchNote) researchNote.hidden = projectsMode;
+    if (projectsMode) {
+      const methodPanel = $('#methodPanel');
+      if (methodPanel) methodPanel.hidden = true;
+      const methodButton = $('#methodButton');
+      if (methodButton) {
+        methodButton.setAttribute('aria-expanded', 'false');
+        methodButton.textContent = '查看核验方法';
+      }
+    }
     const sourceSearch = $('#sourceSearch');
     sourceSearch.value = state.queryRaw;
     sourceSearch.placeholder = projectsMode ? '搜索 AI 分析助手…' : '搜索站点、用途或类型…';
@@ -176,6 +195,7 @@
       if (name.includes('绝区零')) return '绝';
       if (name.includes('鸣潮')) return '鸣';
       if (name.includes('异环') || name.includes('Neverness')) return '异';
+      if (name.includes('阴阳师')) return '阴';
       return null;
     }).filter(Boolean);
   }
@@ -371,6 +391,7 @@
     restoreStateFromUrl();
     bindControls();
     syncControls();
+    render();
     try {
       const response = await fetch(DATA_URL, { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

@@ -391,6 +391,7 @@
     restoreStateFromUrl();
     bindControls();
     syncControls();
+    syncUrl();
     render();
     try {
       const response = await fetch(DATA_URL, { cache: 'no-store' });

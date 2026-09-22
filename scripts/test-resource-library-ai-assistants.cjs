@@ -33,6 +33,8 @@ assert.match(js, /const projectAssistants = \[/);
 assert.doesNotMatch(js, /const researchGroups = \[/);
 assert.match(js, /projectsMode = state\.view === 'projects'/);
 assert.match(js, /gameFilters\.hidden = projectsMode/);
+assert.match(js, /\$\$\('\.game-filter'\)\.forEach/, 'All game-filter buttons must be iterated with $; querySelector returns only one element.');
+assert.doesNotMatch(js, /(?<!\$)\$\('\.game-filter'\)\.forEach/, 'Do not call forEach on querySelector result.');
 assert.match(js, /搜索 AI 分析助手/);
 assert.match(js, /ai-project-card/);
 

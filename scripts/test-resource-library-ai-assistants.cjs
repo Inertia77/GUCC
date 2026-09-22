@@ -17,6 +17,18 @@ assert.match(html, /<span>AI 分析<\/span><strong>4<\/strong>/);
 assert.doesNotMatch(html, /CHARACTER MASTER CONTROL/);
 assert.doesNotMatch(html, /id="projectsHeading">二游角色总控</);
 
+assert.match(html, /class="view-switch is-active"[^>]*data-view="projects"[^>]*aria-pressed="true"/, "AI analysis must be the default active tab.");
+assert.match(html, /id="officialPanel"[^>]*hidden/, "Official references should not be the initial panel.");
+assert.match(html, /id="projectsPanel"[^>]*aria-labelledby="projectsHeading">/, "AI analysis panel should be initially visible.");
+assert.match(html, /id="gameFilters" hidden/, "Game filters should be hidden in the default AI view.");
+assert.doesNotMatch(html, /resource-library-onmyoji\.js/, "Onmyoji must be integrated into the canonical library instead of injected by a second runtime.");
+assert.match(js, /const state = \{ view: 'projects'/, "AI analysis must be the JS default view.");
+assert.match(js, /'阴': \{ name: '阴阳师'/, "Onmyoji must be registered as a canonical game.");
+assert.match(js, /key: '阴'[\s\S]*?https:\/\/yys\.163\.com\//, "Onmyoji official route must live in officialGroups.");
+assert.match(js, /if \(name\.includes\('阴阳师'\)\) return '阴'/, "Onmyoji must participate in source filtering.");
+assert.match(js, /state\.view === 'projects' \|\| state\.game === 'all'\) url\.searchParams\.delete\('game'\)/, "AI analysis URLs must not carry stale game filters.");
+assert.match(js, /render\(\);\s*try \{/, "Default AI launchpad must render before the leak data fetch finishes.");
+
 const expectedProjects = [
   ["Game Assistant", "g-p-6a914917ed548191a8299e3f009aad2f"],
   ["【二游メモ】角色分析（キャラクター）", "g-p-6a8ec96a3bb4819196b66af85cbc9695"],

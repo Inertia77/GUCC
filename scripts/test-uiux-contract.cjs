@@ -75,7 +75,7 @@ assert.match(uxBrowser, /1440, 900/, 'Creator UX browser acceptance must cover 1
 assert.match(uxBrowser, /Human Gate must never auto-fire/, 'Creator UX browser acceptance must protect human-only gates.');
 assert.match(uxBrowser, /first fold/, 'Creator UX browser acceptance must verify current-task-first mobile hierarchy.');
 assert.match(uxBrowser, /saveProject/, 'Creator UX browser acceptance must prove read/navigation smoke creates no Project write.');
-assert.match(serviceWorker, /gucc-static-v26[\s\S]*gucc-runtime-v26/, 'Creator UX closeout must preserve the current production cache generation while extending its shell.');
+assert.match(serviceWorker, /gucc-static-v27[\s\S]*gucc-runtime-v27/, 'Creator UX closeout must preserve the current production cache generation while extending its shell.');
 assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator UX simplification must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Creator UX closeout refinements must remain available in the offline app shell.');
 console.log('UIUX contract checks passed.');

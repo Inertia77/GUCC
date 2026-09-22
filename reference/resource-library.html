@@ -14,8 +14,7 @@
   <link rel="stylesheet" href="../assets/gucc-zzz.css?v=1">
   <link rel="stylesheet" href="../assets/resource-library-compact-v1.css?v=3">
   <script src="../assets/gucc-shell.js?v=6" data-root="../" defer></script>
-  <script src="./resource-library-onmyoji.js" defer></script>
-  <script src="./resource-library.js" defer></script>
+  <script src="./resource-library.js?v=2" defer></script>
 </head>
 <body class="gucc-enhanced gucc-reference resource-page">
   <main class="library-shell">
@@ -33,13 +32,13 @@
         <h1 id="pageTitle">游戏资料导航</h1>
         <p class="hero-lede">正式资料、Leak 情报与 AI 分析辅助分层整理。先确认已上线内容，再查看测试服、数据挖掘与社区线索；需要进一步判断时，进入 Game Assistant 或角色、阵容、机制专用 ChatGPT Project。</p>
         <div class="hero-actions" aria-label="资料类型">
-          <button class="view-switch is-active" type="button" data-view="official" aria-pressed="true">
+          <button class="view-switch" type="button" data-view="official" aria-pressed="false">
             <span>正式资料</span><strong>27</strong>
           </button>
           <button class="view-switch" type="button" data-view="intel" aria-pressed="false">
             <span>Leak 资料</span><strong id="intelCount">28</strong>
           </button>
-          <button class="view-switch" type="button" data-view="projects" aria-pressed="false">
+          <button class="view-switch is-active" type="button" data-view="projects" aria-pressed="true">
             <span>AI 分析</span><strong>4</strong>
           </button>
         </div>
@@ -55,7 +54,7 @@
       </aside>
     </section>
 
-    <section class="research-note" aria-label="使用提醒">
+    <section class="research-note" aria-label="使用提醒" hidden>
       <span class="note-icon" aria-hidden="true">i</span>
       <div><strong>Leak 内容不等于上线内容</strong><p>页面可能包含未公开内容与剧透。不要登录陌生站点或下载程序；转述时请同时标注来源、版本和可信度。</p></div>
       <button type="button" class="method-button" id="methodButton" aria-expanded="false" aria-controls="methodPanel">查看核验方法</button>
@@ -72,8 +71,8 @@
       </ol>
     </section>
 
-    <div class="atlas-toolbar" aria-label="资料筛选">
-      <div class="game-filters" id="gameFilters">
+    <div class="atlas-toolbar is-projects-view" aria-label="资料筛选">
+      <div class="game-filters" id="gameFilters" hidden>
         <button type="button" class="game-filter is-active" data-game="all"><span>ALL</span> 全部</button>
         <button type="button" class="game-filter" data-game="崩"><i>崩</i> 星穹铁道</button>
         <button type="button" class="game-filter" data-game="鸣"><i>鸣</i> 鸣潮</button>
@@ -85,12 +84,12 @@
       <label class="search-box">
         <span aria-hidden="true">⌕</span>
         <span class="sr-only">搜索资料来源</span>
-        <input id="sourceSearch" type="search" placeholder="搜索站点、用途或类型…" autocomplete="off">
+        <input id="sourceSearch" type="search" placeholder="搜索 AI 分析助手…" aria-label="搜索 AI 分析助手" autocomplete="off">
         <kbd>/</kbd>
       </label>
     </div>
 
-    <section class="view-panel" id="officialPanel" data-panel="official" aria-labelledby="officialHeading">
+    <section class="view-panel" id="officialPanel" data-panel="official" aria-labelledby="officialHeading" hidden>
       <div class="section-heading">
         <div><p class="section-kicker">CANONICAL REFERENCES</p><h2 id="officialHeading">正式资料入口</h2><p>确认术语、当前数值与已经上线的内容。</p></div>
         <span class="official-stamp"><b>27</b> VERIFIED ROUTES</span>
@@ -113,7 +112,7 @@
       <div class="empty-state" id="intelEmpty" hidden><strong>没有匹配的来源</strong><span>换一个游戏，或清除搜索关键词。</span></div>
     </section>
 
-    <section class="view-panel" id="projectsPanel" data-panel="projects" aria-labelledby="projectsHeading" hidden>
+    <section class="view-panel" id="projectsPanel" data-panel="projects" aria-labelledby="projectsHeading">
       <div class="section-heading">
         <div><p class="section-kicker">AI ANALYSIS ASSISTANTS</p><h2 id="projectsHeading">AI 分析辅助</h2><p>Game Assistant 负责综合游戏问题；角色、阵容、游戏机制三个专用 Project 负责深入分析。这里统一作为 GUCC 的 AI 研究入口，不再限定为“二游角色总控”。</p></div>
         <span class="official-stamp"><b>4</b> PROJECT ROUTES</span>

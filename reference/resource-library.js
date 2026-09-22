@@ -63,36 +63,46 @@
     }
   ];
 
-  const researchGroups = [
+  const projectAssistants = [
     {
-      key: '崩', description: 'ChatGPT 角色研究工作区', routes: [
-        ['角色养成分析【崩铁】', 'https://chatgpt.com/g/g-p-6a8c369060b0819180d8b0f8ff20ea10/project', '养成分析项目', '需登录'],
-        ['角色解析合集【崩铁】', 'https://chatgpt.com/g/g-p-6a8c1a7dde088191bd3c0a05b41e08db/project', '角色解析项目', '需登录']
-      ]
+      key: 'general',
+      mark: '总',
+      number: '00',
+      eyebrow: 'ChatGPT · 综合游戏助理',
+      title: 'Game Assistant',
+      description: '日常游戏问答、跨类别判断与临时研究的统一入口；不知道该进哪个专用工作区时先从这里开始。',
+      tags: ['综合问答', '跨类别', '临时研究'],
+      url: 'https://chatgpt.com/g/g-p-6a914917ed548191a8299e3f009aad2f/project'
     },
     {
-      key: '鸣', description: 'ChatGPT 角色研究工作区', routes: [
-        ['角色养成分析【鸣潮】', 'https://chatgpt.com/g/g-p-6a8c36c3ab8481919000558defc19582/project', '养成分析项目', '需登录'],
-        ['角色解析合集【鸣潮】', 'https://chatgpt.com/g/g-p-6a8c16d1798c8191abd1c3f732ee69e9/project', '已见条目：解析鸣潮守岸人', '需登录']
-      ]
+      key: 'character',
+      mark: '角',
+      number: '01',
+      eyebrow: 'ChatGPT · 角色分析',
+      title: '【二游メモ】角色分析（キャラクター）',
+      description: '原“二游角色总控”统一改名后的角色专用工作区；继续承接角色解析、人物与养成相关研究。',
+      tags: ['角色解析', '人物', '养成'],
+      url: 'https://chatgpt.com/g/g-p-6a8ec96a3bb4819196b66af85cbc9695/project'
     },
     {
-      key: '绝', description: 'ChatGPT 角色研究工作区', routes: [
-        ['角色养成分析【绝区零】', 'https://chatgpt.com/g/g-p-6a8c36cf72a481919c36fc97e13a33b2/project', '养成分析项目', '需登录'],
-        ['角色解析合集【绝区零】', 'https://chatgpt.com/g/g-p-6a8c1a05abac819184ae205a7b2ef1b7/project', '已见条目：叶瞬光机制、蕾米埃尔', '需登录']
-      ]
+      key: 'party',
+      mark: '阵',
+      number: '02',
+      eyebrow: 'ChatGPT · 阵容分析',
+      title: '【二游メモ】阵容分析（パーティー）',
+      description: '用于配队、替代位、阵容逻辑、排轴与实战适配等队伍层面的专项分析。',
+      tags: ['阵容解析', '配队', '排轴'],
+      url: 'https://chatgpt.com/g/g-p-6a8eef4bc060819197a59cf0a28209be/project'
     },
     {
-      key: '终', description: 'ChatGPT 角色研究工作区', routes: [
-        ['角色养成分析【终末地】', 'https://chatgpt.com/g/g-p-6a8c36db2ea88191957b8ecf15d1d20c/project', '养成分析项目', '需登录'],
-        ['角色解析合集【终末地】', 'https://chatgpt.com/g/g-p-6a8c1aa1072c8191bc3cc8f9ed944119/project', '角色解析项目', '需登录']
-      ]
-    },
-    {
-      key: '异', description: 'ChatGPT 角色研究工作区', routes: [
-        ['角色养成分析【异环】', 'https://chatgpt.com/g/g-p-6a8c371af3548191befbf26b1b5c0c8d/project', '养成分析项目', '需登录'],
-        ['角色解析合集【异环】', 'https://chatgpt.com/g/g-p-6a8c1a93d97881919712db116ce69b43/project', '已见条目：娜娜莉机制、娜娜莉角色', '需登录']
-      ]
+      key: 'mechanism',
+      mark: '机',
+      number: '03',
+      eyebrow: 'ChatGPT · 游戏机制',
+      title: '【二游メモ】游戏机制（メカニズム）',
+      description: '用于系统规则、战斗机制、敌人机制与数值逻辑等不属于单一角色或阵容的问题。',
+      tags: ['游戏机制', '系统规则', '数值逻辑'],
+      url: 'https://chatgpt.com/g/g-p-6a8fd96ffc6c81918d2e5b97c6e86c4a/project'
     }
   ];
 
@@ -146,10 +156,17 @@
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });
-    $$('.game-filter').forEach((button) => {
+    $('.game-filter').forEach((button) => {
       button.classList.toggle('is-active', button.dataset.game === state.game);
     });
-    $('#sourceSearch').value = state.queryRaw;
+    const projectsMode = state.view === 'projects';
+    const gameFilters = $('#gameFilters');
+    if (gameFilters) gameFilters.hidden = projectsMode;
+    $('.atlas-toolbar')?.classList.toggle('is-projects-view', projectsMode);
+    const sourceSearch = $('#sourceSearch');
+    sourceSearch.value = state.queryRaw;
+    sourceSearch.placeholder = projectsMode ? '搜索 AI 分析助手…' : '搜索站点、用途或类型…';
+    sourceSearch.setAttribute('aria-label', projectsMode ? '搜索 AI 分析助手' : '搜索资料来源');
   }
 
   function gameKeys(site) {
@@ -259,19 +276,34 @@
   }
 
   function renderProjects() {
-    const groups = researchGroups.filter((group) => state.game === 'all' || group.key === state.game).map((group) => ({
-      ...group,
-      routes: group.routes.filter((route) => !state.query || normalize([games[group.key].name, ...route].join(' ')).includes(state.query))
-    })).filter((group) => group.routes.length).sort((a, b) => gameRank(a.key) - gameRank(b.key));
+    const projects = projectAssistants.filter((project) => (
+      !state.query || normalize([
+        project.title,
+        project.eyebrow,
+        project.description,
+        ...(project.tags || [])
+      ].join(' ')).includes(state.query)
+    ));
 
-    $('#projectsGrid').innerHTML = groups.map((group) => `
-      <article class="official-group game-${group.key}">
-        <header><span class="official-mark">${group.key}</span><div><p>${escapeHtml(group.description)}</p><h3>${escapeHtml(games[group.key].name)}</h3></div><strong>${String(group.routes.length).padStart(2, '0')}</strong></header>
-        <div class="official-routes">
-          ${group.routes.map((route, index) => `<a href="${escapeHtml(route[1])}" target="_blank" rel="noopener noreferrer"><span class="route-index">${String(index + 1).padStart(2, '0')}</span><span><strong>${escapeHtml(route[0])}</strong><small>${escapeHtml(route[2])}</small></span>${route[3] ? `<em>${escapeHtml(route[3])}</em>` : ''}<b aria-hidden="true">↗</b></a>`).join('')}
+    $('#projectsGrid').innerHTML = projects.map((project) => `
+      <article class="official-group ai-project-card ai-project-${escapeHtml(project.key)}">
+        <header>
+          <span class="official-mark">${escapeHtml(project.mark)}</span>
+          <div>
+            <p>${escapeHtml(project.eyebrow)}</p>
+            <h3>${escapeHtml(project.title)}</h3>
+          </div>
+          <strong>${escapeHtml(project.number)}</strong>
+        </header>
+        <p class="ai-project-description">${escapeHtml(project.description)}</p>
+        <div class="source-types ai-project-tags">
+          ${(project.tags || []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}
         </div>
+        <a class="ai-project-open" href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer">
+          <span>进入 ChatGPT Project</span><b aria-hidden="true">↗</b>
+        </a>
       </article>`).join('');
-    $('#projectsEmpty').hidden = groups.length > 0;
+    $('#projectsEmpty').hidden = projects.length > 0;
   }
 
   function render() {

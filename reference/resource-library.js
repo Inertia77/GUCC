@@ -156,7 +156,7 @@
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });
-    $('.game-filter').forEach((button) => {
+    $$('.game-filter').forEach((button) => {
       button.classList.toggle('is-active', button.dataset.game === state.game);
     });
     const projectsMode = state.view === 'projects';

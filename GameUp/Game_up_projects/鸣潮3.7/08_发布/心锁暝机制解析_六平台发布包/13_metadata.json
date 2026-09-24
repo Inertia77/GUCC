@@ -1,38 +1,46 @@
 {
   "video": {
+    "project": "Wuthering Waves 3.7 - Hsin + Suoming Mechanic Analysis",
     "title_sc": "心+锁暝机制解析",
     "duration": "00:06:36.240",
     "subtitle_sc": "11_字幕_简中_FINAL.srt",
-    "subtitle_tc": "12_字幕_繁中_FINAL.srt"
+    "subtitle_tc": "12_字幕_繁中_FINAL.srt",
+    "chapter_count": 10
   },
   "platforms": {
     "bilibili": {
       "language": "zh-Hans",
-      "title": "【鸣潮3.7】心+锁暝机制解析：同奏怎么接？抽卡怎么规划",
-      "cover": "4:3",
-      "chapters": "08_B站_章节.txt"
+      "title": "【鸣潮3.7】锁暝切人后为什么还在打？心+锁暝同奏机制与抽卡规划",
+      "cover": ["4:3", "16:9-safe-reference"],
+      "chapters": "08_B站_章节.txt",
+      "poll": "09_B站_弹幕投票.md"
     },
     "youtube": {
       "language": "zh-Hant",
-      "title": "【鳴潮3.7】心＋鎖暝機制解析｜同奏怎麼接？抽卡與資源規劃",
+      "title": "【鳴潮3.7】鎖暝切人後為什麼還在打？心＋鎖暝同奏機制與抽卡規劃",
       "cover": "16:9",
-      "chapters": "07_YouTube_章節_繁中.txt"
+      "chapters": "07_YouTube_章節_繁中.txt",
+      "subtitle": "12_字幕_繁中_FINAL.srt"
     },
     "douyin": {
       "language": "zh-Hans",
-      "cover": "9:16"
+      "title": "锁暝切走后为什么还在打？心锁同奏讲清",
+      "cover": ["3:4", "4:3"]
     },
     "tiktok": {
       "language": "zh-Hant",
-      "cover": "9:16"
+      "cover": "9:16",
+      "subtitle": "12_字幕_繁中_FINAL.srt"
     },
     "xiaohongshu": {
       "language": "zh-Hans",
+      "title": "鸣潮3.7｜心+锁暝怎么接",
       "cover": "3:4",
-      "note": "06:36 may require long-video permission"
+      "duration_permission_check": true
     },
     "wechat_channels": {
       "language": "zh-Hans",
+      "short_title": "心锁暝同奏机制解析",
       "cover": "3:4"
     }
   }

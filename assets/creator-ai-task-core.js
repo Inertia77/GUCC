@@ -562,6 +562,8 @@ ${c.missing.length ? c.missing.map((item) => `- ${item}`).join("\n") : "- None r
       return { recognized: false, ready: false, task: null, contract, blockers: ["无法识别短指令；请使用已支持的稳定任务别名。"], prompt: "" };
     }
     const blockers = taskBlockers(task.key, contract);
+    const constitutionLoaded = Boolean(text(input.constitutionText));
+    if (!constitutionLoaded) blockers.push("Creator Constitution 未载入");
     const ready = blockers.length === 0;
     const rules = TASK_RULES[task.key] || [];
     const outputs = TASK_OUTPUTS[task.key] || [];
@@ -603,7 +605,7 @@ ${evidenceTemplate}
 - 列出实际使用的 Source of Truth、实际输入、输出、缺口与需要人工决定的事项。
 - 如果正式文件未随 Prompt 一起提供，不得用旧 Chat 内容或猜测代替；明确要求用户附上当前正式文件。
 `;
-    return { recognized: true, ready: ready && Boolean(text(input.constitutionText)), task, contract, blockers: text(input.constitutionText) ? blockers : [...blockers, "Creator Constitution 未载入"], prompt };
+    return { recognized: true, ready, task, contract, blockers, prompt };
   }
 
   function buildStagePrompt(input = {}) {

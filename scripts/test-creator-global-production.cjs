@@ -111,6 +111,9 @@ assert.match(api, /const locked = booleanValue\(body\.locked, "locked", true\)/,
 
 assert.ok(html.includes('id="globalProduction"')); assert.ok(html.includes("creator-global-production-ui.mjs?v=7"), "Production must cache-bust Global UI changes");
 assert.ok(html.includes("styles.css?v=5"), "Production must cache-bust Global layout changes");
+assert.ok(html.includes("creator-ai-task-core.js?v=1"), "Production must load AI Task core");
+assert.ok(html.includes("creator-ai-task-ui.mjs?v=1"), "Production must load AI Task UI");
+assert.ok(html.includes("app.js?v=5"), "Production must cache-bust enriched Stage Prompt copy behavior");
 for (const label of ["Language Tracks", "Visual Master", "Variants", "Publish Packages", "Publications", "Analytics", "Learning", "最终发布确认"]) assert.ok(ui.includes(label), `Global UI path missing ${label}`);
 assert.match(ui, /AUTH_STORE_KEY = "gameup_session_v5"/, "Global UI must observe the shared Owner session identity");
 assert.match(ui, /requestedProjectId = new URLSearchParams\(location\.search\)\.get\("project"\)[\s\S]*if \(requestedProjectId\) return requestedProjectId[\s\S]*selectedProjectId/, "Explicit Production deep links must win over a stale local project selection");
@@ -131,11 +134,11 @@ assert.match(dashboard, /AUTH_STORE_KEY = "gameup_session_v5"[\s\S]*addEventList
 assert.match(dashboard, /let loadEpoch = 0;[\s\S]*epoch !== loadEpoch/, "Late dashboard responses must not overwrite a newer refresh");
 assert.match(dashboard, /if \(!loggedIn\(\)\) \{ root\.removeAttribute\("aria-busy"\); return renderLogin\(\); \}/, "Logged-out Dashboard state must clear stale busy semantics");
 assert.match(dashboard, /catch \(error\)[\s\S]*if \(loggedIn\(\)\) renderError\(error\); else renderLogin\(\)/, "Expired Dashboard sessions must return to the login state in the same tab");
-assert.match(serviceWorker, /gucc-static-v27[\s\S]*gucc-runtime-v27/, "Global Production offline assets require a fresh Service Worker cache generation");
+assert.match(serviceWorker, /gucc-static-v28[\s\S]*gucc-runtime-v28/, "Global Production offline assets require a fresh Service Worker cache generation");
 for (const offlineAsset of [
   "creator-local-project-contract.js?v=1", "creator-timeline-contract.js?v=1", "creator-global-production-core.js?v=1",
   "creator-project-bootstrap-browser.js?v=1", "creator-timeline-browser.js?v=1", "creator-workspace-root.mjs?v=1",
-  "creator-file-observations.mjs?v=2", "creator-global-production-ui.mjs?v=7", "creator-ux-simplification-v1.mjs?v=1", "production-system/styles.css?v=5", "production-system/app.js?v=4", "creator-pipeline-bridge.mjs?v=7", "creator-pipeline-core.mjs?v=2", "access-guard.js?v=8",
+  "creator-file-observations.mjs?v=2", "creator-global-production-ui.mjs?v=7", "creator-ai-task-core.js?v=1", "creator-ai-task-ui.mjs?v=1", "creator-ux-simplification-v1.mjs?v=1", "production-system/styles.css?v=5", "production-system/app.js?v=5", "creator-pipeline-bridge.mjs?v=7", "creator-pipeline-core.mjs?v=2", "access-guard.js?v=8",
   "creator-dashboard.mjs?v=4", "creator-dashboard.css?v=1",
 ]) assert.ok(serviceWorker.includes(offlineAsset), `Production offline shell missing ${offlineAsset}`);
 

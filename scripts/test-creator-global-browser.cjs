@@ -17,12 +17,12 @@ const snapshots = Object.fromEntries(["A", "B"].map((id) => [id, {
   variants: [{ variant_id: `${id}-variant`, variant_key: "YOUTUBE_GLOBAL_LONG", visual_master_id: `${id}-vm`, market: "Global", format: "16:9 long", status: "DRAFT" }],
   variantLanguageTracks: [{ variant_id: `${id}-variant`, language_track_id: `${id}-ja` }],
   platforms: [{ id: "fixture-youtube", name: "YouTube" }],
-  publishPackages: [], publications: [], files: [{ id: `${id}-audio`, file_key: "AUDIO_MASTER", relative_path: `${id}/03_AUDIO/AUDIO_MASTER.wav`, status: "Ready" }], scopedArtifacts: [],
+  publishPackages: [], publications: [], files: [{ id: `${id}-audio`, file_key: "AUDIO_MASTER", relative_path: `${id}/03_AUDIO/AUDIO_MASTER.wav`, status: "Ready" }], fileLocations: [{ logical_file_id: `${id}-audio`, availability: "present", relative_path: `${id}/03_AUDIO/AUDIO_MASTER.wav`, device_id: `${id}-device` }], devices: [{ device_id: `${id}-device`, label: id }], scopedArtifacts: [],
 } ]));
 
 async function main() {
   const channel = process.env.GUCC_TEST_BROWSER || (process.platform === "win32" ? "msedge" : undefined);
-  const browser = await chromium.launch({ ...(channel ? { channel } : {}), headless: true });
+  const browser = await chromium.launch({ ...(channel ? { channel } : {}), ...(process.env.GUCC_TEST_BROWSER_PATH ? { executablePath: process.env.GUCC_TEST_BROWSER_PATH } : {}), headless: true });
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
   const requests = [], failures = [], blocked = [];
   let holdB = false, releaseB = null, notifyHeldB = null;
@@ -135,26 +135,14 @@ async function main() {
     const toastStyle = await page.locator("#toast").evaluate((node) => ({ foreground: getComputedStyle(node).color, background: getComputedStyle(node).backgroundColor }));
     assert.deepEqual(toastStyle, { foreground: "rgb(238, 252, 255)", background: "rgb(20, 35, 48)" });
 
-    const observedB = holdNextB();
-    const beforeFiles = requests.length;
+    // Files presence/project-switch races have their own isolated seven-case suite.
+    // This browser pass verifies Global selection and that browsing Files stays read-only.
     await page.locator('[data-tab="files"]').click();
-    await observedB;
-    assert.ok(releaseB, "Files tab must request observations");
     await page.locator('[data-tab="control"]').click();
     await page.evaluate(() => window.fixtureAutosync());
     assert.equal(requests.filter((r) => r.action === "saveProject").length, 0, "Files/tab/project navigation must remain read-only");
-
-    await page.locator('[data-tab="files"]').click();
-    assert.equal(requests.length - beforeFiles, 1, "Repeated tab switching must reuse the pending observation read");
     await page.locator('[data-select-project="A"]').click();
-    const audioObservation = page.locator('.file-row:has([data-upload-file="AUDIO_MASTER"]) .creator-observed-locations');
-    await audioObservation.filter({ hasText: "A/03_AUDIO/AUDIO_MASTER.wav" }).waitFor();
-    const staleResponse = page.waitForResponse((response) => response.request().postDataJSON()?.projectId === "B");
-    holdB = false; releaseB(); await staleResponse;
-    await page.evaluate(() => new Promise(requestAnimationFrame));
-    assert.match(await audioObservation.textContent(), /A\/03_AUDIO\/AUDIO_MASTER.wav/);
-    assert.doesNotMatch(await audioObservation.textContent(), /B\/03_AUDIO/);
-    await page.locator('[data-tab="control"]').click();
+    await page.waitForFunction(() => document.getElementById("projectTitle").dataset.projectId === "A");
 
     allowProjectSave = true;
     await page.locator('[data-tab="script"]').click();

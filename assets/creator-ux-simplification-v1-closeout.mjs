@@ -173,7 +173,8 @@ function updateProjectStage() {
   const hero = document.querySelector("body.production-system-page .project-hero");
   if (!hero) return;
   const code = globalStageCode();
-  const label = GLOBAL_STAGE_GROUPS[groupIndex(code)]?.label || "当前阶段";
+  const legacy = document.querySelector("#currentStateLabel")?.textContent.split(" · ")[0].trim() || "IDEA";
+  const label = window.GuccCreatorWorkflow?.stageFor(legacy, code).title || GLOBAL_STAGE_GROUPS[groupIndex(code)]?.label || "当前阶段";
   let stage = hero.querySelector(".ux-project-stage");
   if (!stage) { stage = document.createElement("p"); stage.className = "ux-project-stage"; hero.querySelector("#projectMeta")?.insertAdjacentElement("afterend", stage); }
   setText(stage, `当前阶段 · ${label}`); stage.title = code;

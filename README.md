@@ -51,7 +51,7 @@ Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 | 页面 | 路径 | 用途 |
 |---|---|---|
 | GameUp Command Center | `apps/command-center/` | 查询和维护角色、配队、版本、资源链接 |
-| GUCC WorkSpace | `apps/video-workspace/` | 视频项目模板、WIP/DONE Markdown 与 JSON |
+| Creator Workflow Hub | `apps/video-workspace/` | 七阶段视频流程、共享能力轨道、项目队列与 AI Task 入口；旧 Studio 保留于 `legacy/` |
 | AI Video Production System | `apps/video-workspace/production-system/` | Audio-Locked 状态机、阶段 Prompt、素材、Storyboard 与 Review |
 | Cover Generator | `apps/cover-generator/` | 多比例视频封面生成 |
 | Publish Console | `apps/publishing-console/` | 分平台发布单、预检、执行记录与数据复盘 |

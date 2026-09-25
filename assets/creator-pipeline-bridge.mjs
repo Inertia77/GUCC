@@ -341,7 +341,7 @@ async function runStudio() {
   transfer.addEventListener("click", () => {
     const snapshot = collectStudioSnapshot();
     writeJson(STUDIO_HANDOFF_KEY, { projectId: snapshot.projectId, snapshot, createdAt: new Date().toISOString() });
-    window.location.href = new URL("./production-system/", window.location.href).href;
+    window.location.href = new URL("../production-system/", window.location.href).href;
   });
   setPanelStatus(panel, loggedIn() ? "ok" : "local", loggedIn() ? "Supabase 登录可复用" : "本地可用 · 云同步需先登录 Command Center");
 }

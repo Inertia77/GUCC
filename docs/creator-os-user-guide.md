@@ -4,7 +4,7 @@
 >
 > 不需要先理解数据库、Revision、API、Migration 或 Artifact Scope。正常使用时，你只需要记住一句话：**打开 GUCC → 看“现在做这个” → 做当前任务 → 遇到人工确认再由你点击。**
 >
-> 本指南按 2026-09-25 `main` 的真实界面和行为维护。
+> 本指南按 2026-09-25 Creator Workflow Hub 重构分支的界面和行为维护；合并前以 PR 预览为准。
 
 ## 第一次使用，只看这里
 
@@ -81,7 +81,7 @@ GUCC Portal
 → ＋ 新建项目
 ```
 
-你也可以先在 Studio 做选题和结构，再通过右下角 **「AI 制作总线」→「转入正式制作」**。这样 Studio Draft 会带着同一个 Project ID 进入 Production，不会另外复制一套项目。
+历史 Studio 草稿仍可在 `apps/video-workspace/legacy/studio-v5.1.html` 打开并通过旧桥接转入 Production。新项目直接从创作总览进入 Production，避免维护第二套项目编辑器。
 
 ### 2.2 新建项目要填什么
 
@@ -146,13 +146,15 @@ Production 页面会显示当前唯一的主任务。旧的 Legacy Next Action�
 
 **文件**：看某个标准文件逻辑上是否 Ready，以及 Local Agent 是否真的在本机看到它。
 
-**Studio**：选题、资料整理、结构、早期思考。想清楚后再转正式 Production。
+**创作总览 / Workflow Hub**：看当前项目、七阶段纵向流程、共享规则与可用 AI 指令；不编辑正式项目数据。
 
 **Publish Console**：真正的平台发布执行、最终字段确认、上传准备、Post URL / ID、发布后数据复盘。
 
 ---
 
 ## 4. 从 Idea 到 Script
+
+正式文案前先完成证据研究：有官方直播、PV、角色展示或实机视频时，先逐段解析声音、画面、UI / 状态变化和时间戳，再确立机制结论。不能先写稿再找视频证明。
 
 你不需要手动记状态，但了解这段会更安心：
 

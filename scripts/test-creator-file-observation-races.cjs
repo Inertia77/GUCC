@@ -7,7 +7,7 @@ const vm = require("node:vm");
 const source = fs.readFileSync(path.join(__dirname, "../assets/creator-file-observations.mjs"), "utf8")
   .replace(/^import .*;\r?\n/gm, "");
 const tick = () => new Promise(setImmediate);
-const data = (id, label = id) => ({ project: { project_id: id }, files: [{ id: `${id}-audio`, file_key: "AUDIO_MASTER", relative_path: `${label}/AUDIO_MASTER.wav`, status: "Ready" }] });
+const data = (id, label = id) => ({ project: { project_id: id }, files: [{ id: `${id}-audio`, file_key: "AUDIO_MASTER", relative_path: `${label}/AUDIO_MASTER.wav`, status: "Ready" }], fileLocations: [{ logical_file_id: `${id}-audio`, availability: "present", relative_path: `${label}/AUDIO_MASTER.wav`, device_id: `${id}-device` }], devices: [{ device_id: `${id}-device`, label: id }] });
 
 function harness() {
   let observer, rows = [], owner = true;
@@ -16,7 +16,7 @@ function harness() {
   function row() {
     return {
       annotation: null,
-      querySelector(selector) { return selector === "[data-upload-file]" ? { dataset: { uploadFile: "AUDIO_MASTER" } } : this.annotation; },
+      querySelector(selector) { return selector === "[data-upload-file]" ? { dataset: { uploadFile: "AUDIO_MASTER" } } : selector === ".creator-observed-locations" ? this.annotation : null; },
       appendChild(node) { this.annotation = node; node.remove = () => { this.annotation = null; }; },
     };
   }

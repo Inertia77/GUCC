@@ -4,21 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070a10">
-  <title>AI Video Production System｜GUCC</title>
+  <title>Creator Production · GUCC</title>
   <link rel="icon" type="image/svg+xml" href="../../../assets/icons/gucc-icon.svg?v=5">
   <script src="../../../assets/access-guard.js?v=8" data-root="../../../" data-guard="true"></script>
   <link rel="stylesheet" href="../../../assets/gucc-theme.css">
+  <link rel="stylesheet" href="../../../assets/creator-theme.css">
   <link rel="stylesheet" href="./styles.css?v=5">
 </head>
-<body class="gucc-enhanced production-system-page">
+<body class="gucc-enhanced production-system-page creator-workstation">
   <header class="topbar">
     <div>
-      <p class="eyebrow">GUCC · CREATOR PRODUCTION</p>
-      <h1>AI Video Production System <span>v1.2</span></h1>
-      <p class="subtitle">所有视频共用一条正式制作流程：看“下一步”，按人工 Lock 推进；内容类型不再决定工作流。</p>
+      <p class="eyebrow">GUCC / CREATOR WORKSTATION</p>
+      <h1>Production <span>VIDEO WORKSTATION</span></h1>
+      <p class="subtitle">这条视频做到哪了、现在做什么、缺什么：从当前任务开始。</p>
     </div>
     <nav class="top-actions" aria-label="全局操作">
-      <a class="button ghost" href="../">返回 Studio</a>
+      <a class="button ghost" href="../">创作总览</a>
       <button class="button ghost" id="importSystemButton" type="button">导入 JSON</button>
       <button class="button ghost" id="exportSystemButton" type="button">备份系统</button>
       <button class="button primary" id="newProjectButton" type="button">＋ 新建项目</button>
@@ -40,7 +41,7 @@
       <section id="emptyState" class="empty-state">
         <span class="empty-icon">▶</span>
         <h2>建立第一个生产项目</h2>
-        <p>从 Studio 转入的项目会自动出现在这里；也可以直接新建正式制作项目，不需要先选择内容类型。</p>
+        <p>选择现有项目继续，或新建一条视频。</p>
         <button class="button primary" type="button" data-action="new-project">新建项目</button>
       </section>
 
@@ -104,6 +105,7 @@
   <script src="../../../assets/creator-timeline-contract.js?v=1"></script>
   <script src="../../../assets/creator-global-production-core.js?v=1"></script>
   <script src="../../../assets/creator-ai-task-core.js?v=1"></script>
+  <script src="../../../assets/creator-workflow-map.js"></script>
   <script src="./engine.js"></script>
   <script src="./app.js?v=6"></script>
   <script src="../../../assets/creator-project-bootstrap-browser.js?v=1"></script>

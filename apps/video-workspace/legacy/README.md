@@ -16,3 +16,6 @@ apps/video-workspace/index.html
 - 优先把旧项目导出为 JSON，再导入当前工作台。
 - 只有新版导入出现实际兼容问题时，才打开 `project-forge-v3.8.9.html`。
 - 3.8.8 及更早版本由 Git 历史保存，不再重复占用当前目录。
+
+
+旧 v5.1 Studio 位于 `studio-v5.1.html`，它保留历史草稿身份、导入导出和转入 Production 的兼容路径。`ai-prompts.js` 为旧草稿专用；正式 Creator AI Task 以 `assets/creator-ai-task-core.js` 为准。

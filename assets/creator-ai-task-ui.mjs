@@ -11,7 +11,7 @@ const CONSTITUTION_URL = new URL("../docs/ai-video-production/CREATOR_CONSTITUTI
 let contextEpoch = 0;
 let activeContext = null;
 let activeResult = null;
-let lastCommand = "";
+let lastCommand = new URLSearchParams(location.search).get("command") || "";
 let constitutionPromise = null;
 
 function h(value) {

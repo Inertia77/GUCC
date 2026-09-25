@@ -34,7 +34,7 @@ assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors mu
 assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');
-assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
+assert.match(productionHtml, /class="gucc-enhanced production-system-page creator-workstation"/, 'Production must identify itself for responsive shell rules.');
 assert.match(productionHtml, /creator-ux-simplification-v1\.mjs\?v=1/, 'Production must load the Creator UX simplification layer.');
 assert.match(productionHtml, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Production must load the Creator UX closeout refinements.');
 assert.match(productionCss, /@media\(max-width:700px\)\{\.app-shell\{grid-template-columns:minmax\(0,1fr\)\}\.sidebar,\.project-list\{min-width:0\}\}/, 'Production phone layout must prevent the horizontal project rail from widening the page grid.');
@@ -75,7 +75,7 @@ assert.match(uxBrowser, /1440, 900/, 'Creator UX browser acceptance must cover 1
 assert.match(uxBrowser, /Human Gate must never auto-fire/, 'Creator UX browser acceptance must protect human-only gates.');
 assert.match(uxBrowser, /first fold/, 'Creator UX browser acceptance must verify current-task-first mobile hierarchy.');
 assert.match(uxBrowser, /saveProject/, 'Creator UX browser acceptance must prove read/navigation smoke creates no Project write.');
-assert.match(serviceWorker, /gucc-static-v29[\s\S]*gucc-runtime-v29/, 'Creator UX closeout must preserve the current production cache generation while extending its shell.');
+assert.match(serviceWorker, /gucc-static-v30[\s\S]*gucc-runtime-v30/, 'Creator UX closeout must preserve the current production cache generation while extending its shell.');
 assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator UX simplification must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-ai-task-core\.js\?v=1/, 'Creator AI Task core must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-ai-task-ui\.mjs\?v=1/, 'Creator AI Task UI must remain available in the offline app shell.');

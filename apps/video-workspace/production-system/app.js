@@ -15,7 +15,7 @@
   ];
   const TEXT_FILE_KINDS = new Set(["md", "json", "csv", "srt"]);
   const state = loadStore();
-  let activeTab = "control";
+  let activeTab = new URLSearchParams(location.search).get("tab") === "prompt" ? "prompt" : "control";
   let toastTimer;
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -151,7 +151,7 @@
   function controlView(project) {
     const progress = E.progress(project);
     const visibleKeys = E.visibleFileKeys(project);
-    return `<section class="panel"><div class="section-title"><div><p class="eyebrow">STATE MACHINE</p><h3>统一生产管线</h3></div><p>所有 Creator Project 使用同一条状态机。回退保留文件和历史，但重新打开相应决策。</p></div><div class="pipeline">${progress.flow.map((key, index) => `<div class="stage ${index < progress.index ? "past" : index === progress.index ? "current" : ""}">${String(index + 1).padStart(2, "0")}<b>${h(E.STATE_LABELS[key])}</b></div>`).join("")}</div></section>
+    return `<section class="panel control-overview"><div class="section-title"><div><p class="eyebrow">PROJECT STATUS</p><h3>当前项目概况</h3></div><p>上方显示当前动作与缺口。七阶段流程可以在创作总览查看。</p></div><a class="button ghost" href="../?project=${encodeURIComponent(project.projectId)}#pipeline">查看七阶段流程 →</a><details class="technical-flow"><summary>高级：查看完整内部状态与手工回退</summary><div class="pipeline">${progress.flow.map((key, index) => `<div class="stage ${index < progress.index ? "past" : index === progress.index ? "current" : ""}">${String(index + 1).padStart(2, "0")}<b>${h(E.STATE_LABELS[key])}</b></div>`).join("")}</div></details></section>
       <section class="grid-3"><div class="metric"><span>当前可用文件</span><strong>${visibleKeys.filter((key) => project.files[key]?.status === "Ready").length}/${visibleKeys.length}</strong></div><div class="metric"><span>Must 素材缺口</span><strong>${project.assets.filter((asset) => asset.priority === "Must" && !["Ready", "Used"].includes(asset.status)).length}</strong></div><div class="metric"><span>Review Open</span><strong>${project.reviews.filter((review) => review.status !== "Done").length}</strong></div></section>
       <section class="panel"><div class="section-title"><div><p class="eyebrow">PROJECT CONTEXT</p><h3>阶段上下文</h3></div><p>这些内容会写入项目标准文件，并参与下一步判断。</p></div><div class="grid-2"><label class="field">前置素材指南<textarea class="editor small" data-project-field="preAssetGuide">${h(project.preAssetGuide)}</textarea></label><label class="field">视觉规范<textarea class="editor small" data-project-field="visualStyle">${h(project.visualStyle)}</textarea></label><label class="field">导出规范<textarea class="editor small" data-project-field="exportSpec">${h(project.exportSpec)}</textarea></label><label class="field">发布包<textarea class="editor small" data-project-field="releasePack">${h(project.releasePack)}</textarea></label></div></section>
       <section class="panel danger-zone"><div class="toolbar"><div><p class="eyebrow">PROJECT MAINTENANCE</p><strong>项目操作</strong></div><button class="button danger" data-action="delete-project">删除当前项目</button></div><p class="muted">删除只影响本浏览器内的项目记录；已经同步到磁盘的目录不会被删除。</p></section>`;
@@ -211,7 +211,7 @@
   }
 
   function promptView(project) {
-    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">STAGE HANDOFF</p><h3>Prompt Generator</h3></div><div class="inline-actions"><button class="button ghost" data-action="copy-prompt">复制 Prompt</button><button class="button primary" data-action="download-prompt">下载 .md</button></div></div><pre id="generatedPrompt" class="editor prompt">${h(E.generatePrompt(project))}</pre></section>`;
+    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">STAGE HANDOFF</p><h3>Prompt Generator</h3></div><div class="inline-actions"><button class="button ghost" data-action="copy-prompt">复制 Prompt</button><button class="button primary" data-action="download-prompt">下载 .md</button></div></div><details class="prompt-details"><summary>查看阶段交接 Prompt · 技术细节</summary><pre id="generatedPrompt" class="editor prompt">${h(E.generatePrompt(project))}</pre></details></section>`;
   }
 
   function openProjectDialog(project = null) {
@@ -473,4 +473,6 @@
   });
 
   render();
+  // A new Project is only created when the user submits the existing Manifest dialog.
+  if (new URLSearchParams(location.search).get("new") === "1") openProjectDialog();
 })();

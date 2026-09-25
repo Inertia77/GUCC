@@ -268,14 +268,16 @@
 
     const localScript = localFile(effective, "VOICE_MASTER");
     const cloudScript = track ? scopedFile(snapshot, "language_track", track.language_track_id, "VOICE_SCRIPT") : null;
-    const script = localScript || cloudScript || null;
+    const script = localScript && (fileReady(localScript) || text(localScript.content)) ? localScript : (cloudScript || localScript || null);
     const localAudio = localFile(effective, "AUDIO_MASTER");
     const cloudAudio = track ? scopedFile(snapshot, "language_track", track.language_track_id, "AUDIO_MASTER") : null;
-    const audio = localAudio || cloudAudio || null;
+    const audio = localAudio && fileReady(localAudio) ? localAudio : (cloudAudio || localAudio || null);
 
     const timeline = {};
     for (const key of TIMELINE_KEYS) {
-      timeline[key] = localFile(effective, key) || (track ? scopedFile(snapshot, "language_track", track.language_track_id, key) : null);
+      const local = localFile(effective, key);
+      const cloud = track ? scopedFile(snapshot, "language_track", track.language_track_id, key) : null;
+      timeline[key] = local && (fileReady(local) || text(local.content)) ? local : (cloud || local || null);
     }
 
     const assets = asArray(snapshot.assets).map((asset) => ({

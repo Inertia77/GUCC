@@ -61,7 +61,9 @@ const { pathToFileURL } = require("node:url");
   assert.match(productionApp, /登记本地文件/);
   assert.match(productionApp, /不会上传音频 \/ 视频文件本体/);
   assert.match(productionApp, /文件信息已登记；未上传文件本体/);
-  assert.doesNotMatch(productionApp, /arrayBuffer\(\)|readAsDataURL|FormData|multipart\/form-data|base64/i);
+  const chooseFileSource = productionApp.match(/async function chooseFile\(key\) \{[\s\S]*?\n  \}/)?.[0] || "";
+  assert.match(chooseFileSource, /const content = textArtifact \? await file\.text\(\) : ""/);
+  assert.doesNotMatch(chooseFileSource, /arrayBuffer\(\)|readAsDataURL|FormData|multipart\/form-data|base64/i);
 
   // Cloud sync persists full Project JSON (including imported lightweight text) while logical rows remain metadata-only.
   assert.match(creatorApi, /project_data: projectData/);

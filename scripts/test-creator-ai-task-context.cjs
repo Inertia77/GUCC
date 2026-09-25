@@ -156,6 +156,22 @@ for (const marker of [
   assert.match(AI.formatVideoContract(contract), /主视觉母版/);
 }
 
+// Canonical rules are fail-closed: a task must not become executable if the Constitution cannot load.
+{
+  const project = projectAt("AUDIO_LOCKED");
+  project.locks.scriptLock = true;
+  project.locks.audioLock = true;
+  readyFile(project, "VOICE_MASTER", { content: "正式口播。" });
+  project.voiceMaster = project.files.VOICE_MASTER.content;
+  readyFile(project, "AUDIO_MASTER", { name: "AUDIO_MASTER.wav" });
+  const contract = AI.buildVideoContract(context(project));
+  const result = AI.buildAiTaskPrompt({ command: "生成 SRT", contract, constitutionText: "" });
+  assert.equal(result.ready, false);
+  assert.match(result.blockers.join("\n"), /Creator Constitution 未载入/);
+  assert.match(result.prompt, /Execution Gate: BLOCKED/);
+  assert.match(result.prompt, /BLOCKED — DO NOT EXECUTE/);
+}
+
 // Enriched Stage Prompt uses the same canonical Constitution and current Video Contract.
 {
   const project = projectAt("PLANNING");

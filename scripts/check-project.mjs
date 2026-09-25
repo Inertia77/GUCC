@@ -139,7 +139,8 @@ try {
 const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');
 const workspaceHtml = resolve(root, 'apps', 'video-workspace', 'index.html');
-const workspacePrompts = resolve(root, 'apps', 'video-workspace', 'ai-prompts.js');
+const workspacePrompts = resolve(root, 'apps', 'video-workspace', 'legacy', 'ai-prompts.js');
+const legacyWorkspaceHtml = resolve(root, 'apps', 'video-workspace', 'legacy', 'studio-v5.1.html');
 const productionSystemHtml = resolve(root, 'apps', 'video-workspace', 'production-system', 'index.html');
 const productionSystemEngine = resolve(root, 'apps', 'video-workspace', 'production-system', 'engine.js');
 const productionSystemApp = resolve(root, 'apps', 'video-workspace', 'production-system', 'app.js');
@@ -160,6 +161,7 @@ const htmlEntrypoints = [
   portalHtml,
   appHtml,
   workspaceHtml,
+  legacyWorkspaceHtml,
   productionSystemHtml,
   coverGeneratorHtml,
   publishingConsoleHtml,
@@ -171,6 +173,7 @@ const htmlEntrypoints = [
 ];
 htmlEntrypoints.forEach(checkHtmlLinks);
 checkInlineScripts(workspaceHtml);
+checkInlineScripts(legacyWorkspaceHtml);
 checkInlineScripts(coverGeneratorHtml);
 checkInlineScripts(resolve(root, 'reference', 'ai-prompts.html'));
 checkInlineScripts(resolve(root, 'reference', 'story-library.html'));
@@ -222,32 +225,12 @@ for (const expected of [
 ]) {
   if (!productionSystemSource.includes(expected)) errors.push(`AI Video Production System 缺少关键工作流标记：${expected}`);
 }
-const workspaceVersion = workspaceSource.match(/const TEMPLATE_VERSION = "([^"]+)"/)?.[1];
-if (!workspaceVersion) {
-  errors.push('视频工作台缺少 TEMPLATE_VERSION');
-} else {
-  for (const expected of [
-    `<title>GUCC Studio v${workspaceVersion}`,
-    `GUCC STUDIO · V${workspaceVersion.split('.')[0]}`,
-    `value="v${workspaceVersion}"`
-  ]) {
-    if (!workspaceSource.includes(expected)) errors.push(`视频工作台版本显示不一致：缺少 ${expected}`);
-  }
-}
-for (const expected of [
-  'href="#sec-prestudy"><b>PS</b> 事前学习',
-  'href="#sec-07"><b>07</b> 扩散',
-  'href="#sec-08"><b>08</b> 复盘',
-  'href="#sec-09"><b>09</b> 规则',
-  'data-key="publishLog"',
-  'data-key="diffusionPackage"',
-  'data-key="diffusionLog"',
-  'data-key="preStudyGoal"',
-  'data-key="preStudyNotes"',
-  'data-key="ckPreStudy"',
-  'data-key="ckDiffuse"'
-]) {
-  if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少关键工作流标记：${expected}`);
+// Legacy Studio remains a read-only compatibility destination; the public URL is the Workflow Hub.
+const legacyWorkspaceSource = readFileSync(legacyWorkspaceHtml, 'utf8');
+const workspaceVersion = legacyWorkspaceSource.match(/const TEMPLATE_VERSION = "([^"]+)"/)?.[1];
+if (!workspaceVersion || !legacyWorkspaceSource.includes(`<title>GUCC Studio v${workspaceVersion}`)) errors.push('Legacy Studio version is missing');
+for (const expected of ['id="stageTrack"', 'id="projectLanes"', 'id="taskGrid"', 'href="./production-system/"']) {
+  if (!workspaceSource.includes(expected)) errors.push(`Creator Workflow Hub 缺少关键入口：${expected}`);
 }
 
 const videoPublishBatch = readFileSync(resolve(root, 'automation', '创作中心', '01-publishing.bat'), 'utf8');

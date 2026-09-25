@@ -34,7 +34,7 @@ const snapshot = {
 
 async function main() {
   const channel = process.env.GUCC_TEST_BROWSER || (process.platform === "win32" ? "msedge" : undefined);
-  const browser = await chromium.launch({ ...(channel ? { channel } : {}), headless: true });
+  const browser = await chromium.launch({ ...(channel ? { channel } : {}), ...(process.env.GUCC_TEST_BROWSER_PATH ? { executablePath: process.env.GUCC_TEST_BROWSER_PATH } : {}), headless: true });
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 844 } });
   const requests = [], failures = [], consoleErrors = [], blocked = [];
   let page;
@@ -84,7 +84,7 @@ async function main() {
     assert.equal(requests.filter((request) => request.action === "humanLock").length, 0, "Human Gate must never auto-fire during rendering");
 
     assert.equal(await page.locator(".ux-legacy-workflow").getAttribute("open"), null, "Legacy workflow detail must default collapsed");
-    assert.match(await page.locator(".ux-project-stage").textContent(), /语言版本/, "Project hero must expose a friendly current stage");
+    assert.match(await page.locator(".ux-project-stage").textContent(), /结构 \/ 文案/, "Project hero must expose the seven-stage Creator projection");
     const language = page.locator(".global-lane").filter({ hasText: "Language Tracks" }).locator(".global-card-head strong").first();
     assert.equal(await language.textContent(), "日语版", "Raw language identity must not be the primary visible label");
     assert.match(await language.getAttribute("title"), /JA/, "Raw language identity must remain available as secondary technical detail");

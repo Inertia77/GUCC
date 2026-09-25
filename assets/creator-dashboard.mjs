@@ -45,15 +45,16 @@ function renderAction(item) {
 function observationLine(project) {
   const obs = project.fileObservation || { present: 0, missing: 0, unknown: 0, total: 0 };
   if (!obs.total) return "Local Agent · 尚无 Artifact Contract";
-  return `Local Agent · ✓ ${obs.present} present · ⚠ ${obs.missing} missing · ? ${obs.unknown} 未验证`;
+  return `Local Agent · ✓ 已找到 ${obs.present} · ⚠ 未找到 ${obs.missing} · ○ 未验证 ${obs.unknown}`;
 }
 function renderProject(project) {
   const requirements = project.nextRequirements.slice(0, 3).map((file) => file.label).join(" · ");
+  const macro = window.GuccCreatorWorkflow?.stageFor(project.currentState, project.globalStage);
   const healthNote = project.health.reasons[0] || project.warnings[0] || "当前项目状态正常";
   return `<a class="creator-project-card health-${escapeHtml(project.health.code)}" href="${projectHref(project.projectId)}">
-    <div class="creator-project-top"><span class="creator-health">${project.health.icon} ${escapeHtml(project.health.label)}</span><span class="creator-revision">r${project.revision || 0}</span></div>
+    <div class="creator-project-top"><span class="creator-health">${project.health.icon} ${escapeHtml(project.health.label)}</span><span class="creator-revision" title="内部修订号" aria-hidden="true">●</span></div>
     <h3>${escapeHtml(project.name)}</h3><p>${escapeHtml(project.game)}</p><p class="creator-topic">${escapeHtml(project.topic)}</p>
-    <div class="creator-stage"><strong>${escapeHtml(project.globalStage || project.currentState)}</strong><span>${project.globalStage ? `Global · Legacy ${escapeHtml(project.currentState)}` : `${project.progress}%`}</span></div><div class="creator-progress"><span style="width:${project.progress}%"></span></div>
+    <div class="creator-stage"><strong>${escapeHtml(macro?.title || project.currentState)}</strong><span>${macro ? `${String(macro.index+1).padStart(2,"0")} / 07` : `${project.progress}%`}</span></div><div class="creator-progress"><span style="width:${project.progress}%"></span></div>
     <div class="creator-project-meta"><span>${lockPills(project.locks)}</span><span>目标 ${escapeHtml(formatDate(project.targetPublishDate))} · 更新 ${escapeHtml(formatDate(project.updatedAt))}</span></div>
     <div class="creator-project-next"><small>唯一下一步</small><strong>${escapeHtml(project.nextAction)}</strong><span>下一步需要 · ${escapeHtml(requirements || "无需额外文件")}</span><span class="creator-project-health-note">项目状态 · ${escapeHtml(healthNote)}</span><span class="creator-project-health-note">物理文件 · ${escapeHtml(observationLine(project))}</span></div>
   </a>`;
@@ -85,7 +86,7 @@ function renderDashboard(dashboard) {
     <div class="creator-dashboard-head"><div><p class="eyebrow">TODAY / ACTION QUEUE</p><h2>现在最应该做</h2></div><button class="creator-refresh" id="creatorDashboardRefresh" type="button">刷新</button></div>
     <div class="creator-action-list">${actions.length ? actions.map(renderAction).join("") : `<div class="creator-empty">当前没有待推进项目。难得清静，但别急着给系统再添十个按钮。</div>`}</div>
     <div class="creator-dashboard-head creator-projects-head"><div><p class="eyebrow">MY CREATIONS</p><h2>我的创作 <span>${projects.length}</span></h2></div><a href="./apps/video-workspace/production-system/">打开 Production</a></div>
-    <div class="creator-project-grid">${projects.length ? projects.map(renderProject).join("") : `<div class="creator-empty">还没有 Active Project。先在 Studio 想清楚，再转入正式制作。</div>`}</div>`;
+    <div class="creator-project-grid">${projects.length ? projects.map(renderProject).join("") : `<div class="creator-empty">还没有 Active Project。在 Production 建立第一条视频。</div>`}</div>`;
   document.getElementById("creatorDashboardRefresh")?.addEventListener("click", loadDashboard);
 }
 function renderLogin() { root.innerHTML = `<div class="creator-login-card"><div><p class="eyebrow">CREATOR OS</p><h2>我的创作</h2><p>登录 DB 后，这里会直接显示跨项目下一步、健康状态和截止日期。</p></div><a href="./apps/command-center/">登录并读取项目</a></div>`; }

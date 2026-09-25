@@ -55,7 +55,7 @@
 
   const childRoutes = {
     workspace: {
-      icon: 'WS', label: 'Studio', note: '策划、研究与内容草稿',
+      icon: 'WS', label: '创作总览', note: '流程地图与当前制作队列',
       href: `${normalizedRoot}apps/video-workspace/`,
       active: workspaceActive
     },

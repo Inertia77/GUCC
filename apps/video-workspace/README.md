@@ -1,54 +1,17 @@
-# GUCC Studio
+# GUCC Creator Workflow Hub
 
-AI-first 视频内容工作台，用来准备阶段 Prompt、导入 AI 生成的 JSON / Markdown、可视化编辑项目结构，并再次导出继续流转或归档。
+`/apps/video-workspace/` 是创作总览：七个 Macro Stage 映射现有 Production / Global 状态，展示当前项目、唯一下一步、纵向制作流程和横向共享能力。它只读项目，不编辑项目数据或设置 Human Lock。
 
-需要严格推进正式制作时，使用 [`production-system/`](./production-system/)：它提供 A–D 四类项目状态机、Content / Script / Music / Audio / Picture Lock、唯一下一步、阶段 Prompt、TTS 分块、AV Anchor、素材索引、Timed Storyboard、Review Notes 和真实目录同步。
+## 入口职责
 
-## 入口
+- **Workflow Hub**：理解完整流程，选择项目，打开已有 AI Task 指令。
+- **[Production](./production-system/)**：正式项目执行、文件登记、Timeline、Storyboard、Locks、Global Production。项目状态以现有系统为准。
+- **[Publish Console](../publishing-console/)**：平台适配、人工发布交接与复盘。
+- **[Cover Generator](../cover-generator/)**：封面制作。
+- **[旧 Studio](./legacy/studio-v5.1.html)**：兼容历史草稿的导入、Markdown / JSON 输出与转入 Production；不再是新项目的正式入口。它的 `ai-prompts.js` 只供旧草稿兼容，正式任务来自 `assets/creator-ai-task-core.js`。
 
-```text
-http://localhost:8000/apps/video-workspace/
-http://localhost:8000/apps/video-workspace/production-system/
-```
+## 顺序
 
-页面已接入 GUCC Access Key，并使用 `assets/icons/gucc-icon.svg` 作为 favicon。
+立项 → 社区研究、官方音画证据（若有直播 / PV / 展示 / 实机视频，先分析再写正式稿）→ 机制研究与 Evidence → 核心命题 / 规划 → 完整文案、事实审核、去 AI 味 → Script Lock → 录音、Audio Lock → 按真实音频生成 SRT 与 Timeline Lock → 视觉、真实素材、实战录屏、像素动画、BGM、封面 → 剪辑蓝图、Codex Build、Review、Fine Edit、QC、Picture Lock → 发布包、人工发布、Analytics、Accepted Learning。
 
-## 数据保存
-
-- 浏览器草稿：自动保存到当前浏览器的 `localStorage`
-- WIP Markdown：便于阅读、复盘和人工编辑
-- WIP JSON：最可靠的结构化备份，可重新导入
-- DONE Markdown / JSON：项目完成后的归档版本
-
-浏览器草稿只适合防止误关页面，不替代导出文件。清缓存、换浏览器或换设备时，草稿可能读不到。
-
-## v5 工作流
-
-- 页面分为 `AI 区` 和 `工作区`。AI 区负责准备策划、结构、文案、发布、扩散、复盘与收口 Prompt。
-- 工作区以导入 JSON / Markdown 为主入口，支持文件选择和拖放；导入后以项目概览、阶段导航和结构卡片继续编辑。
-- 原有手动输入、浏览器自动保存、Markdown / JSON 导出和旧版文件导入继续保留。
-- 普通创作讨论不要求证据编号。只有版本日期、数值、官方原话、版权与争议信息等会影响结论的事实，才放进 `事实核对 / 参考来源`。
-- 需要回到工作区时，使用“生成 Workspace JSON / Markdown”Prompt，再把结果导入；JSON 是最稳的结构化交接格式。
-- 正式视频在 B站、抖音、小红书视频、视频号、YouTube 与 TikTok 使用同一个完整内容，只为各平台分别生成标题、简介、话题与标签。
-- 发布包 Prompt 将平台公开硬限制与保守创作区间分开：YouTube 使用公开字符上限；国内平台以发布页实时计数器为最终准绳，不把经验数字伪装成官方规则。
-- B站发布包先生成信息型低风险简介，并过滤标题承诺不兑现、诱导互动、站外导流、虚假福利、规避审核话术和关键词堆砌；其他平台也分别执行对应的元数据与社区规范检查。
-
-## 推荐流程
-
-1. 从 GUCC Portal 打开 Studio。
-2. 在 AI 区复制“完整策划稿”或其他阶段 Prompt，交给常用 AI 生成内容。
-3. 让 AI 收口为 Workspace JSON，并在工作区导入；也可以导入 Markdown 或打开旧项目。
-4. 在 06 为同一完整视频生成各平台发布包，导出 WorkSpace JSON 后交给 Publish Console 预检和执行，并回填发布时间、平台和视频链接。
-5. 在 07 用发布链接和图文素材生成后期扩散包，执行图文、社交帖和社区分发。
-6. 在 08 汇总主视频与扩散结果后复盘。
-7. 阶段性导出 WIP Markdown 和 WIP JSON；完成后导出 DONE Markdown 和 DONE JSON。
-8. WIP 放同步盘工作目录，DONE 放归档目录。
-
-## 维护规则
-
-1. 修改工作台结构、字段、导入导出逻辑时改 `index.html`。
-2. 修改 AI Prompt 文案时改 `ai-prompts.js`，不要为了迭代 Prompt 去改 `index.html`。
-3. 更新 `TEMPLATE_VERSION`、页面显示版本号和 `CHANGELOG.md`。
-4. 用旧版 JSON / Markdown 各做一次导入测试。
-5. 不要改正式入口路径。
-6. 旧 HTML 只放 `legacy/`。
+此七阶段只存在于 UI 投影 `assets/creator-workflow-map.js`，不构成数据库状态机。短指令进入 Production 的同一 AI Task / Video Contract；无项目的通用模板会明确阻塞正式执行。

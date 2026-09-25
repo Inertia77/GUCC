@@ -84,7 +84,8 @@ function renderForRow(row, data) {
   const physical = hasPresent ? "present" : hasMissing ? "missing" : "unverified";
   const physicalLabel = physical === "present" ? "✓ 已找到" : physical === "missing" ? "⚠ 未找到" : "○ 尚未验证";
   const localStatus = row.querySelector("[data-file-local-status]");
-  if (localStatus) localStatus.innerHTML = `<span class="file-state-label">本机状态</span><span class="file-local-pill ${physical}">${physicalLabel}</span>`;
+  const localMarkup = `<span class="file-state-label">本机状态</span><span class="file-local-pill ${physical}">${physicalLabel}</span>`;
+  if (localStatus && localStatus.innerHTML !== localMarkup) localStatus.innerHTML = localMarkup;
 
   row.classList?.toggle?.("local-present", physical === "present");
   row.classList?.toggle?.("local-missing", physical === "missing");
@@ -94,15 +95,19 @@ function renderForRow(row, data) {
   const helper = row.querySelector("[data-file-manual-help]");
   if (button && helper && physical === "present") {
     if (logicalReady) {
-      button.textContent = mode === "text" ? "替换内容（可选）" : "更新登记信息（可选）";
-      helper.textContent = mode === "text"
+      const label = mode === "text" ? "替换内容（可选）" : "更新登记信息（可选）";
+      if (button.textContent !== label) button.textContent = label;
+      const help = mode === "text"
         ? "Local Agent 已找到本机文件；通常无需手工操作。只有要把该文本重新读入当前项目时才使用。"
         : "Local Agent 已找到本机文件；通常无需手工操作。这里只更新项目登记信息，不上传媒体本体。";
+      if (helper.textContent !== help) helper.textContent = help;
     } else {
-      button.textContent = mode === "text" ? "导入内容（手工）" : "纳入项目（手工）";
-      helper.textContent = mode === "text"
+      const label = mode === "text" ? "导入内容（手工）" : "纳入项目（手工）";
+      if (button.textContent !== label) button.textContent = label;
+      const help = mode === "text"
         ? "Local Agent 已证明文件存在，但不会自动把文本读入项目。确认这是正式版本后，可手工导入内容。"
         : "Local Agent 已证明文件存在，但不会自动把项目状态改为 Ready。确认这是正式产物后，可手工纳入；仍不会上传媒体本体。";
+      if (helper.textContent !== help) helper.textContent = help;
     }
   }
 

@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v27";
-const RUNTIME_CACHE = "gucc-runtime-v27";
+const STATIC_CACHE = "gucc-static-v28";
+const RUNTIME_CACHE = "gucc-runtime-v28";
 
 const APP_SHELL = [
   "./",
@@ -20,6 +20,8 @@ const APP_SHELL = [
   "./assets/creator-local-project-contract.js?v=1",
   "./assets/creator-timeline-contract.js?v=1",
   "./assets/creator-global-production-core.js?v=1",
+  "./assets/creator-ai-task-core.js?v=1",
+  "./assets/creator-ai-task-ui.mjs?v=1",
   "./assets/creator-project-bootstrap-browser.js?v=1",
   "./assets/creator-timeline-browser.js?v=1",
   "./assets/creator-workspace-root.mjs?v=1",
@@ -81,10 +83,11 @@ const APP_SHELL = [
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/ai-prompts.js",
   "./apps/video-workspace/production-system/",
+  "./docs/ai-video-production/CREATOR_CONSTITUTION.md",
   "./apps/video-workspace/production-system/index.html",
   "./apps/video-workspace/production-system/styles.css?v=5",
   "./apps/video-workspace/production-system/engine.js",
-  "./apps/video-workspace/production-system/app.js?v=4",
+  "./apps/video-workspace/production-system/app.js?v=5",
   "./apps/cover-generator/",
   "./apps/cover-generator/index.html",
   "./apps/publishing-console/",

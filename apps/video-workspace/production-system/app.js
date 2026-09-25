@@ -286,8 +286,8 @@
       if (action === "open-prompt") { activeTab = "prompt"; render(); $("#tabs").scrollIntoView({ behavior: "smooth" }); return; }
       if (action === "scan-anchors") { project.avAnchors = E.extractAvAnchors(project.voiceMaster); notify(`识别到 ${project.avAnchors.length} 个 AV Anchor`); }
       if (action === "generate-tts") { E.generateTts(project); notify(`已生成 ${project.ttsChunks.length} 个 TTS Chunks`); }
-      if (action === "copy-prompt") { navigator.clipboard.writeText(E.generatePrompt(project)); notify("Prompt 已复制"); return; }
-      if (action === "download-prompt") return download(`${E.safeName(project.name)}_${project.currentState}_HANDOFF.md`, E.generatePrompt(project), "text/markdown");
+      if (action === "copy-prompt") { const prompt = $("#generatedPrompt")?.textContent || E.generatePrompt(project); navigator.clipboard.writeText(prompt); notify("Prompt 已复制"); return; }
+      if (action === "download-prompt") { const prompt = $("#generatedPrompt")?.textContent || E.generatePrompt(project); return download(`${E.safeName(project.name)}_${project.currentState}_HANDOFF.md`, prompt, "text/markdown"); }
       if (action === "delete-project") {
         if (!confirm(`只删除浏览器内的“${project.name}”？磁盘目录不会受影响。`)) return;
         state.projects = state.projects.filter((item) => item.projectId !== project.projectId);

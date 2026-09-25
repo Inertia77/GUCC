@@ -19,10 +19,10 @@ http://localhost:8000/apps/video-workspace/production-system/
    - D：独立音乐资产与发行。
 2. 首页顶部只看“唯一下一步”。缺输入或未满足 Lock 时，系统会显示缺口并禁止前进。
 3. 在 Prompt 页复制当前阶段 Prompt 给 ChatGPT、Suno 或 Codex。Prompt 已包含 Role、Goal、State、Inputs、Locks、Task、Rules、Outputs、Handoff 和 Do Not。
-4. AI 产出的标准文件在“文件”页登记。Markdown / JSON / CSV / SRT 会写入项目备份；音视频只记录名称和大小，不会塞进 `localStorage`。
+4. AI / Codex 优先把产物写到标准本地 Workspace，由 Local Agent 观察是否存在。“文件”页的手工操作只是补充：Markdown / JSON / CSV / SRT 可“导入内容”进入 Project 状态；音视频只“登记本地文件”信息，不会把媒体字节塞进 `localStorage`、Supabase 或 Drive。
 5. 完整口播放进“脚本 / TTS”，在强音画绑定处写 `[AV:UI]`、`[AV:NUMBER]`、`[AV:COMPARE]` 等标记，再生成 TTS Chunks。
 6. 导入真实 `AUDIO_MASTER.wav` 后才能点 Audio Lock。Audio Lock 之前，系统不允许进入精确时间轴。
-7. 登记真实 `SUBTITLE_MASTER.srt`，再制作 Timed Storyboard。所有 Must 素材和生产文件齐备后，才能进入 Production Ready。
+7. 确认真正的 `SUBTITLE_MASTER.srt` 已位于标准目录；需要时用“导入内容”把文本纳入 Project，再制作 Timed Storyboard。所有 Must 素材和生产文件齐备后，才能进入 Production Ready。
 8. V0 复盘时用时间码 Review Note，不再截图后手工拼给 AI；Revision Prompt 会直接引用这些记录。
 
 ## 一键保存到真实项目目录
@@ -44,7 +44,7 @@ http://localhost:8000/apps/video-workspace/production-system/
 └─ 10_RELEASE/
 ```
 
-当前同步会写入系统掌握的文本文件、索引、状态、Prompt 上下文和 TTS 分块。浏览器无法凭文件名复制本地大型音视频，所以音视频需要放进对应目录后再在页面登记。Chrome / Edge 的 File System Access API 支持这项能力；不支持时使用“导出项目”JSON。
+当前同步会把 GUCC 已掌握的文本文件、索引、状态、Prompt 上下文和 TTS 分块写到本地 Workspace。大型音视频本体始终由你 / AI / Codex 放在对应本地目录，Local Agent 再负责观察它是否真实存在；文件页手工登记只补充 Project 信息，不会复制或上传媒体本体。Chrome / Edge 的 File System Access API 用于浏览器侧创建 / 同步文本目录；不支持时使用“导出项目”JSON。
 
 “读取项目目录”会读取 `00_CONTROL/PROJECT_DATA.json`，可在另一台设备或清理浏览器数据后恢复项目。
 

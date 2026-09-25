@@ -13,6 +13,7 @@
     ["audioLock", "Audio Lock", "真实 AUDIO_MASTER 成为绝对时间轴"],
     ["pictureLock", "Picture Lock", "VIDEO_V1 画面不再修改"]
   ];
+  const TEXT_FILE_KINDS = new Set(["md", "json", "csv", "srt"]);
   const state = loadStore();
   let activeTab = "control";
   let toastTimer;
@@ -21,6 +22,22 @@
   const h = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const currentProject = () => state.projects.find((project) => project.projectId === state.selectedProjectId) || null;
   const fileLabel = (key) => E.FILE_DEFINITIONS[key]?.filename || key;
+  const isTextArtifact = (key) => TEXT_FILE_KINDS.has(E.FILE_DEFINITIONS[key]?.kind);
+  function fileManualAction(key, file) {
+    const textArtifact = isTextArtifact(key);
+    if (textArtifact) {
+      return {
+        mode: "text",
+        label: file.status === "Ready" ? "替换内容" : "导入内容",
+        help: "读取文本内容并保存到当前项目状态；不是把文件上传到云盘。",
+      };
+    }
+    return {
+      mode: "media",
+      label: file.status === "Ready" ? "更新登记信息" : "登记本地文件",
+      help: "只记录文件名、大小和项目状态；不会上传音频 / 视频文件本体。",
+    };
+  }
 
   function syncProjectQuery(projectId) {
     const url = new URL(location.href);
@@ -142,11 +159,26 @@
 
   function filesView(project) {
     const keys = E.visibleFileKeys(project);
-    return `<section class="panel"><div class="toolbar"><div><p class="eyebrow">ARTIFACT CONTRACT</p><h3>项目文件登记</h3></div><span class="muted">文本保存在项目 JSON；大音视频只登记文件信息。Music 文件随 Music Mode 显示。</span></div><div class="file-list">${keys.map((key) => {
-      const file = project.files[key];
-      const contract = E.fileContract(project, key);
-      return `<div class="file-row"><div><strong>${h(E.FILE_DEFINITIONS[key]?.label || key)}</strong>${contract === "optional" ? ` <small class="muted">Optional</small>` : ""}<br><code>${h(file.relativePath)}</code></div><div><span class="status-pill ${String(file.status).toLowerCase()}">${h(file.status)}</span>${file.filename && file.filename !== E.FILE_DEFINITIONS[key]?.filename ? ` <small class="muted">${h(file.filename)}</small>` : ""}</div><div class="file-actions"><button class="button tiny ghost" data-upload-file="${key}">${file.status === "Ready" ? "替换" : "登记"}</button>${file.content ? `<button class="button tiny ghost" data-download-file="${key}">下载</button>` : ""}</div></div>`;
-    }).join("")}</div></section>`;
+    return `<section class="panel file-contract-panel">
+      <div class="toolbar"><div><p class="eyebrow">LOCAL-FIRST ARTIFACT CONTRACT</p><h3>项目文件</h3></div><span class="muted">Music 文件随 Music Mode 显示。</span></div>
+      <div class="file-local-first-note"><strong>GUCC 不是云盘。</strong> 真实视频、音频、录屏和剪辑工程保存在本机 Workspace；GUCC 管理它们应该在哪里、项目是否已纳入，以及 Local Agent 是否真的在本机看到。轻量文本可以同步为项目内容。</div>
+      <div class="file-status-legend"><span><b>标准位置</b> = GUCC 期望文件所在路径</span><span><b>项目状态</b> = 是否已纳入当前项目 / Ready</span><span><b>本机状态</b> = Local Agent 是否在本机找到</span></div>
+      <div class="file-list">${keys.map((key) => {
+        const file = project.files[key];
+        const def = E.FILE_DEFINITIONS[key] || {};
+        const contract = E.fileContract(project, key);
+        const action = fileManualAction(key, file);
+        const extraName = file.filename && file.filename !== def.filename ? `<small class="muted file-registered-name">已登记：${h(file.filename)}</small>` : "";
+        return `<div class="file-row" data-file-key="${h(key)}" data-file-mode="${action.mode}" data-file-kind="${h(def.kind || "other")}">
+          <div class="file-identity"><div><strong>${h(def.label || key)}</strong>${contract === "optional" ? ` <small class="muted">Optional</small>` : ""} <small class="muted">${h(String(def.kind || "file").toUpperCase())}</small></div><div class="file-path-line"><span>标准位置</span><code>${h(file.relativePath)}</code></div></div>
+          <div class="file-status-stack">
+            <div class="file-state-line"><span class="file-state-label">项目状态</span><span class="status-pill ${String(file.status).toLowerCase()}">${h(file.status)}</span>${extraName}</div>
+            <div class="file-state-line file-local-status" data-file-local-status><span class="file-state-label">本机状态</span><span class="file-local-pill unverified">○ 尚未验证</span></div>
+          </div>
+          <div class="file-actions"><button class="button tiny ghost" data-upload-file="${h(key)}" title="${h(action.help)}">${h(action.label)}</button>${isTextArtifact(key) && file.content ? `<button class="button tiny ghost" data-download-file="${h(key)}" title="导出当前 GUCC 项目状态里保存的文本内容">导出文本</button>` : ""}<small class="file-manual-help" data-file-manual-help>${h(action.help)}</small></div>
+        </div>`;
+      }).join("")}</div>
+    </section>`;
   }
 
   function assetsView(project) {
@@ -201,12 +233,14 @@
     input.onchange = async () => {
       const file = input.files[0];
       if (!file) return;
-      const textKinds = ["md", "json", "csv", "srt"];
-      const content = textKinds.includes(kind) ? await file.text() : "";
+      const textArtifact = TEXT_FILE_KINDS.has(kind);
+      const content = textArtifact ? await file.text() : "";
       E.registerFile(project, key, { name: file.name, size: file.size, content, status: "Ready" });
       save();
       render();
-      notify(`${file.name} 已登记`);
+      notify(textArtifact
+        ? `${file.name} 内容已导入当前项目`
+        : `${file.name} 文件信息已登记；未上传文件本体`);
     };
     input.click();
   }

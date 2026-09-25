@@ -74,7 +74,7 @@ async function loadData(projectId, session) {
 }
 function renderForRow(row, data) {
   const button = row.querySelector("[data-upload-file]");
-  const fileKey = row.dataset.fileKey || button?.dataset.uploadFile;
+  const fileKey = row.dataset?.fileKey || button?.dataset.uploadFile;
   if (!fileKey) return;
   const logical = (data?.files || []).find((file) => file.file_key === fileKey);
   const devices = new Map((data?.devices || []).map((device) => [device.device_id, device]));
@@ -86,10 +86,10 @@ function renderForRow(row, data) {
   const localStatus = row.querySelector("[data-file-local-status]");
   if (localStatus) localStatus.innerHTML = `<span class="file-state-label">本机状态</span><span class="file-local-pill ${physical}">${physicalLabel}</span>`;
 
-  row.classList.toggle("local-present", physical === "present");
-  row.classList.toggle("local-missing", physical === "missing");
+  row.classList?.toggle?.("local-present", physical === "present");
+  row.classList?.toggle?.("local-missing", physical === "missing");
 
-  const mode = row.dataset.fileMode || "media";
+  const mode = row.dataset?.fileMode || "media";
   const logicalReady = String(logical?.status || "").toLowerCase() === "ready";
   const helper = row.querySelector("[data-file-manual-help]");
   if (button && helper && physical === "present") {

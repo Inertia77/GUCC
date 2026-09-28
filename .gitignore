@@ -26,7 +26,6 @@ GameUp/Game_up_projects/**/*.mkv
 GameUp/Game_up_projects/**/*.avi
 GameUp/Game_up_projects/**/*.webm
 GameUp/Game_up_projects/**/*.m4v
-GameUp/Game_up_projects/**/*.ts
 
 # Audio media / masters
 GameUp/Game_up_projects/**/*.wav

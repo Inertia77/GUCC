@@ -9,4 +9,56 @@ Thumbs.db
 node_modules/
 .pnpm-store/
 supabase/.temp/
-GameUp/
+
+# =========================================================
+# GameUp Creator Workspace
+# Active project text/config/code/small visual assets are tracked.
+# Heavy media, generated binaries, local caches and completed archives stay local.
+# =========================================================
+
+# Completed local project archive
+GameUp/_archive/
+
+# Video media
+GameUp/Game_up_projects/**/*.mp4
+GameUp/Game_up_projects/**/*.mov
+GameUp/Game_up_projects/**/*.mkv
+GameUp/Game_up_projects/**/*.avi
+GameUp/Game_up_projects/**/*.webm
+GameUp/Game_up_projects/**/*.m4v
+GameUp/Game_up_projects/**/*.ts
+
+# Audio media / masters
+GameUp/Game_up_projects/**/*.wav
+GameUp/Game_up_projects/**/*.flac
+GameUp/Game_up_projects/**/*.m4a
+GameUp/Game_up_projects/**/*.aac
+GameUp/Game_up_projects/**/*.mp3
+GameUp/Game_up_projects/**/*.ogg
+GameUp/Game_up_projects/**/*.opus
+
+# Packaged / binary production assets
+GameUp/Game_up_projects/**/*.zip
+GameUp/Game_up_projects/**/*.7z
+GameUp/Game_up_projects/**/*.rar
+GameUp/Game_up_projects/**/*.exe
+GameUp/Game_up_projects/**/*.psd
+GameUp/Game_up_projects/**/*.aep
+GameUp/Game_up_projects/**/*.prproj
+
+# Download / render / proxy / cache directories
+GameUp/Game_up_projects/**/downloads/
+GameUp/Game_up_projects/**/Downloads/
+GameUp/Game_up_projects/**/Master/
+GameUp/Game_up_projects/**/master/
+GameUp/Game_up_projects/**/Proxy/
+GameUp/Game_up_projects/**/proxy/
+GameUp/Game_up_projects/**/Proxies/
+GameUp/Game_up_projects/**/renders/
+GameUp/Game_up_projects/**/render/
+GameUp/Game_up_projects/**/.cache/
+GameUp/Game_up_projects/**/.tmp/
+
+# Partial downloader artifacts
+GameUp/Game_up_projects/**/*.part
+GameUp/Game_up_projects/**/*.ytdl

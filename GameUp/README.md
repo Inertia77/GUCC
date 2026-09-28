@@ -26,7 +26,7 @@ Do not use ordinary Git as the media master store.
 After a project reaches FINAL / QC_PASS / PUBLISHED:
 
 1. Make sure all trackable project files are committed.
-2. Run the existing Creator Archive flow when a long-term Drive archive is required:
+2. Run the existing Creator Archive flow when a lightweight long-term Drive snapshot is required (media masters are not uploaded by that flow):
    `npm run creator:archive -- --once --project <projectId>`
 3. Move the local completed project out of the active workspace:
    `npm run gameup:archive -- --project "<project path>"`

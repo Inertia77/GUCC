@@ -28,14 +28,3 @@ GUCC is a long-term single-user personal system. The production Supabase project
 5. Keep public signup UI and client signup helpers absent or blocked. Existing owner sign-in, sign-out, session refresh, and deliberate account recovery remain allowed.
 6. Temporary production data tests must be clearly marked, reversible, owner-scoped, and cleaned up immediately. Prefer local fixtures whenever possible.
 7. Do not change this project from single-user to multi-user behavior unless the user explicitly requests that product change.
-
-## GameUp Git Workspace Policy
-
-`GameUp/Game_up_projects/` is the active, version-controlled Creator workspace.
-
-1. Prefer reading and writing active project research, scripts, subtitles, metadata, prompts, edit blueprints, release packages, code, and small visual assets directly in the repository so GPT/Codex/local work share one source.
-2. Never commit production-heavy media or packaged binaries under GameUp: video, audio masters, archive packages, executables, Adobe project binaries, proxies, renders, downloader artifacts, or caches. The root `.gitignore` defines the enforced exclusions.
-3. Small PNG/JPG/WebP/SVG assets may be tracked. `npm run check:gameup` enforces a default 20 MiB per tracked GameUp file and is part of CI.
-4. Completed projects leave the active tree only after their trackable state is committed. Use `npm run gameup:archive -- --project "<project path>"` to move them to ignored `GameUp/_archive/<year>/` and record the recoverable final Git commit in `GameUp/archive_index.json`.
-5. The existing Creator Archive / Google Drive flow is a lightweight project-state archive; it does not upload media masters. Do not treat it as a backup of raw video/audio assets.
-

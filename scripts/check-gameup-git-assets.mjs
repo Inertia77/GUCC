@@ -10,7 +10,7 @@ const maxMiB = Number(process.env.GUCC_GAMEUP_MAX_FILE_MB || 20);
 const maxBytes = maxMiB * 1024 * 1024;
 
 const forbiddenExtensions = new Set([
-  ".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v", ".ts",
+  ".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v",
   ".wav", ".flac", ".m4a", ".aac", ".mp3", ".ogg", ".opus",
   ".zip", ".7z", ".rar", ".exe", ".psd", ".aep", ".prproj",
   ".part", ".ytdl",

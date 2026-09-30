@@ -130,6 +130,15 @@ assert.match(responsiveLayoutStyles, /@media \(max-width: 900px\)[\s\S]*?\.edito
 assert.match(responsiveLayoutStyles, /\.editor :is\(input, textarea, select\)[\s\S]*?font-size:\s*16px/);
 assert.match(responsiveLayoutStyles, /\.editor-footer[\s\S]*?grid-template-columns:\s*minmax\(0, 1\.35fr\) minmax\(96px, \.65fr\)/);
 
+// Mobile editors must keep their primary save action permanently reachable.
+assert.match(responsiveLayoutStyles, /Mobile editor action bar guarantee/);
+assert.match(responsiveLayoutStyles, /editor-open \.gucc-shell-dock[\s\S]*?display:\s*none\s*!important/);
+assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\)[\s\S]*?height:\s*100dvh\s*!important/);
+assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form[\s\S]*?grid-template-rows:\s*minmax\(0, 1fr\) auto\s*!important/);
+assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form > \.editor-body[\s\S]*?overflow-y:\s*auto\s*!important/);
+assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) \.editor-footer[\s\S]*?min-height:\s*68px\s*!important/);
+assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=2/);
+
 // Readability / search density / touch targets stay explicit.
 assert.match(gameThemeStyles, /character-title-localized[\s\S]*?font-size:\s*13px/);
 assert.match(gameThemeStyles, /character-localized-label[\s\S]*?font-size:\s*12px/);

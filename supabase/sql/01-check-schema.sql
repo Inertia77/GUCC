@@ -7,7 +7,7 @@
 with expected(table_name, required_columns) as (
   values
     ('games', array['id','short_code','code','title']),
-    ('characters', array['id','game_id','name','element','profession','sex','rarity','note','updated_at']),
+    ('characters', array['id','game_id','name','full_name','release_date','element','profession','sex','rarity','note','updated_at']),
     ('character_names', array['character_id','lang','name']),
     ('character_progress', array['character_id','research_status','build_status','progress_note','updated_at']),
     ('character_evaluations', array['character_id','context','role_type','power_rank','like_level','note','created_at']),

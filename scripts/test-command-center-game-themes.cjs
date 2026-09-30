@@ -27,7 +27,7 @@ const searchUxIndex = mainSource.indexOf("game-os.css?v=3");
 const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
-const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=1");
+const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=2");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
 assert(gamePremiumIndex >= 0, "Missing premium game material stylesheet");

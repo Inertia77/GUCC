@@ -15,7 +15,7 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
   ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
   ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
-  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=1']
+  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=2']
 ];
 
 const TAB_LOADERS = {

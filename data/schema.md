@@ -46,6 +46,7 @@ Creator Project data is also currently written through `creator-project-api`; RL
 | game_id | uuid | FK → games, cascade |
 | name | text | canonical zh name; unique with game_id |
 | full_name | text | nullable; canonical full display name |
+| release_date | date | nullable; canonical first playable/release date for tracked server/region; character list sorts newest first |
 | element | text | nullable |
 | profession | text | nullable |
 | sex | text | nullable; 男/女/未定 |

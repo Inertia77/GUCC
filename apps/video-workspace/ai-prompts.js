@@ -144,9 +144,9 @@ const COMMON=`【单步约定】只完成本条明确工作；合并的子工作
 【素材】保持ASSET_ID、路径/basename、时长、真实时间、对应旁白、用途/限制与描述MD；记SOURCE_URL/OWNER、RIGHTS_STATUS、EDIT_USE_ALLOWED、ATTRIBUTION_REQUIRED/TEXT、AI_GENERATED_OR_ASSISTED/GENERATOR_TOOL及许可备注。官方公开≠无限制许可，社区未授权只研究。观众产物不夹LOCK/TODO/Prompt/工作日志。`;
 function route(id){return ROUTES.find(x=>x.id===id)||ROUTES[0];}
 function task(id){return tasks.find(x=>x.id===id)||tasks[0];}
-function parts(id,mode){const t=task(id);if(mode==='Chat'&&t.fallback){const io=PART_IO[id]||[];return t.fallback.map(([name,body],index)=>({name,body,index,inputs:io[index]?.inputs||t.inputs,outputs:io[index]?.outputs||t.outputs}));}return[{name:t.name,body:'',index:0,inputs:t.inputs,outputs:t.outputs}];}
+function parts(id,mode){const t=task(id);if(mode==='Chat'&&t.fallback&&t.fallback.length>1){const io=PART_IO[id]||[];return t.fallback.map(([name,body],index)=>({name,body,index,inputs:io[index]?.inputs||t.inputs,outputs:io[index]?.outputs||t.outputs}));}return[{name:t.name,body:'',index:0,inputs:t.inputs,outputs:t.outputs}];}
 function build(id,c={},mode='Chat',partIndex=0){
- const t=task(id),r=route(c.route),ps=parts(id,mode),p=ps[partIndex]||ps[0],split=mode==='Chat'&&Boolean(t.fallback);
+ const t=task(id),r=route(c.route),ps=parts(id,mode),p=ps[partIndex]||ps[0],split=mode==='Chat'&&Boolean(t.fallback)&&t.fallback.length>1;
  const ctxLines=[['PROJECT_ID',c.projectId],['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['目标时长',c.duration],['本轮补充（可选覆盖）',c.notes]].filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}：${String(v).trim()}`);
  const ctx=ctxLines.length?`【项目上下文｜仅列工作台已填写项】\n${ctxLines.join('\n')}\n未填写项直接沿用同一Chat已经确认的上下文；不要为了模板完整逐项追问。\n`:'【项目上下文】直接沿用同一Chat已确认的项目与文件；没有新的补充项，不要要求用户逐项填写。\n';
  const lens=t.lens?`【${r.name}分支】\n${r[t.lens]}\n${['brief','analysis','outline','script','audit'].includes(id)?r.research:''}\n`:'';

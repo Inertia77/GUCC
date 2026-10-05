@@ -1,3 +1,10 @@
+# v6.1.0 · 2026-10-05
+
+- 项目上下文改为可选覆盖：空字段不再输出“未提供；不猜”，同一 Chat 直接复用已有上下文。
+- 朗读任务新增“真人录音 / 剪映 AI 朗读”切换。
+- AI 朗读输出 `TTS_TEMP.srt`（单 cue ≤500 可见字符，尽量 430–490）与 `TTS_PRONUNCIATION_MAP.md`，处理多音字、生僻字、游戏专名、数字与符号发音。
+- 临时 SRT 明确不是真实时间线；生成后的 `AUDIO_MASTER` 继续作为最终 SRT / Timeline 的时间真值。
+
 # GUCC Studio Changelog
 
 ## Production System v1

@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080f19"><title>GUCC Studio v6.1.3｜创作 Prompt 工作台</title>
+<meta name="theme-color" content="#080f19"><title>GUCC Studio v6.1.4｜创作 Prompt 工作台</title>
 <link rel="icon" href="../../assets/icons/gucc-icon.svg"><link rel="manifest" href="../../manifest.webmanifest">
 <script src="../../assets/access-guard.js?v=9" data-root="../../" data-guard="true" data-creator-prompts="true"></script>
-<link rel="stylesheet" href="./studio.css?v=6.1.3">
-<script>const TEMPLATE_VERSION = "6.1.3";</script>
-<script src="./ai-prompts.js?v=6.1.3" defer></script><script src="./studio.js?v=6.1.3" defer></script>
+<link rel="stylesheet" href="./studio.css?v=6.1.4">
+<script>const TEMPLATE_VERSION = "6.1.4";</script>
+<script src="./ai-prompts.js?v=6.1.4" defer></script><script src="./studio.js?v=6.1.4" defer></script>
 </head>
 <body class="creator-prompt-page">
 <div class="creator-shell">
@@ -27,7 +27,7 @@
    <label class="notes-label">本轮补充（可选）<textarea id="notesInput" rows="3" placeholder="通常可以留空：同一 Chat 会直接沿用已有上下文。只有本轮需要覆盖文件名、结论、保留段落或特殊限制时再填写。"></textarea></label>
    <div class="file-actions"><button id="importButton" type="button">导入项目约定／草稿</button><button id="exportButton" type="button">导出工作台草稿</button><span>支持 VIDEO_CONTRACT.md、新版草稿和旧版 JSON</span><input id="importFile" type="file" accept=".json,.md,.txt" hidden></div>
   </div>
-  <div class="route-summary"><span class="route-chip" id="routeChip"></span><span class="project-id" id="projectIdChip"></span><p id="routeHint"></p><span class="edition">2026.10.05</span></div>
+  <div class="route-summary"><span class="route-chip" id="routeChip"></span><p id="routeHint"></p><span class="edition">2026.10.05</span></div>
  </section>
  <div class="workspace-grid">
   <aside class="stage-panel" aria-label="创作阶段"><div class="panel-label">制作阶段 <span>按需选择</span></div><nav id="stageNav"></nav><button id="compilerButton" class="tool-link" type="button"><span aria-hidden="true">＋</span> 自定义需求转 Prompt</button><details class="reference-links"><summary>参考与旧项目</summary><a href="https://app.notion.com/p/prompt-3ea5adb3775e80a08beee9be5824dbc0" target="_blank" rel="noopener">Notion 规则参考</a><a href="./legacy/studio-v5.html">旧工作区与历史草稿</a><button id="mappingButton" type="button">原编号对照／合并依据</button></details></aside>
@@ -44,7 +44,7 @@
    <p id="handoffNote" class="handoff-note"></p>
   </section>
  </div>
- <footer class="creator-footer"><span>Creator OS · Prompt 工作台</span><span>选题 · 证据 · 表达 · 制作 · 发布</span><input type="hidden" value="v6.1.3"></footer>
+ <footer class="creator-footer"><span>Creator OS · Prompt 工作台</span><span>选题 · 证据 · 表达 · 制作 · 发布</span><input type="hidden" value="v6.1.4"></footer>
 </div>
 <dialog id="helpDialog" class="creator-dialog"><div class="dialog-heading"><h2>从当前任务开始</h2><button type="button" data-close>关闭</button></div><ol><li>选择本期视频类型和长／短形式。人物志会得到剧情与人物证据分支。</li><li>选择当前阶段和任务，再选执行环境。Work／Codex 版一次完成该任务内的合并工作。</li><li>额度不足时选 Chat，按备用步骤依次复制。每条都能独立使用，同一 Chat 会复用上轮结果。</li><li>同一 Chat 连续做下一步时直接复用已有上下文，不需要每次重复上传；只有换 Chat／Work／Codex 后无法实际读取的关键输入才补。</li><li>“Chat 分步”表示 Chat 本身就是主执行环境，但为了质量拆成连续子步骤；“Chat 备用”表示本任务首选 Work／Codex，额度不足时才用 Chat 分步替代。每个子步骤只显示自己的真实输入和产物。</li><li>朗读与录音准备支持“真人录音 / 剪映 AI 朗读”。AI 模式会生成每个 cue 不超过 500 字、尽量接近 500 字的 TTS 临时 SRT，并单独处理多音字、生僻字、专名和符号发音；最终时间线仍以生成后的真实音频为准。</li><li>把实际文件、原文或可读索引一起交给 AI。任务编号和浏览器草稿不代表 AI 已读取素材。</li><li>需要本地转码、动画、音频或渲染时，Chat 会给执行脚本；运行并回传结果以后才能确认完成。</li></ol><p>本工作台保存浏览器草稿，导出可跨设备继续；不自动运行任务、写入正式项目或上传制作素材。旧工作区与原有草稿仍可从“参考与旧项目”打开。</p><p>两项默认执行输出是无音轨无字幕的画面与只含 BGM/SFX 的背景声，最后在剪映与最终旁白、SRT 同 00:00 合成。成片重分析 QC 为可选。</p></dialog>
 <dialog id="mappingDialog" class="creator-dialog"><div class="dialog-heading"><h2>原编号与现在的任务</h2><button type="button" data-close>关闭</button></div><p>合并同一输入下可连续完成的工作；确认命题、录音、时间线、资产和剪辑蓝图之间保留交接。</p><div class="table-wrap"><table><thead><tr><th>原 Notion 编号</th><th>当前任务</th><th>Chat 备用</th></tr></thead><tbody id="mappingBody"></tbody></table></div><p>依据 2026-10-05 读取的 Notion 母库重构。页面只生成当前版本 Prompt；原版留作迁移核对。</p></dialog>

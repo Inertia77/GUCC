@@ -43,6 +43,9 @@
     const shell = document.createElement('script'); shell.src = new URL('assets/gucc-shell.js?v=10', rootHref).href; shell.dataset.root = rootHref; shell.dataset.guccShellBootstrap = 'true'; document.head.appendChild(shell);
   }
   function bootstrapCreatorPipeline() {
+    // The v6 prompt catalog has its own local draft model. Legacy Studio bridge
+    // controls collect v5 fields and must not create phantom project handoffs here.
+    if (script?.dataset.creatorPrompts === 'true') return;
     const pathname = window.location.pathname;
     const eligible = pathname.includes('/apps/video-workspace/') || pathname.includes('/apps/publishing-console/');
     if (!eligible) return;

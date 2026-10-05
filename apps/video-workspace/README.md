@@ -1,54 +1,23 @@
-# GUCC Studio
+# GUCC Studio v6
 
-AI-first 视频内容工作台，用来准备阶段 Prompt、导入 AI 生成的 JSON / Markdown、可视化编辑项目结构，并再次导出继续流转或归档。
+正式入口保持 `apps/video-workspace/`。当前页面是 GameUp Creator OS 的 Prompt 工作台，依据 2026-10-05 实际读取的 Notion 母库重构。
 
-需要严格推进正式制作时，使用 [`production-system/`](./production-system/)：它提供 A–D 四类项目状态机、Content / Script / Music / Audio / Picture Lock、唯一下一步、阶段 Prompt、TTS 分块、AV Anchor、素材索引、Timed Storyboard、Review Notes 和真实目录同步。
+选择视频类型、长/短形式、阶段、任务与执行环境，复制当前完整独立 Prompt。8 类题材分支贯穿来源、研究、解析、录屏、结构、审核、视觉、声音及发布承诺。Work/Codex 任务全部有 Chat 备用版，长任务分为连续且独立的子 Prompt；需要执行工具的步骤输出脚本并要求实际运行结果，不冒充媒体完成。
 
-## 入口
+## 文件
 
-```text
-http://localhost:8000/apps/video-workspace/
-http://localhost:8000/apps/video-workspace/production-system/
-```
+- `ai-prompts.js`：唯一当前 Prompt 目录与纯函数生成器。
+- `studio.js` / `studio.css` / `index.html`：草稿、导入导出、搜索、复制及响应式界面。
+- `notion-prompts.json`：原母库 31 条 Prompt 的冻结迁移快照，不用于当前复制。
+- `legacy/studio-v5.html` / `legacy/ai-prompts.js`：旧工作区、旧 JSON/Markdown 导入与历史浏览器草稿入口。
+- `production-system/`：原有正式制作系统，保持独立入口和现有行为。本工作台不自动写入该系统、不创建项目、不触发正式锁定。
 
-页面已接入 GUCC Access Key，并使用 `assets/icons/gucc-icon.svg` 作为 favicon。
+## 草稿
 
-## 数据保存
+当前页面使用独立 `gucc_creator_prompt_v6` localStorage 键，保留旧版草稿。导出 JSON 可跨设备继续；导入支持新版 JSON、旧版 JSON 和 `VIDEO_CONTRACT.md`。未知旧字段及原始导入文件内容保存在导出 JSON 的 `importedSource` 中，避免新输入表丢失历史项目细节。浏览器草稿不代表其他 Chat 已读取素材，复制时仍需提供真实可访问文件。
 
-- 浏览器草稿：自动保存到当前浏览器的 `localStorage`
-- WIP Markdown：便于阅读、复盘和人工编辑
-- WIP JSON：最可靠的结构化备份，可重新导入
-- DONE Markdown / JSON：项目完成后的归档版本
+## 维护与验证
 
-浏览器草稿只适合防止误关页面，不替代导出文件。清缓存、换浏览器或换设备时，草稿可能读不到。
+修改 Prompt 优先改 `ai-prompts.js`，保持每个原编号恰好一个迁移去向。升级版本时同步页面、脚本/CSS query 与 `sw.js` 缓存资源。
 
-## v5 工作流
-
-- 页面分为 `AI 区` 和 `工作区`。AI 区负责准备策划、结构、文案、发布、扩散、复盘与收口 Prompt。
-- 工作区以导入 JSON / Markdown 为主入口，支持文件选择和拖放；导入后以项目概览、阶段导航和结构卡片继续编辑。
-- 原有手动输入、浏览器自动保存、Markdown / JSON 导出和旧版文件导入继续保留。
-- 普通创作讨论不要求证据编号。只有版本日期、数值、官方原话、版权与争议信息等会影响结论的事实，才放进 `事实核对 / 参考来源`。
-- 需要回到工作区时，使用“生成 Workspace JSON / Markdown”Prompt，再把结果导入；JSON 是最稳的结构化交接格式。
-- 正式视频在 B站、抖音、小红书视频、视频号、YouTube 与 TikTok 使用同一个完整内容，只为各平台分别生成标题、简介、话题与标签。
-- 发布包 Prompt 将平台公开硬限制与保守创作区间分开：YouTube 使用公开字符上限；国内平台以发布页实时计数器为最终准绳，不把经验数字伪装成官方规则。
-- B站发布包先生成信息型低风险简介，并过滤标题承诺不兑现、诱导互动、站外导流、虚假福利、规避审核话术和关键词堆砌；其他平台也分别执行对应的元数据与社区规范检查。
-
-## 推荐流程
-
-1. 从 GUCC Portal 打开 Studio。
-2. 在 AI 区复制“完整策划稿”或其他阶段 Prompt，交给常用 AI 生成内容。
-3. 让 AI 收口为 Workspace JSON，并在工作区导入；也可以导入 Markdown 或打开旧项目。
-4. 在 06 为同一完整视频生成各平台发布包，导出 WorkSpace JSON 后交给 Publish Console 预检和执行，并回填发布时间、平台和视频链接。
-5. 在 07 用发布链接和图文素材生成后期扩散包，执行图文、社交帖和社区分发。
-6. 在 08 汇总主视频与扩散结果后复盘。
-7. 阶段性导出 WIP Markdown 和 WIP JSON；完成后导出 DONE Markdown 和 DONE JSON。
-8. WIP 放同步盘工作目录，DONE 放归档目录。
-
-## 维护规则
-
-1. 修改工作台结构、字段、导入导出逻辑时改 `index.html`。
-2. 修改 AI Prompt 文案时改 `ai-prompts.js`，不要为了迭代 Prompt 去改 `index.html`。
-3. 更新 `TEMPLATE_VERSION`、页面显示版本号和 `CHANGELOG.md`。
-4. 用旧版 JSON / Markdown 各做一次导入测试。
-5. 不要改正式入口路径。
-6. 旧 HTML 只放 `legacy/`。
+`node scripts/test-creator-prompt-catalog.cjs` 检查原编号覆盖、题材分支、所有环境/备用步骤及关键真值约束。`node scripts/test-creator-prompt-browser.cjs` 在隔离浏览器验证分支、输入保存、导入、复制/下载及 1440/768/390/320 宽度；可通过 `GUCC_TEST_EXECUTABLE` 指定已有 Chromium。测试不会接触生产 Supabase。

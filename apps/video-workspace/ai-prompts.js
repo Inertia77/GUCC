@@ -1,798 +1,92 @@
-/* GUCC Studio AI Prompt templates.
-   Edit prompts here instead of changing index.html. */
-
-function projectHeaderContext(d){
-  return `# 项目基础资料
-
-## 00 项目总控
-- 项目标题：${safeText(d.projectTitle)}
-- 游戏：${safeText(d.game)}
-- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
-- 内容类型：${safeText(d.type)}
-- 状态：${safeText(d.status)}
-- DDL：${safeText(d.ddl)}
-- 版本 / 卡池 / 活动：${safeText(d.version)}
-- 参考时长/形式：${safeText(d.duration)}
-- 优先级：${safeText(d.priority)}
-- 项目简易标题：${safeText(d.projectShortTitle)}
-- 简称预览：${safeText(d.projectShortName || d.shortName)}`;
+/* Canonical prompt catalog. Pure builders; no network or implicit project writes. */
+(function(root){'use strict';
+const VERSION='6.0.0';
+const STAGES=[['research','01','选题与证据'],['script','02','结构与文案'],['timeline','03','录音与时间线'],['assets','04','画面与声音'],['blueprint','05','剪辑蓝图'],['assembly','06','执行与合成'],['publish','07','发布与复盘']].map(([id,no,name])=>({id,no,name}));
+const ROUTES=[
+{id:'mechanism',name:'机制专题',hint:'规则、触发、状态与资源',source:'正式技能与系统文本、官方演示、当前区服真实实机。看清关键 UI、状态、数值与连续过程。',research:'规则→触发条件→状态/资源变化→边界条件→操作结果；分别核实共存、覆盖、延迟、离场生效与例外。只研究核心问题，不扩成养成百科。',structure:'从真实现象建立因果模型，用具体操作及边界反例验证；配队养成只留会改变该模型的部分。',analysis:'同步看动作、听音频、读 UI，记录 STATE_BEFORE / TRIGGER / STATE_AFTER 与资源增减；单帧不能证明触发顺序。',recording:'设计能区分两种解释的控制变量测试，明确起手资源、可用配置、输入、可见 UI 与成功标准，必要时重复。',visual:'真实镜头承担 PROOF；资源回路、状态与时间轴动画承担 EXPLAIN。图形运动对应含义，不生成假实机。',audit:'核对触发顺序、状态归属、伤害标签、边界反例和因果，看不清的数字不能猜。',sound:'资源满足、状态切换、关键触发设少量提示；解释密集处降低背景声。',promise:'兑现一个系统关系与操作收益，不承诺未验证数值。'},
+{id:'guide',name:'正式攻略',hint:'养成、队伍与操作收益',source:'当前正式服技能、配置规则、面板、可复现实测与真实操作。',research:'按核心问题选择机制、资源循环、配装、投资、队伍和排轴。明确测试条件、适用范围、低成本替代和常见失误。',structure:'先给适用对象与实战判断，再解释决定结果的机制、配置和操作，不逐条复述技能。',analysis:'对应动作、资源、队伍增益和输出窗口，保留配置/场景，不从一次录像推普遍排名。',recording:'安排可复现配置与操作对比，写起手状态、场景、控制变量和成功标准。',visual:'真实操作/UI证明，循环动画解释，配装和替代方案用清晰对照。',audit:'核对技能、词条、配装、队伍、资源收支、收益依据，不用高配置代表全体玩家。',sound:'操作点少量准确提示，讲解保证口播清楚，展示段落适当加强节奏。',promise:'说明谁能用、如何用、得到什么有证据的收益。'},
+{id:'preview',name:'前瞻解析',hint:'官方公开与未知边界',source:'官方公开直播、原始 PV、官网图文，核对频道、版本、区服、发布日期，未公开资料禁入正文。',research:'分清官方说法、公开画面现象、条件分析和未知。未正式验证的数值、最优配队和抽取排名不写死。',structure:'围绕公开信息的新认识组织，说明证据边界，未知集中表达，不伪造完整攻略。',analysis:'官方原话与同刻画面/UI分栏，演示无法确定的条件标未知，不只靠字幕推机制。',recording:'未上线内容不安排不存在的正式服测试；只列上线后会改变结论的验证问题。',visual:'用官方原画面作证据，分析视觉明确标分析，不制作假正式服 UI。',audit:'排查把演示外推完整机制、把分析写成官方确认、把未知强度写成排名。',sound:'随公开画面和信息揭示设置节奏，未知部分保持克制。',promise:'标题不能暗示正式服已实测，说明公开信息能判断到哪一步。'},
+{id:'rerun',name:'复刻重评',hint:'首发到当前的变化',source:'首发与当前正式服资料分开，当前队友、装备、环境与实测优先。',research:'建立首发→当前变化表：调整、队友/装备、环境、替代和成本。旧结论重验，未变化的基础介绍压缩。',structure:'当前结论前置，以变化变量为中心，说明哪些旧判断仍成立。',analysis:'每段标版本/配置，不能拼不同时期录像伪装同条件比较。',recording:'只测试会改变当前评价的变量；同条件比较旧/新方案，写控制变量。',visual:'版本对照、同条件实战与队伍关系展示重评依据，不复刻首发百科。',audit:'检查旧资料继承、当前适用性、变化到收益的因果和投入回报。',sound:'变化与新收益处设锚点，基础项不反复强调。',promise:'回答现在为什么重评、哪些账号值得投资。'},
+{id:'decision',name:'抽卡／决策',hint:'账号条件、替代与成本',source:'已公开正式机制、实际配置收益、用户真实角色库与资源约束；缺账号信息则分条件。',research:'只研究改变决策的本体、专武/投资、队伍占用、替代、预算与机会成本。未来兼容性只用已公开证据。',structure:'账号条件结论→关键变量→替代与成本，不给所有观众同一个抽取结论。',analysis:'提取配置/场景、操作难度、队友占用与收益，展示伤害不能代替投资判断。',recording:'只做改变选择的同条件配置/替代对比，没有配置不编测试结果。',visual:'账号条件矩阵、投资分层、替代对照与必要真实演示，不堆无关机制动画。',audit:'核对条件、预算、基准、收益和未来推断，不以未知队友逼抽。',sound:'结论和选择清楚，避免连续刺激、夸张中奖感。',promise:'标题明确适用条件，正文兑现投资依据。'},
+{id:'rotation',name:'实战／排轴',hint:'动作、资源与窗口',source:'连续正式服录像、配置、输入与起手资源，不能只靠技能文本拼理论轴。',research:'核实启动轴/循环轴/爆发轴和资源回流，区分固定轴/条件轴/资源轴/状态轴，列中断与场景变招。',structure:'结果与配置→逐动作资源/状态→调整和失败分支，减少基础档案。',analysis:'角色→具体技能→状态变化→切谁→下一动作→资源与窗口；保留连续衔接和取消证据。',recording:'写起手、每步输入、切人时机、观察项、成功和失败分支，不要求用户没有的配置。',visual:'真实完整实战、局部慢放、输入/资源轨道与窗口轴为主，不让动画冒充操作。',audit:'检查起手假设、资源收支、顺序、衔接、窗口和可执行性；未经录像验证不写死帧级结论。',sound:'关键切换/窗口少量提示，必要时保留能证明操作的游戏原声。',promise:'说明配置、场景和起手条件，承诺可执行收益。'},
+{id:'story',name:'人物志／剧情',hint:'原文、动机与叙事证据',source:'正式剧情、对话、档案、角色故事与官方角色 PV；记章节、说话者、原文、先后与剧透范围，优先叙事资料。',research:'人物事件年表、关系、动机、选择、后果与意象；区分主观看法、叙述事实、作者解读。招式演出不能自动证明世界观，强度不能证明性格。',structure:'围绕人物核心矛盾/关键选择，可按年代或主题推进，用原文支撑解读，避免档案流水账与强悬念。',analysis:'核对说话者、语气、上下文、事件先后、镜头/表情/环境意象与选择，保留引用原文和 Master 时间，解读标分析。',recording:'只补剧情/档案/场景/对话、身份细节与氛围。写章节、剧透、镜头主体、原文和干净画面要求；无需则不录。',visual:'正式剧情切片、PV、原文引用、事件年表、人物关系与意象镜头；不套战斗资源条，不伪造剧情。',audit:'核对身份、年代、事件、关系、说话者、引用语境、剧透和解读边界，不凭台词断言诊断/作者意图。',sound:'围绕情绪弧、停顿、原台词与叙事转折，为原声/引文留空间，避免战斗提示音串。',promise:'兑现人物/剧情认识，明确剧透范围，不虚构角色事实。'},
+{id:'creative',name:'创意／整活',hint:'事实骨架、形式与回收',source:'正式角色/世界观事实、已确认形式参考与官方身份图；原设定和创作改编分开。',research:'建立最小准确事实骨架，核对梗来源与语境，虚构仅限明确创作约定，不冒充官方。',structure:'服从铺垫、回收、笑点/情绪弧；正史/纪传体保持真正史书语法和叙事逻辑，不改成现代口播攻略。',analysis:'提取识别点、台词、动作、情绪、可改编段落与梗上下文，不硬解战斗资源或编设定。',recording:'只拍服务笑点/情绪/形式的动作和场景，写构图、身份和用途，不安排完整机制测试。',visual:'表演、视觉回收、物件/场景意象和角色动作，创作不能冒充官方剧情；不默认Pixel/HUD。',audit:'核对事实骨架、身份、改编边界、语境、形式与效果。史书等文体不机械套口播去书面语。',sound:'声音服务铺垫、回收、停顿和情绪，保留有意义静默，不堆无关搞笑音效。',promise:'标题准确表达主题与形式，创作不能冒充官方结论。'}
+];
+const defs=[
+['brief','research','立项与项目约定',['01','01A'],['Chat','Work'],'游戏/区服/版本/想法、观众与限制','PROJECT_BRIEF.md、VIDEO_CONTRACT.md','structure',`调查玩家为什么点、看完解决什么、竞品饱和/缺口、信息增量、最硬内容、转粉理由、风险。记录真实链接/日期/可见指标，不编热度；不能联网则给条件判断。GO/HOLD/SHORT/MERGE/CANCEL；仅热点无增量不推荐长视频。
+通过立项才整理 Contract：PROJECT_ID/NAME、GAME/SERVER/VERSION/DATA_CUTOFF、PRODUCT_TYPE/FORMAT/PLATFORMS、CORE_PLAYER_QUESTION/CONTENT_INCREMENT、CORE_THESIS（未确认UNCONFIRMED）、CURRENT_STAGE、VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE、OFFICIAL_TERMINOLOGY、AVAILABLE_ARTIFACTS、LOCKED_ARTIFACTS、PRODUCTION_NEEDS与NEXT_HANDOFF。各资源需求标REQUIRED/CONDITIONAL/NOT_PLANNED和原因，只是可调整计划。未知字段UNKNOWN，不提前写正文或宣告LOCK。`,[['立项判断','只完成需求、竞品、信息增量与立项结论，交PROJECT_BRIEF.md，不先写正文。'],['项目约定','沿用真实立项结果，交VIDEO_CONTRACT.md。未通过时只记录当前状态与等待项，不默认GO。']]],
+['discovery','research','社区需求与官方资料',['02','03'],['Work','Chat'],'游戏/版本/区服、主题、已有来源（可选）','COMMUNITY_QUESTIONS.md、SOURCE_VERIFICATION.md、SOURCE_DOWNLOAD_MANIFEST.md','source',`调查B站/NGA/贴吧/官方社区/Reddit/YouTube等实际可访问社区，记原帖URL、发布/观察日期、可见指标与语境；热度/价值/争议/误解/搜索/传播分别判断，不编排名。输出Top5、竞品缺口、讲烂内容与研究重点。
+按问题找官网图文、原图与YouTube官方原始视频，逐项核对官方身份、频道ID/VIDEO_ID、游戏/角色/区服/版本/内容，排除搬运/同名/旧版。页面地址和可下载源分开。清单给稳定ASSET_ID、主体、用途、取得状态、日期、文件名/类型与权限。官方公开不自动等于许可，社区未授权只作研究。只交研究和源清单，不写稿或下载本地大文件。`,[['社区与竞品','联网核实问题/真实讨论/竞品，交COMMUNITY_QUESTIONS.md；无法联网则用用户给的原帖，不编数据。'],['官方来源','沿用问题池，逐项核验官方视频/图片/图文，交来源验证与下载清单，保持稳定ASSET_ID。']]],
+['ingest','research','下载与自适应 Proxy',['03A','03C'],['Codex','Work','Chat'],'已验证下载清单、真实根目录/Master、媒体参数（可探测）','DOWNLOAD_REPORT.md、MEDIA_PROBE.json、PROXY_MAP.md','source',`有本地权限就下载需要的已核实源和字幕，复用现有文件，不覆盖大素材；不绕过登录/DRM，失败逐项报告。云端访问不了Windows路径则给PowerShell，不称已执行。
+下载后用真实ffprobe自动探测，依时长、运动、小字/UI及当前真实上传限制反推Proxy参数。Master/Proxy分离，不裁切/变速/换序/删片，保留语音，不无意义升级分辨率/帧率。先压码率，再尺寸，再帧率；不固定套720p/CRF。450MB仅历史工作目标，当前限制必须核实。目标总码率≈目标字节×8/时长，扣音频/容器余量，必要两遍编码；语音AAC96–128kbps可作起点。
+关键细节不清时分段，每段原速并记绝对起点，MASTER_TS=PART_MASTER_START+PART_LOCAL_TS。验证实际大小、时长、尺寸、帧率、音轨和原点，明显时长不一致失败。PROXY_MAP记ASSET_ID、Master/Proxy路径、时长、参数、分段偏移与真实验证状态。不分析内容。`,[['下载与探测','交可本地运行的PowerShell下载+ffprobe脚本与MEDIA_PROBE.json输出；根目录用显式参数。无参数时停此步等用户结果。'],['转码方案','按回传真实探测计算参数，交批量FFmpeg脚本、命名、分段映射和验证命令，不猜参数。'],['回读验证','按用户返回的真实探测与日志完成PROXY_MAP；未回传的文件标UNVERIFIED。']]],
+['recording','research','必要研究录屏',['03B'],['Chat'],'研究问题、证据、可操作环境与配置','RESEARCH_RECORDING_PLAN.md','recording',`逐项写要证明什么、界面/章节/关卡、主体与可用配置、起手/上下文、具体操作、观察项、成功标准、是否重复、ASSET_ID和文件名。不写“随便打一局”。充分则NO_ADDITIONAL_RECORDING_REQUIRED。录屏为Master，后续确需分析再转Proxy。当前只交计划，不假装操作游戏。`],
+['analysis','research','视听解析与证据结论',['04','05'],['Work','Chat'],'实际可读Proxy/原文/截图、来源验证与Master映射、研究问题','SOURCE_ANALYSIS_<ASSET_ID>.md、SOURCE_ANALYSIS_INDEX.md、RESEARCH_CONCLUSIONS.md','analysis',`先核对ASSET_ID、文件、VIDEO_ID、官方身份、游戏/版本/区服。错源SOURCE_MISMATCH并停其推论。实际听音频/看画面/上下文，不只读字幕。看不清NEED_MASTER_RECHECK；工具看不了视频则只分析给出的原文/截图/真实标记，不宣告看过全片。
+每源MD记文件/来源/时长/映射/权限、摘要、EVIDENCE_TIMELINE、EDIT_ANCHORS、HIGH_VALUE_SOURCE_RANGES和限制。证据行给Master START/END、实际声音/原文、画面事件、关键前后变化、证据等级与SUPPORTED_CONCLUSION；叙事资料用说话者/事件上下文替代战斗字段。时间来自真实媒体，分段换算Master。锚点给职责PROOF/EXPLAIN/SHOW、适合旁白与限制。
+汇总索引及已确认事实/公开分析/未知、因果或叙事链、操作/决策结果（相关时）、矛盾与缺口，不写完整稿。只提供文本时不要捏造剪辑时间。`,[['逐源解析（可重复）','每轮少量真实素材，交每源MD，稳定ASSET_ID/Master原点；不能看视频时取得关键片段/高清截图/原文及真实时间，不假装画面验证。'],['证据索引','仅汇总已完成分析MD，不重扫大视频，交SOURCE_ANALYSIS_INDEX.md、矛盾与缺口。'],['研究结论','依据真实分析与正式资料形成RESEARCH_CONCLUSIONS.md，按本题材建立因果/叙事链，不写正文。']]],
+['outline','script','核心命题与结构',['06'],['Chat'],'问题池、研究结论、形式/时长','CONTENT_OUTLINE.md、CONTRACT_PATCH','structure',`给CORE_THESIS、信息增量、必讲/可删项、15–30秒开场、标题方向、封面信息、推荐时长、章节/内容结构和证据/视觉重点。每章服务命题，正确但无关就删。用户未确认标PROPOSED，不宣告STRUCTURE_LOCK，不写正文。附Contract状态/命题/下一任务补丁，真实写入回读才称同步。`],
+['script','script','完整文案',['07'],['Chat'],'已确认命题/结构、事实证据与官方术语','SCRIPT_DRAFT.md','structure',`不改变已确认命题/事实。写完整连续稿，直接判断+证据+因果+结果，每段有新认识，重要答案前置。开头15–30秒入问题；句长变化与自然停顿；创意文体服从已确认形式，不硬套现代口播。
+默认避“不是A而是B”“你以为A其实B”“反而才是”“接下来我们来看”“值得注意的是”“一句话总结”、假互动、机械排比、换词重复总结。真实逻辑需要才偶尔自然用，不加口癖/乱梗。使用官方简中术语与排轴/循环轴/启动轴/爆发轴/资源循环，不用“怎么转/转起来”含混说法。缺关键事实NEED_INPUT，不补造。观众稿不夹LOCK/TODO/日志，不附写作分析。此轮仅草稿，内部自检不能替代真实三项审核。`],
+['audit','script','三项审核与差异修订',['08','08B','09'],['Work','Chat'],'同一当前完整稿、命题/证据/术语、修改边界','SCRIPT_REVIEW.md、SCRIPT_REVISED.md','audit',`分别执行①事实/术语/证据边界②价值/逻辑/命题兑现/定位③去AI味/留存/作品形式，每项单独状态、位置、P0/P1、依据和最小改法。未核事实P1不能PASS；价值P0/P1未修不能PASS；NEEDS_MINOR_FIX不等于PASS。
+按本轮授权DIFF MODE修必要问题，保留通过段落、结构与指定名句；需打开LOCK/改变命题标NEED_INPUT。对修订后同一版本核查受影响事实并完成三个最终复核，报告稿件版本与未解决项。三项真实PASS、无未解决证据问题且符合当前命题时具备SCRIPT_LOCK条件；本轮明确要求锁稿可登记，否则READY_FOR_SCRIPT_LOCK。不能知道编号就假装他Chat审核完成。`,[['事实审核','只做①事实/术语/版本/引用/机制/证据，给P0/P1、依据、替换与PASS/NEEDS_FIX，不写全文。'],['价值与表达审核','对同一当前稿分别做②内容逻辑与③表达留存/作品形式，独立状态，不宣告锁稿。'],['修订与最终复核','汇总真实意见按差异修稿；再对同一最终版本三维复核，交稿与SCRIPT_REVIEW。未知仍NEEDS_FIX；三项PASS后READY_FOR_SCRIPT_LOCK，本轮明确要求锁稿才登记。']]],
+['read','timeline','朗读与录音准备',['10'],['Chat'],'用户已确认SCRIPT_LOCK正文','SCRIPT_LOCK.md、SCRIPT_READ.md',null,`输出连续稿及语义拆分朗读稿，每段原则≤500字，不改正文、不打断名字/句意，保留标点，专名读音提示放正文外。多人配音时给独立台词/分配/重组顺序。未给最终文本NEED_INPUT，不拿草稿冒充，不生成时间戳。`],
+['align','timeline','精确字幕与主时间线',['11'],['Work','Codex','Chat'],'最终真实录音AUDIO_MASTER与SCRIPT_LOCK正文','FINAL.srt、TIMELINE_MASTER.md',null,`WHEN=真实录音，WHAT=锁定文本。缺一NEED_INPUT。实际ASR/语音对齐→真实时间→锁文对应→纠术语→自然意群cue，ASR错字不覆盖正式文本。录音/稿件实质差异列位置等用户判断，不隐瞒。禁止字数/平均语速/均分推时间。
+检查顺序、意群、漏句/重句、覆盖、持续时间。TIMELINE_MASTER每Segment记ID、START/END、LOCKED_TEXT、SPEAKER、CHAPTER、SEMANTIC_PURPOSE、KEY_TERMS、IMPORTANT_BEAT、PAUSE_AFTER、NOTES，适合加ANCHOR_CANDIDATE/REASON；不提前决定镜头/SFX，可附CSV。音频=字幕=Timeline=后续输出同00:00，不能重定义原点。实际完成核对后登记TIMELINE_LOCK，不能只有标签。`,[['真实语音对齐','确有音频能力直接对齐；否则给真实本地/剪映识别与SRT导出步骤，取得实际时间结果。无工具明确未完成，不猜时间，不默认付费服务或未授权上传。'],['纠文与语义轴','用最终音频、锁稿和真实对齐结果纠术语，保留原点/真实时间。实质差异报告，交FINAL.srt和TIMELINE_MASTER；无法回听明确验证限制，不宣告完整复核。']]],
+['visualplan','assets','画面总纲与素材缺口',['12','13','14'],['Chat','Work'],'最终SRT/时间线、旁白、现有素材索引/描述','VISUAL_DIRECTION.md、EDIT_ASSET_REQUIREMENTS.md、FINAL_RECORDING_PLAN.md（按需）','visual',`围绕统一旁白时间逐段写需要看什么、PROOF/EXPLAIN/SHOW/BREATH、语言、真实证据、已有Master/Source Range、动态需求、缺口与音画锚点。无真实时间不猜Source In/Out。Pixel可选，题材可用HUD/几何/关系/意象等；理解→证据→节奏→美感。
+复用已验证素材，不重拍重下。缺口给必要性、已有替代和最小补齐。确需补拍才写最终段落、主体/界面、起手/上下文、具体操作、可见信息、成功标准、ASSET_ID/文件名、备份与权限；无需求NO_FINAL_RECORDING_REQUIRED。新增视频以后只补其获取/Proxy/映射/解析MD，不全部重跑。此轮不下载/转码/制作/最终Shot判断。`,[['逐段画面方向','用真实SRT/时间线与MD交VISUAL_DIRECTION.md，职责和锚点明确，不渲染。'],['缺口与补拍','核对现有索引，交需求/缺口；仅必要时生成FINAL_RECORDING_PLAN.md。']]],
+['visualpack','assets','动态视觉素材制作',['15'],['Work','Codex','Chat'],'明确视觉设计、最终时间线、核实事实与官方身份参考','ANIMATION_CLIPS/、PACKAGE_INDEX.md、PREVIEW.mp4、可复现脚本','visual',`按已明确设计制作，Codex不能临时导演；关键设计缺失先交待确认规格。OUTPUT_MODE=ANIMATION_ASSET_PACKAGE；STATIC_ONLY_DELIVERY=FORBIDDEN。主要交可播放短片或序列帧+脚本/时间参数，静态组件只是组成部分。默认16:9/1080p/30fps或项目规格，按真实旁白区间，考虑字幕安全区；默认CUT/CUTAWAY，仅蓝图明确才OVERLAY。
+具体人物须当前可读官方身份参考，保持发型/服装/武器/饰品/颜色；无参考用抽象职能，不乱补人物。Pixel整数放大/最近邻，其他风格不套滤镜。动作、状态与空间关系必须解释含义，灵动、有前中后层次和细节，克制配色，不做几个文字框/纯线框/静态PPT。生成视觉只解释，不伪造实机UI、数值或剧情。
+PACKAGE_INDEX逐资产记ID、真实路径/basename、时长、主时间区间与本地映射、内容/动作时间、锚点、职责、使用方式、规格/限制/权限。验证实际可播放和时长，交预览；无渲染工具交完整代码/依赖/命令/组件，标RENDER_PENDING，不能只给概念图。`,[['动画规格','逐段确定构图/动作/组件/本地时间/主时间映射/输出参数，不把概念图当成品。'],['代码与组件','按规格分批交完整可运行脚本、真实参考组件、依赖与本地渲染命令；无渲染工具RENDER_PENDING。'],['回读与索引','按实际文件探测/预览核对身份、动作、时长、锚点与可播放，交PACKAGE_INDEX；没结果不标FILE_EXISTS=YES。']]],
+['sound','assets','声音设计与资产制作',['16','16A'],['Work','Codex','Chat'],'最终时间线/旁白、视觉锚点/参考；Codex需明确声音方案','SOUND_DIRECTION.md、SOUND_CUE_MAP.md、BGM/SFX文件、SOUND_PACKAGE_INDEX.md','sound',`Work可设计→生产连续完成；Codex只按明确声音方案执行，缺方案先交待确认规格。逐段定BGM情绪/音乐结构、留白、提示、Cue、Gain/Fade/Ducking和音画锚点，口播始终清楚。
+BGM有音乐性、可循环，不做持续嗡鸣/满高频；SFX短准且有联想，只产必要资产。使用合法素材/专业工具/可运行MIDI或脚本，不冒充已授权音乐，不克隆未授权声音；无法高质量生产MANUAL_REQUIRED，不用噪声充数。
+原始资产稳定ASSET_ID/CUE_ID，48kHz WAV优先、不含口播、有headroom，不提前混最终总轨。索引给实际文件/TYPE/时长/采样/声道、描述、Loop In/Out、适用区间、Gain/Fade、叠加限制、Cue与许可/生成方式。真实存在并验证FILE_EXISTS=YES，否则PLANNED；MUST_USE未齐MISSING_AUDIO_ASSET，不留执行器临时找音乐。`,[['声音方向与Cue','交声音结构、真实时间、留白、提示、Gain/Fade/Ducking与声画锚点。'],['资产生产','按Cue给专业工具精确提示词/参数、合法获取或完整本地MIDI/音频脚本。能生成则实际生产；无工具标PLANNED/MANUAL_REQUIRED。'],['试听与索引','据实际音频/探测验音乐性、Loop、48kHz、无口播、headroom/时长/许可，交索引；缺文件保留MISSING_AUDIO_ASSET。']]],
+['cover','assets','三比例正式封面',['17'],['Chat','Work'],'最终命题/正文、卖点、当前可读官方身份参考','4:3/3:4/16:9三成图、COVER_PACKAGE_INDEX.md','promise',`明确可兑现的一条点击信息，主大字3–5候选，短辅助文案按需，标题与封面互补。角色真实官方身份锁，不改脸/发型/服装/武器，主体不做像素小人；背景可轻像素/HUD，避免霓虹粒子堆砌。
+实际生成4:3、3:4、16:9三种独立构图，分别适配人物/文字/焦点/留白，不机械裁切。投稿时核实平台尺寸，必要COVER_VARIANT_REQUIRED。成图检查身份、文字、比例、缩略图可读。
+索引写COVER_MESSAGE、CORE_THESIS、SELECTED/ALT_COVER_TEXT、TITLE_COMPLEMENT_RULE、每比例实际文件名/构图、Identity Source、特版保持点与权限。无图像工具只交方案并标IMAGE_GENERATION_REQUIRED，不能称已生成。`,[['卖点与三构图','确定可兑现文案/点击逻辑、官方身份锁、三种独立构图，不改正文结论。'],['成图与索引','使用有图像能力Chat实际生成并验三张，交索引；无工具IMAGE_GENERATION_REQUIRED。']]],
+['organise','blueprint','本地素材整理与索引',['18A'],['Codex','Chat'],'真实根目录/tree /f、描述MD与LOCK文件','ASSET_INDEX.md、PATH_MAP.md、脚本/日志',null,`检查现有结构，复用目录、不建空目录、不重复大视频、不删除源、不改变LOCK内容。未知根目录用显式参数/相对方案，不猜C盘。Master/Proxy、自录/官方/生成、音频/字幕/时间线分清；二进制与MD一起移动或同步改路径，保持ASSET_ID、basename、时间映射/权限。冲突不覆盖、未识别留原位。
+交可检查路径映射及DryRun；具备权限且用户要求执行则按安全映射实际整理回读，否则给PowerShell。脚本支持预览、执行日志、反向映射。真实索引列ID、路径、类型、时长、描述MD、区间、权限与缺项，不推到Git。`,[['计划与脚本','据真实树/根目录给路径映射和DryRun/Execute PowerShell，不覆盖删除，同步描述路径。'],['回读与索引','用户运行后返回tree/日志，核对映射/冲突/描述，完成索引；没执行不称已整理。']]],
+['blueprint','blueprint','精细剪辑与声音蓝图',['18B'],['Chat'],'最终SRT/时间线、tree/索引/各素材MD、画面方案/Cue与实际声音','EDITING_BLUEPRINT.md、SHOTS.csv/AUDIO_CUES.csv（按需）','visual',`优先MD与索引，文字不足才要局部Proxy/截图，不重扫大文件。逐Shot给SHOT_ID、Timeline In/Out、旁白/职责、实际素材路径、Source In/Out、速度、构图/裁切、动作/转场、视觉锚点、安全区、缺口处理。Source无依据NEED_INPUT不猜时间。
+逐Cue给ID、实际文件、Source In/Out、放置时间、Loop、Gain/Fade/Ducking与锚点。MUST_USE声音真实存在，EDIT_USE_ALLOWED!=YES默认禁入成片。缺口标BLOCKED和最小替代，不擅自把黑屏/占位当完成。
+EDITOR_AUTONOMY=EXECUTION_ONLY，导演/选片/音乐决定都在蓝图。默认1080p/30fps/H.264，FINAL_VIDEO_SILENT.mp4无音轨无字幕；FINAL_BGM_SFX.wav48kHz只含背景声，与旁白同00:00/主时长。此轮只设计，不渲染、不改锁定稿/录音/字幕。`],
+['render','assembly','严格执行蓝图／双输出',['19'],['Codex','Work','Chat'],'可执行蓝图、明确引用的真实文件、AUDIO_MASTER主时长/原点','FINAL_VIDEO_SILENT.mp4、FINAL_BGM_SFX.wav、BUILD_REPORT.md',null,`先逐Shot/Cue检查真实路径/权限/范围/时长/参数。只读蓝图与明确素材执行，不重新研究/写稿/导演/找素材/加特效。用高清Master，不用Proxy偷换；不动LOCK、旁白/时间原点。
+按蓝图FFmpeg/动画脚本渲染静音视频1920×1080/30fps/H.264、无音轨无烧录字幕（允许蓝图说明标签）；背景WAV48kHz仅BGM/SFX，按Gain/Fade/Loop/Ducking/Cue，不混口播。两项与旁白同00:00与主时长，不能拉伸旁白。
+缺失报告确切Shot/Cue与项，先完成能确定检查，不宣告成片完成。验证文件/轨道/时长/首尾/关键锚点，不强制全片AI重分析。BUILD_REPORT记实际命令/输出/探测/失败与未执行项。无工具/权限交完整脚本/命令标EXECUTION_PENDING，不以计划冒充视频。`,[['蓝图预检','据蓝图检查输入；云端看不了本地文件则给PowerShell/ffprobe预检等真实结果，不编存在性。'],['完整执行脚本','按已通过预检的真实Shot/Cue给完整代码、依赖、路径参数、日志/验证，长脚本分批后合一入口，不留导演判断。'],['回读渲染','用户运行回传探测/日志/关键预览，验静音无音轨无字幕、背景48kHz无口播、同原点/时长，完成报告；无结果EXECUTION_PENDING。']]],
+['assemble','assembly','剪映四件套组装',['19A'],['Chat'],'静音视频、背景WAV、AUDIO_MASTER、FINAL.srt','ASSEMBLY_CHECKLIST.md、用户导出的FINAL_MASTER.mp4',null,`给最短操作清单：四件套分别导入从00:00对齐；旁白不变速/变长，字幕不平均重定时。用户调整字幕样式/安全区和背景总音量，人耳核口播清晰、锚点/首尾后导出。镜头错回蓝图/画面，背景响调背景轨，术语错核锁文，时间错回真实对齐。只交清单，不假装替用户导出。`],
+['qc','assembly','可选：成片定点检查',['20'],['Work','Chat'],'实际成片/指定区间、SRT与蓝图','FINAL_QC_REPORT.md','audit',`全片重分析非默认必经。按本轮指定范围与真实可读媒体检查，说明覆盖；核事实/素材对应、锚点、字幕、旁白、轨道/时长和内部痕迹。给真实问题时间、现象、依据和最低改法；不能看/听则UNVERIFIED，不判PASS，不自动重剪或改LOCK。`,[['定点检查','只检查指定问题/区间，基于真实媒体给时间/依据/修法，能力不足项目UNVERIFIED。']]],
+['publish','publish','六平台发布包',['21'],['Work','Chat'],'最终命题/SRT/真实时间线、封面索引、成片规格及署名许可','PLATFORM_RULES_CHECK.md、六平台发布文案.md','promise',`先实时联网核实六平台官方帮助/规范或可访问投稿页：真实字段/必填、标题/简介限制、标签、封面/安全区、视频格式/时长/大小、字幕/SRT、分区/合集、可见性/时间、原创/转载、商业/AI合成声明、受众/年龄、章节/互动与版权。逐规则给URL/核验日期和官方确认/投稿页确认/可靠文档/无法确认；UI与文档差异按实时UI，不把经验当上限，查不到标投稿时按实时UI确认。无权限不要求登录。
+B站/抖音/小红书/视频号简中，YouTube/TikTok繁中。每平台≥5标题或Caption与短点击逻辑，不打分；读封面COVER_MESSAGE/SELECTED_COVER_TEXT/TITLE_COMPLEMENT_RULE互补并兑现正文。
+每平台字段名｜必填/选填｜限制/依据｜本期填值，含文件、标题、简介/正文、封面、标签、分区/合集、字幕语言、可见性/时间、互动、原创/商业/AI/受众等实际字段，未确认存在不装必填。给完整可复制文案、标签、封面方案/特版需求、置顶与设置。
+B站/YouTube据真实SRT/Timeline给3–9章节首章00:00，不均分，核YouTube当前识别要求；短内容不适合则说明，不凑章。B站2–4投票给真实时间、问题/2–4选项、原因/剧透；不适合或不支持如实说明。
+各平台核标题承诺、虚假官方/无关热词/诱导、素材权限/署名、商业/AI披露与外链规则，给最低成本修法。缺成片不猜画面/时长，文字时间够可先完成文案。只交发布包，不上传发布或强加成片QC。`,[['投稿规则','只核当前官方/可访问投稿页，交规则MD，未知标实时UI确认，不编上限。'],['B站与YouTube','按规则/正式内容给完整字段/≥5标题/简介/标签/封面/真实章与B站投票，YouTube繁中。'],['其余四平台与全包核对','给抖音/小红书/视频号简中、TikTok繁中字段/≥5标题或Caption/正文，合并六平台，核一致性/署名/披露/兑现。']]],
+['retrospective','publish','真实数据复盘',['22'],['Chat','Work'],'真实链接/标题/发布时间、曝光/CTR/留存/互动/涨粉','PERFORMANCE_REVIEW.md、新增问题池/候选经验','promise',`仅真实可得指标，没后台权限用截图/导出，不声称取得后台。区分曝光/CTR、前30秒/中段、平均观看/完播、收藏/分享/转粉、搜索/推荐和新问题；缺指标MISSING不填零。输出WHAT_WORKED/FAILED/WHY/NEXT_ACTION、证据/限制、新问题、可复用经验/候选规则。小样本/相关性/可测试推断分开，不只看播放量，不自动写库。`,[['真实指标','只整理实际数据/经授权报表和缺项，不编后台。'],['复盘动作','用真实指标解释具体掉点/点击/转粉，给下一次可测试改法和候选经验。']]],
+['compiler','utility','自定义需求转 Prompt',['23'],['Chat'],'自然语言需求、真实文件、修改边界','独立可执行Prompt',null,`只编译当前需求：目标/输入/事实来源/LOCK/可改/保持/自主权限/禁项/输出/验收/NEXT_HANDOFF。可读Contract才继承，早期NOT_PLANNED不禁止当前任务。检查跨阶段、改LOCK、旧版本、导演权、权限、内部痕迹、无用文件和重复读大素材。能引正式MD不复制整库，只交Prompt，不执行。`]
+];
+const tasks=defs.map(([id,stage,name,old,modes,inputs,outputs,lens,body,fallback])=>({id,stage,name,old,modes,inputs,outputs,lens,body,fallback,optional:id==='qc'}));
+// Preserve source contracts that matter to the existing local production handoff.
+for(const t of tasks){t.body=t.body.replaceAll('EDITING_BLUEPRINT.md','CODEX_EDIT_BLUEPRINT.md').replaceAll('PATH_MAP.md','PATH_REMAP.md');t.outputs=t.outputs.replaceAll('EDITING_BLUEPRINT.md','CODEX_EDIT_BLUEPRINT.md').replaceAll('PATH_MAP.md','PATH_REMAP.md');}
+taskExtra('discovery', '图片与图文也要主动获取，不只找视频。额外交 IMAGE_REQUIREMENTS.md，记官方原图实际尺寸/语言和取得状态；缺干净图但有核实官方文本时标 TO_RENDER_TEXT_VISUAL，准备明确的非官方说明图规格，不默认让用户自行截图。视频记准确标题/语言/字幕轨/真实时长，静态图不必转 Proxy。');
+taskExtra('ingest', '图片下载核对 Content-Type、magic bytes 与可读尺寸，不能把登录HTML存成.png；图文保留核实原文和来源。仅正式文字时可按清单渲染 GENERATED_EXPLANATION 图，不冒充官方原图。脚本正确处理中文/空格/特殊字符，尽量幂等，单项失败继续其他项。');
+taskExtra('sound', 'SOUND_CUE_MAP逐行包含 TIMELINE_IN/OUT、VOICE_ANCHOR、VISUAL_ANCHOR、TYPE、音色/动作、设计原因、强度、Fade/Ducking及是否精确对齐；无声也是Cue。必要音乐情绪变化与角色气质写入方向，不把音乐做成持续环境噪声。');
+taskExtra('blueprint', '最新 ASSET_INDEX.md / PATH_REMAP.md 决定当前路径，描述MD的旧路径不能覆盖它。蓝图按 GLOBAL_RULES / VISUAL_TRACK / AUDIO_DESIGN_TRACK / OUTPUT_SPECS / MISSING_ASSET / MISSING_AUDIO_ASSET / RIGHTS_REVIEW_REQUIRED 组织；Shot加SHOT_TYPE、EDIT_ACTION、QC_CHECK，音频加PAN、PURPOSE、QC_CHECK。保留实际静音段，不把声音前移。背景预混默认约-24 LUFS Integrated、True Peak≤-6 dBTP、足够Headroom，不做响度最大化；蓝图具体Gain/Ducking优先。');
+taskExtra('render', '视频 yuv420p、CRF18–20或等效高质量、合理preset、Fast Start、正确比例不拉伸；背景WAV Stereo/优先PCM24-bit，默认约-24 LUFS Integrated/True Peak≤-6 dBTP，具体蓝图优先，不响度最大化。无声区保留静音。主素材缺失仅用蓝图已明确fallback，没有则报告，不临时替换。');
+function taskExtra(id,extra){const t=tasks.find(x=>x.id===id);t.body+='\n'+extra;}
+const COMMON=`【单步约定】只完成本条明确工作；合并的子工作属于本轮范围，不自动执行下游。编号仅查找。同一Chat已实际取得的文件/结论直接复用，跨环境只继承真实可读输入；Contract可用则读，缺可选资料先完成能确定部分，缺关键事实/时间/身份才NEED_INPUT。
+【真值与LOCK】使用当前游戏/区服官方简中术语；区分官方确认、真实画面/实机、公开分析、未知、未公开资料。不能把传闻/拆包当官方。修订默认DIFF MODE，不改已确认LOCK；最终录音是时间真值，锁文是字幕文字真值，时间锁后同00:00。用户当前要求优先于早期资源计划。
+【真实交付】实际工具写入并回读才称已保存/更新；无工具交完整可保存内容/可运行脚本并标待执行，文件存在且验证才FILE_EXISTS=YES。不把制作文件推Git，大素材留本地。只交正式产物、真实完成/缺项与短NEXT_HANDOFF，不展开下游。
+【素材】保持ASSET_ID、路径/basename、时长、真实时间、对应旁白、用途/限制与描述MD；记SOURCE_URL/OWNER、RIGHTS_STATUS、EDIT_USE_ALLOWED、ATTRIBUTION_REQUIRED/TEXT、AI_GENERATED_OR_ASSISTED/GENERATOR_TOOL及许可备注。官方公开≠无限制许可，社区未授权只研究。观众产物不夹LOCK/TODO/Prompt/工作日志。`;
+function route(id){return ROUTES.find(x=>x.id===id)||ROUTES[0];}
+function task(id){return tasks.find(x=>x.id===id)||tasks[0];}
+function parts(id,mode){const t=task(id);return mode==='Chat'&&t.fallback?t.fallback.map(([name,body],index)=>({name,body,index})):[{name:t.name,body:'',index:0}];}
+function build(id,c={},mode='Chat',partIndex=0){
+ const t=task(id),r=route(c.route),ps=parts(id,mode),p=ps[partIndex]||ps[0],split=mode==='Chat'&&Boolean(t.fallback);
+ const ctx=[['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['目标时长',c.duration],['本轮实际输入/需求/限制',c.notes]].map(([k,v])=>`${k}：${String(v||'未提供；不猜').trim()}`).join('\n');
+ const lens=t.lens?`【${r.name}分支】\n${r[t.lens]}\n${['brief','analysis','outline','script','audit'].includes(id)?r.research:''}\n`:'';
+ const format=c.format==='short'?'短内容：只解一个问题，减非必要证据/章节/流程，开场按实际时长缩短，不硬扩长攻略。':'长内容：解释深度与章节服务命题，不为完整而拉长。';
+ const scope=split?`【Chat备用 ${p.index+1}/${ps.length}：${p.name}】\n本条只执行这个子任务；以下总规格仅约束，不授权提前执行其余子任务。同一Chat沿用上轮结果，换Chat需提供已完成产物。\n${p.body}\n`:'';
+ const capability=['ingest','organise','render','visualpack','sound'].includes(id)?'检查真实文件/执行工具；Chat无本地执行能力时给脚本与回读步骤，不称已渲染。':id==='align'?'必须真实音频/对齐工具；纯文字不能推精确时间。':id==='analysis'||id==='qc'?'先确认实际看/听能力，不能以字幕冒充画面确认。':id==='cover'?'成图需图像生成/编辑工具，无工具明确待成图。':'使用实际可用工具。';
+ return `【任务：${t.name}${split?'／'+p.name:''}】\n【环境】${mode}。${capability}\n\n${ctx}\n内容类型：${r.name}\n${format}\n\n${COMMON}\n\n【所需输入】${t.inputs}\n\n${lens}\n${scope}\n【${split?'任务总规格（本轮范围以上述子任务为准）':'执行要求'}】\n${t.body}\n\n【正式输出${split?'：本轮仅交子任务对应产物':''}】${t.outputs}\n【NEXT_HANDOFF】简短说明实际产物、关键缺项、以后需提交的真实文件，不自动执行下一条。`;
 }
-function macroContext(d){
-  return `## 01 内容宏观定位
-### 一句话问题
-${safeText(d.coreQuestion)}
-
-### 暂定核心结论
-${safeText(d.coreConclusion)}
-
-### 目标观众
-${safeText(d.audience)}
-
-### 这期不做什么
-${safeText(d.notDo)}`;
-}
-function preStudyContext(d){
-  return `## PS 事前学习 / Pre-study
-### 学习目标
-${safeText(d.preStudyGoal)}
-
-### 学习材料 / 链接
-${safeText(d.preStudyMaterials)}
-
-### 学习笔记 / 关键概念
-${safeText(d.preStudyNotes)}
-
-### 对本期企划的影响 / 可直接采用的结论
-${safeText(d.preStudyTakeaways)}
-
-### 仍未理解 / 待确认
-${safeText(d.preStudyQuestions)}`;
-}
-function rawResearchContext(d){
-  return `## 02 原始资料
-### 官方信息 / 链接
-${safeText(d.officialInfo)}
-
-### 社区争议 / 玩家问题
-${safeText(d.communityDebate)}
-
-### 自己的观察 / 实测条件
-${safeText(d.testNotes)}
-
-### 事实核对 / 参考来源（可选）
-${safeText(d.evidenceLocker, '（未填写。只有版本时间、数值、规则、原话或争议信息会改变结论时，才补少量关键来源。）')}`;
-}
-function briefContext(d){
-  return `${projectHeaderContext(d)}
-
-${preStudyContext(d)}
-
-${macroContext(d)}
-
-${rawResearchContext(d)}`;
-}
-function analysisContext(d){
-  return `# 立项/资料分析输入
-以下内容只包含我已经填写的 00/PS/01/02，不包含 AI 分析、结构、文案、发布包、后期扩散、复盘。
-
-${briefContext(d)}`;
-}
-function outlineContext(d){
-  return `# 章节结构输入
-
-${briefContext(d)}
-
-## 已有 AI 分析结果
-${safeText(d.aiAnalysis)}
-
-## 当前 03 结构状态
-- 当前结构预设：${safeText(currentStructurePresetLabel())}
-- 当前结构内容：${safeText(d.chapterTable, '（尚未填写；请从零生成结构）')}`;
-}
-function scriptContext(d){
-  return `# 脚本生成输入
-
-${briefContext(d)}
-
-## AI 分析结果
-${safeText(d.aiAnalysis)}
-
-## 03 内容结构 / 分镜节奏
-${safeText(d.chapterTable, '（尚未填写；请先指出需要补结构，不要直接硬写完整脚本）')}
-
-## 05 素材与画面计划
-### 需要录制的游戏画面
-${safeText(d.gameFootage)}
-
-### 截图 / 图表 / 封面方向
-${safeText(d.visualPlan)}`;
-}
-function platformContext(d){
-  return `# 主平台发布包输入
-
-${projectHeaderContext(d)}
-
-## 核心结论
-${safeText(d.coreConclusion)}
-
-## 事实与内容边界
-${safeText(d.evidenceLocker, '（未填写。标题、封面字和简介只能承诺视频里确实讲到的内容；数值、日期和官方结论不确定时使用保留表达。）')}
-
-## AI 分析摘要
-${safeText(d.aiAnalysis)}
-
-## 03 内容结构 / 分镜节奏
-${safeText(d.chapterTable)}
-
-## 04 正式文案
-${safeText(d.script, '（未填写正式文案；如果信息不足，请先列缺失项，不要硬编完整发布包）')}
-
-## 05 视觉/封面方向
-${safeText(d.visualPlan)}`;
-}
-function translateContext(d){
-  migrateMultiLanguageFields(d);
-  const hasCN = filled(d.publishCN);
-  const hasMulti = filled(d.publishMulti);
-  return `# 多语言本地化输入
-
-## 游戏与关键词
-- 游戏：${safeText(d.game)}
-- 游戏代码：${safeText(d.gameCode || gameAbbrev(d.game))}
-- 版本/活动：${safeText(d.version)}
-- 内容类型：${safeText(d.type)}
-
-## 简中发布包
-${hasCN ? d.publishCN : '（暂无简中发布包。请先根据下方项目资料生成一版简中基准发布包，再进行多语言本地化。）'}
-
-## 现有多语言发布包（如已有，繁中和外语都在同一框）
-${hasMulti ? d.publishMulti : '（暂无。请同时生成繁体中文 / English / 日本語 / 한국어 / Français。）'}
-
-## 可参考项目资料
-${hasCN ? '（简中发布包已提供，优先以发布包为准。）' : platformContext(d)}`;
-}
-function diffusionContext(d){
-  return `# 后期扩散输入
-
-${projectHeaderContext(d)}
-
-## 主平台发布包
-${safeText(d.publishCN)}
-
-## 多语言发布包
-${safeText(d.publishMulti)}
-
-## 正式发布记录 / 主视频链接
-${safeText(d.publishLog, '（尚未填写。不要虚构链接；先输出待补链接占位，并说明补齐后再执行扩散。）')}
-
-## 扩散目标 / 时间窗口
-${safeText(d.diffusionGoal)}
-
-## 可复用素材 / 图文卡片清单
-${safeText(d.diffusionAssets)}
-
-## 已有扩散包（如需迭代）
-${safeText(d.diffusionPackage)}`;
-}
-function reviewContext(d){
-  return `# 复盘分析输入
-
-## 项目
-- 标题：${safeText(d.projectTitle)}
-- 游戏：${safeText(d.game)}
-- 类型：${safeText(d.type)}
-- 版本/活动：${safeText(d.version)}
-
-## 发布包
-${safeText(d.publishCN)}
-
-## 正式发布记录
-${safeText(d.publishLog)}
-
-## 后期扩散计划与执行结果
-### 扩散包
-${safeText(d.diffusionPackage)}
-
-### 执行记录
-${safeText(d.diffusionLog)}
-
-## 进度记录
-${safeText(d.progressLog)}
-
-## 结项反思 / 数据
-${safeText(d.review, '（请先在 08 复盘区补：播放量、完播/平均观看、点赞收藏评论、涨粉、发布时间、标题封面、评论区问题，以及扩散帖的点击/互动结果。）')}`;
-}
-function workspaceFullContext(d){
-  return `# 当前 Workspace 快照
-
-${briefContext(d)}
-
-## 03 内容结构 / 分镜节奏
-${safeText(d.chapterTable)}
-
-## 04 正式文案
-${safeText(d.script)}
-
-## 05 素材与画面
-- 游戏画面：${safeText(d.gameFootage)}
-- 截图 / 图表 / 封面：${safeText(d.visualPlan)}
-
-## 06 发布包
-### 简中
-${safeText(d.publishCN)}
-### 多语言
-${safeText(d.publishMulti)}
-### 发布记录
-${safeText(d.publishLog)}
-
-## 07 后期扩散
-${safeText(d.diffusionPackage)}
-
-## 08 进度与复盘
-${safeText(d.progressLog)}
-
-${safeText(d.review)}`;
-}
-function stageGuard(kind){
-  const guards = {
-    analysis:'可以主动查资料，但只核对会影响选题判断的关键事实；不要把回答做成研究报告，也不要开始写完整脚本或发布包。',
-    outline:'可以补查结构真正需要的事实；不要写完整口播稿、发布标题或多语言内容。',
-    script:'可以核对日期、数值、机制和原话；不要生成发布标题、简介、标签或复盘。',
-    platform:'允许查平台关键词、同类标题和社区搜索词；不要重写整篇脚本。标题必须匹配正片真实内容，不得夸大。',
-    translate:'允许查各语言通用译名、海外社区说法和 SEO 关键词；不要改选题核心，不要把中文梗硬翻。',
-    diffusion:'允许针对图文和社交平台重组已有内容；不要把后期扩散变成再次上传正片，不要伪造主视频链接、数据或平台反馈。',
-    review:'允许对照平台数据/评论/同类内容经验做诊断；不要补写脚本或发布包。数据不足时先输出缺口，不要装作能复盘。'
-  };
-  return guards[kind] || '';
-}
-function promptBase(kind){
-  return `你是我的二游视频项目共同策划人，不是表格填写机器。你的任务是和我一起把这个项目做成：选题站得住、资料查得准、结构讲得清、发布包有点击理由、后期扩散不浪费素材、复盘能反推下一期。
-
-工作原则：
-- 当前还是内容创作阶段，不是论文、尽调或深度研究阶段。先给能推动项目的判断和成品，不写研究方法、证据链、可信度评级、逐条证据编号或大段查证过程。
-- 普通创意判断直接说明理由即可。只有日期、数值、版本规则、官方原话、版权归属或争议信息会改变结论时才核对；确实查过资料时，在末尾放少量可直接打开的来源链接，不给来源编 E01、S1 一类编号。
-- 事实暂时不确定时，用一句自然的【待确认】说明影响；不为显得严谨而扩大调查范围。当前不能联网时，也只提醒真正阻碍下一步的少数问题。
-- 你可以给我建议，也要指出我的问题：选题是否太散、结论是否太早、观众是否不明确、资料是否不足、表达是否容易被喷。
-- 不要把视频时长写死。根据题材复杂度、观众耐心和素材密度给一个推荐区间；除非我要求，不要同时展开三套版本。
-- 不要编造官方数据、日期、倍率、活动规则或社区共识。
-- 表达风格：严谨但别板着脸。你是游戏 UP 主的共同策划，不是写审计报告；允许适当加入轻松吐槽、游戏梗、生活类比和“人话翻译”，但不要低俗、阴阳怪气、人身攻击，也不要为了搞笑牺牲准确性。
-- 幽默使用原则：每个关键段落最多 1 个轻梗；优先服务理解和记忆点，不要把视频写成脱口秀，也不要把严肃核验写成段子。
-- 不要用“必抽/血亏/垃圾角色”等强命令表达；可以用“哪些账号更该关注 / 哪些可以观望 / 哪些说法先别急着信”。
-- 反空洞规则：禁止只写“优化节奏 / 补充素材 / 提高质量 / 增加案例 / 加强论证”。建议要说清具体改什么、放在哪里、需要什么素材。
-- 画面规则：不能写“配游戏画面”。必须写具体画面，例如“角色技能说明页截图”“活动商店兑换界面”“0命实战录屏 20 秒”“评论区高频问题截图并打码”。
-- 输出优先方便我继续和 AI 对话、生成独立 HTML/文档或粘贴回 Workspace，不要为了适配模板制造多余字段。
-
-本阶段限制：
-${stageGuard(kind)}`;
-}
-function buildPrompt(kind){
-  const d = normalizeShortFields(collect());
-  if(kind === "artifact"){
-    return `${promptBase('analysis')}
-
-这是【独立 HTML 策划稿阶段】。我会主要在 AI 对话里推进创作，不要求先填满 Workspace。请综合当前对话、我提供的文件，以及下方已有 Workspace 快照，创建或更新一份便于阅读和继续讨论的独立 HTML 策划文件。
-
-要求：
-1. 如果当前对话已有 HTML 文件，优先在原文件上修改；没有时再创建一个单文件 HTML。
-2. 页面要像真正的创作策划稿：先给结论和当前版本，再呈现选题、观众、结构、文案片段、素材计划、待决定事项。不要做成管理后台或资料数据库。
-3. 用清楚的卡片、目录和状态提示组织内容，桌面与手机都能读；不要依赖外部构建工具。
-4. 只保留会影响决策的来源或待确认事实，不展开查证过程。
-5. 对我刚提出的问题直接修改成新版本，并在页面顶部用 3-6 条说明本轮改变。
-6. 如果环境能创建文件，请直接交付可打开的 .html；否则输出完整 HTML。不要只给伪代码或设计建议。
-
-${workspaceFullContext(d)}`;
-  }
-  if(kind === "workspaceJson"){
-    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可直接导入 GUCC Studio v5.1.0 的 JSON 文件。
-
-执行规则：
-1. 以当前对话中最新确认的版本为准；旧版本和被我否定的方案不要混入。
-2. 缺失字段使用空字符串、false 或空数组，不要编造。不要为了填满模板新增研究结论。
-3. 只输出一个合法 JSON 对象，不要 Markdown 代码围栏、解释、前言或尾注。字符串中的换行必须正确转义。
-4. sectionsJson 必须是数组；每节使用 role、title、time、goal、content、visual、transition、status。status 只用“草稿 / 需资料 / 待确认 / 可录制 / 已完成”。
-5. status 只用“0-灵感 / 1-立项 / 2-资料中 / 3-脚本中 / 4-待录制 / 5-剪辑中 / 6-待发布 / 7-已发布 / 8-扩散中 / 9-待复盘 / 10-已归档”之一。
-6. publishCN 保留完整的分平台中文发布包；publishMulti 保留繁中、English、日本語、한국어、Français；所有发布平台仍对应同一个完整视频，不生成切片。
-
-JSON 顶层只使用这些键：
-__workspaceName, __workspaceVersion, __templateVersion, __schemaVersion, __exportStage, projectTitle, game, gameCode, type, status, ddl, version, duration, priority, projectShortTitle, projectShortName, localPath, projectMemo, preStudyGoal, preStudyMaterials, preStudyNotes, preStudyTakeaways, preStudyQuestions, coreQuestion, coreConclusion, audience, notDo, officialInfo, communityDebate, testNotes, evidenceLocker, aiAnalysis, structurePreset, sectionsJson, chapterTable, script, gameFootage, visualPlan, publishCN, publishMulti, publishLog, diffusionGoal, diffusionAssets, diffusionPackage, diffusionLog, progressLog, review, ckBrief, ckPreStudy, ckResearch, ckScript, ckRecord, ckEdit, ckSubtitle, ckCover, ckPublish, ckDiffuse, ckReview, ckArchive。
-
-固定元数据：__workspaceName="GUCC Studio"；__workspaceVersion="5.1.0"；__templateVersion="5.1.0"；__schemaVersion="gucc-workspace-schema-4"；__exportStage 根据项目状态写 WIP 或 DONE。
-
-${workspaceFullContext(d)}`;
-  }
-  if(kind === "workspaceMarkdown"){
-    return `你现在负责把我们在当前 AI 对话、独立 HTML/文档和下方 Workspace 快照中的最新成果，收口成一个可导入 GUCC Studio v5.1.0、同时便于人阅读的 Markdown 文件。
-
-规则：
-1. 以当前对话里最新确认的版本为准；没有的信息写“（未填写）”，不要编造。
-2. 只输出 Markdown 正文，不要代码围栏、前言或解释。
-3. 必须严格保留下列 ## / ### 标题名称，导入器依靠它们识别字段。
-4. 在每个 ### 字段内部不要再使用 ## 或 ###；需要分层时用加粗标签和列表。
-5. 03 可以按“### 第1节”继续分节。所有发布平台对应同一个完整视频，不生成切片。
-
-请严格使用这个骨架并填入内容：
-
-# 项目完整标题
-
-## 00 项目总控
-- 游戏代码：
-- 项目简易标题：
-- 文件简称：
-- 游戏：
-- 内容类型：
-- 状态：
-- DDL：
-- 版本 / 卡池 / 活动：
-- 时长估算：
-- 优先级：
-- 本地工程路径：
-### 项目备注
-
-## PS 事前学习 / Pre-study
-### 学习目标
-### 学习材料 / 链接
-### 学习笔记 / 关键概念
-### 对本期企划的影响 / 可直接采用的结论
-### 仍未理解 / 待确认
-
-## 01 内容宏观定位
-### 一句话问题
-### 核心结论
-### 目标观众
-### 这期不做什么
-
-## 02 资料与 AI 分析
-### 官方信息 / 链接
-### 社区争议 / 玩家问题
-### 自己的观察 / 实测条件
-### 事实核对 / 参考来源
-### AI 分析结果
-
-## 03 内容结构 / 分镜节奏
-
-## 04 文案
-
-## 05 素材与制作
-### 需要录制的游戏画面
-### 截图 / 图表 / 封面方向
-
-## 06 正式发布 / 发布包
-### 简中：标题 / 简介 / 标签 / 章节
-### 多语言：繁中 / EN / JP / KR / FR
-### 正式发布记录：时间 / 平台 / 视频链接
-
-## 07 后期扩散 / 内容再分发
-### 扩散目标 / 时间窗口
-### 可复用素材 / 图文卡片清单
-### 后期扩散包：小红书图文 / 公众号 / 微博 / X / HoYoLab
-### 扩散执行记录：时间 / 平台 / 链接 / 初步结果
-
-## 08 进度记录 / 结项复盘
-### 进度记录 DATE / 进度
-### 结项反思 DATE / REPORT
-
-${workspaceFullContext(d)}`;
-  }
-  if(kind === "analysis"){
-    return `${promptBase('analysis')}
-
-这是【① 立项 / 资料分析阶段】。
-你要像共同策划一样和我把选题聊明白：值不值得做、最有意思的切口是什么、下一步先做什么。不要急着写脚本，也不要把回答做成深度研究报告。
-
-请执行：
-1. 先用自己的话复述这期真正想解决的问题；如果题目太散，直接帮我收窄。
-2. 只补查会改变选题或结论的关键事实；不要输出证据表、资料评级或逐条来源编号。
-3. 给出一个主推荐切口和最多两个备选；明确推荐理由、适合观众和最大风险。
-4. 指出最需要修正的 1-3 个问题，不要为了完整而凑问题。
-5. 给出下一步最小行动：接下来先查什么、做什么、产出什么。
-
-请按以下格式输出：
-
-# 可粘贴到【02 资料与 AI 分析：AI 分析结果】的内容
-
-## 快速判断
-- 建议：继续 / 收窄后继续 / 暂缓
-- 这期真正的问题：
-- 为什么有人会点开：
-- 推荐观众与建议时长：
-
-## 推荐切口
-- 主推荐：切口 + 一句话理由 + 主要风险
-- 备选（最多 2 个）：只有确实有价值时才写
-
-## 需要修正
-只写最重要的 1-3 条，每条包含“哪里有问题 → 怎么改”。
-
-## 待确认（仅在确实影响下一步时保留）
-用一两句话说明即可；没有就删掉本节，不要为了完整而列清单。
-
-## 下一步
-给 3-5 个按顺序可执行的动作，并明确下一份产物应该是结构、脚本还是独立策划文档。
-
-${analysisContext(d)}`;
-  }
-  if(kind === "outline"){
-    return `${promptBase('outline')}
-
-这是【② 章节结构阶段】。
-你要像真正的策划编辑一样，基于 Brief、原始资料、AI 分析和必要的外部资料，设计一个适合本项目的结构。不要死套 8-12 分钟，也不要机械套 6 节。
-
-请执行：
-1. 先给一个推荐时长区间和节数，并用一句话说明理由；除非我要求，不展开三套版本。
-2. 如果我的 03 结构不合理，可以直接指出并改。
-3. 每一节都要有明确功能和观众问题，不要每节都写成“继续分析”。
-4. “关键内容”写清讲法顺序、具体例子和这一节不该提前说什么。
-5. 每节都说明具体画面/素材，不能只写“配游戏画面”。
-6. 最后只给一个压缩方案：时间不够时先合并或删除哪一节。
-
-输出格式必须严格使用下面字段名，方便我直接复制到 HTML 的【AI 结构文本导入】里自动识别：
-
-# 可粘贴到【AI 结构文本导入】的内容
-
-## 结构判断
-- 建议节数：
-- 建议总时长区间：
-- 时长理由：
-- 如果要压缩，优先删：
-- 结构前置缺口：只写会阻碍写稿的事实缺口；没有就写“无”。
-- 素材拍摄总清单：
-
-## 分节方案
-
-### 第1节
-- 本节功能：Hook / 背景 / 现象 / 资料 / 机制 / 争议 / 实测 / 判断 / 建议 / 总结 / 转场 / 其他
-- 章节标题：
-- 预计时间：
-- 状态：草稿
-- 本节目标：
-- 关键内容：按【观众问题】【讲法顺序】【具体例子】【本节不要讲】写。
-- 画面/素材：必须写具体素材、截图或录屏对象；如果没有素材，写“需补素材：...”。
-- 转场句：
-
-### 第2节
-同格式继续，节数由你根据项目决定。
-
-注意：
-- 不要输出完整口播稿。
-- 不要输出发布标题、简介、标签。
-- 如果当前资料不足以定结构，先写“结构前置缺口”，再给临时结构。
-- 如果某节依赖尚未确认的日期、数值或机制，把状态写成“需资料”或“待确认”。
-- 不要在“分节方案”后追加额外标题；删减方案和素材拍摄总清单都写进“结构判断”，避免导入 03 时污染最后一节。
-
-${outlineContext(d)}`;
-  }
-  if(kind === "script"){
-    return `${promptBase('script')}
-
-这是【③ 脚本生成阶段】。
-你要基于 03 结构写中文口播稿，但不是把要点机械扩写。你需要先检查结构是否能讲通，再写成真实可录制的稿子。
-
-请执行：
-1. 先做 3 行以内的脚本前检查，只写真正会影响录制的资料、事实或节奏问题；没有就直接进入正文。
-2. 必要时补查最新资料，核对官方/社区说法；不确定的地方标【待核实】。
-3. 口播要像人在讲，不要论文腔，不要短视频营销腔；允许偶尔吐槽、类比、小幽默，让观众觉得“这人懂游戏也懂人话”。
-4. 每节保留“口播 + 画面 + 必要的剪辑提示”；只在结尾提醒仍会影响录制的少量待确认事实。
-5. 每段口播都服务一个观众问题。主观判断用自然的保留表达，不要把临时判断写成官方结论。
-6. 遇到争议，不要站桩输出结论；先拆前提，再给有条件判断。
-7. 如果你认为当前结构有问题，先指出问题，再按你修正后的结构写。
-
-请按以下格式输出：
-
-# 可粘贴到【04 文案】的内容
-
-## 脚本前检查
-最多 3 行；无关键问题时写“可直接录制”。
-
-## 开头 Hook
-【口播】
-直接给可录制口播。
-
-【画面】
-具体画面和字幕提示。
-
-## 第1节｜章节标题
-【口播】
-……
-
-【画面】
-……
-
-【剪辑提示】
-……
-
-需要时把轻梗自然写进口播，不要每节强行单列。
-
-后续章节同格式。
-
-## 结尾
-一句话总结 + 行动建议 / 评论引导 / 下期方向。
-
-额外要求：
-- 不要生成发布标题、简介、标签。
-- 不要把“画面建议”写成空话。
-- 对真正影响结论的不确定事实标注【待核实】。
-- 最后追加“录制前确认”：只列仍需核对的事实和仍需补的画面；没有就写“无”。
-
-${scriptContext(d)}`;
-  }
-  if(kind === "platform"){
-    return `${promptBase('platform')}
-
-这是【④ 正式视频发布包阶段】。
-你要根据已经完成的正片，生成可直接复制到各发布页的中文发布包。
-
-【视频内容锁定】
-- B站、抖音、小红书视频、微信视频号、YouTube 简中、TikTok 简中使用同一个完整成片；画面、口播、章节顺序和总时长都相同。
-- 平台适配只改标题/首句、简介/说明、话题/hashtags、后台 tags 和置顶评论。不得生成切片、短版脚本、30-60 秒版本、Shorts 方案或“某平台另剪一版”。
-- 如果完整成片不符合某个平台当前的上传时长、比例、文件大小或账号权限，只在最后写一个【发布阻塞项】，让我去发布页确认；不要自行删减内容。
-
-【字段规则｜核对日期 2026-08-08】
-平台规则会更新。公开规则能确认的硬限制按硬限制执行；国内平台未稳定公开或会随入口/账号变化的计数，以实际发布页实时计数器为最终准绳。下面的“创作目标”用于完整显示、可读和降低误触风险，不能写成平台官方保证。
-
-- B站：有独立标题、简介和普通标签。标题按投稿约束控制在 80 字符以内，创作目标 18-48 个中文字符；简介控制在 250 字以内，创作目标 80-220 字；普通标签优先 4-5 个，只放游戏名、角色/版本和本期核心机制，不在简介里堆 hashtag。
-- 抖音：把“发布文案 + #话题”视为同一个发布字段，不另造一篇长简介。创作目标为 1 句明确钩子 + 2-4 个强相关话题，总体短而完整；实际字符上限以发布页计数器为准并预留余量。
-- 小红书视频：有标题、正文和话题。标题以 20 字内为保守目标，优先 12-18 字；正文 100-260 字、2-4 个短段落；话题 3-5 个，使用社区会真实搜索的游戏/角色/玩法词，不用空泛流量词。
-- 微信视频号：不要假装有一个与描述分离的长视频标题字段；把描述第一行写成 12-24 字的清楚首句，再写 40-120 字完整描述，结尾放 2-4 个相关话题。公开资料没有可靠统一硬上限时，不得编造数字结论。
-- YouTube 简中：标题硬上限 100 字符，创作目标 28-65 个中文字符；简介硬上限 5000 字符，创作目标 160-500 字；只选 3 个最相关 hashtags；后台 tags 3-8 个，只补充核心词、外文名或常见误拼，因为 tags 对发现的作用有限。
-- TikTok 简中：没有单独长标题和长简介，输出一个 caption（说明）并自然接 3-5 个相关 hashtags；创作目标为 1-3 句。不同地区/账号可用长度可能变化，以发布页计数器为准并预留余量。
-
-【全平台共同底线】
-- 标题、封面字、简介与话题只能承诺正片确实讲到、演示到或得出的内容；不得把推测写成官宣，不得虚构爆料、奖励、实测结果、官方态度、全网排名或确定结论。
-- 可以有吸引力，但不默认使用“最强、第一、必看、必抽、血亏、废了、凉了、封神、100%、绝对、无脑”等绝对化或煽动性承诺。只有正片正在辨析该说法时，才可用带清晰语境的疑问句。
-- 不写诱导互动、虚假福利或站外导流：如扣数字、互关互赞、转发抽奖、私信领取、加群/加V、扫码、网盘口令、主页见、外链见。开放式讨论问题放置顶评论，不要求固定答案或交换利益。
-- 不用谐音、拆字、拼音、特殊符号规避审核，也不写“保证过审、绝无违规、已做敏感词处理”等无效声明。
-- 检查版权/转载、未公开资料、AI 生成或实质修改内容的标识、商业合作披露、未成年人、隐私、低俗性暗示、血腥暴力、仇恨/人身攻击、赌博交易、政治/地域和未经证实信息。需要平台标签或人工选择时写进【发布阻塞项】，不要硬塞进简介。
-- 同一个关键词不要在标题、简介、话题和 tags 中机械重复；优先让人一眼看懂“讲什么、看完得到什么”。不承诺一定过审。
-
-【平台专项写法】
-- B站：简介采用“本期结论/价值 → 主要内容 → 适合谁 → 必要来源或素材署名”的信息型结构。不要写营销口令、联系方式、站外平台名、引导三连、虚假福利、规避审核声明或关键词墙；只有实际引用的资料才给短链接/名称。若上次式样可能触发风险，直接给干净替换稿，不复述高风险原句。
-- 抖音：第一句立刻说主题和观看收益；话题直接接在文案后。不得用不相关热搜词、夸张标题、字符变体或过度营销。
-- 小红书：语气像真实经验分享，写清“为什么做 + 发现了什么 + 谁会有用”；禁止标题正文不一致、虚构体验、情绪勒令、固定答案互动、未经允许的站外导流和无关蹭热度。
-- 微信视频号：首句完整可读，描述克制清楚；不以“赶紧转发、必须关注、别让朋友错过”等方式诱导分享关注，不声称“全网首发/官方推荐”除非已核实。
-- YouTube：标题与缩略图准确代表正片；简介前两行自然出现 1-2 个核心关键词。章节只使用真实时间点；hashtags 必须直接相关，不把普通 tags 或重复句塞进简介。
-- TikTok：caption 先写清内容，再放 hashtags；不做 like-for-like、虚假奖励、刷互动或无关标签。若含逼真 AI/实质合成内容，提醒使用平台披露选项。
-
-生成前先在内部做一次“内容兑现 + 平台合规 + 字符计数”复核，只输出修正后的可发布版本；不要输出审核推理、违规词大全或风险草稿。
-
-请按以下格式输出：
-
-# 可粘贴到【06 发布包：简中】的内容
-
-## 发布定位
-- 核心卖点（一句话）：
-- 目标观众：
-- 不能承诺的内容：
-- 同一成片确认：明确写“六个平台使用同一个完整成片，仅发布元数据不同”。
-- 共用封面大字建议：1 个主方案 + 1 个备选；必须与同一正片匹配。
-
-每个平台先给【最终可复制版】，再给 2 个简短备选。不要写长篇分析；标题/首句/caption 后标注字符数，话题计入同一字段时同时给总字符数。
-
-## B站
-### 最终标题（可直接复制）
-### 备选标题 2 个
-### 最终简介（可直接复制）
-### 普通标签
-4-5 个，以中文逗号分隔，不加 #。
-### 置顶评论
-只问一个与正片有关、没有固定答案的开放问题。
-
-## 抖音
-### 最终发布文案（可直接复制，已含 #话题）
-### 备选发布文案 2 个
-### 置顶评论
-
-## 小红书视频
-### 最终标题（可直接复制，保守目标 20 字内）
-### 备选标题 2 个
-### 最终正文（可直接复制）
-### 话题
-3-5 个，单独一行。
-### 置顶评论
-
-## 微信视频号
-### 最终完整描述（可直接复制，第一行即首句）
-### 备选首句 2 个
-### 话题
-### 置顶评论
-
-## YouTube 简体中文
-### 最终标题（可直接复制）
-### 备选标题 2 个
-### 最终简介（可直接复制）
-### Hashtags
-3 个。
-### 后台 Tags
-3-8 个，以英文逗号分隔。
-
-## TikTok 简体中文
-### 最终 Caption（可直接复制，已含 hashtags）
-### 备选 Caption 2 个
-### 置顶评论
-
-## 发布阻塞项（只在需要人工处理时输出）
-只列会阻止发布的事项，例如发布页计数超限、成片规格不支持、版权/转载/商业合作/AI 标识待选、脚本事实无法确认。没有就写“无”。最后确认：六个平台使用同一个完整成片，没有生成任何切片或短版方案。
-
-${platformContext(d)}`;
-  }
-  if(kind === "translate"){
-    return `${promptBase('translate')}
-
-这是【⑤ 多语言本地化阶段】。
-你要把简中发布包一次性本地化成【繁中 + English + 日本語 + 한국어 + Français】，不要逐字翻译。所有语言仍对应同一个完整成片；只能本地化发布元数据，不生成 Shorts、TikTok 切片、短版视频或改版脚本。繁中和其他语言放在同一个多语言发布包里。
-
-请执行：
-1. 先确认游戏、角色、版本、机制等固有名词在各语言社区的常见说法。
-2. 不要把中文网络梗硬翻成外语；要换成目标语言自然表达。
-3. 标题要保留原选题的点击理由，但不要跨文化误伤。
-4. 输出时按语言分块；每种语言给 YouTube 和 TikTok 两个平台的最终可发布元数据，不改变视频内容。
-5. 每个平台只给 1 个最终推荐和 2 个标题/说明备选，不要一次堆 10 个近义版本。
-6. YouTube 标题不超过 100 字符，简介自然包含 1-2 个主要关键词，只选 3 个 hashtags；后台 tags 只补充核心词、外文名和常见误拼，不塞进简介。TikTok 没有独立长标题/简介，输出 1-3 句 caption + 3-5 个相关 hashtags，最终长度以目标地区发布页为准。
-7. 按目标语言执行反误导、反虚假互动、反垃圾标签、反站外导流和商业/AI 披露检查；本地化不是规避审核。内部完成复核，只输出干净的最终文案。
-
-请输出：
-# 可粘贴到【06 发布包：多语言】的内容
-
-## 术语核验
-- 确认译名：
-- 待确认译名：
-- 不建议直译的中文表达：
-- 只列会影响理解或搜索的术语，不需要写语言学报告。
-
-## 繁体中文
-### YouTube｜最終標題 + 備選 2 個
-### YouTube｜簡介 + Hashtags + 後台 Tags
-### TikTok｜最終說明 + 備選 2 個 + Hashtags
-
-## English
-### YouTube | Final title + 2 alternatives
-### YouTube | Description + hashtags + backend tags
-### TikTok | Final caption + 2 alternatives + hashtags
-
-## 日本語
-### YouTube｜最終タイトル + 代案2個
-### YouTube｜概要欄 + ハッシュタグ + 管理画面タグ
-### TikTok｜最終キャプション + 代案2個 + ハッシュタグ
-
-## 한국어
-### YouTube｜최종 제목 + 대안 2개
-### YouTube｜설명 + 해시태그 + 백엔드 태그
-### TikTok｜최종 캡션 + 대안 2개 + 해시태그
-
-## Français
-### YouTube | Titre final + 2 alternatives
-### YouTube | Description + hashtags + tags internes
-### TikTok | Légende finale + 2 alternatives + hashtags
-
-## 本地化风险
-哪些标题或表达在海外容易显得奇怪、夸张、误导。
-
-## 发布前检查
-按语言检查：字符上限｜术语｜是否像机翻｜是否误导/诱导/导流｜需人工确认项。最后确认所有语言对应同一个完整视频。
-
-${translateContext(d)}`;
-  }
-  if(kind === "diffusion"){
-    return `${promptBase('diffusion')}
-
-这是【⑥ 后期扩散阶段】。
-正片已经进入主平台发布环节。你要把现有内容重组为图文、社交帖和社区内容，服务主视频的二次触达与长尾搜索；不要再次生成视频上传包，也不要把同一段文案复制到所有平台。
-
-请执行：
-1. 先检查是否已有主视频链接、正式发布时间和可复用素材；缺少的项目要明确标【执行前补齐】，绝不虚构。
-2. 给出分波次节奏：首发后 0-2 小时、24 小时内、3-7 天长尾。每个波次说明目标、平台、素材和判断是否继续的信号。
-3. 分别适配小红书图文、微信公众号、微博、X、HoYoLab；没有合适素材的平台可以建议跳过，并说明理由。
-4. 每个平台都要写清【内容形式】【首句/标题】【正文】【配图/卡片】【CTA】【主视频链接位置】【建议发布时间】。
-5. 优先复用已完成的封面、资料截图、图文卡片和评论问题；除非我另行提出，不制作视频切片，也不把 07 当成另一轮视频发布。
-6. 避免刷屏：相邻平台要改写角度，平台内重复发布要有新的信息或讨论理由。
-7. 最后给执行清单和回填格式，方便我记录真实链接与初步结果。
-
-请按以下格式输出：
-
-# 可粘贴到【07 后期扩散：后期扩散包】的内容
-
-## 0. 执行前检查
-- 主视频链接：已确认 / 待补
-- 正式发布时间：已确认 / 待补
-- 当前可复用素材：
-- 还缺的尺寸或素材：
-- 不应重复承诺的内容：
-
-## 1. 扩散节奏
-### 0-2 小时｜首发承接
-- 目标：
-- 平台与动作：
-- 继续/暂停信号：
-
-### 24 小时内｜讨论放大
-- 目标：
-- 平台与动作：
-- 继续/暂停信号：
-
-### 3-7 天｜长尾补充
-- 目标：
-- 平台与动作：
-- 继续/暂停信号：
-
-## 2. 小红书图文
-- 内容形式：
-- 标题：
-- 正文：
-- 配图/卡片顺序：
-- CTA 与主视频链接位置：
-- 建议发布时间：
-
-## 3. 微信公众号
-同字段输出；如果不值得做长图文，改给简短推荐语并说明原因。
-
-## 4. 微博
-同字段输出，附一条短版和一条讨论版。
-
-## 5. X
-同字段输出；根据已有多语言包选择合适语言，不要硬翻中文梗。
-
-## 6. HoYoLab
-同字段输出，优先社区讨论角度，不要写成外链广告。
-
-## 7. 执行清单
-按时间排序，每条写：时间窗口｜平台｜动作｜所需素材｜完成条件。
-
-## 8. 回填模板
-一行一条：DATE TIME｜平台｜内容形式｜真实链接｜曝光/点击/互动｜备注。
-
-${diffusionContext(d)}`;
-  }
-  if(kind === "review"){
-    return `${promptBase('review')}
-
-这是【⑦ 复盘分析阶段】。
-你要像项目合伙人一样帮我复盘：这期哪里做对了，哪里做错了，哪些问题来自选题，哪些来自标题/封面，哪些来自脚本节奏，下一期应该怎么改。
-
-请执行：
-1. 如果数据不足，先列缺失数据，不要装作能分析。
-2. 根据已有数据和评论，把问题分成：选题、标题封面、开头、主体节奏、结尾、发布时间、平台匹配。
-3. 把主视频自然表现与后期扩散带来的增量分开；没有来源数据时明确写“无法归因”。
-4. 对照我一开始的项目目标，判断有没有跑偏。
-5. 给下一期可执行改进，不要只写“提高质量”。每条改进都要写：改哪里、怎么改、用什么素材/数据判断是否有效。
-
-请按以下格式输出：
-
-# 可粘贴到【08 复盘】的内容
-
-## 1. 数据完整度
-- 已有数据：
-- 缺失数据：
-- 缺失数据会影响哪些判断：
-- 在数据不足时，哪些结论不能下：
-
-## 2. 项目目标回看
-- 原目标：
-- 实际表现：
-- 是否跑偏：
-
-## 3. 表现诊断
-- 选题：
-- 标题/封面：
-- 前 30 秒：
-- 主体节奏：
-- 结尾与互动：
-- 发布时间/平台：
-- 后期扩散：哪些平台带来增量，哪些只是重复劳动；没有来源数据就标无法归因。
-
-## 4. 评论区需求
-把观众问题归类，并判断哪些值得做成下一期。
-
-## 5. 下一步动作
-- 是否需要补短视频：
-- 是否需要补图文：
-- 是否值得做后续长视频：
-- 下一期最推荐选题：
-- 具体改法 3 条：
-- 下次扩散保留 / 停止 / 新增的动作：
-
-## 6. 空洞检查
-把“提高质量 / 优化节奏 / 加强标题”这类泛建议改成具体动作，例如改哪 10 秒、换什么封面字、补哪种截图、下次看哪个指标。
-
-${reviewContext(d)}`;
-  }
-  return briefContext(d);
-}
+const api={VERSION,STAGES,ROUTES,tasks,COMMON,route,task,parts,build};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;
+root.CreatorPrompts=api;
+})(typeof window==='undefined'?globalThis:window);

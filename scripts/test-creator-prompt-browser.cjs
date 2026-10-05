@@ -1,0 +1,41 @@
+'use strict';
+// Fully isolated static browser QA. No production API, login, project or file writes.
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path');
+const {chromium}=require('playwright-core');
+const repo=path.resolve(__dirname,'..'),origin='https://prompt.gucc.test',P=require('../apps/video-workspace/ai-prompts.js');
+async function main(){
+ const browser=await chromium.launch({headless:true,...(process.env.GUCC_TEST_EXECUTABLE?{executablePath:process.env.GUCC_TEST_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
+ const output=path.join(repo,'tmp/creator-prompt-browser');await fs.mkdir(output,{recursive:true});
+ const context=await browser.newContext({serviceWorkers:'block'}),errors=[],external=[];
+ await context.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!==origin){external.push(u.origin);return route.abort();}const font=process.env.GUCC_TEST_FONT_DIR&&u.pathname.startsWith('/__test-font__/');const base=font?path.resolve(process.env.GUCC_TEST_FONT_DIR):repo;const relative=font?u.pathname.slice('/__test-font__/'.length):'.'+decodeURIComponent(u.pathname);const target=path.resolve(base,relative,u.pathname.endsWith('/')?'index.html':'');if(!target.startsWith(base+path.sep))return route.abort();try{const body=await fs.readFile(target);const ext=path.extname(target);return route.fulfill({body,contentType:({'.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.html':'text/html','.svg':'image/svg+xml','.json':'application/json','.png':'image/png','.woff2':'font/woff2'})[ext]||'text/plain'});}catch{return route.fulfill({status:404,body:'missing fixture'});}});
+ const guard=await fs.readFile(path.join(repo,'assets/access-guard.js'),'utf8');const hash=guard.match(/ACCESS_HASH = '([^']+)'/)[1];
+ await context.addInitScript(value=>localStorage.setItem('gucc_access_hash_v2',value),hash);
+ const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+ try{
+  await page.setViewportSize({width:1440,height:1000});await page.goto(origin+'/apps/video-workspace/');await page.waitForSelector('#promptText');await page.waitForTimeout(600);
+  assert.equal(await page.locator('.stage-button').count(),7);assert.equal(await page.locator('#taskList .task-card').count(),5);
+  await page.selectOption('#routeSelect','story');await page.locator('#taskList .task-card').filter({hasText:'视听解析与证据结论'}).click();await page.locator('#modeTabs button').filter({hasText:'Work',exact:true}).click();assert.match(await page.inputValue('#promptText'),/说话者、语气、上下文/);assert.doesNotMatch(await page.inputValue('#promptText'),/STATE_BEFORE/);
+  await page.locator('#modeTabs button').filter({hasText:'Chat 备用'}).click();assert.equal(await page.locator('#partTabs button').count(),3);await page.click('#nextPartButton');assert.match(await page.inputValue('#promptText'),/Chat备用 2\/3/);
+  await page.click('#contextToggle');await page.fill('#titleInput','洛克茜人物志');await page.selectOption('#gameInput','绝区零');await page.fill('#serverInput','国际服');await page.fill('#notesInput','已提供剧情原文与PV；不修改已确认名句。');await page.reload();assert.equal(await page.inputValue('#titleInput'),'洛克茜人物志');assert.equal(await page.inputValue('#routeSelect'),'story');assert.match(await page.inputValue('#promptText'),/已提供剧情原文/);
+  await page.selectOption('#formatSelect','short');assert.match(await page.inputValue('#promptText'),/短内容：只解一个问题/);
+  await page.fill('#searchInput','18B');assert.equal(await page.locator('#taskList .task-card').count(),1);await page.locator('#taskList .task-card').click();assert.match(await page.inputValue('#promptText'),/CODEX_EDIT_BLUEPRINT/);
+  await page.fill('#searchInput','不存在的任务');assert.equal(await page.locator('.empty-results').count(),1);await page.fill('#searchInput','');
+  await page.click('#contextToggle');if(await page.locator('#importFile').isVisible())throw new Error('File input should be hidden');
+  await page.setInputFiles('#importFile',{name:'legacy.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({data:{projectTitle:'旧项目导入',game:'鸣潮',type:'机制专题',coreQuestion:'循环条件',preStudyNotes:'保留原字段'}}))});await page.waitForFunction(()=>document.getElementById('titleInput').value==='旧项目导入');assert.equal(await page.inputValue('#titleInput'),'旧项目导入');assert.ok(await page.evaluate(()=>localStorage.getItem('gucc_creator_prompt_v6').includes('preStudyNotes')),'Original unknown fields preserved in export');
+  await page.setInputFiles('#importFile',{name:'VIDEO_CONTRACT.md',mimeType:'text/markdown',buffer:Buffer.from('- PROJECT_NAME: 人物测试\n- GAME: 绝区零\n- PRODUCT_TYPE: 人物志\n- SERVER: 国际服\n- VERSION: 3.2\n')});await page.waitForFunction(()=>document.getElementById('titleInput').value==='人物测试');assert.equal(await page.inputValue('#routeSelect'),'story');assert.equal(await page.inputValue('#titleInput'),'人物测试');
+  await page.locator('.reference-links summary').click();await page.click('#mappingButton');assert.equal(await page.locator('#mappingBody tr').count(),P.tasks.length);await page.locator('#mappingDialog [data-close]').click();await page.locator('.reference-links summary').click();
+  await page.evaluate(()=>{window.__copied='';Object.defineProperty(navigator,'clipboard',{value:{writeText:async value=>window.__copied=value},configurable:true});});await page.click('#copyButton');assert.equal(await page.evaluate(()=>window.__copied),await page.inputValue('#promptText'));
+  const download=page.waitForEvent('download');await page.click('#downloadButton');assert.ok((await download).suggestedFilename().endsWith('.md'));
+  await page.click('#contextToggle');await page.fill('#searchInput','');await page.locator('#stageNav button').filter({hasText:'选题与证据'}).click();await page.locator('#taskList .task-card').filter({hasText:'视听解析与证据结论'}).click();await page.locator('#modeTabs button').filter({hasText:'Work',exact:true}).click();
+  if(process.env.GUCC_TEST_FONT_DIR){await page.addStyleTag({url:origin+'/__test-font__/400.css'});await page.addStyleTag({content:'.creator-prompt-page,.creator-prompt-page button,.creator-prompt-page input,.creator-prompt-page select,.creator-prompt-page textarea,.creator-prompt-page #promptText{font-family:"Noto Sans SC",sans-serif!important}'});await page.evaluate(()=>document.fonts.ready);}
+  assert.equal(await page.locator('#guccCreatorBridge').count(),0,'Legacy project bus must not appear on the prompt catalog');
+  await page.evaluate(()=>document.getElementById('toast').hidden=true);
+  for(const [width,height,label]of [[1440,1000,'desktop'],[768,1024,'tablet'],[390,844,'phone'],[320,740,'small-phone']]){await page.setViewportSize({width,height});await page.waitForTimeout(120);const geometry=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));assert.ok(geometry.scroll<=geometry.width+2,`${label}: horizontal overflow ${JSON.stringify(geometry)}`);assert.ok(await page.locator('#copyButton').isVisible());await page.screenshot({path:path.join(output,label+'.png'),fullPage:true});}
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='32px');const zoom=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);assert.ok(zoom<=2,'200% base text must not overflow');
+  assert.deepEqual(errors,[],'No page JavaScript errors');assert.ok(!external.some(x=>/supabase/.test(x)),'Prompt work surface must not contact production Supabase');
+  await page.evaluate(()=>localStorage.setItem('GUCC_WORKSPACE_CURRENT',JSON.stringify({projectTitle:'历史草稿测试',game:'鸣潮',type:'机制解析'})));
+  const legacy=await context.newPage();await legacy.goto(origin+'/apps/video-workspace/legacy/studio-v5.html');await legacy.waitForFunction(()=>document.querySelector('[data-key="projectTitle"]')?.textContent==='历史草稿测试');assert.equal(await legacy.locator('[data-key="projectTitle"]').textContent(),'历史草稿测试');await legacy.close();
+  console.log('Prompt browser QA passed: branches, fallback steps, persistence, copy/download, old JSON/Contract import, source mapping, 1440/768/390/320 widths.');
+ }finally{await browser.close();}
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});

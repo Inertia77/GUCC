@@ -150,6 +150,7 @@ const publishingConsoleRules = resolve(root, 'apps', 'publishing-console', 'plat
 const publisherAssistantServer = resolve(root, 'scripts', 'publisher-assistant', 'server.cjs');
 const publisherAssistantAdapters = resolve(root, 'scripts', 'publisher-assistant', 'adapters.cjs');
 checkSyntax(workspacePrompts);
+checkSyntax(resolve(root, 'apps/video-workspace/studio.js'));
 checkSyntax(productionSystemEngine);
 checkSyntax(productionSystemApp);
 checkSyntax(publishingConsoleApp);
@@ -235,17 +236,17 @@ if (!workspaceVersion) {
   }
 }
 for (const expected of [
-  'href="#sec-prestudy"><b>PS</b> 事前学习',
-  'href="#sec-07"><b>07</b> 扩散',
-  'href="#sec-08"><b>08</b> 复盘',
-  'href="#sec-09"><b>09</b> 规则',
-  'data-key="publishLog"',
-  'data-key="diffusionPackage"',
-  'data-key="diffusionLog"',
-  'data-key="preStudyGoal"',
-  'data-key="preStudyNotes"',
-  'data-key="ckPreStudy"',
-  'data-key="ckDiffuse"'
+  'id="routeSelect"',
+  'id="formatSelect"',
+  'id="stageNav"',
+  'id="taskList"',
+  'id="modeTabs"',
+  'id="partTabs"',
+  'id="promptText"',
+  'id="copyButton"',
+  'id="importFile"',
+  'id="exportButton"',
+  'href="./legacy/studio-v5.html"'
 ]) {
   if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少关键工作流标记：${expected}`);
 }

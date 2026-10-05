@@ -1,4 +1,4 @@
-# GUCC Studio v6.1.2
+# GUCC Studio v6.1.3
 
 正式入口保持 `apps/video-workspace/`。当前页面是 GameUp Creator OS 的 Prompt 工作台，依据 2026-10-05 实际读取的 Notion 母库重构。
 
@@ -45,3 +45,9 @@
 - 区分“Chat 分步”（Chat 本身是主环境）与“Chat 备用”（首选 Work/Codex，额度不足时用 Chat）。单一子步骤不再显示无意义的备用流程。
 - 自动 PROJECT_ID 的短哈希现在同时考虑游戏、区服、版本、内容类型与主题，降低同日项目碰撞。
 - 剪映四件套任务不再把尚未导出的 `FINAL_MASTER.mp4` 写成 AI 正式产物。
+
+
+## v6.1.3
+
+- Hotfix：修复 v6.1.2 子步骤 I/O 改造后 `renderPrompt()` 未绑定当前 part，导致 Prompt 文本框及输入/产物区域停止渲染的问题。
+- 当前子步骤现在显式绑定 `p = ps[state.part] || ps[0]`；所有任务继续按 v6.1.2 的独立 I/O 规则工作。

@@ -1,4 +1,4 @@
-# GUCC Studio v6.1.3
+# GUCC Studio v6.1.4
 
 正式入口保持 `apps/video-workspace/`。当前页面是 GameUp Creator OS 的 Prompt 工作台，依据 2026-10-05 实际读取的 Notion 母库重构。
 
@@ -51,3 +51,10 @@
 
 - Hotfix：修复 v6.1.2 子步骤 I/O 改造后 `renderPrompt()` 未绑定当前 part，导致 Prompt 文本框及输入/产物区域停止渲染的问题。
 - 当前子步骤现在显式绑定 `p = ps[state.part] || ps[0]`；所有任务继续按 v6.1.2 的独立 I/O 规则工作。
+
+
+## v6.1.4
+
+- 工作台不再自动生成、显示或维护 PROJECT_ID；修改标题 / 游戏 / 版本不会触发 ID 变化。
+- PROJECT_ID 回归「项目约定 / VIDEO_CONTRACT」Prompt：AI 根据已通过的立项信息自动提出人类可读 ID，例如 `ZZZ-3.3-菲欧妮前瞻`，用户无需手工命名。
+- 已有 VIDEO_CONTRACT 中的 PROJECT_ID 必须原样沿用；ID 一旦被接受，标题措辞变化不自动改名，只有明确新建项目或要求改 ID 时才重新生成。

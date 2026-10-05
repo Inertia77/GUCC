@@ -1,6 +1,6 @@
 /* Canonical prompt catalog. Pure builders; no network or implicit project writes. */
 (function(root){'use strict';
-const VERSION='6.1.2';
+const VERSION='6.1.3';
 const STAGES=[['research','01','选题与证据'],['script','02','结构与文案'],['timeline','03','录音与时间线'],['assets','04','画面与声音'],['blueprint','05','剪辑蓝图'],['assembly','06','执行与合成'],['publish','07','发布与复盘']].map(([id,no,name])=>({id,no,name}));
 const ROUTES=[
 {id:'mechanism',name:'机制专题',hint:'规则、触发、状态与资源',source:'正式技能与系统文本、官方演示、当前区服真实实机。看清关键 UI、状态、数值与连续过程。',research:'规则→触发条件→状态/资源变化→边界条件→操作结果；分别核实共存、覆盖、延迟、离场生效与例外。只研究核心问题，不扩成养成百科。',structure:'从真实现象建立因果模型，用具体操作及边界反例验证；配队养成只留会改变该模型的部分。',analysis:'同步看动作、听音频、读 UI，记录 STATE_BEFORE / TRIGGER / STATE_AFTER 与资源增减；单帧不能证明触发顺序。',recording:'设计能区分两种解释的控制变量测试，明确起手资源、可用配置、输入、可见 UI 与成功标准，必要时重复。',visual:'真实镜头承担 PROOF；资源回路、状态与时间轴动画承担 EXPLAIN。图形运动对应含义，不生成假实机。',audit:'核对触发顺序、状态归属、伤害标签、边界反例和因果，看不清的数字不能猜。',sound:'资源满足、状态切换、关键触发设少量提示；解释密集处降低背景声。',promise:'兑现一个系统关系与操作收益，不承诺未验证数值。'},

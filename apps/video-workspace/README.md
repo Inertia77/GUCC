@@ -1,4 +1,4 @@
-# GUCC Studio v6
+# GUCC Studio v6.1
 
 正式入口保持 `apps/video-workspace/`。当前页面是 GameUp Creator OS 的 Prompt 工作台，依据 2026-10-05 实际读取的 Notion 母库重构。
 
@@ -21,3 +21,10 @@
 修改 Prompt 优先改 `ai-prompts.js`，保持每个原编号恰好一个迁移去向。升级版本时同步页面、脚本/CSS query 与 `sw.js` 缓存资源。
 
 `node scripts/test-creator-prompt-catalog.cjs` 检查原编号覆盖、题材分支、所有环境/备用步骤及关键真值约束。`node scripts/test-creator-prompt-browser.cjs` 在隔离浏览器验证分支、输入保存、导入、复制/下载及 1440/768/390/320 宽度；可通过 `GUCC_TEST_EXECUTABLE` 指定已有 Chromium。测试不会接触生产 Supabase。
+
+
+## v6.1.0
+
+- 空的“本轮补充”不再生成“未提供；不猜”；同一 Chat 默认继承已确认上下文，只有真正缺关键输入才补充。
+- 「朗读与录音准备」新增真人录音 / 剪映 AI 朗读切换。AI 模式生成 `TTS_TEMP.srt`（每 cue ≤500 可见字符，目标 430–490）、`TTS_PRONUNCIATION_MAP.md` 与 `TTS_README.md`。
+- `TTS_TEMP.srt` 仅用于剪映 AI 朗读，时间码是导入占位，不进入最终时间真值；最终 `FINAL.srt` 仍显示 SCRIPT_LOCK 原文，时间由生成后的 `AUDIO_MASTER` 决定。

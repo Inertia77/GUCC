@@ -1,6 +1,6 @@
 /* Canonical prompt catalog. Pure builders; no network or implicit project writes. */
 (function(root){'use strict';
-const VERSION='6.1.0';
+const VERSION='6.1.1';
 const STAGES=[['research','01','选题与证据'],['script','02','结构与文案'],['timeline','03','录音与时间线'],['assets','04','画面与声音'],['blueprint','05','剪辑蓝图'],['assembly','06','执行与合成'],['publish','07','发布与复盘']].map(([id,no,name])=>({id,no,name}));
 const ROUTES=[
 {id:'mechanism',name:'机制专题',hint:'规则、触发、状态与资源',source:'正式技能与系统文本、官方演示、当前区服真实实机。看清关键 UI、状态、数值与连续过程。',research:'规则→触发条件→状态/资源变化→边界条件→操作结果；分别核实共存、覆盖、延迟、离场生效与例外。只研究核心问题，不扩成养成百科。',structure:'从真实现象建立因果模型，用具体操作及边界反例验证；配队养成只留会改变该模型的部分。',analysis:'同步看动作、听音频、读 UI，记录 STATE_BEFORE / TRIGGER / STATE_AFTER 与资源增减；单帧不能证明触发顺序。',recording:'设计能区分两种解释的控制变量测试，明确起手资源、可用配置、输入、可见 UI 与成功标准，必要时重复。',visual:'真实镜头承担 PROOF；资源回路、状态与时间轴动画承担 EXPLAIN。图形运动对应含义，不生成假实机。',audit:'核对触发顺序、状态归属、伤害标签、边界反例和因果，看不清的数字不能猜。',sound:'资源满足、状态切换、关键触发设少量提示；解释密集处降低背景声。',promise:'兑现一个系统关系与操作收益，不承诺未验证数值。'},
@@ -14,7 +14,7 @@ const ROUTES=[
 ];
 const defs=[
 ['brief','research','立项与项目约定',['01','01A'],['Chat','Work'],'游戏/区服/版本/想法、观众与限制','PROJECT_BRIEF.md、VIDEO_CONTRACT.md','structure',`调查玩家为什么点、看完解决什么、竞品饱和/缺口、信息增量、最硬内容、转粉理由、风险。记录真实链接/日期/可见指标，不编热度；不能联网则给条件判断。GO/HOLD/SHORT/MERGE/CANCEL；仅热点无增量不推荐长视频。
-通过立项才整理 Contract：PROJECT_ID/NAME、GAME/SERVER/VERSION/DATA_CUTOFF、PRODUCT_TYPE/FORMAT/PLATFORMS、CORE_PLAYER_QUESTION/CONTENT_INCREMENT、CORE_THESIS（未确认UNCONFIRMED）、CURRENT_STAGE、VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE、OFFICIAL_TERMINOLOGY、AVAILABLE_ARTIFACTS、LOCKED_ARTIFACTS、PRODUCTION_NEEDS与NEXT_HANDOFF。各资源需求标REQUIRED/CONDITIONAL/NOT_PLANNED和原因，只是可调整计划。未知字段UNKNOWN，不提前写正文或宣告LOCK。`,[['立项判断','只完成需求、竞品、信息增量与立项结论，交PROJECT_BRIEF.md，不先写正文。'],['项目约定','沿用真实立项结果，交VIDEO_CONTRACT.md。未通过时只记录当前状态与等待项，不默认GO。']]],
+通过立项才整理 Contract：PROJECT_ID/NAME、GAME/SERVER/VERSION/DATA_CUTOFF、PRODUCT_TYPE/FORMAT/PLATFORMS、CORE_PLAYER_QUESTION/CONTENT_INCREMENT、CORE_THESIS（未确认UNCONFIRMED）、CURRENT_STAGE、VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE、OFFICIAL_TERMINOLOGY、AVAILABLE_ARTIFACTS、LOCKED_ARTIFACTS、PRODUCTION_NEEDS与NEXT_HANDOFF。各资源需求标REQUIRED/CONDITIONAL/NOT_PLANNED和原因，只是可调整计划。未知字段UNKNOWN，不提前写正文或宣告LOCK。若工作台上下文已有PROJECT_ID，VIDEO_CONTRACT必须直接沿用该ID，不再要求用户命名，也不要自行另造第二套ID。`,[['立项判断','只完成需求、竞品、信息增量与立项结论，交PROJECT_BRIEF.md，不先写正文。'],['项目约定','沿用真实立项结果，交VIDEO_CONTRACT.md。未通过时只记录当前状态与等待项，不默认GO。']]],
 ['discovery','research','社区需求与官方资料',['02','03'],['Work','Chat'],'游戏/版本/区服、主题、已有来源（可选）','COMMUNITY_QUESTIONS.md、SOURCE_VERIFICATION.md、SOURCE_DOWNLOAD_MANIFEST.md','source',`调查B站/NGA/贴吧/官方社区/Reddit/YouTube等实际可访问社区，记原帖URL、发布/观察日期、可见指标与语境；热度/价值/争议/误解/搜索/传播分别判断，不编排名。输出Top5、竞品缺口、讲烂内容与研究重点。
 按问题找官网图文、原图与YouTube官方原始视频，逐项核对官方身份、频道ID/VIDEO_ID、游戏/角色/区服/版本/内容，排除搬运/同名/旧版。页面地址和可下载源分开。清单给稳定ASSET_ID、主体、用途、取得状态、日期、文件名/类型与权限。官方公开不自动等于许可，社区未授权只作研究。只交研究和源清单，不写稿或下载本地大文件。`,[['社区与竞品','联网核实问题/真实讨论/竞品，交COMMUNITY_QUESTIONS.md；无法联网则用用户给的原帖，不编数据。'],['官方来源','沿用问题池，逐项核验官方视频/图片/图文，交来源验证与下载清单，保持稳定ASSET_ID。']]],
 ['ingest','research','下载与自适应 Proxy',['03A','03C'],['Codex','Work','Chat'],'已验证下载清单、真实根目录/Master、媒体参数（可探测）','DOWNLOAD_REPORT.md、MEDIA_PROBE.json、PROXY_MAP.md','source',`有本地权限就下载需要的已核实源和字幕，复用现有文件，不覆盖大素材；不绕过登录/DRM，失败逐项报告。云端访问不了Windows路径则给PowerShell，不称已执行。
@@ -70,22 +70,90 @@ taskExtra('sound', 'SOUND_CUE_MAP逐行包含 TIMELINE_IN/OUT、VOICE_ANCHOR、V
 taskExtra('blueprint', '最新 ASSET_INDEX.md / PATH_REMAP.md 决定当前路径，描述MD的旧路径不能覆盖它。蓝图按 GLOBAL_RULES / VISUAL_TRACK / AUDIO_DESIGN_TRACK / OUTPUT_SPECS / MISSING_ASSET / MISSING_AUDIO_ASSET / RIGHTS_REVIEW_REQUIRED 组织；Shot加SHOT_TYPE、EDIT_ACTION、QC_CHECK，音频加PAN、PURPOSE、QC_CHECK。保留实际静音段，不把声音前移。背景预混默认约-24 LUFS Integrated、True Peak≤-6 dBTP、足够Headroom，不做响度最大化；蓝图具体Gain/Ducking优先。');
 taskExtra('render', '视频 yuv420p、CRF18–20或等效高质量、合理preset、Fast Start、正确比例不拉伸；背景WAV Stereo/优先PCM24-bit，默认约-24 LUFS Integrated/True Peak≤-6 dBTP，具体蓝图优先，不响度最大化。无声区保留静音。主素材缺失仅用蓝图已明确fallback，没有则报告，不临时替换。');
 function taskExtra(id,extra){const t=tasks.find(x=>x.id===id);t.body+='\n'+extra;}
+const PART_IO={
+brief:[
+ {inputs:'游戏 / 区服 / 版本 / 视频想法；同一Chat已有热点、观众问题与限制直接沿用',outputs:'PROJECT_BRIEF.md（立项结论、信息增量、风险、建议形式）'},
+ {inputs:'刚完成的PROJECT_BRIEF.md或同一Chat中的真实立项结论；工作台自动PROJECT_ID',outputs:'VIDEO_CONTRACT.md（沿用自动PROJECT_ID；未通过立项则只记录状态与等待项）'}
+],
+discovery:[
+ {inputs:'游戏 / 版本 / 区服 / 当前主题；同一Chat已有玩家问题直接沿用',outputs:'COMMUNITY_QUESTIONS.md（真实需求、争议、竞品缺口）'},
+ {inputs:'COMMUNITY_QUESTIONS.md / 当前核心问题；已有官方线索可沿用',outputs:'SOURCE_VERIFICATION.md、SOURCE_DOWNLOAD_MANIFEST.md、IMAGE_REQUIREMENTS.md'}
+],
+ingest:[
+ {inputs:'已验证下载清单 + Windows项目根目录；已有Master直接沿用',outputs:'下载脚本、DOWNLOAD_REPORT.md草案、MEDIA_PROBE.json / ffprobe结果'},
+ {inputs:'真实MEDIA_PROBE / Master参数与上传限制',outputs:'逐Master Proxy配置、PowerShell/FFmpeg命令、PROXY_MAP.md草案'},
+ {inputs:'本地实际执行结果、生成文件、ffprobe / 文件大小验证结果',outputs:'已验证PROXY_MAP.md、失败项与最小修复命令'}
+],
+analysis:[
+ {inputs:'一个或一组实际可读Proxy / 截图 / 原文 + Master映射 + 研究问题',outputs:'SOURCE_ANALYSIS_<ASSET_ID>.md；可对多个来源重复本子步骤'},
+ {inputs:'本轮已完成的SOURCE_ANALYSIS_*.md',outputs:'SOURCE_ANALYSIS_INDEX.md'},
+ {inputs:'SOURCE_ANALYSIS_INDEX.md + 关键分析MD + 当前核心研究问题',outputs:'RESEARCH_CONCLUSIONS.md（结论、因果链、未知与证据缺口）'}
+],
+audit:[
+ {inputs:'当前完整稿 + 对应证据 / 术语真值',outputs:'SCRIPT_REVIEW_FACT.md（事实/机制/术语审核）'},
+ {inputs:'同一当前稿 + CORE THESIS + 玩家问题 / 作品形式',outputs:'SCRIPT_REVIEW_VALUE_STYLE.md（价值/逻辑 + 去AI味/留存）'},
+ {inputs:'前两步真实审核结果 + 当前稿 + 修改边界',outputs:'SCRIPT_REVISED.md、合并SCRIPT_REVIEW.md、最终复核状态'}
+],
+align:[
+ {inputs:'真实AUDIO_MASTER + SCRIPT_LOCK正文；有TTS发音映射则一起提供',outputs:'真实语音对齐结果 / 初始SRT时间；无音频工具则给取得真实对齐结果的方法'},
+ {inputs:'真实对齐结果 + SCRIPT_LOCK正文 + 可回听音频',outputs:'FINAL.srt、TIMELINE_MASTER.md'}
+],
+visualplan:[
+ {inputs:'FINAL.srt + TIMELINE_MASTER.md + 旁白 + 已有素材描述',outputs:'VISUAL_DIRECTION.md'},
+ {inputs:'VISUAL_DIRECTION.md + ASSET_INDEX / 素材描述',outputs:'EDIT_ASSET_REQUIREMENTS.md、FINAL_RECORDING_PLAN.md（仅确有缺口时）'}
+],
+visualpack:[
+ {inputs:'VISUAL_DIRECTION / 明确视觉需求 + FINAL.srt / Timeline + 事实与身份参考',outputs:'ANIMATION_SPEC.md（逐片段构图、动作、时间、组件、规格）'},
+ {inputs:'ANIMATION_SPEC.md + 官方参考 + 可执行本地环境',outputs:'动画代码 / 组件 / 渲染命令或实际ANIMATION_CLIPS/'},
+ {inputs:'真实渲染结果 / 文件探测 / 预览',outputs:'PACKAGE_INDEX.md、PREVIEW.mp4（可生成时）、缺陷与修复项'}
+],
+sound:[
+ {inputs:'FINAL.srt / Timeline + AUDIO_MASTER语义 + 视觉锚点',outputs:'SOUND_DIRECTION.md、SOUND_CUE_MAP.md'},
+ {inputs:'已确认SOUND_DIRECTION / CUE_MAP + 可执行音频环境',outputs:'BGM / SFX实际文件或可运行制作脚本'},
+ {inputs:'实际音频文件 + 探测 / 试听结果',outputs:'SOUND_PACKAGE_INDEX.md、缺陷与修复项'}
+],
+cover:[
+ {inputs:'最终命题 / 正文 + 封面卖点 + 可读官方角色参考',outputs:'COVER_DIRECTION.md（三比例构图与文案策略）'},
+ {inputs:'已确认COVER_DIRECTION + 官方身份参考 + 图像生成能力',outputs:'4:3 / 3:4 / 16:9正式成图、COVER_PACKAGE_INDEX.md'}
+],
+organise:[
+ {inputs:'真实项目根目录 + 当前tree /f + 描述MD / LOCK文件',outputs:'整理方案、Dry Run PowerShell / Codex指令、目标目录结构'},
+ {inputs:'Dry Run / 正式执行后的最新tree /f与日志',outputs:'ASSET_INDEX.md、PATH_REMAP.md、冲突 / 缺失报告'}
+],
+render:[
+ {inputs:'CODEX_EDIT_BLUEPRINT.md + 最新ASSET_INDEX / PATH_REMAP + 被引用真实文件',outputs:'蓝图预检报告：路径、时长、权限、缺失资产、可执行性'},
+ {inputs:'通过预检的蓝图 + 真实素材路径',outputs:'完整可执行渲染 / 合成脚本；有本地执行权限时可直接执行'},
+ {inputs:'真实渲染产物 + ffprobe / loudness等验证结果',outputs:'FINAL_VIDEO_SILENT.mp4、FINAL_BGM_SFX.wav、BUILD_REPORT.md'}
+],
+qc:[
+ {inputs:'实际成片或指定区间 + SRT / 蓝图 + 具体检查目标',outputs:'FINAL_QC_REPORT.md（仅本次定点问题）'}
+],
+publish:[
+ {inputs:'最终平台清单 + 当前联网能力',outputs:'PLATFORM_RULES_CHECK.md（六平台当前真实字段 / 限制 / 披露）'},
+ {inputs:'PLATFORM_RULES_CHECK.md + 最终命题 / SRT / Timeline + COVER_PACKAGE_INDEX',outputs:'Bilibili + YouTube完整发布包'},
+ {inputs:'前两步结果 + 最终命题 / SRT / 封面 / 权限信息',outputs:'抖音 / TikTok / 小红书 / 视频号发布包 + 六平台一致性核对'}
+],
+retrospective:[
+ {inputs:'真实发布链接 / 发布时间 / 标题 + 实际后台截图或导出指标',outputs:'METRICS_SNAPSHOT.md（只整理真实指标与缺项）'},
+ {inputs:'METRICS_SNAPSHOT.md + 本期命题 / 发布包',outputs:'PERFORMANCE_REVIEW.md、新问题池、下一期可测试改法'}
+]
+};
 const COMMON=`【单步约定】只完成本条明确工作；合并的子工作属于本轮范围，不自动执行下游。编号仅查找。同一Chat已实际取得的文件/结论直接复用，跨环境只继承真实可读输入；Contract可用则读，缺可选资料先完成能确定部分，缺关键事实/时间/身份才NEED_INPUT。
 【真值与LOCK】使用当前游戏/区服官方简中术语；区分官方确认、真实画面/实机、公开分析、未知、未公开资料。不能把传闻/拆包当官方。修订默认DIFF MODE，不改已确认LOCK；最终录音是时间真值，锁文是字幕文字真值，时间锁后同00:00。用户当前要求优先于早期资源计划。
 【真实交付】实际工具写入并回读才称已保存/更新；无工具交完整可保存内容/可运行脚本并标待执行，文件存在且验证才FILE_EXISTS=YES。不把制作文件推Git，大素材留本地。只交正式产物、真实完成/缺项与短NEXT_HANDOFF，不展开下游。
 【素材】保持ASSET_ID、路径/basename、时长、真实时间、对应旁白、用途/限制与描述MD；记SOURCE_URL/OWNER、RIGHTS_STATUS、EDIT_USE_ALLOWED、ATTRIBUTION_REQUIRED/TEXT、AI_GENERATED_OR_ASSISTED/GENERATOR_TOOL及许可备注。官方公开≠无限制许可，社区未授权只研究。观众产物不夹LOCK/TODO/Prompt/工作日志。`;
 function route(id){return ROUTES.find(x=>x.id===id)||ROUTES[0];}
 function task(id){return tasks.find(x=>x.id===id)||tasks[0];}
-function parts(id,mode){const t=task(id);return mode==='Chat'&&t.fallback?t.fallback.map(([name,body],index)=>({name,body,index})):[{name:t.name,body:'',index:0}];}
+function parts(id,mode){const t=task(id);if(mode==='Chat'&&t.fallback){const io=PART_IO[id]||[];return t.fallback.map(([name,body],index)=>({name,body,index,inputs:io[index]?.inputs||t.inputs,outputs:io[index]?.outputs||t.outputs}));}return[{name:t.name,body:'',index:0,inputs:t.inputs,outputs:t.outputs}];}
 function build(id,c={},mode='Chat',partIndex=0){
  const t=task(id),r=route(c.route),ps=parts(id,mode),p=ps[partIndex]||ps[0],split=mode==='Chat'&&Boolean(t.fallback);
- const ctxLines=[['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['目标时长',c.duration],['本轮补充（可选覆盖）',c.notes]].filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}：${String(v).trim()}`);
+ const ctxLines=[['PROJECT_ID',c.projectId],['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['目标时长',c.duration],['本轮补充（可选覆盖）',c.notes]].filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}：${String(v).trim()}`);
  const ctx=ctxLines.length?`【项目上下文｜仅列工作台已填写项】\n${ctxLines.join('\n')}\n未填写项直接沿用同一Chat已经确认的上下文；不要为了模板完整逐项追问。\n`:'【项目上下文】直接沿用同一Chat已确认的项目与文件；没有新的补充项，不要要求用户逐项填写。\n';
  const lens=t.lens?`【${r.name}分支】\n${r[t.lens]}\n${['brief','analysis','outline','script','audit'].includes(id)?r.research:''}\n`:'';
  const format=c.format==='short'?'短内容：只解一个问题，减非必要证据/章节/流程，开场按实际时长缩短，不硬扩长攻略。':'长内容：解释深度与章节服务命题，不为完整而拉长。';
  const voice=id==='read'?(c.voiceMode==='ai'?`【朗读方式】剪映AI朗读。必须输出TTS_TEMP.srt与TTS_PRONUNCIATION_MAP.md；临时SRT每cue≤500可见字符、尽量430–490，专为正确发音改写，绝不作为最终字幕/真实时间线。\n`:`【朗读方式】真人录音。输出自然朗读稿，不生成虚构时间戳。\n`):''; const scope=split?`【Chat备用 ${p.index+1}/${ps.length}：${p.name}】\n本条只执行这个子任务；以下总规格仅约束，不授权提前执行其余子任务。同一Chat沿用上轮结果，换Chat需提供已完成产物。\n${p.body}\n`:'';
  const capability=['ingest','organise','render','visualpack','sound'].includes(id)?'检查真实文件/执行工具；Chat无本地执行能力时给脚本与回读步骤，不称已渲染。':id==='align'?'必须真实音频/对齐工具；纯文字不能推精确时间。':id==='analysis'||id==='qc'?'先确认实际看/听能力，不能以字幕冒充画面确认。':id==='cover'?'成图需图像生成/编辑工具，无工具明确待成图。':'使用实际可用工具。';
- return `【任务：${t.name}${split?'／'+p.name:''}】\n【环境】${mode}。${capability}\n\n${ctx}内容类型：${r.name}\n${format}\n${voice}\n${COMMON}\n\n【所需输入】${t.inputs}\n\n${lens}\n${scope}\n【${split?'任务总规格（本轮范围以上述子任务为准）':'执行要求'}】\n${t.body}\n\n【正式输出${split?'：本轮仅交子任务对应产物':''}】${t.outputs}\n【NEXT_HANDOFF】简短说明实际产物、关键缺项、以后需提交的真实文件，不自动执行下一条。`;
+ return `【任务：${t.name}${split?'／'+p.name:''}】\n【环境】${mode}。${capability}\n\n${ctx}内容类型：${r.name}\n${format}\n${voice}\n${COMMON}\n\n【所需输入】${p.inputs||t.inputs}\n\n${lens}\n${scope}\n【${split?'任务总规格（本轮范围以上述子任务为准）':'执行要求'}】\n${t.body}\n\n【正式输出${split?'：本轮仅交子任务对应产物':''}】${p.outputs||t.outputs}\n【NEXT_HANDOFF】简短说明实际产物、关键缺项、以后需提交的真实文件，不自动执行下一条。`;
 }
 const api={VERSION,STAGES,ROUTES,tasks,COMMON,route,task,parts,build};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;

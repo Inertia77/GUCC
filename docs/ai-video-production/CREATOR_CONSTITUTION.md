@@ -52,6 +52,24 @@
 3. Fine Edit 才处理字幕强调、信息动效、SFX、BGM 与节奏细化；视觉效果保持克制，避免无信息装饰和廉价 AI 感。
 4. Picture / Master Render Lock 后只允许 QC、编码、导出和发布打包；要改画面必须先由人明确 Reopen 对应 Gate。
 
+## AI-first Orchestration
+
+1. 默认 `AUTONOMY_LEVEL = L2`。AI 主动完成普通研究、规划、Capability 选择、Prompt Flow 编排、普通 QC、文件命名、Asset Index 与小范围 Workflow 调整；不要把可可靠完成的普通决策重新丢给用户。
+2. `REVIEW_OPTIONAL` 不阻塞项目。只有 GO / CANCEL、LONG ↔ SHORT 重大变化、SCRIPT_LOCK、修改既有 Lock、必须人类输入、最终成片确认和正式发布等关键节点使用 `APPROVAL_REQUIRED`。
+3. `NEED_INPUT` 仅用于继续会制造虚假、伪造或根本无法成立产物的 HARD STOP：例如无最终 AUDIO_MASTER 却要求真实时间码、视频不可访问却要求确认具体画面、无正式服证据却要求声称正式服实测、写入失败却声称成功、未 Reopen 却修改 Lock。
+4. 普通资料不完整、社区结论不统一、机制尚未正式验证、可选素材缺失、版权状态待确认等属于 SOFT UNCERTAINTY；使用 `UNKNOWN / REASONED_ANALYSIS / CONDITIONAL / REVIEW_REQUIRED` 继续能完成的部分。
+5. 01～07 是 Human-facing Production Map，不是固定 Prompt 流水线。真正执行逻辑为 `PROJECT → PROJECT_WORKFLOW → PROJECT_PROMPT_FLOW → CURRENT_TASK → Capability`。
+6. Workflow 可以动态，Capability 的成熟执行方法、Guardrail、Failure Prevention 和 Quality Gate 应保持稳定。Prompt Flow 更新默认 DIFF MODE：`ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE`。
+7. Proxy、Pixel、补录、额外视觉、全片 AI QC 等均为条件能力，不得因为旧模板存在就固定执行。
+8. 用户当前明确要求优先于早期 `PRODUCTION_NEEDS / NOT_PLANNED`；早期计划只表达当时资源规划，不是永久禁止。
+
+## QC Levels
+
+- `Q0` Basic Auto Check：格式、字段、命名、机器可验证一致性。
+- `Q1` AI Self-QC：普通能力执行内部自检。
+- `Q2` Independent AI QC：关键研究、机制、脚本、时间线、蓝图等独立复核。
+- `Q3` Human Review：重大方向、Lock、最终成片和发布等少数节点。
+
 ## Audience-facing Clean Output
 
 1. 最终给观众看到的脚本、字幕、动画、成片和发布文案中，不得出现内部制作信息，例如：`LOCK`、`TODO`、`AI`、`Codex`、Prompt、内部审核、Review Note、修改记录、文件路径、状态机、待办或调试标记。

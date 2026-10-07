@@ -10,7 +10,9 @@ const shellCss = read('assets/gucc-shell-nav-v2.css');
 const workspaceFixes = read('assets/gucc-workspace-fixes-v1.css');
 const floatingDocks = read('assets/gucc-floating-docks-v1.css');
 const coverFixes = read('assets/gucc-cover-workspace-fixes-v1.css');
-const productionHtml = read('apps/video-workspace/production-system/index.html');
+const creatorOsHtml = read('apps/video-workspace/production-system/index.html');
+const creatorOsCss = read('apps/video-workspace/production-system/creator-os.css');
+const productionHtml = read('apps/video-workspace/production-system/legacy-v1.html');
 const productionCss = read('apps/video-workspace/production-system/styles.css');
 const accessGuard = read('assets/access-guard.js');
 const portal = read('index.html');
@@ -32,6 +34,20 @@ assert.match(workspaceFixes, /:has\(#structureFloatingNav\.show\)/, 'Workspace m
 assert.match(coverFixes, /"workspace"\s*\n\s*"inspector"\s*\n\s*"materials"/, 'Cover mobile flow must put the inspector immediately after the canvas.');
 assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors must avoid iOS focus zoom.');
 assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
+assert.match(creatorOsHtml, /GameUp Creator OS v2/, 'Canonical Production must identify Creator OS v2.');
+for (const marker of [
+  'id="currentTaskName"', 'id="projectSelect"', 'id="newProjectBtn"',
+  'id="buildFlowBtn"', 'id="copyBuildFlowPrompt"', 'id="copyUpdateFlowPrompt"',
+  'id="capabilityGrid"', 'id="view-core"', 'id="view-system"',
+  'id="view-capabilities"', 'id="view-libraries"', 'id="view-projects"'
+]) assert.ok(creatorOsHtml.includes(marker), `Creator OS v2 missing ${marker}`);
+assert.match(creatorOsHtml, /core-rules\.js\?v=2\.0\.0/);
+assert.match(creatorOsHtml, /failure-prevention\.js\?v=2\.0\.0/);
+assert.match(creatorOsHtml, /capability-library\.js\?v=2\.0\.0/);
+assert.match(creatorOsHtml, /orchestrator\.js\?v=2\.0\.0/);
+assert.match(creatorOsHtml, /creator-os-app\.js\?v=2\.0\.0/);
+assert.match(creatorOsCss, /@media\(max-width:720px\)/, 'Creator OS must keep a responsive phone layout.');
+assert.match(creatorOsCss, /\.current-task-panel/, 'Creator OS must expose Current Task as a first-class surface.');
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');
 assert.match(productionHtml, /class="gucc-enhanced production-system-page"/, 'Production must identify itself for responsive shell rules.');
@@ -75,8 +91,9 @@ assert.match(uxBrowser, /1440, 900/, 'Creator UX browser acceptance must cover 1
 assert.match(uxBrowser, /Human Gate must never auto-fire/, 'Creator UX browser acceptance must protect human-only gates.');
 assert.match(uxBrowser, /first fold/, 'Creator UX browser acceptance must verify current-task-first mobile hierarchy.');
 assert.match(uxBrowser, /saveProject/, 'Creator UX browser acceptance must prove read/navigation smoke creates no Project write.');
-assert.match(serviceWorker, /gucc-static-v28[\s\S]*gucc-runtime-v28/, 'Creator UX closeout must preserve the current production cache generation while extending its shell.');
+assert.match(serviceWorker, /gucc-static-v29[\s\S]*gucc-runtime-v29/, 'Creator OS v2 must bump the offline cache generation.');
 assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator UX simplification must remain available in the offline app shell.');
+assert.match(serviceWorker, /creator-os-app\.js\?v=2\.0\.0/, 'Creator OS v2 app must be available in the offline shell.');
 assert.match(serviceWorker, /creator-ai-task-core\.js\?v=1/, 'Creator AI Task core must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-ai-task-ui\.mjs\?v=1/, 'Creator AI Task UI must remain available in the offline app shell.');
 assert.match(serviceWorker, /CREATOR_CONSTITUTION\.md/, 'Canonical Creator Constitution must be available to the AI Task prompt builder offline.');

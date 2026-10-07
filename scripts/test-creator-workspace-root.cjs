@@ -6,11 +6,15 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const moduleSource = fs.readFileSync(path.join(ROOT, "assets/creator-workspace-root.mjs"), "utf8");
-const productionHtml = fs.readFileSync(path.join(ROOT, "apps/video-workspace/production-system/index.html"), "utf8");
+const productionHtml = fs.readFileSync(path.join(ROOT, "apps/video-workspace/production-system/legacy-v1.html"), "utf8");
+const creatorOsHtml = fs.readFileSync(path.join(ROOT, "apps/video-workspace/production-system/index.html"), "utf8");
 const creatorEdge = fs.readFileSync(path.join(ROOT, "supabase/functions/creator-project-api/index.ts"), "utf8");
 
-// Production must load the Phase 2A.1 Workspace Root UI.
+// Legacy Production compatibility must keep the Phase 2A.1 Workspace Root UI.
 assert.match(productionHtml, /creator-workspace-root\.mjs\?v=1/);
+// Creator OS v2 is the canonical Project / Prompt Flow surface and keeps legacy production available separately.
+assert.match(creatorOsHtml, /GameUp Creator OS v2/);
+assert.match(creatorOsHtml, /legacy-v1\.html/);
 
 // It must reuse the same persistent browser device identity as the Creator bridge.
 assert.match(moduleSource, /gucc_creator_device_id_v1/);

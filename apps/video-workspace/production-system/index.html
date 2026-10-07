@@ -1,118 +1,173 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#070a10">
-  <title>AI Video Production System｜GUCC</title>
-  <link rel="icon" type="image/svg+xml" href="../../../assets/icons/gucc-icon.svg?v=5">
-  <script src="../../../assets/access-guard.js?v=8" data-root="../../../" data-guard="true"></script>
-  <link rel="stylesheet" href="../../../assets/gucc-theme.css">
-  <link rel="stylesheet" href="./styles.css?v=5">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101b">
+<title>GameUp Creator OS v2｜GUCC</title>
+<link rel="icon" href="../../../assets/icons/gucc-icon.svg?v=5">
+<script src="../../../assets/access-guard.js?v=9" data-root="../../../" data-guard="true"></script>
+<link rel="stylesheet" href="../../../assets/gucc-theme.css">
+<link rel="stylesheet" href="./creator-os.css?v=2.0.0">
 </head>
-<body class="gucc-enhanced production-system-page">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">GUCC · CREATOR PRODUCTION</p>
-      <h1>AI Video Production System <span>v1.2</span></h1>
-      <p class="subtitle">所有视频共用一条正式制作流程：看“下一步”，按人工 Lock 推进；内容类型不再决定工作流。</p>
-    </div>
-    <nav class="top-actions" aria-label="全局操作">
-      <a class="button ghost" href="../">返回 Studio</a>
-      <button class="button ghost" id="importSystemButton" type="button">导入 JSON</button>
-      <button class="button ghost" id="exportSystemButton" type="button">备份系统</button>
-      <button class="button primary" id="newProjectButton" type="button">＋ 新建项目</button>
-      <input id="systemFileInput" type="file" accept="application/json,.json" hidden>
-    </nav>
-  </header>
+<body class="creator-os-page">
+<header class="os-topbar">
+  <div>
+    <p class="eyebrow">GUCC · GAMEUP CREATOR OS</p>
+    <h1>AI-first Video Production <span>v2</span></h1>
+    <p class="subtitle">AI 主动研究、编排与制作；人只介入 Creative Direction、关键输入、Lock、最终成片与发布。</p>
+  </div>
+  <nav class="top-actions">
+    <a class="button ghost" href="../">Prompt Studio</a>
+    <a class="button ghost" href="./legacy-v1.html">Legacy v1</a>
+    <a class="button ghost" href="../../publishing-console/">投稿</a>
+  </nav>
+</header>
 
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-head"><strong>项目</strong><span id="projectCount">0</span></div>
-      <div id="projectList" class="project-list"></div>
-      <div class="side-note">
-        <strong>推进原则</strong>
-        <p>优先处理“唯一下一步”。Content / Script / Audio / Picture Lock 是人工确认；音乐只是 Audio Production 的可选组成。</p>
+<div class="os-shell">
+  <aside class="os-nav">
+    <div class="nav-title">GameUp Creator OS</div>
+    <button data-view="core"><b>00</b><span>Core Rules</span></button>
+    <button data-view="system" class="active"><b>01</b><span>Project System</span></button>
+    <button data-view="capabilities"><b>02</b><span>Capability Library</span></button>
+    <button data-view="libraries"><b>03</b><span>Global Libraries</span></button>
+    <button data-view="projects"><b>04</b><span>Projects</span></button>
+    <div class="nav-note">01～07 继续作为人类理解生命周期的 Production Map，不再强制决定 Prompt 顺序。</div>
+  </aside>
+
+  <main class="os-main">
+    <section class="project-bar">
+      <div>
+        <span class="micro">CURRENT PROJECT</span>
+        <select id="projectSelect" aria-label="当前项目"></select>
       </div>
-    </aside>
+      <div class="project-actions">
+        <button class="button ghost" id="newProjectBtn">＋ Create Project</button>
+        <button class="button ghost" id="importBtn">导入项目 JSON</button>
+        <button class="button ghost" id="exportBtn">导出项目 JSON</button>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </section>
 
-    <main id="workspace" class="workspace">
-      <section id="emptyState" class="empty-state">
-        <span class="empty-icon">▶</span>
-        <h2>建立第一个生产项目</h2>
-        <p>从 Studio 转入的项目会自动出现在这里；也可以直接新建正式制作项目，不需要先选择内容类型。</p>
-        <button class="button primary" type="button" data-action="new-project">新建项目</button>
+    <section id="view-system" class="view active">
+      <div class="hero-grid">
+        <article class="panel current-task-panel">
+          <div class="panel-head"><div><span class="micro">CURRENT TASK</span><h2 id="currentTaskName">—</h2></div><span id="currentExecutor" class="executor-badge">—</span></div>
+          <p id="currentTaskReason" class="lead"></p>
+          <div class="io-grid">
+            <div><span>Required Input</span><div id="currentInputs"></div></div>
+            <div><span>Expected Output</span><div id="currentOutputs"></div></div>
+          </div>
+          <div class="gate-line"><span>Quality Gate</span><strong id="currentQc"></strong><span id="currentReview"></span></div>
+          <div class="prompt-actions">
+            <button class="button primary" id="copyCurrentPrompt">复制 Current Prompt</button>
+            <button class="button ghost" id="markDoneBtn">标记完成 → 下一任务</button>
+            <button class="button ghost" id="skipTaskBtn">条件不需要 · Skip</button>
+          </div>
+          <pre id="currentPrompt" class="prompt-box"></pre>
+        </article>
+
+        <aside class="panel project-summary">
+          <span class="micro">PROJECT CONTRACT</span>
+          <h3 id="projectName">—</h3>
+          <div id="projectMeta" class="meta-stack"></div>
+          <div class="summary-actions">
+            <button class="button ghost" id="copyContractBtn">复制 VIDEO_CONTRACT</button>
+            <button class="button ghost" id="copyWorkflowBtn">复制 PROJECT_WORKFLOW</button>
+          </div>
+        </aside>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head"><div><span class="micro">HUMAN-FACING PRODUCTION MAP</span><h2>01～07 宏观制作地图</h2></div><span class="pill">不是固定 Prompt 流水线</span></div>
+        <div id="productionMap" class="production-map"></div>
       </section>
 
-      <div id="projectWorkspace" hidden>
-        <section class="project-hero panel">
-          <div>
-            <div class="type-row"><span class="type-badge">CREATOR PROJECT</span><span id="saveState" class="save-state">已自动保存</span></div>
-            <h2 id="projectTitle"></h2>
-            <p id="projectMeta" class="muted"></p>
-          </div>
-          <div class="hero-actions">
-            <button class="button ghost" type="button" data-action="edit-project">编辑资料</button>
-            <button class="button ghost" type="button" data-action="export-project">导出项目</button>
-            <button class="button ghost" type="button" data-action="import-directory">读取项目目录</button>
-            <button class="button primary" type="button" data-action="sync-directory">创建 / 同步本地 Workspace</button>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-label"><span id="currentStateLabel"></span><strong id="progressText"></strong></div>
-            <div class="progress"><span id="progressBar"></span></div>
-            <div class="state-controls">
-              <button class="button tiny ghost" type="button" data-action="state-back">← 回退一阶段</button>
-              <button class="button tiny primary" type="button" data-action="state-next">进入下一阶段 →</button>
-            </div>
-          </div>
-        </section>
+      <section class="action-grid">
+        <article class="panel action-card">
+          <span class="micro">CREATE PROJECT</span>
+          <h3>一句话说想法</h3>
+          <p>AI 主动研究、补字段、判断 GO / SHORT / HOLD，并生成 PROJECT_BRIEF + VIDEO_CONTRACT。</p>
+          <textarea id="ideaInput" rows="5" placeholder="例如：我要做绝区零3.3菲欧妮和赛维里安前瞻，两个视频共用一个项目，前瞻结束后尽快做，不碰内鬼。"></textarea>
+          <button class="button primary" id="createPromptBtn">生成 Create Project Prompt</button>
+        </article>
+        <article class="panel action-card">
+          <span class="micro">BUILD PROJECT PROMPT FLOW</span>
+          <h3>让能力库编译项目专属执行流</h3>
+          <p>动态选择 Capability、Executor、Quality Gate 与 Chat Fallback；Proxy、Pixel、补拍、全片 QC 均按条件。</p>
+          <div class="button-row"><button class="button primary" id="buildFlowBtn">直接编译 Flow</button><button class="button ghost" id="copyBuildFlowPrompt">复制 Compiler Prompt</button></div>
+        </article>
+        <article class="panel action-card">
+          <span class="micro">UPDATE PROJECT PROMPT FLOW</span>
+          <h3>执行中只做 DIFF</h3>
+          <p>新资料、LONG→SHORT、任务失败或工具不可用时，只 ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。</p>
+          <button class="button ghost" id="copyUpdateFlowPrompt">复制 Update Prompt</button>
+        </article>
+      </section>
 
-        <section class="next-action panel accent-panel" id="nextActionCard"></section>
+      <section class="panel">
+        <div class="panel-head"><div><span class="micro">PROJECT PROMPT FLOW</span><h2>当前执行流</h2></div><span id="flowRevision" class="pill"></span></div>
+        <div id="flowList" class="flow-list"></div>
+      </section>
+    </section>
 
-        <section id="globalProduction" class="panel global-production" aria-live="polite">
-          <div class="global-loading">正在读取 Global Production…</div>
-        </section>
+    <section id="view-core" class="view">
+      <div class="section-head"><span class="micro">00</span><h2>Core Rules & Failure Prevention</h2><p>长期规则稳定，Workflow 动态。只有真正会制造虚假产物的缺失才 HARD STOP。</p></div>
+      <div id="autonomyGrid" class="card-grid"></div>
+      <div id="coreRuleGrid" class="rule-grid"></div>
+      <section class="panel"><div class="panel-head"><h3>Hard Stop</h3><span class="danger-pill">ONLY WHEN TRUTH BREAKS</span></div><div id="hardStopList"></div></section>
+      <section class="panel"><div class="panel-head"><h3>Failure Prevention Library</h3><span class="pill">从旧 Prompt 踩坑迁移</span></div><div id="failureList" class="failure-list"></div></section>
+    </section>
 
-        <section class="locks panel">
-          <div class="section-title"><div><p class="eyebrow">SAFETY GATES</p><h3>生产锁</h3></div><p>只有确认版本不会继续漂移时再 Lock。Music 不单独锁定，最终音频以 Audio Lock 为确认点。</p></div>
-          <div id="lockGrid" class="lock-grid"></div>
-        </section>
+    <section id="view-capabilities" class="view">
+      <div class="section-head"><span class="micro">02</span><h2>Capability Library</h2><p>能力没有固定顺序。每个模块保留成熟 Prompt DNA、Guardrail、Quality Gate、Executor 与 Chat Fallback。</p></div>
+      <div class="filters"><input id="capSearch" type="search" placeholder="搜索 Capability / 旧 Prompt 编号…"><select id="capDomain"></select></div>
+      <div id="capabilityGrid" class="capability-grid"></div>
+    </section>
 
-        <nav id="tabs" class="tabs" aria-label="项目模块"></nav>
-        <div id="tabContent"></div>
+    <section id="view-libraries" class="view">
+      <div class="section-head"><span class="micro">03</span><h2>Global Libraries</h2><p>复用现有 Creator 数据层，不新建重复数据库。</p></div>
+      <div class="library-grid">
+        <article class="panel"><h3>Research Source Library</h3><p>复用 <code>creator_research_sources</code>：官方来源、版本语境、检查时间与事实快照。</p></article>
+        <article class="panel"><h3>Asset Library</h3><p>复用 <code>creator_assets</code> + <code>creator_project_files</code>：ASSET_ID、路径、权限、scope 与文件状态。</p></article>
+        <article class="panel"><h3>Project / Locks</h3><p>复用 <code>creator_projects</code>、Language Track / Visual Master / Variant 与现有 Human Lock。</p></article>
+        <article class="panel"><h3>Platform Rules</h3><p>复用 Publishing Console；发布时仍需实时核验平台字段、版权与 AI 披露。</p><a href="../../publishing-console/">打开投稿控制台 →</a></article>
+        <article class="panel"><h3>Analytics / Learning</h3><p>复用 publication / metric snapshot / performance report / learning proposal 结构。</p></article>
+        <article class="panel"><h3>Database Decision</h3><p><strong>本次不新增数据库表。</strong> PROJECT_WORKFLOW、PROJECT_PROMPT_FLOW、CURRENT_TASK 作为 project-scope logical artifacts 存入现有 artifact registry 即可。</p></article>
       </div>
-    </main>
-  </div>
+    </section>
 
-  <dialog id="projectDialog">
-    <form id="projectForm" method="dialog" class="dialog-form">
-      <header><div><p class="eyebrow">PROJECT MANIFEST</p><h2 id="projectDialogTitle">新建项目</h2></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></header>
-      <input name="projectId" type="hidden">
-      <label>项目名称<input name="name" required placeholder="例如：清宵完整攻略"></label>
-      <div class="form-grid">
-        <label>游戏<input name="game" placeholder="鸣潮"></label>
-        <label>目标发布日期<input name="targetPublishDate" type="date"></label>
-      </div>
-      <label>核心主题<input name="topic" placeholder="这个视频必须解决什么问题？"></label>
-      <label>备注<textarea name="notes" rows="3" placeholder="观众、边界、版本等"></textarea></label>
-      <footer><button class="button ghost" value="cancel">取消</button><button class="button primary" value="default" type="submit">保存项目</button></footer>
-    </form>
-  </dialog>
+    <section id="view-projects" class="view">
+      <div class="section-head"><span class="micro">04</span><h2>Projects</h2><p>当前项目事实、Prompt Flow 与执行状态。大媒体仍留本地，不进 Git。</p></div>
+      <div id="projectCards" class="project-cards"></div>
+      <section class="panel">
+        <div class="panel-head"><h3>当前项目 Artifact</h3><div class="button-row"><button class="button ghost" data-artifact="brief">PROJECT_BRIEF</button><button class="button ghost" data-artifact="contract">VIDEO_CONTRACT</button><button class="button ghost" data-artifact="workflow">PROJECT_WORKFLOW</button><button class="button ghost" data-artifact="flow">PROJECT_PROMPT_FLOW</button><button class="button ghost" data-artifact="task">CURRENT_TASK</button></div></div>
+        <pre id="artifactPreview" class="artifact-preview"></pre>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h3>旧 Prompt 迁移</h3><span class="pill">Legacy retained</span></div>
+        <div id="migrationTable"></div>
+      </section>
+    </section>
+  </main>
+</div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="../../../assets/creator-local-project-contract.js?v=1"></script>
-  <script src="../../../assets/creator-timeline-contract.js?v=1"></script>
-  <script src="../../../assets/creator-global-production-core.js?v=1"></script>
-  <script src="../../../assets/creator-ai-task-core.js?v=1"></script>
-  <script src="./engine.js"></script>
-  <script src="./app.js?v=5"></script>
-  <script src="../../../assets/creator-project-bootstrap-browser.js?v=1"></script>
-  <script src="../../../assets/creator-timeline-browser.js?v=1"></script>
-  <script type="module" src="../../../assets/creator-workspace-root.mjs?v=1"></script>
-  <script type="module" src="../../../assets/creator-file-observations.mjs?v=2"></script>
-  <script type="module" src="../../../assets/creator-global-production-ui.mjs?v=7"></script>
-  <script type="module" src="../../../assets/creator-ai-task-ui.mjs?v=1"></script>
-  <script type="module" src="../../../assets/creator-ux-simplification-v1.mjs?v=1"></script>
-  <script type="module" src="../../../assets/creator-ux-simplification-v1-closeout.mjs?v=1"></script>
+<dialog id="createDialog">
+  <form method="dialog" class="dialog-card">
+    <div class="panel-head"><div><span class="micro">CREATE PROJECT</span><h2>建立项目草案</h2></div><button value="cancel" class="icon-button">×</button></div>
+    <p>这里只录入最少上下文；普通字段交给 Project Builder AI 补全。</p>
+    <label>自然语言想法<textarea name="idea" rows="6" required></textarea></label>
+    <div class="form-grid"><label>游戏（可选）<input name="game"></label><label>区服（可选）<input name="server"></label><label>版本（可选）<input name="version"></label><label>类型（可选）<select name="productType"><option value="preview">前瞻解析</option><option value="guide">正式攻略</option><option value="rerun">复刻重评</option><option value="mechanism">机制专题</option><option value="decision">抽卡/决策</option><option value="rotation">实战/排轴</option><option value="story">人物/剧情</option><option value="creative">创意内容</option></select></label></div>
+    <footer><button value="cancel" class="button ghost">取消</button><button id="saveDraftProject" value="default" class="button primary">创建草案并生成 Project Builder Prompt</button></footer>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="./core-rules.js?v=2.0.0"></script>
+<script src="./failure-prevention.js?v=2.0.0"></script>
+<script src="./capability-library.js?v=2.0.0"></script>
+<script src="./orchestrator.js?v=2.0.0"></script>
+<script src="./creator-os-app.js?v=2.0.0"></script>
 </body>
 </html>

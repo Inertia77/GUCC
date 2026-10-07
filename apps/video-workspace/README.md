@@ -1,27 +1,46 @@
-# GUCC Studio v6.1.4
+# GameUp Creator OS v2
 
-正式入口保持 `apps/video-workspace/`。当前页面是 GameUp Creator OS 的 Prompt 工作台，依据 2026-10-05 实际读取的 Notion 母库重构。
+正式入口保持 `apps/video-workspace/`，现在会直接进入 AI-first Project System：
 
-选择视频类型、长/短形式、阶段、任务与执行环境，复制当前完整独立 Prompt。8 类题材分支贯穿来源、研究、解析、录屏、结构、审核、视觉、声音及发布承诺。Work/Codex 任务全部有 Chat 备用版，长任务分为连续且独立的子 Prompt；需要执行工具的步骤输出脚本并要求实际运行结果，不冒充媒体完成。
+`apps/video-workspace/production-system/`
 
-## 文件
+新版不再要求用户在几十条 Prompt 里手动找固定编号。核心操作改为：
 
-- `ai-prompts.js`：唯一当前 Prompt 目录与纯函数生成器。
-- `studio.js` / `studio.css` / `index.html`：草稿、导入导出、搜索、复制及响应式界面。
-- `notion-prompts.json`：原母库 31 条 Prompt 的冻结迁移快照，不用于当前复制。
-- `legacy/studio-v5.html` / `legacy/ai-prompts.js`：旧工作区、旧 JSON/Markdown 导入与历史浏览器草稿入口。
-- `production-system/`：原有正式制作系统，保持独立入口和现有行为。本工作台不自动写入该系统、不创建项目、不触发正式锁定。
+- Create Project
+- Current Projects
+- Current Task
+- Build Project Prompt Flow
+- Update Project Prompt Flow
+- Capability Library
 
-## 草稿
+01～07 继续作为 Human-facing Production Map；真实执行由 Project Workflow / Project Prompt Flow 动态编排。
 
-当前页面使用独立 `gucc_creator_prompt_v6` localStorage 键，保留旧版草稿。导出 JSON 可跨设备继续；导入支持新版 JSON、旧版 JSON 和 `VIDEO_CONTRACT.md`。未知旧字段及原始导入文件内容保存在导出 JSON 的 `importedSource` 中，避免新输入表丢失历史项目细节。浏览器草稿不代表其他 Chat 已读取素材，复制时仍需提供真实可访问文件。
+旧 v6 Prompt Studio 仍保留：
+
+`apps/video-workspace/legacy-prompt-studio-v6.html`
+
+旧 `notion-prompts.json` 与 `ai-prompts.js` 不删除，作为成熟 Prompt DNA 与历史兼容来源；新版迁移映射位于 `production-system/legacy-prompt-migration.json`。
+
+## 新版文件
+
+- `production-system/core-rules.js`：Evidence / Script / Timeline / Asset / Visual / Codex / Publish / Autonomy 规则。
+- `production-system/failure-prevention.js`：历史踩坑与 Failure Prevention。
+- `production-system/capability-library.js`：Research / Source / Writing / Audio / Visual / Edit / Publish 能力模块。
+- `production-system/orchestrator.js`：Project Builder、Workflow、Prompt Flow、Current Task、DIFF Update。
+- `production-system/creator-os-app.js` / `creator-os.css`：AI-first Project System UI。
+- `production-system/fixtures/ZZZ_3.3_FIONI_SEVERIAN_PREVIEW/`：结构测试项目。
+- `production-system/legacy-v1.html`：旧固定 Production System。
+- `legacy-prompt-studio-v6.html`：旧 Prompt Studio。
+
+## 数据
+
+新版复用现有 Creator 数据模型，不新建重复数据库表。Project Workflow / Prompt Flow / Current Task 属于 project-scope logical artifacts；媒体继续 local-first，不上传 Git。
 
 ## 维护与验证
 
-修改 Prompt 优先改 `ai-prompts.js`，保持每个原编号恰好一个迁移去向。升级版本时同步页面、脚本/CSS query 与 `sw.js` 缓存资源。
+`node scripts/test-creator-os-v2.cjs` 校验 Core Rules、Capability、旧 Prompt 映射、测试项目 Prompt Flow 与 Current Task。该测试已加入 `npm test`。
 
-`node scripts/test-creator-prompt-catalog.cjs` 检查原编号覆盖、题材分支、所有环境/备用步骤及关键真值约束。`node scripts/test-creator-prompt-browser.cjs` 在隔离浏览器验证分支、输入保存、导入、复制/下载及 1440/768/390/320 宽度；可通过 `GUCC_TEST_EXECUTABLE` 指定已有 Chromium。测试不会接触生产 Supabase。
-
+下面保留 v6 Prompt Studio 的历史变更记录，供迁移/回归参考。
 
 ## v6.1.0
 

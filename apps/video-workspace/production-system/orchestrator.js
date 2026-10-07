@@ -68,7 +68,9 @@
     add("PLAYER_DEMAND_RESEARCH");
     if(["preview","rerun","decision","mechanism","guide"].includes(t)) add("COMPETITOR_RESEARCH");
     add("OFFICIAL_SOURCE_RESEARCH");
-    if(["preview","guide","rerun","mechanism","rotation","decision"].includes(t)) add("VIDEO_SOURCE_ANALYSIS",{conditional:true});
+    add("ACQUIRE_REGISTER_OFFICIAL_SOURCE",{conditional:true});
+    if(project.productionNeeds?.PROXY!=="NOT_PLANNED") add("PROXY_MEDIA",{conditional:true});
+    if(["preview","guide","rerun","mechanism","rotation","decision","story"].includes(t)) add("VIDEO_SOURCE_ANALYSIS",{conditional:true});
     if(["mechanism","guide","preview"].includes(t)) add("MECHANIC_RESEARCH");
     if(t==="guide") {add("FORMAL_SERVER_VALIDATION");add("TEAM_RESEARCH");add("ROTATION_RESEARCH",{conditional:true});add("PULL_DECISION_RESEARCH",{conditional:true});}
     if(t==="rerun"){add("RERUN_REEVALUATION");add("TEAM_RESEARCH",{conditional:true});add("PULL_DECISION_RESEARCH");}
@@ -82,7 +84,10 @@
     add("SCRIPT_VALUE_QC");
     add("SCRIPT_NATURALNESS_QC");
     add("SCRIPT_DIFF_REVISION");
+    add("SCRIPT_LOCK_GATE");
     add("READING_SCRIPT");
+    add("AUDIO_MASTER_CAPTURE");
+    add("AUDIO_LOCK_GATE");
     add("PRECISE_SRT_ALIGNMENT");
     add("TIMELINE_MASTER");
     add("VISUAL_DIRECTION");
@@ -212,16 +217,17 @@
       const chain=[
         ["03","CONTENT_STRUCTURE","Chat"],["04","SCRIPT_DRAFT","Chat"],["05","SCRIPT_FACT_QC","Work"],
         ["06","SCRIPT_VALUE_QC","Work"],["07","SCRIPT_NATURALNESS_QC","Chat"],["08","SCRIPT_DIFF_REVISION","Chat"],
-        ["09","READING_SCRIPT","Chat"],["10","PRECISE_SRT_ALIGNMENT","Work"],["11","TIMELINE_MASTER","Chat"],
-        ["12","VISUAL_DIRECTION","Chat"],["13","SOUND_DESIGN_BLUEPRINT","Chat"],["14","COVER_DESIGN","Chat"],
-        ["15","ASSET_GAP_AND_INDEX","Codex"],["16","EDITING_BLUEPRINT","Chat"],["17","CODEX_BUILD","Codex"],
-        ["18","FINAL_ASSEMBLY","Human"],["19","PLATFORM_RULE_VERIFICATION","Work"],["20","SIX_PLATFORM_PUBLISH_PACKAGE","Work"]
+        ["09","SCRIPT_LOCK_GATE","Human"],["10","READING_SCRIPT","Chat"],["11","AUDIO_MASTER_CAPTURE","Human"],
+        ["12","AUDIO_LOCK_GATE","Human"],["13","PRECISE_SRT_ALIGNMENT","Work"],["14","TIMELINE_MASTER","Chat"],
+        ["15","VISUAL_DIRECTION","Chat"],["16","SOUND_DESIGN_BLUEPRINT","Chat"],["17","COVER_DESIGN","Chat"],
+        ["18","ASSET_GAP_AND_INDEX","Codex"],["19","EDITING_BLUEPRINT","Chat"],["20","CODEX_BUILD","Codex"],
+        ["21","FINAL_ASSEMBLY","Human"],["22","PLATFORM_RULE_VERIFICATION","Work"],["23","SIX_PLATFORM_PUBLISH_PACKAGE","Work"]
       ];
       for(const [num,capId,executor] of chain){
         const cap=Caps.get(capId);
         const id=`PF-${prefix}${num}`;
         const n=node(id,`${branch} · ${cap.name}`,capId,executor,prev,{branch});
-        if(capId==="READING_SCRIPT") n.reviewMode="APPROVAL_REQUIRED";
+        if(["SCRIPT_LOCK_GATE","AUDIO_MASTER_CAPTURE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY"].includes(capId)) n.reviewMode="APPROVAL_REQUIRED";
         if(capId==="PRECISE_SRT_ALIGNMENT") n.hardStop=["没有该角色视频最终 AUDIO_MASTER 时 NEED_INPUT"];
         if(capId==="CODEX_BUILD") n.expectedOutput=["FINAL_VIDEO_SILENT.mp4","FINAL_BGM_SFX.wav","BUILD_REPORT.md"];
         f.push(n);prev=[id];

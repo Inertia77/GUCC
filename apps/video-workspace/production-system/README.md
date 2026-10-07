@@ -1,92 +1,116 @@
-# AI Video Production System v1
-
-现有 23-state Project workflow 是 Legacy/default compatibility layer。同一页面现已加入 additive **Global Production v1** 面板，用于独立 Language Tracks、真实音频 Timeline、统一 Visual Master、Variant composition、Publish Package、QA / Release、Publication、Analytics 与 Learning。完整契约见 [`docs/creator-global-production-v1.md`](../../../docs/creator-global-production-v1.md)。
-
-这是 GUCC Studio 里的模块化生产系统。它不替代原来的自由创作工作区，而是把已经确定要做的视频，按“立案 → 锁内容 → 锁脚本 → 锁音频 → 真实时间轴 → Storyboard → 素材补全 → Build → Review → 发布”推进。
+# GameUp Creator OS v2｜AI-first Project System
 
 入口：
 
-```text
-http://localhost:8000/apps/video-workspace/production-system/
-```
+~~~text
+https://inertia77.github.io/GUCC/apps/video-workspace/production-system/
+~~~
 
-## 第一次使用
+Legacy 固定 23-state 页面保留：
 
-1. 点击“新建项目”，选择项目类型：
-   - A：角色全方位攻略，不含音乐生成阶段。
-   - B：Suno 歌曲 / 音乐视频，包含 Music Draft 和 Music Lock。
-   - C：游戏底层机制系列，不含音乐生成阶段。
-   - D：独立音乐资产与发行。
-2. 首页顶部只看“唯一下一步”。缺输入或未满足 Lock 时，系统会显示缺口并禁止前进。
-3. 在 Prompt 页复制当前阶段 Prompt 给 ChatGPT、Suno 或 Codex。Prompt 已包含 Role、Goal、State、Inputs、Locks、Task、Rules、Outputs、Handoff 和 Do Not。
-4. AI 产出的标准文件在“文件”页登记。Markdown / JSON / CSV / SRT 会写入项目备份；音视频只记录名称和大小，不会塞进 `localStorage`。
-5. 完整口播放进“脚本 / TTS”，在强音画绑定处写 `[AV:UI]`、`[AV:NUMBER]`、`[AV:COMPARE]` 等标记，再生成 TTS Chunks。
-6. 导入真实 `AUDIO_MASTER.wav` 后才能点 Audio Lock。Audio Lock 之前，系统不允许进入精确时间轴。
-7. 登记真实 `SUBTITLE_MASTER.srt`，再制作 Timed Storyboard。所有 Must 素材和生产文件齐备后，才能进入 Production Ready。
-8. V0 复盘时用时间码 Review Note，不再截图后手工拼给 AI；Revision Prompt 会直接引用这些记录。
+~~~text
+/apps/video-workspace/production-system/legacy-v1.html
+~~~
 
-## 一键保存到真实项目目录
+## 定位
 
-点击“同步到目录”，选择一个磁盘父目录。系统会建立：
+v2 不再把视频制作理解成一条固定 Prompt 流水线。
 
-```text
-项目名/
-├─ 00_CONTROL/
-├─ 01_RESEARCH/
-├─ 02_SCRIPT/TTS_CHUNKS/
-├─ 03_AUDIO/
-├─ 04_SUBTITLES/
-├─ 05_ASSETS/{GAMEPLAY,UI,CHARACTER,BUILD,GRAPHICS,MUSIC,SFX}/
-├─ 06_EDIT_PLAN/
-├─ 07_CODEX_BUILD/
-├─ 08_REVIEW/
-├─ 09_FINAL/
-└─ 10_RELEASE/
-```
+真实执行逻辑：
 
-当前同步会写入系统掌握的文本文件、索引、状态、Prompt 上下文和 TTS 分块。浏览器无法凭文件名复制本地大型音视频，所以音视频需要放进对应目录后再在页面登记。Chrome / Edge 的 File System Access API 支持这项能力；不支持时使用“导出项目”JSON。
+~~~text
+PROJECT
+  ↓
+PROJECT_WORKFLOW
+  ↓
+PROJECT_PROMPT_FLOW
+  ↓
+CURRENT_TASK
+  ↓
+Capability
+~~~
 
-“读取项目目录”会读取 `00_CONTROL/PROJECT_DATA.json`，可在另一台设备或清理浏览器数据后恢复项目。
+01～07（选题/立项 → 研究/证据 → 结构/文案 → 声音/时间线 → 视觉/素材 → 剪辑/成片 → 发布/复盘）继续保留为 **Human-facing Production Map**，用于理解生命周期，不决定 Prompt 必须按编号执行。
 
-## 数据与备份
+默认 AUTONOMY_LEVEL = L2。
 
-- 自动保存键：`gucc_ai_video_production_v1`
-- “导出项目”：单项目结构化 JSON。
-- “备份系统”：全部项目和 Music Library。
-- `PROJECT_DATA.json` 不会递归包含自身内容，反复同步不会无限膨胀。
-- 删除浏览器项目不会删除已经同步到磁盘的目录。
+AI 主动研究、规划、生成、QC 与小范围 Workflow 调整；用户主要负责重大方向、LOCK、必须人类输入、真人录音、最终成片与发布。
 
-## 生产锁
+## Information Architecture
 
-- Content Lock：核心结论、范围和叙事顺序确定。
-- Script Lock：必须已有 `VOICE_MASTER.md`。
-- Music Lock：B / D 必须已有 `MUSIC_MASTER.wav`。
-- Audio Lock：必须已有真实 `AUDIO_MASTER.wav`；它是绝对主时间轴。
-- Picture Lock：必须已有 `VIDEO_V1.mp4`。
+- 00｜Core Rules：Evidence / Script / Audio-Timeline / Asset / Visual / Codex / Publish；HARD STOP / SOFT UNCERTAINTY；Q0～Q3。
+- 01｜Project System：Create Project / Current Projects / Current Task / Build Project Prompt Flow / Update Project Prompt Flow。
+- 02｜Capability Library：Research / Source / Writing / Audio / Visual / Edit / Publish。
+- 03｜Global Libraries：复用现有 creator_research_sources / creator_assets / creator_project_files / Publish / Analytics / Learning。
+- 04｜Projects：PROJECT_BRIEF / VIDEO_CONTRACT / PROJECT_WORKFLOW / PROJECT_PROMPT_FLOW / CURRENT_TASK。
 
-Lock 可以重新打开，但会写入项目历史。不要用“强制跳阶段”代替缺失文件。
+## 数据库策略
 
-## 目录内文件职责
+**本次没有新增重复数据库表。**
 
-- `00_CONTROL/STATUS.md`：唯一阶段状态和下一动作。
-- `00_CONTROL/PROJECT_DATA.json`：工作台恢复数据。
-- `02_SCRIPT/VOICE_MASTER.md`：锁定口播。
-- `02_SCRIPT/TTS_MANIFEST.csv`：自然语义分块清单。
-- `04_SUBTITLES/SUBTITLE_MASTER.srt`：字幕唯一时间源。
-- `06_EDIT_PLAN/ASSET_INDEX.csv`：素材状态与优先级。
-- `06_EDIT_PLAN/EDIT_BLUEPRINT.csv`：剪辑结构唯一基准。
-- `08_REVIEW/REVIEW_NOTES.md`：带时间码的修订依据。
+现有 Creator 数据模型已经能够承载新版系统：
 
-## 本地验证
+- creator_projects：Content Project Root
+- creator_project_files：逻辑 Artifact Registry
+- creator_research_sources：Source Library
+- creator_assets：Asset Library
+- Language Track / Visual Master / Variant：继续处理音频、时间线、视觉与发布 identity
 
-在仓库根目录运行：
+PROJECT_WORKFLOW.md、PROJECT_PROMPT_FLOW.md、CURRENT_TASK.md、PROJECT_BRIEF.md、VIDEO_CONTRACT.md 属于 **project-scope logical artifacts**，可以继续使用既有 (project_id, artifact_scope_type, artifact_scope_id, file_key) 模型，不需要机械新建表。
 
-```bash
+媒体仍保留本地；不得把视频、音频和大制作素材上传 Git。
+
+## Capability Library
+
+Capability 不是步骤编号。每个 Capability 保存 PURPOSE、WHEN_TO_USE / WHEN_NOT_TO_USE、REQUIRED_INPUT / OPTIONAL_INPUT、CORE_METHOD、MANDATORY_GUARDRAILS、Failure Prevention refs、QUALITY_GATE、OUTPUT_SCHEMA、DEFAULT_EXECUTOR / ALTERNATIVE_EXECUTOR、CHAT_FALLBACK、PROJECT_INJECTION、SKIP_CONDITION、HARD_STOP_CONDITION、QC_LEVEL / REVIEW_MODE 与 Legacy Prompt 来源。
+
+旧 apps/video-workspace/notion-prompts.json 完整保留；legacy-prompt-migration.json 只做迁移映射，不删除旧经验。
+
+## Prompt Flow
+
+项目定义后可编译完整 PROJECT_PROMPT_FLOW。每个 Node 包含 PROMPT_ID / NAME / PURPOSE / EXECUTOR / WHEN / DEPENDENCIES / REQUIRED_INPUT / OPTIONAL_INPUT / READ_FROM_PREVIOUS / CAPABILITY_USED / 完整 PROMPT / EXPECTED_OUTPUT / SAVE_AS / QUALITY_GATE / HARD_STOP / SOFT_UNCERTAINTY_POLICY / SKIP_CONDITION / NEXT / CHAT_FALLBACK / QC_LEVEL / REVIEW_MODE。
+
+执行过程中只做 DIFF：ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。
+
+## QC 与 Review
+
+- Q0：Basic Auto Check
+- Q1：AI Self-QC
+- Q2：Independent AI QC
+- Q3：Human Review
+
+REVIEW_OPTIONAL 不阻塞。APPROVAL_REQUIRED 只用于重大方向、LONG/SHORT/CANCEL、SCRIPT_LOCK、修改 LOCK、必须人类输入、最终成片和发布等真正重要节点。
+
+## HARD STOP
+
+只有继续会制造虚假、伪造或无法成立的产物时才 NEED_INPUT，例如：没有最终 AUDIO_MASTER 却要求真实时间线；视频不可访问却要求确认具体画面；没正式服证据却要求声称正式服实测；写入失败却要求声称已保存；未 Reopen / 无充分新证据却要修改 LOCK。
+
+普通缺失使用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED，继续能完成的部分。
+
+## Test Fixture
+
+固定测试项目：ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+
+位置：fixtures/ZZZ_3.3_FIONI_SEVERIAN_PREVIEW/
+
+验证：双视频共用一个项目；Shared Source；直播前不能写完整正文；等待 Special Program；YouTube 官方 Master + 字幕；Codex 直接本地分析 Master；PROXY = NOT_PLANNED；菲欧妮 / 赛维里安分别 Research；分别 LONG / SHORT / CANCEL Gate；各自 Script / Audio / Timeline / Visual / Edit / Publish。
+
+测试仅验证 Project Builder / Workflow / Prompt Flow / Current Task，不开始制作未来视频内容。
+
+## 文件
+
+- core-rules.js：长期规则、Autonomy、QC、Hard Stop
+- failure-prevention.js：历史踩坑规则
+- capability-library.js：成熟能力模块
+- orchestrator.js：Project / Workflow / Prompt Flow Compiler
+- creator-os-app.js：当前 UI
+- legacy-prompt-migration.json：旧 Prompt → 新能力映射
+- ../notion-prompts.json：旧 Prompt 母库，继续保留
+- legacy-v1.html：旧固定 Production System UI
+
+## 测试
+
+~~~bash
+node scripts/test-creator-os-v2.cjs
 npm test
-```
-
-生产系统的纯逻辑测试也可单独运行：
-
-```bash
-node scripts/test-production-system.cjs
-```
+~~~

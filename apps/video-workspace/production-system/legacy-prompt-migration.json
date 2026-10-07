@@ -261,11 +261,12 @@
     },
     {
       "legacyPromptId": "23",
-      "disposition": "MERGE",
+      "disposition": "CONVERT_TO_CAPABILITY",
       "capabilities": [
-        "PROMPT_FLOW_COMPILER"
+        "PROMPT_FLOW_COMPILER",
+        "PROMPT_FLOW_UPDATER"
       ],
-      "reason": "升级为一级核心功能，由Orchestrator实现。"
+      "reason": "升级为Project System一级核心能力：首次编译完整Flow，执行中按DIFF更新。"
     }
   ]
 }

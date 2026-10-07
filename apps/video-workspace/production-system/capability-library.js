@@ -58,6 +58,31 @@
       legacyPromptIds:["01","01A"]
     }),
 
+    cap("PROMPT_FLOW_COMPILER","Control","Build Project Prompt Flow",{
+      purpose:"根据 Project Brief / Contract、Core Rules、Capability Library、Failure Prevention、已有素材与当前工具能力编译项目专属 Workflow 与完整 Prompt Flow。",
+      whenToUse:["项目定义完成后","需要首次生成项目执行流"],
+      requiredInput:["PROJECT_BRIEF","VIDEO_CONTRACT"],
+      optionalInput:["已有素材索引","当前工具能力","时间/发布约束"],
+      coreMethod:["优先复用成熟 Capability，不从零现场发明操作方法。","减少低价值人工中转；保留核心机制判断、核心命题、Script/Lock、真实Timeline、重大格式Gate与Final Review。","为Work/Codex节点准备Chat Fallback；Proxy/Pixel/补拍/Final AI QC按条件。"],
+      failureRefs:["PM_OPTIONAL_MISSING_NOT_BLOCK","PM_USER_NOW_OVERRIDES_OLD_PLAN","PM_NO_AUTO_NEXT"],
+      qualityGate:["每个Node有完整Prompt与Executor/依赖/输入/输出/QC/Hard Stop/Skip/Next","流程符合当前产品类型，不机械复制固定编号"],
+      outputSchema:["PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","CURRENT_TASK.md"],
+      defaultExecutor:"Chat",alternativeExecutor:["Work"],
+      qcLevel:"Q2",reviewMode:"APPROVAL_REQUIRED",legacyPromptIds:["23"]
+    }),
+
+    cap("PROMPT_FLOW_UPDATER","Control","Update Project Prompt Flow",{
+      purpose:"执行中根据新资料、格式变化、工具失败或用户新要求对现有 Prompt Flow 做最小 DIFF 更新。",
+      whenToUse:["新官方资料","LONG→SHORT/CANCEL","某步骤不再需要","Capability失败","Work/Codex不可用","用户改变要求"],
+      requiredInput:["当前PROJECT_PROMPT_FLOW","VIDEO_CONTRACT","新变化"],
+      coreMethod:["只允许 ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。","保留已完成Node、Lock与成熟Capability Guardrail。","普通变化AI自动调整，重大方向改变才请求Human Approval。"],
+      failureRefs:["PM_USER_NOW_OVERRIDES_OLD_PLAN","SC_LOCK_PROTECTION","PM_NO_AUTO_NEXT"],
+      qualityGate:["变更范围最小","不重写整个Flow","已完成产物引用不丢失"],
+      outputSchema:["PROJECT_PROMPT_FLOW.md DIFF","PROJECT_WORKFLOW.md PATCH","CURRENT_TASK.md"],
+      defaultExecutor:"Chat",alternativeExecutor:["Work"],
+      qcLevel:"Q1",reviewMode:"REVIEW_OPTIONAL",legacyPromptIds:["23"]
+    }),
+
     cap("PLAYER_DEMAND_RESEARCH","Research","Player Demand Research",{
       purpose:"找到真实玩家问题、误解、争议、搜索意图与值得点击的入口。",
       whenToUse:["新题材","前瞻/复刻/决策/机制专题","流量方向不确定"],

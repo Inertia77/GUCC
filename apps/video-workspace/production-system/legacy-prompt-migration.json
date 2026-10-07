@@ -1,0 +1,271 @@
+{
+  "version": "2.0.0",
+  "source": "apps/video-workspace/notion-prompts.json",
+  "note": "旧 Prompt 保留，不删除；本映射只说明新版能力归属与是否条件化。",
+  "mappings": [
+    {
+      "legacyPromptId": "01",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "PROJECT_BUILDER",
+        "PLAYER_DEMAND_RESEARCH",
+        "COMPETITOR_RESEARCH"
+      ],
+      "reason": "立项判断保留，项目字段由AI主动补全。"
+    },
+    {
+      "legacyPromptId": "01A",
+      "disposition": "MERGE",
+      "capabilities": [
+        "PROJECT_BUILDER"
+      ],
+      "reason": "并入项目构建；VIDEO_CONTRACT仍保留。"
+    },
+    {
+      "legacyPromptId": "02",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "PLAYER_DEMAND_RESEARCH",
+        "COMPETITOR_RESEARCH"
+      ],
+      "reason": "社区需求/竞品拆为可复用研究能力。"
+    },
+    {
+      "legacyPromptId": "03",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "OFFICIAL_SOURCE_RESEARCH"
+      ],
+      "reason": "官方来源核验保留。"
+    },
+    {
+      "legacyPromptId": "03A",
+      "disposition": "MERGE",
+      "capabilities": [
+        "ACQUIRE_REGISTER_OFFICIAL_SOURCE"
+      ],
+      "reason": "下载+metadata+字幕+探测+注册合并。"
+    },
+    {
+      "legacyPromptId": "03B",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "GAMEPLAY_RECORDING_PLAN",
+        "ROTATION_RESEARCH"
+      ],
+      "reason": "仅有证据/实战缺口时调用。"
+    },
+    {
+      "legacyPromptId": "03C",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "PROXY_MEDIA"
+      ],
+      "reason": "Proxy不再固定步骤。"
+    },
+    {
+      "legacyPromptId": "04",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "VIDEO_SOURCE_ANALYSIS"
+      ],
+      "reason": "强化连续画面/UI/音频/时间戳。"
+    },
+    {
+      "legacyPromptId": "05",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "MECHANIC_RESEARCH",
+        "FORMAL_SERVER_VALIDATION",
+        "TEAM_RESEARCH",
+        "ROTATION_RESEARCH",
+        "PULL_DECISION_RESEARCH",
+        "RERUN_REEVALUATION",
+        "CHARACTER_LORE_RESEARCH"
+      ],
+      "reason": "按内容类型动态选择。"
+    },
+    {
+      "legacyPromptId": "06",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "CORE_THESIS",
+        "CONTENT_STRUCTURE"
+      ],
+      "reason": "核心命题与结构继续保留高价值认知检查点。"
+    },
+    {
+      "legacyPromptId": "07",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "SCRIPT_DRAFT"
+      ],
+      "reason": "完整口播稿。"
+    },
+    {
+      "legacyPromptId": "08",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "SCRIPT_FACT_QC"
+      ],
+      "reason": "事实/机制/术语独立QC。"
+    },
+    {
+      "legacyPromptId": "08B",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "SCRIPT_VALUE_QC"
+      ],
+      "reason": "内容价值/逻辑独立QC。"
+    },
+    {
+      "legacyPromptId": "09",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "SCRIPT_NATURALNESS_QC",
+        "SCRIPT_DIFF_REVISION"
+      ],
+      "reason": "去AI味/留存与最低成本修订。"
+    },
+    {
+      "legacyPromptId": "10",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "READING_SCRIPT"
+      ],
+      "reason": "真人/AI朗读准备。"
+    },
+    {
+      "legacyPromptId": "11",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "PRECISE_SRT_ALIGNMENT",
+        "TIMELINE_MASTER"
+      ],
+      "reason": "真实音频时间真值保留。"
+    },
+    {
+      "legacyPromptId": "12",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "VISUAL_DIRECTION",
+        "DATA_VISUALIZATION"
+      ],
+      "reason": "画面语言按内容类型变化。"
+    },
+    {
+      "legacyPromptId": "13",
+      "disposition": "MERGE",
+      "capabilities": [
+        "ASSET_GAP_AND_INDEX"
+      ],
+      "reason": "素材缺口与索引合并。"
+    },
+    {
+      "legacyPromptId": "14",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "GAMEPLAY_RECORDING_PLAN"
+      ],
+      "reason": "只在成片/证据确有缺口时补拍。"
+    },
+    {
+      "legacyPromptId": "15",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "DYNAMIC_MECHANIC_VISUAL",
+        "DATA_VISUALIZATION"
+      ],
+      "reason": "Pixel不固定，按需调用。"
+    },
+    {
+      "legacyPromptId": "16",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "SOUND_DESIGN_BLUEPRINT"
+      ],
+      "reason": "声音设计保留。"
+    },
+    {
+      "legacyPromptId": "16A",
+      "disposition": "MERGE",
+      "capabilities": [
+        "BGM_SFX_ASSET_PRODUCTION"
+      ],
+      "reason": "声音资产实际制作并入能力。"
+    },
+    {
+      "legacyPromptId": "17",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "COVER_DESIGN"
+      ],
+      "reason": "三比例Canonical封面保留。"
+    },
+    {
+      "legacyPromptId": "18A",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "ASSET_GAP_AND_INDEX"
+      ],
+      "reason": "素材复杂时整理；简单项目可跳过。"
+    },
+    {
+      "legacyPromptId": "18B",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "EDITING_BLUEPRINT"
+      ],
+      "reason": "精细蓝图是Codex执行前关键认知检查点。"
+    },
+    {
+      "legacyPromptId": "19",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "CODEX_BUILD"
+      ],
+      "reason": "Codex只执行蓝图。"
+    },
+    {
+      "legacyPromptId": "19A",
+      "disposition": "KEEP_AS_CORE",
+      "capabilities": [
+        "FINAL_ASSEMBLY"
+      ],
+      "reason": "剪映四件套与人类最终听感确认保留。"
+    },
+    {
+      "legacyPromptId": "20",
+      "disposition": "CONDITIONAL",
+      "capabilities": [
+        "FINAL_VIDEO_QC"
+      ],
+      "reason": "全片AI QC默认可跳过，重大项目/疑点时启用。"
+    },
+    {
+      "legacyPromptId": "21",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "PLATFORM_RULE_VERIFICATION",
+        "SIX_PLATFORM_PUBLISH_PACKAGE"
+      ],
+      "reason": "平台规则实时核验+发布包。"
+    },
+    {
+      "legacyPromptId": "22",
+      "disposition": "CONVERT_TO_CAPABILITY",
+      "capabilities": [
+        "ANALYTICS_REVIEW"
+      ],
+      "reason": "真实数据复盘。"
+    },
+    {
+      "legacyPromptId": "23",
+      "disposition": "MERGE",
+      "capabilities": [
+        "PROMPT_FLOW_COMPILER"
+      ],
+      "reason": "升级为一级核心功能，由Orchestrator实现。"
+    }
+  ]
+}

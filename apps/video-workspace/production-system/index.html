@@ -61,6 +61,7 @@
           <div class="gate-line"><span>Quality Gate</span><strong id="currentQc"></strong><span id="currentReview"></span></div>
           <div class="prompt-actions">
             <button class="button primary" id="copyCurrentPrompt">复制 Current Prompt</button>
+            <button class="button ghost" id="applyResultBtn">应用 AI Result</button>
             <button class="button ghost" id="markDoneBtn">标记完成 → 下一任务</button>
             <button class="button ghost" id="skipTaskBtn">条件不需要 · Skip</button>
           </div>
@@ -151,6 +152,15 @@
     </section>
   </main>
 </div>
+
+<dialog id="resultDialog">
+  <form method="dialog" class="dialog-card">
+    <div class="panel-head"><div><span class="micro">APPLY NODE RESULT</span><h2>粘贴 GUCC_NODE_RESULT</h2></div><button value="cancel" class="icon-button">×</button></div>
+    <p>粘贴当前 AI 输出中的 JSON 代码块。系统只合并明确返回的事实、Artifact 与 Flow DIFF，不猜未写字段。</p>
+    <textarea id="resultInput" rows="16" placeholder='{"promptId":"PF-001","status":"DONE",...}'></textarea>
+    <footer><button value="cancel" class="button ghost">取消</button><button id="applyResultConfirm" value="default" class="button primary">应用并刷新 Current Task</button></footer>
+  </form>
+</dialog>
 
 <dialog id="createDialog">
   <form method="dialog" class="dialog-card">

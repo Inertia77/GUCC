@@ -71,7 +71,7 @@ async function main() {
     page = await context.newPage();
     page.on("pageerror", (error) => failures.push(error.message));
     page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
-    await page.goto(`${origin}/apps/video-workspace/production-system/?project=A`);
+    await page.goto(`${origin}/apps/video-workspace/production-system/legacy-v1.html?project=A`);
     await page.locator(".ux-canonical-now").waitFor();
     await page.locator("#guccCreatorBridge").waitFor();
     await page.waitForFunction(() => document.body.dataset.creatorUxCloseout === "creator-ux-simplification-v1-closeout");

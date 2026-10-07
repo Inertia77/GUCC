@@ -139,10 +139,17 @@ try {
 const portalHtml = resolve(root, 'index.html');
 const appHtml = resolve(root, 'apps', 'command-center', 'index.html');
 const workspaceHtml = resolve(root, 'apps', 'video-workspace', 'index.html');
+const legacyPromptStudioHtml = resolve(root, 'apps', 'video-workspace', 'legacy-prompt-studio-v6.html');
 const workspacePrompts = resolve(root, 'apps', 'video-workspace', 'ai-prompts.js');
 const productionSystemHtml = resolve(root, 'apps', 'video-workspace', 'production-system', 'index.html');
+const legacyProductionHtml = resolve(root, 'apps', 'video-workspace', 'production-system', 'legacy-v1.html');
 const productionSystemEngine = resolve(root, 'apps', 'video-workspace', 'production-system', 'engine.js');
 const productionSystemApp = resolve(root, 'apps', 'video-workspace', 'production-system', 'app.js');
+const creatorOsCoreRules = resolve(root, 'apps', 'video-workspace', 'production-system', 'core-rules.js');
+const creatorOsFailurePrevention = resolve(root, 'apps', 'video-workspace', 'production-system', 'failure-prevention.js');
+const creatorOsCapabilities = resolve(root, 'apps', 'video-workspace', 'production-system', 'capability-library.js');
+const creatorOsOrchestrator = resolve(root, 'apps', 'video-workspace', 'production-system', 'orchestrator.js');
+const creatorOsApp = resolve(root, 'apps', 'video-workspace', 'production-system', 'creator-os-app.js');
 const coverGeneratorHtml = resolve(root, 'apps', 'cover-generator', 'index.html');
 const publishingConsoleHtml = resolve(root, 'apps', 'publishing-console', 'index.html');
 const publishingConsoleApp = resolve(root, 'apps', 'publishing-console', 'app.js');
@@ -153,6 +160,11 @@ checkSyntax(workspacePrompts);
 checkSyntax(resolve(root, 'apps/video-workspace/studio.js'));
 checkSyntax(productionSystemEngine);
 checkSyntax(productionSystemApp);
+checkSyntax(creatorOsCoreRules);
+checkSyntax(creatorOsFailurePrevention);
+checkSyntax(creatorOsCapabilities);
+checkSyntax(creatorOsOrchestrator);
+checkSyntax(creatorOsApp);
 checkSyntax(publishingConsoleApp);
 checkSyntax(publishingConsoleRules);
 checkSyntax(publisherAssistantServer);
@@ -161,7 +173,9 @@ const htmlEntrypoints = [
   portalHtml,
   appHtml,
   workspaceHtml,
+  legacyPromptStudioHtml,
   productionSystemHtml,
+  legacyProductionHtml,
   coverGeneratorHtml,
   publishingConsoleHtml,
   resolve(root, 'apps', 'gameup-command-center', 'index.html'),
@@ -209,10 +223,38 @@ for (const legacyRootFile of ['CUCC_index_v3.8.8.html', 'CUCC_index_v3.8.9.html'
 }
 
 const workspaceSource = readFileSync(workspaceHtml, 'utf8');
-if (!workspaceSource.includes('href="./production-system/"')) {
-  errors.push('视频工作台缺少 AI Video Production System 入口');
-}
+const legacyPromptStudioSource = readFileSync(legacyPromptStudioHtml, 'utf8');
 const productionSystemSource = readFileSync(productionSystemHtml, 'utf8');
+const legacyProductionSource = readFileSync(legacyProductionHtml, 'utf8');
+
+for (const expected of [
+  'location.replace("./production-system/"',
+  'href="./production-system/"',
+  'href="./legacy-prompt-studio-v6.html"'
+]) {
+  if (!workspaceSource.includes(expected)) errors.push(`Creator OS stable entrypoint missing: ${expected}`);
+}
+for (const expected of [
+  'id="currentTaskName"',
+  'id="projectSelect"',
+  'id="newProjectBtn"',
+  'id="buildFlowBtn"',
+  'id="copyBuildFlowPrompt"',
+  'id="copyUpdateFlowPrompt"',
+  'id="capabilityGrid"',
+  'id="view-core"',
+  'id="view-system"',
+  'id="view-capabilities"',
+  'id="view-libraries"',
+  'id="view-projects"',
+  'src="./core-rules.js?v=2.0.0"',
+  'src="./failure-prevention.js?v=2.0.0"',
+  'src="./capability-library.js?v=2.0.0"',
+  'src="./orchestrator.js?v=2.0.0"',
+  'src="./creator-os-app.js?v=2.0.0"'
+]) {
+  if (!productionSystemSource.includes(expected)) errors.push(`Creator OS v2 缺少关键标记：${expected}`);
+}
 for (const expected of [
   'id="nextActionCard"',
   'id="lockGrid"',
@@ -221,34 +263,22 @@ for (const expected of [
   'src="./engine.js"',
   'src="./app.js?v=5"'
 ]) {
-  if (!productionSystemSource.includes(expected)) errors.push(`AI Video Production System 缺少关键工作流标记：${expected}`);
+  if (!legacyProductionSource.includes(expected)) errors.push(`Legacy Production compatibility missing: ${expected}`);
 }
-const workspaceVersion = workspaceSource.match(/const TEMPLATE_VERSION = "([^"]+)"/)?.[1];
+const workspaceVersion = legacyPromptStudioSource.match(/const TEMPLATE_VERSION = "([^"]+)"/)?.[1];
 if (!workspaceVersion) {
-  errors.push('视频工作台缺少 TEMPLATE_VERSION');
+  errors.push('Legacy Prompt Studio 缺少 TEMPLATE_VERSION');
 } else {
-  for (const expected of [
-    `<title>GUCC Studio v${workspaceVersion}`,
-    `GUCC STUDIO · V${workspaceVersion.split('.')[0]}`,
-    `value="v${workspaceVersion}"`
-  ]) {
-    if (!workspaceSource.includes(expected)) errors.push(`视频工作台版本显示不一致：缺少 ${expected}`);
+  for (const expected of [`v${workspaceVersion}`, `value="v${workspaceVersion}"`]) {
+    if (!legacyPromptStudioSource.includes(expected)) errors.push(`Legacy Prompt Studio 版本显示不一致：缺少 ${expected}`);
   }
 }
 for (const expected of [
-  'id="routeSelect"',
-  'id="formatSelect"',
-  'id="stageNav"',
-  'id="taskList"',
-  'id="modeTabs"',
-  'id="partTabs"',
-  'id="promptText"',
-  'id="copyButton"',
-  'id="importFile"',
-  'id="exportButton"',
-  'href="./legacy/studio-v5.html"'
+  'id="routeSelect"', 'id="formatSelect"', 'id="stageNav"', 'id="taskList"',
+  'id="modeTabs"', 'id="partTabs"', 'id="promptText"', 'id="copyButton"',
+  'id="importFile"', 'id="exportButton"'
 ]) {
-  if (!workspaceSource.includes(expected)) errors.push(`视频工作台缺少关键工作流标记：${expected}`);
+  if (!legacyPromptStudioSource.includes(expected)) errors.push(`Legacy Prompt Studio 缺少关键工作流标记：${expected}`);
 }
 
 const videoPublishBatch = readFileSync(resolve(root, 'automation', '创作中心', '01-publishing.bat'), 'utf8');

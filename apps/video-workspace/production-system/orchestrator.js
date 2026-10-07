@@ -316,6 +316,9 @@ ${(n.saveAs||[]).map(x=>"- "+x).join("\n")}
 【Task】
 只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
 完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+最后额外输出一个 \`GUCC_NODE_RESULT\` JSON 代码块，至少包含：
+{"promptId":"${n.promptId}","status":"DONE|WAITING|NEED_INPUT","outputs":[],"availableArtifacts":[],"verifiedFacts":[],"reasonedAnalysis":[],"unknowns":[],"contractPatch":{},"flowOps":[],"requiresApproval":${n.reviewMode==="APPROVAL_REQUIRED"?"true":"false"}}
+只写本次真实完成/确认的内容；不要把计划文件写成已存在。普通未知放 unknowns；确有重大流程变化才给 flowOps。
 ${n.reviewMode==="APPROVAL_REQUIRED"?"本节点完成后等待 Human Approval。":"本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。"}
 ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }

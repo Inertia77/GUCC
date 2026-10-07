@@ -1,0 +1,2858 @@
+{
+  "schemaVersion": "creator-os-v2",
+  "projectId": "ZZZ_3.3_FIONI_SEVERIAN_PREVIEW",
+  "name": "绝区零3.3｜菲欧妮 & 赛维里安前瞻解析",
+  "idea": "绝区零3.3菲欧妮和赛维里安前瞻，两个视频共用一个项目，前瞻结束后尽快做，不碰内鬼。",
+  "game": "绝区零",
+  "server": "国际服",
+  "version": "3.3",
+  "dataCutoff": "",
+  "productType": "preview",
+  "format": "UNKNOWN",
+  "platforms": [
+    "Bilibili",
+    "YouTube",
+    "抖音",
+    "TikTok",
+    "小红书",
+    "微信视频号"
+  ],
+  "autonomyLevel": "L2",
+  "videos": [
+    {
+      "videoId": "FIONI",
+      "name": "菲欧妮前瞻解析",
+      "decision": "PENDING"
+    },
+    {
+      "videoId": "SEVERIAN",
+      "name": "赛维里安前瞻解析",
+      "decision": "PENDING"
+    }
+  ],
+  "sharedSources": [
+    "3.3 官方 Special Program Master",
+    "3.3 官方字幕"
+  ],
+  "verifiedFacts": [],
+  "reasonedAnalysis": [],
+  "unknowns": [
+    "Special Program 尚未实际提供；不能猜未来直播内容。"
+  ],
+  "doNotUse": [
+    "测试服",
+    "内鬼",
+    "拆包",
+    "二手未核实传闻"
+  ],
+  "officialTerminology": [],
+  "availableArtifacts": [],
+  "lockedArtifacts": [],
+  "productionNeeds": {
+    "PROXY": "NOT_PLANNED",
+    "SHARED_SOURCE": "REQUIRED",
+    "CODEX_LOCAL_MASTER_ANALYSIS": "REQUIRED"
+  },
+  "locks": {
+    "script": false,
+    "audio": false,
+    "timeline": false,
+    "final": false,
+    "publish": false
+  },
+  "status": "TEST_FIXTURE",
+  "currentStage": "01",
+  "workflow": [
+    {
+      "promptId": "PF-001",
+      "name": "直播前项目基线与需求研究",
+      "capabilityUsed": "PLAYER_DEMAND_RESEARCH",
+      "executor": "Work",
+      "dependencies": [],
+      "branch": "SHARED",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-002",
+      "name": "等待 3.3 Special Program",
+      "capabilityUsed": "OFFICIAL_SOURCE_RESEARCH",
+      "executor": "System",
+      "dependencies": [
+        "PF-001"
+      ],
+      "branch": "SHARED",
+      "status": "WAITING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-003",
+      "name": "核验官方 YouTube Master 与字幕",
+      "capabilityUsed": "OFFICIAL_SOURCE_RESEARCH",
+      "executor": "Work",
+      "dependencies": [
+        "PF-002"
+      ],
+      "branch": "SHARED",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-004",
+      "name": "Acquire & Register Official Source",
+      "capabilityUsed": "ACQUIRE_REGISTER_OFFICIAL_SOURCE",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-003"
+      ],
+      "branch": "SHARED",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-005",
+      "name": "Codex Local Source Analysis",
+      "capabilityUsed": "VIDEO_SOURCE_ANALYSIS",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-004"
+      ],
+      "branch": "SHARED",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-006",
+      "name": "Shared Program Analysis",
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "executor": "Work",
+      "dependencies": [
+        "PF-005"
+      ],
+      "branch": "SHARED",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F01",
+      "name": "FIONI Research",
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "executor": "Work",
+      "dependencies": [
+        "PF-006"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S01",
+      "name": "SEVERIAN Research",
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "executor": "Work",
+      "dependencies": [
+        "PF-006"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F02",
+      "name": "FIONI LONG / SHORT / CANCEL Gate",
+      "capabilityUsed": "CORE_THESIS",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F01"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S02",
+      "name": "SEVERIAN LONG / SHORT / CANCEL Gate",
+      "capabilityUsed": "CORE_THESIS",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S01"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F03",
+      "name": "FIONI · Content Structure",
+      "capabilityUsed": "CONTENT_STRUCTURE",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F02"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F04",
+      "name": "FIONI · Script",
+      "capabilityUsed": "SCRIPT_DRAFT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F03"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F05",
+      "name": "FIONI · Fact / Mechanic / Terminology QC",
+      "capabilityUsed": "SCRIPT_FACT_QC",
+      "executor": "Work",
+      "dependencies": [
+        "PF-F04"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F06",
+      "name": "FIONI · Content Value / Logic QC",
+      "capabilityUsed": "SCRIPT_VALUE_QC",
+      "executor": "Work",
+      "dependencies": [
+        "PF-F05"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F07",
+      "name": "FIONI · Anti-AI / Retention QC",
+      "capabilityUsed": "SCRIPT_NATURALNESS_QC",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F06"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F08",
+      "name": "FIONI · DIFF Revision",
+      "capabilityUsed": "SCRIPT_DIFF_REVISION",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F07"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F09",
+      "name": "FIONI · Reading Script / TTS Prep",
+      "capabilityUsed": "READING_SCRIPT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F08"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F10",
+      "name": "FIONI · Precise SRT Alignment",
+      "capabilityUsed": "PRECISE_SRT_ALIGNMENT",
+      "executor": "Work",
+      "dependencies": [
+        "PF-F09"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F11",
+      "name": "FIONI · TIMELINE_MASTER",
+      "capabilityUsed": "TIMELINE_MASTER",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F10"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F12",
+      "name": "FIONI · Visual Direction",
+      "capabilityUsed": "VISUAL_DIRECTION",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F11"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F13",
+      "name": "FIONI · Sound Design Blueprint",
+      "capabilityUsed": "SOUND_DESIGN_BLUEPRINT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F12"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F14",
+      "name": "FIONI · Cover",
+      "capabilityUsed": "COVER_DESIGN",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F13"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F15",
+      "name": "FIONI · Asset Gap / ASSET_INDEX",
+      "capabilityUsed": "ASSET_GAP_AND_INDEX",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-F14"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F16",
+      "name": "FIONI · Editing Blueprint",
+      "capabilityUsed": "EDITING_BLUEPRINT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-F15"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-F17",
+      "name": "FIONI · Codex Build",
+      "capabilityUsed": "CODEX_BUILD",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-F16"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F18",
+      "name": "FIONI · Final Human Assembly",
+      "capabilityUsed": "FINAL_ASSEMBLY",
+      "executor": "Human",
+      "dependencies": [
+        "PF-F17"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q3"
+    },
+    {
+      "promptId": "PF-F19",
+      "name": "FIONI · Platform Rule Verification",
+      "capabilityUsed": "PLATFORM_RULE_VERIFICATION",
+      "executor": "Work",
+      "dependencies": [
+        "PF-F18"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-F20",
+      "name": "FIONI · Six-platform Publish Package",
+      "capabilityUsed": "SIX_PLATFORM_PUBLISH_PACKAGE",
+      "executor": "Work",
+      "dependencies": [
+        "PF-F19"
+      ],
+      "branch": "FIONI",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S03",
+      "name": "SEVERIAN · Content Structure",
+      "capabilityUsed": "CONTENT_STRUCTURE",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S02"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S04",
+      "name": "SEVERIAN · Script",
+      "capabilityUsed": "SCRIPT_DRAFT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S03"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S05",
+      "name": "SEVERIAN · Fact / Mechanic / Terminology QC",
+      "capabilityUsed": "SCRIPT_FACT_QC",
+      "executor": "Work",
+      "dependencies": [
+        "PF-S04"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S06",
+      "name": "SEVERIAN · Content Value / Logic QC",
+      "capabilityUsed": "SCRIPT_VALUE_QC",
+      "executor": "Work",
+      "dependencies": [
+        "PF-S05"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S07",
+      "name": "SEVERIAN · Anti-AI / Retention QC",
+      "capabilityUsed": "SCRIPT_NATURALNESS_QC",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S06"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S08",
+      "name": "SEVERIAN · DIFF Revision",
+      "capabilityUsed": "SCRIPT_DIFF_REVISION",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S07"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S09",
+      "name": "SEVERIAN · Reading Script / TTS Prep",
+      "capabilityUsed": "READING_SCRIPT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S08"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S10",
+      "name": "SEVERIAN · Precise SRT Alignment",
+      "capabilityUsed": "PRECISE_SRT_ALIGNMENT",
+      "executor": "Work",
+      "dependencies": [
+        "PF-S09"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S11",
+      "name": "SEVERIAN · TIMELINE_MASTER",
+      "capabilityUsed": "TIMELINE_MASTER",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S10"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S12",
+      "name": "SEVERIAN · Visual Direction",
+      "capabilityUsed": "VISUAL_DIRECTION",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S11"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S13",
+      "name": "SEVERIAN · Sound Design Blueprint",
+      "capabilityUsed": "SOUND_DESIGN_BLUEPRINT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S12"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S14",
+      "name": "SEVERIAN · Cover",
+      "capabilityUsed": "COVER_DESIGN",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S13"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S15",
+      "name": "SEVERIAN · Asset Gap / ASSET_INDEX",
+      "capabilityUsed": "ASSET_GAP_AND_INDEX",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-S14"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S16",
+      "name": "SEVERIAN · Editing Blueprint",
+      "capabilityUsed": "EDITING_BLUEPRINT",
+      "executor": "Chat",
+      "dependencies": [
+        "PF-S15"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q2"
+    },
+    {
+      "promptId": "PF-S17",
+      "name": "SEVERIAN · Codex Build",
+      "capabilityUsed": "CODEX_BUILD",
+      "executor": "Codex",
+      "dependencies": [
+        "PF-S16"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S18",
+      "name": "SEVERIAN · Final Human Assembly",
+      "capabilityUsed": "FINAL_ASSEMBLY",
+      "executor": "Human",
+      "dependencies": [
+        "PF-S17"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q3"
+    },
+    {
+      "promptId": "PF-S19",
+      "name": "SEVERIAN · Platform Rule Verification",
+      "capabilityUsed": "PLATFORM_RULE_VERIFICATION",
+      "executor": "Work",
+      "dependencies": [
+        "PF-S18"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "qcLevel": "Q1"
+    },
+    {
+      "promptId": "PF-S20",
+      "name": "SEVERIAN · Six-platform Publish Package",
+      "capabilityUsed": "SIX_PLATFORM_PUBLISH_PACKAGE",
+      "executor": "Work",
+      "dependencies": [
+        "PF-S19"
+      ],
+      "branch": "SEVERIAN",
+      "status": "PENDING",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "qcLevel": "Q2"
+    }
+  ],
+  "promptFlow": [
+    {
+      "promptId": "PF-001",
+      "name": "直播前项目基线与需求研究",
+      "purpose": "直播前只做玩家问题、竞品、官方已公开基线与风险，不提前写完整正文。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [],
+      "requiredInput": [
+        "游戏/版本/主题"
+      ],
+      "optionalInput": [
+        "已有社区链接",
+        "频道受众线索"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "PLAYER_DEMAND_RESEARCH",
+      "expectedOutput": [
+        "PROJECT_BRIEF.md",
+        "PRELIVE_BASELINE.md"
+      ],
+      "saveAs": [
+        "PROJECT_BRIEF.md",
+        "PRELIVE_BASELINE.md"
+      ],
+      "qualityGate": [
+        "问题可追溯到真实讨论",
+        "不以单帖冒充社区共识"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [
+        "PF-002"
+      ],
+      "chatFallback": "联网能力有限时基于用户给的真实帖子做小样本研究，明确覆盖范围。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-001｜直播前项目基线与需求研究】\n【Executor】Work\n【Capability】PLAYER_DEMAND_RESEARCH / Player Demand Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n直播前只做玩家问题、竞品、官方已公开基线与风险，不提前写完整正文。\n\n【Dependencies / Read From Previous】\nDependencies: NONE\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 游戏/版本/主题\n\n【Optional Input】\n- 已有社区链接\n- 频道受众线索\n\n【CORE METHOD】\n- 扫描 B站/NGA/贴吧/米游社/Reddit/YouTube 等实际可访问社区。\n- 记录原帖 URL、日期、可见指标和语境；热度、价值、争议、误解、搜索需求分开判断。\n- 输出 Top 问题、已讲烂内容、竞品空白与本期最值得解决的问题。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 缺可选资料不能升级成 NEED_INPUT；先完成能确定的部分。\n[HARD_CONSTRAINT] 不能编造热度、排名、搜索量、玩家共识或竞品表现。\n[HARD_CONSTRAINT] 不能编造来源 URL、视频 ID、发布时间、数值、角色术语。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 问题可追溯到真实讨论\n- 不以单帖冒充社区共识\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- PROJECT_BRIEF.md\n- PRELIVE_BASELINE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n联网能力有限时基于用户给的真实帖子做小样本研究，明确覆盖范围。"
+    },
+    {
+      "promptId": "PF-002",
+      "name": "等待 3.3 Special Program",
+      "purpose": "条件节点：等待官方前瞻真正公开；不猜直播内容。",
+      "executor": "System",
+      "when": "官方 3.3 Special Program 正式公开后触发",
+      "dependencies": [
+        "PF-001"
+      ],
+      "requiredInput": [
+        "游戏/版本/角色/研究问题"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "OFFICIAL_SOURCE_RESEARCH",
+      "expectedOutput": [
+        "EVENT_READY"
+      ],
+      "saveAs": [
+        "CURRENT_TASK.md"
+      ],
+      "qualityGate": [
+        "每个 VERIFIED 来源身份可解释",
+        "错误候选有排除原因"
+      ],
+      "hardStop": [
+        "正式直播尚未公开时不得伪造其内容"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [
+        "PF-003"
+      ],
+      "chatFallback": "无；这是条件等待节点。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "WAITING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-002｜等待 3.3 Special Program】\n【Executor】System\n【Capability】OFFICIAL_SOURCE_RESEARCH / Official Source Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n条件节点：等待官方前瞻真正公开；不猜直播内容。\n\n【Dependencies / Read From Previous】\nDependencies: PF-001\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 游戏/版本/角色/研究问题\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 视频优先 YouTube 官方频道原始上传，其次官网/媒体中心，必要时才用 B站官方号。\n- 逐项核对频道主体、CHANNEL_ID、VIDEO_ID、游戏、角色、区服、版本、发布日期、实际内容。\n- 图片优先官网/官方公告/Media Kit 原图；影画/技能等只有官方文字时保存文字真值并允许后续做 GENERATED_EXPLANATION。\n- 输出来源页面 URL 与直接媒体 URL 分离。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不能编造来源 URL、视频 ID、发布时间、数值、角色术语。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[HARD_CONSTRAINT] 分析前核对游戏、角色、版本、区服、官方主体、VIDEO_ID；来源不匹配立即 SOURCE_MISMATCH。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- 正式直播尚未公开时不得伪造其内容\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 每个 VERIFIED 来源身份可解释\n- 错误候选有排除原因\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- CURRENT_TASK.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n无；这是条件等待节点。"
+    },
+    {
+      "promptId": "PF-003",
+      "name": "核验官方 YouTube Master 与字幕",
+      "purpose": "定位并核验 3.3 官方 YouTube 原上传与官方字幕，排除搬运/旧版/错误视频。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-002"
+      ],
+      "requiredInput": [
+        "游戏/版本/角色/研究问题"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "OFFICIAL_SOURCE_RESEARCH",
+      "expectedOutput": [
+        "SOURCE_VERIFICATION.md",
+        "SOURCE_DOWNLOAD_MANIFEST.md"
+      ],
+      "saveAs": [
+        "SOURCE_VERIFICATION.md",
+        "SOURCE_DOWNLOAD_MANIFEST.md"
+      ],
+      "qualityGate": [
+        "每个 VERIFIED 来源身份可解释",
+        "错误候选有排除原因"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [
+        "PF-004"
+      ],
+      "chatFallback": "逐个少量搜索并核验，宁可 NEED_VERIFY 也不伪造 URL。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-003｜核验官方 YouTube Master 与字幕】\n【Executor】Work\n【Capability】OFFICIAL_SOURCE_RESEARCH / Official Source Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n定位并核验 3.3 官方 YouTube 原上传与官方字幕，排除搬运/旧版/错误视频。\n\n【Dependencies / Read From Previous】\nDependencies: PF-002\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 游戏/版本/角色/研究问题\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 视频优先 YouTube 官方频道原始上传，其次官网/媒体中心，必要时才用 B站官方号。\n- 逐项核对频道主体、CHANNEL_ID、VIDEO_ID、游戏、角色、区服、版本、发布日期、实际内容。\n- 图片优先官网/官方公告/Media Kit 原图；影画/技能等只有官方文字时保存文字真值并允许后续做 GENERATED_EXPLANATION。\n- 输出来源页面 URL 与直接媒体 URL 分离。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不能编造来源 URL、视频 ID、发布时间、数值、角色术语。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[HARD_CONSTRAINT] 分析前核对游戏、角色、版本、区服、官方主体、VIDEO_ID；来源不匹配立即 SOURCE_MISMATCH。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 每个 VERIFIED 来源身份可解释\n- 错误候选有排除原因\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SOURCE_VERIFICATION.md\n- SOURCE_DOWNLOAD_MANIFEST.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n逐个少量搜索并核验，宁可 NEED_VERIFY 也不伪造 URL。"
+    },
+    {
+      "promptId": "PF-004",
+      "name": "Acquire & Register Official Source",
+      "purpose": "下载共享 Master + 官方字幕 + metadata + ffprobe 并登记；不创建 Proxy。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-003"
+      ],
+      "requiredInput": [
+        "SOURCE_DOWNLOAD_MANIFEST",
+        "本地项目根目录"
+      ],
+      "optionalInput": [
+        "已有文件",
+        "yt-dlp/FFmpeg路径"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "ACQUIRE_REGISTER_OFFICIAL_SOURCE",
+      "expectedOutput": [
+        "3.3_SHARED_MASTER",
+        "OFFICIAL_SUBTITLE",
+        "DOWNLOAD_REPORT.md",
+        "MEDIA_PROBE.json"
+      ],
+      "saveAs": [
+        "DOWNLOAD_REPORT.md",
+        "MEDIA_PROBE.json",
+        "SOURCE_DOWNLOAD_MANIFEST.md"
+      ],
+      "qualityGate": [
+        "每个 DOWNLOADED_VERIFIED 都有真实文件验证",
+        "失败项独立报告"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [
+        "PROXY明确NOT_PLANNED；本节点只获取Master，不执行代理转码"
+      ],
+      "next": [
+        "PF-005"
+      ],
+      "chatFallback": "生成幂等 PowerShell/yt-dlp/FFmpeg 脚本→用户运行→回传真实结果→Chat登记。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-004｜Acquire & Register Official Source】\n【Executor】Codex\n【Capability】ACQUIRE_REGISTER_OFFICIAL_SOURCE / Acquire & Register Official Source\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n下载共享 Master + 官方字幕 + metadata + ffprobe 并登记；不创建 Proxy。\n\n【Dependencies / Read From Previous】\nDependencies: PF-003\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- SOURCE_DOWNLOAD_MANIFEST\n- 本地项目根目录\n\n【Optional Input】\n- 已有文件\n- yt-dlp/FFmpeg路径\n\n【CORE METHOD】\n- 一次完成下载、字幕/metadata、ffprobe/图片验证与 Source 注册；复用现有文件，不覆盖 Master。\n- YouTube 官方视频保留高清 Master；图片验证 Content-Type/magic bytes/尺寸。\n- 记录 ASSET_ID、来源、路径、媒体参数、RIGHTS_STATUS、EDIT_USE_ALLOWED、ATTRIBUTION。\n\n【MANDATORY GUARDRAILS】\n- 不绕过 DRM/付费墙/登录限制。\n- 云端无本地权限时只交脚本，不能声称下载完成。\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 批处理默认不覆盖 Master / 原始素材；移动前 Dry Run，冲突时停止。\n[FAILURE_WARNING] Work 擅长浏览器和多资料研究，不假设它自动拥有 Windows 本地路径访问权。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 每个 DOWNLOADED_VERIFIED 都有真实文件验证\n- 失败项独立报告\n\n【Skip Condition】\n- PROXY明确NOT_PLANNED；本节点只获取Master，不执行代理转码\n\n【Output / Save As】\n- DOWNLOAD_REPORT.md\n- MEDIA_PROBE.json\n- SOURCE_DOWNLOAD_MANIFEST.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n生成幂等 PowerShell/yt-dlp/FFmpeg 脚本→用户运行→回传真实结果→Chat登记。"
+    },
+    {
+      "promptId": "PF-005",
+      "name": "Codex Local Source Analysis",
+      "purpose": "Codex 直接分析本地 Master 的声音、连续画面、UI、动作与时间戳；PROXY=NOT_PLANNED。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-004"
+      ],
+      "requiredInput": [
+        "实际可读视频或片段",
+        "Master映射（如使用Proxy）"
+      ],
+      "optionalInput": [
+        "官方字幕",
+        "研究问题"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "VIDEO_SOURCE_ANALYSIS",
+      "expectedOutput": [
+        "SOURCE_ANALYSIS_SHARED_PROGRAM.md"
+      ],
+      "saveAs": [
+        "SOURCE_ANALYSIS_SHARED_PROGRAM.md"
+      ],
+      "qualityGate": [
+        "高价值结论都有视频证据时间锚点",
+        "不把解释动画/字幕当实机证据"
+      ],
+      "hardStop": [
+        "要求具体画面结论但视频不可访问"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [
+        "仅当Codex实际无法读取Master且上传条件受限时，才由编译器ADD PROXY_MEDIA"
+      ],
+      "next": [
+        "PF-006"
+      ],
+      "chatFallback": "若当前Chat确实能看视频则分片分析；否则只处理已有分析MD，不冒充观看。",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-005｜Codex Local Source Analysis】\n【Executor】Codex\n【Capability】VIDEO_SOURCE_ANALYSIS / Video Source Analysis\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\nCodex 直接分析本地 Master 的声音、连续画面、UI、动作与时间戳；PROXY=NOT_PLANNED。\n\n【Dependencies / Read From Previous】\nDependencies: PF-004\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 实际可读视频或片段\n- Master映射（如使用Proxy）\n\n【Optional Input】\n- 官方字幕\n- 研究问题\n\n【CORE METHOD】\n- 先复核 SOURCE_IDENTITY。\n- 逐证据记录 Master 时间、官方说法、画面动作、UI/状态、可以确认什么、不能确认什么。\n- 字幕只辅助定位；必须看连续画面。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不能只读字幕猜动作、UI、资源变化或镜头事实。\n[BEST_PRACTICE] 机制分析优先看连续画面、UI、音频、动作前后关系与真实时间戳。\n[HARD_CONSTRAINT] Proxy / 分段时间不能直接当 Master 时间；必须保留绝对偏移映射。\n[HARD_CONSTRAINT] 分析前核对游戏、角色、版本、区服、官方主体、VIDEO_ID；来源不匹配立即 SOURCE_MISMATCH。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- 要求具体画面结论但视频不可访问\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 高价值结论都有视频证据时间锚点\n- 不把解释动画/字幕当实机证据\n\n【Skip Condition】\n- 仅当Codex实际无法读取Master且上传条件受限时，才由编译器ADD PROXY_MEDIA\n\n【Output / Save As】\n- SOURCE_ANALYSIS_SHARED_PROGRAM.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n若当前Chat确实能看视频则分片分析；否则只处理已有分析MD，不冒充观看。"
+    },
+    {
+      "promptId": "PF-006",
+      "name": "Shared Program Analysis",
+      "purpose": "把共用直播证据整理成两条视频可共享的正式信息、未知边界与角色分流研究问题。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-005"
+      ],
+      "requiredInput": [
+        "官方文本/视频分析/实机证据中的至少一种"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "expectedOutput": [
+        "SHARED_PROGRAM_ANALYSIS.md"
+      ],
+      "saveAs": [
+        "SHARED_PROGRAM_ANALYSIS.md"
+      ],
+      "qualityGate": [
+        "核心结论来源清楚",
+        "没有把相关性写成因果"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [
+        "PF-F01",
+        "PF-S01"
+      ],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SHARED",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-006｜Shared Program Analysis】\n【Executor】Work\n【Capability】MECHANIC_RESEARCH / Mechanic Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n把共用直播证据整理成两条视频可共享的正式信息、未知边界与角色分流研究问题。\n\n【Dependencies / Read From Previous】\nDependencies: PF-005\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 官方文本/视频分析/实机证据中的至少一种\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 先列现象→触发→状态/资源→结果→边界。\n- 把官方确认、实机确认、分析、未知分层。\n- 遇到冲突优先核对版本与条件，不强行统一。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 测试服、泄露、拆包、二手传闻不得包装成官方事实。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[FAILURE_WARNING] 不能只读字幕猜动作、UI、资源变化或镜头事实。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 核心结论来源清楚\n- 没有把相关性写成因果\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SHARED_PROGRAM_ANALYSIS.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F01",
+      "name": "FIONI Research",
+      "purpose": "建立规则、触发条件、状态、资源、边界条件与因果链。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-006"
+      ],
+      "requiredInput": [
+        "官方文本/视频分析/实机证据中的至少一种"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "expectedOutput": [
+        "FIONI_RESEARCH.md"
+      ],
+      "saveAs": [
+        "FIONI_RESEARCH.md"
+      ],
+      "qualityGate": [
+        "核心结论来源清楚",
+        "没有把相关性写成因果"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F01｜FIONI Research】\n【Executor】Work\n【Capability】MECHANIC_RESEARCH / Mechanic Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n建立规则、触发条件、状态、资源、边界条件与因果链。\n\n【Dependencies / Read From Previous】\nDependencies: PF-006\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 官方文本/视频分析/实机证据中的至少一种\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 先列现象→触发→状态/资源→结果→边界。\n- 把官方确认、实机确认、分析、未知分层。\n- 遇到冲突优先核对版本与条件，不强行统一。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 测试服、泄露、拆包、二手传闻不得包装成官方事实。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[FAILURE_WARNING] 不能只读字幕猜动作、UI、资源变化或镜头事实。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 核心结论来源清楚\n- 没有把相关性写成因果\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FIONI_RESEARCH.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S01",
+      "name": "SEVERIAN Research",
+      "purpose": "建立规则、触发条件、状态、资源、边界条件与因果链。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-006"
+      ],
+      "requiredInput": [
+        "官方文本/视频分析/实机证据中的至少一种"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "MECHANIC_RESEARCH",
+      "expectedOutput": [
+        "SEVERIAN_RESEARCH.md"
+      ],
+      "saveAs": [
+        "SEVERIAN_RESEARCH.md"
+      ],
+      "qualityGate": [
+        "核心结论来源清楚",
+        "没有把相关性写成因果"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S01｜SEVERIAN Research】\n【Executor】Work\n【Capability】MECHANIC_RESEARCH / Mechanic Research\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n建立规则、触发条件、状态、资源、边界条件与因果链。\n\n【Dependencies / Read From Previous】\nDependencies: PF-006\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 官方文本/视频分析/实机证据中的至少一种\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 先列现象→触发→状态/资源→结果→边界。\n- 把官方确认、实机确认、分析、未知分层。\n- 遇到冲突优先核对版本与条件，不强行统一。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 测试服、泄露、拆包、二手传闻不得包装成官方事实。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[FAILURE_WARNING] 不能只读字幕猜动作、UI、资源变化或镜头事实。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 核心结论来源清楚\n- 没有把相关性写成因果\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SEVERIAN_RESEARCH.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F02",
+      "name": "FIONI LONG / SHORT / CANCEL Gate",
+      "purpose": "按直播后真实信息量决定菲欧妮做长、短或取消；不为了排期硬做长视频。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F01"
+      ],
+      "requiredInput": [
+        "玩家问题",
+        "研究结论"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CORE_THESIS",
+      "expectedOutput": [
+        "FIONI_FORMAT_GATE.md",
+        "FIONI_CORE_THESIS.md"
+      ],
+      "saveAs": [
+        "FIONI_FORMAT_GATE.md",
+        "FIONI_CORE_THESIS.md"
+      ],
+      "qualityGate": [
+        "命题可被证据支撑",
+        "LONG/SHORT/CANCEL判断可解释"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F02｜FIONI LONG / SHORT / CANCEL Gate】\n【Executor】Chat\n【Capability】CORE_THESIS / Core Thesis\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n按直播后真实信息量决定菲欧妮做长、短或取消；不为了排期硬做长视频。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F01\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 玩家问题\n- 研究结论\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 一句话回答：观众看完真正知道/会做什么。\n- 列必须讲、可删、不能讲与标题/封面承诺边界。\n- 长短形式由信息密度决定，不默认10分钟。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 命题可被证据支撑\n- LONG/SHORT/CANCEL判断可解释\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FIONI_FORMAT_GATE.md\n- FIONI_CORE_THESIS.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-S02",
+      "name": "SEVERIAN LONG / SHORT / CANCEL Gate",
+      "purpose": "按直播后真实信息量决定赛维里安做长、短或取消。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S01"
+      ],
+      "requiredInput": [
+        "玩家问题",
+        "研究结论"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CORE_THESIS",
+      "expectedOutput": [
+        "SEVERIAN_FORMAT_GATE.md",
+        "SEVERIAN_CORE_THESIS.md"
+      ],
+      "saveAs": [
+        "SEVERIAN_FORMAT_GATE.md",
+        "SEVERIAN_CORE_THESIS.md"
+      ],
+      "qualityGate": [
+        "命题可被证据支撑",
+        "LONG/SHORT/CANCEL判断可解释"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S02｜SEVERIAN LONG / SHORT / CANCEL Gate】\n【Executor】Chat\n【Capability】CORE_THESIS / Core Thesis\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n按直播后真实信息量决定赛维里安做长、短或取消。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S01\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 玩家问题\n- 研究结论\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 一句话回答：观众看完真正知道/会做什么。\n- 列必须讲、可删、不能讲与标题/封面承诺边界。\n- 长短形式由信息密度决定，不默认10分钟。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 命题可被证据支撑\n- LONG/SHORT/CANCEL判断可解释\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SEVERIAN_FORMAT_GATE.md\n- SEVERIAN_CORE_THESIS.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-F03",
+      "name": "FIONI · Content Structure",
+      "purpose": "为当前产品类型安排信息顺序、章节、钩子与证据位置。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F02"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "研究结论"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CONTENT_STRUCTURE",
+      "expectedOutput": [
+        "CONTENT_OUTLINE.md"
+      ],
+      "saveAs": [
+        "CONTENT_OUTLINE.md"
+      ],
+      "qualityGate": [
+        "删掉任一章节会损失明确价值",
+        "没有百科式填充"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F03｜FIONI · Content Structure】\n【Executor】Chat\n【Capability】CONTENT_STRUCTURE / Content Structure\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n为当前产品类型安排信息顺序、章节、钩子与证据位置。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F02\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- 研究结论\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 开头15–30秒直击问题。\n- 章节只服务命题；短内容不强制章节。\n- 把证据、判断、操作与收益按因果排列。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 删掉任一章节会损失明确价值\n- 没有百科式填充\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- CONTENT_OUTLINE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F04",
+      "name": "FIONI · Script",
+      "purpose": "生成自然、准确、高信息密度的真人口播稿。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F03"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "CONTENT_OUTLINE",
+        "研究材料"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_DRAFT",
+      "expectedOutput": [
+        "SCRIPT_DRAFT.md"
+      ],
+      "saveAs": [
+        "SCRIPT_DRAFT.md"
+      ],
+      "qualityGate": [
+        "正文兑现命题",
+        "没有把分析写成官方事实"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F04｜FIONI · Script】\n【Executor】Chat\n【Capability】SCRIPT_DRAFT / Script\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成自然、准确、高信息密度的真人口播稿。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F03\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- CONTENT_OUTLINE\n- 研究材料\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 直接判断→证据→因果→操作/决策。\n- 重要答案前置；每段有新信息。\n- 产品类型决定语言：机制更重UI/状态因果，剧情更重事件/主题/人物关系，决策更重条件与机会成本。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 避免公告腔、百科堆砌、机械转场、连续总结与 AI 模板句。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 正文兑现命题\n- 没有把分析写成官方事实\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_DRAFT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F05",
+      "name": "FIONI · Fact / Mechanic / Terminology QC",
+      "purpose": "独立检查术语、数值、机制、版本、配队、排轴与证据边界。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F04"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "证据/正式术语真值"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_FACT_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_FACT.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_FACT.md"
+      ],
+      "qualityGate": [
+        "无未解决P0/事实型P1才PASS"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F05｜FIONI · Fact / Mechanic / Terminology QC】\n【Executor】Work\n【Capability】SCRIPT_FACT_QC / Fact / Mechanic / Terminology QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n独立检查术语、数值、机制、版本、配队、排轴与证据边界。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F04\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- 证据/正式术语真值\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐问题给位置/问题/正确依据/最低成本改法。\n- 事实型 P1 未核实不能 PASS。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不能编造来源 URL、视频 ID、发布时间、数值、角色术语。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 无未解决P0/事实型P1才PASS\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_FACT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F06",
+      "name": "FIONI · Content Value / Logic QC",
+      "purpose": "检查核心命题兑现、逻辑链、信息增量、产品类型与收藏分享价值。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F05"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "CORE_THESIS",
+        "产品类型"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_VALUE_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_VALUE.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_VALUE.md"
+      ],
+      "qualityGate": [
+        "核心命题完整兑现且无影响价值/逻辑P0/P1"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F06｜FIONI · Content Value / Logic QC】\n【Executor】Work\n【Capability】SCRIPT_VALUE_QC / Content Value / Logic QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n检查核心命题兑现、逻辑链、信息增量、产品类型与收藏分享价值。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F05\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- CORE_THESIS\n- 产品类型\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐段判断新认识/机制/因果/操作/误区/决策价值。\n- 标 DELETE/KEEP/P0/P1。\n- 检查标题/封面承诺是否由正文支撑。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 核心命题完整兑现且无影响价值/逻辑P0/P1\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_VALUE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F07",
+      "name": "FIONI · Anti-AI / Retention QC",
+      "purpose": "去模板化语言并检查前30秒与中段留存。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F06"
+      ],
+      "requiredInput": [
+        "当前稿"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_NATURALNESS_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_NATURALNESS.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_NATURALNESS.md"
+      ],
+      "qualityGate": [
+        "真人可念、节奏有变化、没有明显AI模板堆叠"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F07｜FIONI · Anti-AI / Retention QC】\n【Executor】Chat\n【Capability】SCRIPT_NATURALNESS_QC / Anti-AI / Retention QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n去模板化语言并检查前30秒与中段留存。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F06\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 扫描否定再肯定、反而、模板转场、空泛强调、重复总结、假互动和过度工整。\n- 只给DIFF建议，不为了自然故意说乱。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] 避免公告腔、百科堆砌、机械转场、连续总结与 AI 模板句。\n[BEST_PRACTICE] 已确认稿件默认 DIFF MODE，只改事实错误、新正式资料或严重逻辑问题。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 真人可念、节奏有变化、没有明显AI模板堆叠\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_NATURALNESS.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F08",
+      "name": "FIONI · DIFF Revision",
+      "purpose": "合并审核结果，对当前稿做最低成本修订并保留已确认部分。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F07"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "审核结果"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_DIFF_REVISION",
+      "expectedOutput": [
+        "SCRIPT_REVISED.md",
+        "SCRIPT_REVIEW.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVISED.md",
+        "SCRIPT_REVIEW.md"
+      ],
+      "qualityGate": [
+        "没有顺手全文重写",
+        "受影响审核项关闭"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F08｜FIONI · DIFF Revision】\n【Executor】Chat\n【Capability】SCRIPT_DIFF_REVISION / DIFF Revision\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n合并审核结果，对当前稿做最低成本修订并保留已确认部分。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F07\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- 审核结果\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 只改对应位置。\n- 事实错误优先；新资料只影响相关段落。\n- 修后再次检查受影响的事实/逻辑/自然度。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n[BEST_PRACTICE] 已确认稿件默认 DIFF MODE，只改事实错误、新正式资料或严重逻辑问题。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 没有顺手全文重写\n- 受影响审核项关闭\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVISED.md\n- SCRIPT_REVIEW.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F09",
+      "name": "FIONI · Reading Script / TTS Prep",
+      "purpose": "把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F08"
+      ],
+      "requiredInput": [
+        "SCRIPT_LOCK正文"
+      ],
+      "optionalInput": [
+        "真人/AI朗读模式",
+        "多人角色分配"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "READING_SCRIPT",
+      "expectedOutput": [
+        "SCRIPT_READ.md 或 TTS_TEMP.srt",
+        "TTS_PRONUNCIATION_MAP.md",
+        "TTS_README.md"
+      ],
+      "saveAs": [
+        "SCRIPT_READ.md 或 TTS_TEMP.srt",
+        "TTS_PRONUNCIATION_MAP.md",
+        "TTS_README.md"
+      ],
+      "qualityGate": [
+        "不改变事实/语义",
+        "TTS安全写法有Pronunciation Map"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F09｜FIONI · Reading Script / TTS Prep】\n【Executor】Chat\n【Capability】READING_SCRIPT / Reading Script / TTS Prep\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F08\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- SCRIPT_LOCK正文\n\n【Optional Input】\n- 真人/AI朗读模式\n- 多人角色分配\n\n【CORE METHOD】\n- 真人模式保持正式文本并按自然语义分块。\n- AI模式生成TTS_TEMP.srt，每cue≤500可见字符、尽量430–490；用发音映射处理多音字、生僻字、专名、数字/符号。\n- TTS临时时码只为导入，不是真实Timeline。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n[FAILURE_WARNING] TTS_TEMP.srt 只用于 AI 朗读，临时时码不能污染最终时间线。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 不改变事实/语义\n- TTS安全写法有Pronunciation Map\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_READ.md 或 TTS_TEMP.srt\n- TTS_PRONUNCIATION_MAP.md\n- TTS_README.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-F10",
+      "name": "FIONI · Precise SRT Alignment",
+      "purpose": "用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F09"
+      ],
+      "requiredInput": [
+        "AUDIO_MASTER",
+        "SCRIPT_LOCK正文"
+      ],
+      "optionalInput": [
+        "TTS_PRONUNCIATION_MAP"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "PRECISE_SRT_ALIGNMENT",
+      "expectedOutput": [
+        "FINAL.srt",
+        "ALIGNMENT_REPORT.md"
+      ],
+      "saveAs": [
+        "FINAL.srt",
+        "ALIGNMENT_REPORT.md"
+      ],
+      "qualityGate": [
+        "所有时间来自真实音频",
+        "无重叠/倒序",
+        "术语与锁稿一致"
+      ],
+      "hardStop": [
+        "没有该角色视频最终 AUDIO_MASTER 时 NEED_INPUT"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F10｜FIONI · Precise SRT Alignment】\n【Executor】Work\n【Capability】PRECISE_SRT_ALIGNMENT / Precise SRT Alignment\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F09\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- AUDIO_MASTER\n- SCRIPT_LOCK正文\n\n【Optional Input】\n- TTS_PRONUNCIATION_MAP\n\n【CORE METHOD】\n- 真实ASR/对齐取WHEN，锁定文本取WHAT。\n- 自然意群切cue，ASR错词用锁定文本校正。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 禁止按字数、平均语速、脚本长度或句长猜时间。\n[HARD_CONSTRAINT] ASR 只提供时间参考，不能覆盖锁定角色名、术语与正式字幕文字。\n[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- 没有该角色视频最终 AUDIO_MASTER 时 NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 所有时间来自真实音频\n- 无重叠/倒序\n- 术语与锁稿一致\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FINAL.srt\n- ALIGNMENT_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。"
+    },
+    {
+      "promptId": "PF-F11",
+      "name": "FIONI · TIMELINE_MASTER",
+      "purpose": "从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F10"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "AUDIO_MASTER",
+        "SCRIPT_LOCK"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "TIMELINE_MASTER",
+      "expectedOutput": [
+        "TIMELINE_MASTER.md"
+      ],
+      "saveAs": [
+        "TIMELINE_MASTER.md"
+      ],
+      "qualityGate": [
+        "与FINAL.srt/AUDIO_MASTER同00:00",
+        "无猜测时间"
+      ],
+      "hardStop": [
+        "FINAL.srt不是真实音频对齐结果"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F11｜FIONI · TIMELINE_MASTER】\n【Executor】Chat\n【Capability】TIMELINE_MASTER / TIMELINE_MASTER\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F10\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- AUDIO_MASTER\n- SCRIPT_LOCK\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 每段记录SEGMENT_ID/START/END/LOCKED_TEXT/SECTION/SEMANTIC_PURPOSE/KEY_TERMS/IMPORTANT_BEAT/PAUSE/ANCHOR_CANDIDATE。\n- 不在此阶段提前决定具体视觉或SFX。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- FINAL.srt不是真实音频对齐结果\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 与FINAL.srt/AUDIO_MASTER同00:00\n- 无猜测时间\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- TIMELINE_MASTER.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F12",
+      "name": "FIONI · Visual Direction",
+      "purpose": "根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F11"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "TIMELINE_MASTER",
+        "已有素材描述"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "VISUAL_DIRECTION",
+      "expectedOutput": [
+        "VISUAL_DIRECTION.md"
+      ],
+      "saveAs": [
+        "VISUAL_DIRECTION.md"
+      ],
+      "qualityGate": [
+        "关闭声音仍能大致理解关键段落",
+        "视觉类型匹配内容类型"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F12｜FIONI · Visual Direction】\n【Executor】Chat\n【Capability】VISUAL_DIRECTION / Visual Direction\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F11\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- TIMELINE_MASTER\n- 已有素材描述\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐段定义视觉目的：证明/展示/对比/解释/氛围。\n- 真实证据优先真实素材；抽象机制再用HUD/Pixel/图表。\n- 剧情/人物类优先官方剧情画面、关系、时间线、意象，不强塞战斗HUD。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] AI 解释动画、生成图不能冒充真实游戏画面或正式机制证据。\n[BEST_PRACTICE] 视觉服务理解、证据与节奏；不靠满屏光效或无信息装饰充数。\n[OPTIONAL_ENHANCEMENT] Pixel、几何、HUD、数据图、关系图按项目需要选择，不是固定步骤。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 关闭声音仍能大致理解关键段落\n- 视觉类型匹配内容类型\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- VISUAL_DIRECTION.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F13",
+      "name": "FIONI · Sound Design Blueprint",
+      "purpose": "围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F12"
+      ],
+      "requiredInput": [
+        "AUDIO_MASTER",
+        "TIMELINE_MASTER",
+        "视觉方向"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SOUND_DESIGN_BLUEPRINT",
+      "expectedOutput": [
+        "SOUND_DIRECTION.md",
+        "SOUND_CUE_MAP.md"
+      ],
+      "saveAs": [
+        "SOUND_DIRECTION.md",
+        "SOUND_CUE_MAP.md"
+      ],
+      "qualityGate": [
+        "每个声音Cue有叙事/信息目的",
+        "未存在资产明确PLANNED/MISSING_AUDIO_ASSET"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F13｜FIONI · Sound Design Blueprint】\n【Executor】Chat\n【Capability】SOUND_DESIGN_BLUEPRINT / Sound Design Blueprint\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F12\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- AUDIO_MASTER\n- TIMELINE_MASTER\n- 视觉方向\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 口播可听性第一。\n- 精确到Cue记录时间、声音目的、Gain/Fade/Ducking、是否Must Use。\n- 避免持续嗡鸣与无关UI音效堆叠。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n[HARD_CONSTRAINT] 没有真实渲染结果和探测验证，不能声称 FINAL_VIDEO_SILENT / FINAL_BGM_SFX 已完成。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 每个声音Cue有叙事/信息目的\n- 未存在资产明确PLANNED/MISSING_AUDIO_ASSET\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SOUND_DIRECTION.md\n- SOUND_CUE_MAP.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F14",
+      "name": "FIONI · Cover",
+      "purpose": "生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F13"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "封面核心表达",
+        "官方角色参考"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "COVER_DESIGN",
+      "expectedOutput": [
+        "三比例正式封面",
+        "COVER_PACKAGE_INDEX.md"
+      ],
+      "saveAs": [
+        "三比例正式封面",
+        "COVER_PACKAGE_INDEX.md"
+      ],
+      "qualityGate": [
+        "角色可识别",
+        "一眼只有一个主要点击信息",
+        "正文能兑现"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F14｜FIONI · Cover】\n【Executor】Chat\n【Capability】COVER_DESIGN / Cover\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F13\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- 封面核心表达\n- 官方角色参考\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 4:3/3:4/16:9独立构图，不机械裁切。\n- 角色主图不做像素化替代；背景可用克制Pixel/几何。\n- 输出COVER_MESSAGE与TITLE_COMPLEMENT_RULE，发布阶段再适配平台特版。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 角色形象必须依据真实可读官方参考；缺参考不能凭空高还原。\n[HARD_CONSTRAINT] 标题与封面不能夸大到正文无法兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 角色可识别\n- 一眼只有一个主要点击信息\n- 正文能兑现\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- 三比例正式封面\n- COVER_PACKAGE_INDEX.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F15",
+      "name": "FIONI · Asset Gap / ASSET_INDEX",
+      "purpose": "知道现有素材是什么、缺什么、在哪里、能否用于最终成片。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F14"
+      ],
+      "requiredInput": [
+        "tree /f或真实目录索引",
+        "素材描述MD"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "ASSET_GAP_AND_INDEX",
+      "expectedOutput": [
+        "ASSET_INDEX.md",
+        "PATH_REMAP.md（如移动）",
+        "MISSING_ASSET_REPORT.md"
+      ],
+      "saveAs": [
+        "ASSET_INDEX.md",
+        "PATH_REMAP.md（如移动）",
+        "MISSING_ASSET_REPORT.md"
+      ],
+      "qualityGate": [
+        "所有蓝图候选素材都有真实路径/描述/权限状态"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F15｜FIONI · Asset Gap / ASSET_INDEX】\n【Executor】Codex\n【Capability】ASSET_GAP_AND_INDEX / Asset Gap / ASSET_INDEX\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n知道现有素材是什么、缺什么、在哪里、能否用于最终成片。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F14\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- tree /f或真实目录索引\n- 素材描述MD\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 稳定ASSET_ID贯穿来源、Master/Proxy、描述、蓝图。\n- 区分MISSING_ASSET / RIGHTS_REVIEW_REQUIRED / 已就绪。\n- 文件移动用PATH_REMAP，不依赖旧路径覆盖最新索引。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。\n[HARD_CONSTRAINT] 批处理默认不覆盖 Master / 原始素材；移动前 Dry Run，冲突时停止。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 所有蓝图候选素材都有真实路径/描述/权限状态\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- ASSET_INDEX.md\n- PATH_REMAP.md（如移动）\n- MISSING_ASSET_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\nChat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。"
+    },
+    {
+      "promptId": "PF-F16",
+      "name": "FIONI · Editing Blueprint",
+      "purpose": "在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F15"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "TIMELINE_MASTER",
+        "ASSET_INDEX",
+        "视觉/声音设计"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "EDITING_BLUEPRINT",
+      "expectedOutput": [
+        "CODEX_EDIT_BLUEPRINT.md"
+      ],
+      "saveAs": [
+        "CODEX_EDIT_BLUEPRINT.md"
+      ],
+      "qualityGate": [
+        "Codex无需重新导演",
+        "所有引用路径/权限/时间真实可执行"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F16｜FIONI · Editing Blueprint】\n【Executor】Chat\n【Capability】EDITING_BLUEPRINT / Editing Blueprint\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F15\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- TIMELINE_MASTER\n- ASSET_INDEX\n- 视觉/声音设计\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐Shot写时间、旁白语义、素材ASSET_ID/真实路径、Source In/Out、构图、转场、动效、字幕/视觉锚点。\n- 声音写BGM/SFX/Cue/Gain/Fade/Ducking。\n- 素材不存在写MISSING，不把寻找/导演留给Codex。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n[HARD_CONSTRAINT] AI 解释动画、生成图不能冒充真实游戏画面或正式机制证据。\n[BEST_PRACTICE] Codex 适合本地文件、FFmpeg、批处理、动画、音频和蓝图执行；导演判断前移。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- Codex无需重新导演\n- 所有引用路径/权限/时间真实可执行\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- CODEX_EDIT_BLUEPRINT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F17",
+      "name": "FIONI · Codex Build",
+      "purpose": "严格按蓝图执行本地视频与背景声构建。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F16"
+      ],
+      "requiredInput": [
+        "CODEX_EDIT_BLUEPRINT",
+        "实际本地素材"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CODEX_BUILD",
+      "expectedOutput": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "BUILD_REPORT.md"
+      ],
+      "saveAs": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "BUILD_REPORT.md"
+      ],
+      "qualityGate": [
+        "ffprobe/音频探测通过",
+        "同00:00",
+        "无口播/字幕混入对应输出"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F17｜FIONI · Codex Build】\n【Executor】Codex\n【Capability】CODEX_BUILD / Codex Build\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n严格按蓝图执行本地视频与背景声构建。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F16\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CODEX_EDIT_BLUEPRINT\n- 实际本地素材\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 先预检路径/时长/权限/缺失，再执行。\n- 画面输出FINAL_VIDEO_SILENT.mp4；背景声输出FINAL_BGM_SFX.wav。\n- 不临场换素材/改脚本/重新导演。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不得擅自把本地制作素材、大视频、音频或项目工作目录推到 Git。\n[BEST_PRACTICE] Codex 适合本地文件、FFmpeg、批处理、动画、音频和蓝图执行；导演判断前移。\n[HARD_CONSTRAINT] 没有真实渲染结果和探测验证，不能声称 FINAL_VIDEO_SILENT / FINAL_BGM_SFX 已完成。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- ffprobe/音频探测通过\n- 同00:00\n- 无口播/字幕混入对应输出\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FINAL_VIDEO_SILENT.mp4\n- FINAL_BGM_SFX.wav\n- BUILD_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\nChat生成可执行构建脚本；用户/本地执行器运行并回传验证。"
+    },
+    {
+      "promptId": "PF-F18",
+      "name": "FIONI · Final Human Assembly",
+      "purpose": "在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。",
+      "executor": "Human",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F17"
+      ],
+      "requiredInput": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "AUDIO_MASTER",
+        "FINAL.srt"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "FINAL_ASSEMBLY",
+      "expectedOutput": [
+        "ASSEMBLY_CHECKLIST.md",
+        "用户实际导出的FINAL_MASTER.mp4"
+      ],
+      "saveAs": [
+        "ASSEMBLY_CHECKLIST.md",
+        "用户实际导出的FINAL_MASTER.mp4"
+      ],
+      "qualityGate": [
+        "成片完整播放、字幕同步、口播清楚"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q3",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F18｜FIONI · Final Human Assembly】\n【Executor】Human\n【Capability】FINAL_ASSEMBLY / Final Human Assembly\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F17\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL_VIDEO_SILENT.mp4\n- FINAL_BGM_SFX.wav\n- AUDIO_MASTER\n- FINAL.srt\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 四件套同00:00。\n- 人工调整总背景声与口播听感，不反向改变锁稿/Timeline。\n- 导出FINAL_MASTER.mp4。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q3】\n- 成片完整播放、字幕同步、口播清楚\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- ASSEMBLY_CHECKLIST.md\n- 用户实际导出的FINAL_MASTER.mp4\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-F19",
+      "name": "FIONI · Platform Rule Verification",
+      "purpose": "实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F18"
+      ],
+      "requiredInput": [
+        "目标六平台"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "PLATFORM_RULE_VERIFICATION",
+      "expectedOutput": [
+        "PLATFORM_RULES_CHECK.md"
+      ],
+      "saveAs": [
+        "PLATFORM_RULES_CHECK.md"
+      ],
+      "qualityGate": [
+        "动态规则有当前来源/日期"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F19｜FIONI · Platform Rule Verification】\n【Executor】Work\n【Capability】PLATFORM_RULE_VERIFICATION / Platform Rule Verification\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F18\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 目标六平台\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 优先官方投稿UI/帮助/规范。\n- 无法确认数字就写投稿时按实时UI最终确认，不编。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 平台投稿字段、字数、封面、版权、AI披露规则必须实时核验。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 动态规则有当前来源/日期\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- PLATFORM_RULES_CHECK.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-F20",
+      "name": "FIONI · Six-platform Publish Package",
+      "purpose": "生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-F19"
+      ],
+      "requiredInput": [
+        "CORE_THESIS/最终稿",
+        "FINAL.srt/Timeline",
+        "COVER_PACKAGE_INDEX",
+        "PLATFORM_RULES_CHECK"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SIX_PLATFORM_PUBLISH_PACKAGE",
+      "expectedOutput": [
+        "PUBLISH_PACKAGE.md"
+      ],
+      "saveAs": [
+        "PUBLISH_PACKAGE.md"
+      ],
+      "qualityGate": [
+        "字段符合当前平台规则",
+        "标题/封面/正文一致"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "FIONI",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-F20｜FIONI · Six-platform Publish Package】\n【Executor】Work\n【Capability】SIX_PLATFORM_PUBLISH_PACKAGE / Six-platform Publish Package\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。\n\n【Dependencies / Read From Previous】\nDependencies: PF-F19\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS/最终稿\n- FINAL.srt/Timeline\n- COVER_PACKAGE_INDEX\n- PLATFORM_RULES_CHECK\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- B站/抖音/小红书/视频号简中；YouTube/TikTok繁中。\n- 标题≥5候选且与封面互补。\n- B站/YouTube按真实Timeline生成3–9章节；B站给2–4弹幕投票建议。\n- 处理署名与AI披露。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] B站/抖音/小红书/视频号简体；YouTube/TikTok繁体，除非项目覆盖。\n[HARD_CONSTRAINT] 标题与封面不能夸大到正文无法兑现。\n[HARD_CONSTRAINT] ATTRIBUTION_REQUIRED / AI disclosure 在发布前必须处理。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 字段符合当前平台规则\n- 标题/封面/正文一致\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- PUBLISH_PACKAGE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-S03",
+      "name": "SEVERIAN · Content Structure",
+      "purpose": "为当前产品类型安排信息顺序、章节、钩子与证据位置。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S02"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "研究结论"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CONTENT_STRUCTURE",
+      "expectedOutput": [
+        "CONTENT_OUTLINE.md"
+      ],
+      "saveAs": [
+        "CONTENT_OUTLINE.md"
+      ],
+      "qualityGate": [
+        "删掉任一章节会损失明确价值",
+        "没有百科式填充"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S03｜SEVERIAN · Content Structure】\n【Executor】Chat\n【Capability】CONTENT_STRUCTURE / Content Structure\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n为当前产品类型安排信息顺序、章节、钩子与证据位置。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S02\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- 研究结论\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 开头15–30秒直击问题。\n- 章节只服务命题；短内容不强制章节。\n- 把证据、判断、操作与收益按因果排列。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 删掉任一章节会损失明确价值\n- 没有百科式填充\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- CONTENT_OUTLINE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S04",
+      "name": "SEVERIAN · Script",
+      "purpose": "生成自然、准确、高信息密度的真人口播稿。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S03"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "CONTENT_OUTLINE",
+        "研究材料"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_DRAFT",
+      "expectedOutput": [
+        "SCRIPT_DRAFT.md"
+      ],
+      "saveAs": [
+        "SCRIPT_DRAFT.md"
+      ],
+      "qualityGate": [
+        "正文兑现命题",
+        "没有把分析写成官方事实"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S04｜SEVERIAN · Script】\n【Executor】Chat\n【Capability】SCRIPT_DRAFT / Script\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成自然、准确、高信息密度的真人口播稿。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S03\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- CONTENT_OUTLINE\n- 研究材料\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 直接判断→证据→因果→操作/决策。\n- 重要答案前置；每段有新信息。\n- 产品类型决定语言：机制更重UI/状态因果，剧情更重事件/主题/人物关系，决策更重条件与机会成本。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 避免公告腔、百科堆砌、机械转场、连续总结与 AI 模板句。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 正文兑现命题\n- 没有把分析写成官方事实\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_DRAFT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S05",
+      "name": "SEVERIAN · Fact / Mechanic / Terminology QC",
+      "purpose": "独立检查术语、数值、机制、版本、配队、排轴与证据边界。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S04"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "证据/正式术语真值"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_FACT_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_FACT.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_FACT.md"
+      ],
+      "qualityGate": [
+        "无未解决P0/事实型P1才PASS"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S05｜SEVERIAN · Fact / Mechanic / Terminology QC】\n【Executor】Work\n【Capability】SCRIPT_FACT_QC / Fact / Mechanic / Terminology QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n独立检查术语、数值、机制、版本、配队、排轴与证据边界。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S04\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- 证据/正式术语真值\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐问题给位置/问题/正确依据/最低成本改法。\n- 事实型 P1 未核实不能 PASS。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不能编造来源 URL、视频 ID、发布时间、数值、角色术语。\n[HARD_CONSTRAINT] 不能把旧版本、其他区服或不同测试阶段资料覆盖当前项目已确认版本事实。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 无未解决P0/事实型P1才PASS\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_FACT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S06",
+      "name": "SEVERIAN · Content Value / Logic QC",
+      "purpose": "检查核心命题兑现、逻辑链、信息增量、产品类型与收藏分享价值。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S05"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "CORE_THESIS",
+        "产品类型"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_VALUE_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_VALUE.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_VALUE.md"
+      ],
+      "qualityGate": [
+        "核心命题完整兑现且无影响价值/逻辑P0/P1"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S06｜SEVERIAN · Content Value / Logic QC】\n【Executor】Work\n【Capability】SCRIPT_VALUE_QC / Content Value / Logic QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n检查核心命题兑现、逻辑链、信息增量、产品类型与收藏分享价值。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S05\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- CORE_THESIS\n- 产品类型\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐段判断新认识/机制/因果/操作/误区/决策价值。\n- 标 DELETE/KEEP/P0/P1。\n- 检查标题/封面承诺是否由正文支撑。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[FAILURE_WARNING] 不为了凑 10 分钟或完整攻略而重复信息、硬塞百科内容。\n[BEST_PRACTICE] 标题/封面承诺、开场问题和正文核心结论必须互相兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 核心命题完整兑现且无影响价值/逻辑P0/P1\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_VALUE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S07",
+      "name": "SEVERIAN · Anti-AI / Retention QC",
+      "purpose": "去模板化语言并检查前30秒与中段留存。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S06"
+      ],
+      "requiredInput": [
+        "当前稿"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_NATURALNESS_QC",
+      "expectedOutput": [
+        "SCRIPT_REVIEW_NATURALNESS.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVIEW_NATURALNESS.md"
+      ],
+      "qualityGate": [
+        "真人可念、节奏有变化、没有明显AI模板堆叠"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S07｜SEVERIAN · Anti-AI / Retention QC】\n【Executor】Chat\n【Capability】SCRIPT_NATURALNESS_QC / Anti-AI / Retention QC\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n去模板化语言并检查前30秒与中段留存。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S06\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 扫描否定再肯定、反而、模板转场、空泛强调、重复总结、假互动和过度工整。\n- 只给DIFF建议，不为了自然故意说乱。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] 避免公告腔、百科堆砌、机械转场、连续总结与 AI 模板句。\n[BEST_PRACTICE] 已确认稿件默认 DIFF MODE，只改事实错误、新正式资料或严重逻辑问题。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 真人可念、节奏有变化、没有明显AI模板堆叠\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVIEW_NATURALNESS.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S08",
+      "name": "SEVERIAN · DIFF Revision",
+      "purpose": "合并审核结果，对当前稿做最低成本修订并保留已确认部分。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S07"
+      ],
+      "requiredInput": [
+        "当前稿",
+        "审核结果"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SCRIPT_DIFF_REVISION",
+      "expectedOutput": [
+        "SCRIPT_REVISED.md",
+        "SCRIPT_REVIEW.md"
+      ],
+      "saveAs": [
+        "SCRIPT_REVISED.md",
+        "SCRIPT_REVIEW.md"
+      ],
+      "qualityGate": [
+        "没有顺手全文重写",
+        "受影响审核项关闭"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S08｜SEVERIAN · DIFF Revision】\n【Executor】Chat\n【Capability】SCRIPT_DIFF_REVISION / DIFF Revision\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n合并审核结果，对当前稿做最低成本修订并保留已确认部分。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S07\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 当前稿\n- 审核结果\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 只改对应位置。\n- 事实错误优先；新资料只影响相关段落。\n- 修后再次检查受影响的事实/逻辑/自然度。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n[BEST_PRACTICE] 已确认稿件默认 DIFF MODE，只改事实错误、新正式资料或严重逻辑问题。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 没有顺手全文重写\n- 受影响审核项关闭\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_REVISED.md\n- SCRIPT_REVIEW.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S09",
+      "name": "SEVERIAN · Reading Script / TTS Prep",
+      "purpose": "把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S08"
+      ],
+      "requiredInput": [
+        "SCRIPT_LOCK正文"
+      ],
+      "optionalInput": [
+        "真人/AI朗读模式",
+        "多人角色分配"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "READING_SCRIPT",
+      "expectedOutput": [
+        "SCRIPT_READ.md 或 TTS_TEMP.srt",
+        "TTS_PRONUNCIATION_MAP.md",
+        "TTS_README.md"
+      ],
+      "saveAs": [
+        "SCRIPT_READ.md 或 TTS_TEMP.srt",
+        "TTS_PRONUNCIATION_MAP.md",
+        "TTS_README.md"
+      ],
+      "qualityGate": [
+        "不改变事实/语义",
+        "TTS安全写法有Pronunciation Map"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S09｜SEVERIAN · Reading Script / TTS Prep】\n【Executor】Chat\n【Capability】READING_SCRIPT / Reading Script / TTS Prep\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S08\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- SCRIPT_LOCK正文\n\n【Optional Input】\n- 真人/AI朗读模式\n- 多人角色分配\n\n【CORE METHOD】\n- 真人模式保持正式文本并按自然语义分块。\n- AI模式生成TTS_TEMP.srt，每cue≤500可见字符、尽量430–490；用发音映射处理多音字、生僻字、专名、数字/符号。\n- TTS临时时码只为导入，不是真实Timeline。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。\n[FAILURE_WARNING] TTS_TEMP.srt 只用于 AI 朗读，临时时码不能污染最终时间线。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 不改变事实/语义\n- TTS安全写法有Pronunciation Map\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SCRIPT_READ.md 或 TTS_TEMP.srt\n- TTS_PRONUNCIATION_MAP.md\n- TTS_README.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-S10",
+      "name": "SEVERIAN · Precise SRT Alignment",
+      "purpose": "用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S09"
+      ],
+      "requiredInput": [
+        "AUDIO_MASTER",
+        "SCRIPT_LOCK正文"
+      ],
+      "optionalInput": [
+        "TTS_PRONUNCIATION_MAP"
+      ],
+      "readFromPrevious": [],
+      "capabilityUsed": "PRECISE_SRT_ALIGNMENT",
+      "expectedOutput": [
+        "FINAL.srt",
+        "ALIGNMENT_REPORT.md"
+      ],
+      "saveAs": [
+        "FINAL.srt",
+        "ALIGNMENT_REPORT.md"
+      ],
+      "qualityGate": [
+        "所有时间来自真实音频",
+        "无重叠/倒序",
+        "术语与锁稿一致"
+      ],
+      "hardStop": [
+        "没有该角色视频最终 AUDIO_MASTER 时 NEED_INPUT"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S10｜SEVERIAN · Precise SRT Alignment】\n【Executor】Work\n【Capability】PRECISE_SRT_ALIGNMENT / Precise SRT Alignment\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S09\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- AUDIO_MASTER\n- SCRIPT_LOCK正文\n\n【Optional Input】\n- TTS_PRONUNCIATION_MAP\n\n【CORE METHOD】\n- 真实ASR/对齐取WHEN，锁定文本取WHAT。\n- 自然意群切cue，ASR错词用锁定文本校正。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 禁止按字数、平均语速、脚本长度或句长猜时间。\n[HARD_CONSTRAINT] ASR 只提供时间参考，不能覆盖锁定角色名、术语与正式字幕文字。\n[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- 没有该角色视频最终 AUDIO_MASTER 时 NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 所有时间来自真实音频\n- 无重叠/倒序\n- 术语与锁稿一致\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FINAL.srt\n- ALIGNMENT_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\n只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。"
+    },
+    {
+      "promptId": "PF-S11",
+      "name": "SEVERIAN · TIMELINE_MASTER",
+      "purpose": "从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S10"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "AUDIO_MASTER",
+        "SCRIPT_LOCK"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "TIMELINE_MASTER",
+      "expectedOutput": [
+        "TIMELINE_MASTER.md"
+      ],
+      "saveAs": [
+        "TIMELINE_MASTER.md"
+      ],
+      "qualityGate": [
+        "与FINAL.srt/AUDIO_MASTER同00:00",
+        "无猜测时间"
+      ],
+      "hardStop": [
+        "FINAL.srt不是真实音频对齐结果"
+      ],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S11｜SEVERIAN · TIMELINE_MASTER】\n【Executor】Chat\n【Capability】TIMELINE_MASTER / TIMELINE_MASTER\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S10\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- AUDIO_MASTER\n- SCRIPT_LOCK\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 每段记录SEGMENT_ID/START/END/LOCKED_TEXT/SECTION/SEMANTIC_PURPOSE/KEY_TERMS/IMPORTANT_BEAT/PAUSE/ANCHOR_CANDIDATE。\n- 不在此阶段提前决定具体视觉或SFX。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n- FINAL.srt不是真实音频对齐结果\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 与FINAL.srt/AUDIO_MASTER同00:00\n- 无猜测时间\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- TIMELINE_MASTER.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S12",
+      "name": "SEVERIAN · Visual Direction",
+      "purpose": "根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S11"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "TIMELINE_MASTER",
+        "已有素材描述"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "VISUAL_DIRECTION",
+      "expectedOutput": [
+        "VISUAL_DIRECTION.md"
+      ],
+      "saveAs": [
+        "VISUAL_DIRECTION.md"
+      ],
+      "qualityGate": [
+        "关闭声音仍能大致理解关键段落",
+        "视觉类型匹配内容类型"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S12｜SEVERIAN · Visual Direction】\n【Executor】Chat\n【Capability】VISUAL_DIRECTION / Visual Direction\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S11\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- TIMELINE_MASTER\n- 已有素材描述\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐段定义视觉目的：证明/展示/对比/解释/氛围。\n- 真实证据优先真实素材；抽象机制再用HUD/Pixel/图表。\n- 剧情/人物类优先官方剧情画面、关系、时间线、意象，不强塞战斗HUD。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] AI 解释动画、生成图不能冒充真实游戏画面或正式机制证据。\n[BEST_PRACTICE] 视觉服务理解、证据与节奏；不靠满屏光效或无信息装饰充数。\n[OPTIONAL_ENHANCEMENT] Pixel、几何、HUD、数据图、关系图按项目需要选择，不是固定步骤。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 关闭声音仍能大致理解关键段落\n- 视觉类型匹配内容类型\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- VISUAL_DIRECTION.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S13",
+      "name": "SEVERIAN · Sound Design Blueprint",
+      "purpose": "围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S12"
+      ],
+      "requiredInput": [
+        "AUDIO_MASTER",
+        "TIMELINE_MASTER",
+        "视觉方向"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SOUND_DESIGN_BLUEPRINT",
+      "expectedOutput": [
+        "SOUND_DIRECTION.md",
+        "SOUND_CUE_MAP.md"
+      ],
+      "saveAs": [
+        "SOUND_DIRECTION.md",
+        "SOUND_CUE_MAP.md"
+      ],
+      "qualityGate": [
+        "每个声音Cue有叙事/信息目的",
+        "未存在资产明确PLANNED/MISSING_AUDIO_ASSET"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S13｜SEVERIAN · Sound Design Blueprint】\n【Executor】Chat\n【Capability】SOUND_DESIGN_BLUEPRINT / Sound Design Blueprint\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S12\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- AUDIO_MASTER\n- TIMELINE_MASTER\n- 视觉方向\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 口播可听性第一。\n- 精确到Cue记录时间、声音目的、Gain/Fade/Ducking、是否Must Use。\n- 避免持续嗡鸣与无关UI音效堆叠。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n[HARD_CONSTRAINT] 没有真实渲染结果和探测验证，不能声称 FINAL_VIDEO_SILENT / FINAL_BGM_SFX 已完成。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 每个声音Cue有叙事/信息目的\n- 未存在资产明确PLANNED/MISSING_AUDIO_ASSET\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- SOUND_DIRECTION.md\n- SOUND_CUE_MAP.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S14",
+      "name": "SEVERIAN · Cover",
+      "purpose": "生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S13"
+      ],
+      "requiredInput": [
+        "CORE_THESIS",
+        "封面核心表达",
+        "官方角色参考"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "COVER_DESIGN",
+      "expectedOutput": [
+        "三比例正式封面",
+        "COVER_PACKAGE_INDEX.md"
+      ],
+      "saveAs": [
+        "三比例正式封面",
+        "COVER_PACKAGE_INDEX.md"
+      ],
+      "qualityGate": [
+        "角色可识别",
+        "一眼只有一个主要点击信息",
+        "正文能兑现"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S14｜SEVERIAN · Cover】\n【Executor】Chat\n【Capability】COVER_DESIGN / Cover\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S13\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS\n- 封面核心表达\n- 官方角色参考\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 4:3/3:4/16:9独立构图，不机械裁切。\n- 角色主图不做像素化替代；背景可用克制Pixel/几何。\n- 输出COVER_MESSAGE与TITLE_COMPLEMENT_RULE，发布阶段再适配平台特版。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 角色形象必须依据真实可读官方参考；缺参考不能凭空高还原。\n[HARD_CONSTRAINT] 标题与封面不能夸大到正文无法兑现。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 角色可识别\n- 一眼只有一个主要点击信息\n- 正文能兑现\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- 三比例正式封面\n- COVER_PACKAGE_INDEX.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S15",
+      "name": "SEVERIAN · Asset Gap / ASSET_INDEX",
+      "purpose": "知道现有素材是什么、缺什么、在哪里、能否用于最终成片。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S14"
+      ],
+      "requiredInput": [
+        "tree /f或真实目录索引",
+        "素材描述MD"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "ASSET_GAP_AND_INDEX",
+      "expectedOutput": [
+        "ASSET_INDEX.md",
+        "PATH_REMAP.md（如移动）",
+        "MISSING_ASSET_REPORT.md"
+      ],
+      "saveAs": [
+        "ASSET_INDEX.md",
+        "PATH_REMAP.md（如移动）",
+        "MISSING_ASSET_REPORT.md"
+      ],
+      "qualityGate": [
+        "所有蓝图候选素材都有真实路径/描述/权限状态"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S15｜SEVERIAN · Asset Gap / ASSET_INDEX】\n【Executor】Codex\n【Capability】ASSET_GAP_AND_INDEX / Asset Gap / ASSET_INDEX\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n知道现有素材是什么、缺什么、在哪里、能否用于最终成片。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S14\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- tree /f或真实目录索引\n- 素材描述MD\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 稳定ASSET_ID贯穿来源、Master/Proxy、描述、蓝图。\n- 区分MISSING_ASSET / RIGHTS_REVIEW_REQUIRED / 已就绪。\n- 文件移动用PATH_REMAP，不依赖旧路径覆盖最新索引。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。\n[HARD_CONSTRAINT] 批处理默认不覆盖 Master / 原始素材；移动前 Dry Run，冲突时停止。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 所有蓝图候选素材都有真实路径/描述/权限状态\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- ASSET_INDEX.md\n- PATH_REMAP.md（如移动）\n- MISSING_ASSET_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\nChat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。"
+    },
+    {
+      "promptId": "PF-S16",
+      "name": "SEVERIAN · Editing Blueprint",
+      "purpose": "在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。",
+      "executor": "Chat",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S15"
+      ],
+      "requiredInput": [
+        "FINAL.srt",
+        "TIMELINE_MASTER",
+        "ASSET_INDEX",
+        "视觉/声音设计"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "EDITING_BLUEPRINT",
+      "expectedOutput": [
+        "CODEX_EDIT_BLUEPRINT.md"
+      ],
+      "saveAs": [
+        "CODEX_EDIT_BLUEPRINT.md"
+      ],
+      "qualityGate": [
+        "Codex无需重新导演",
+        "所有引用路径/权限/时间真实可执行"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S16｜SEVERIAN · Editing Blueprint】\n【Executor】Chat\n【Capability】EDITING_BLUEPRINT / Editing Blueprint\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S15\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL.srt\n- TIMELINE_MASTER\n- ASSET_INDEX\n- 视觉/声音设计\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 逐Shot写时间、旁白语义、素材ASSET_ID/真实路径、Source In/Out、构图、转场、动效、字幕/视觉锚点。\n- 声音写BGM/SFX/Cue/Gain/Fade/Ducking。\n- 素材不存在写MISSING，不把寻找/导演留给Codex。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n[HARD_CONSTRAINT] AI 解释动画、生成图不能冒充真实游戏画面或正式机制证据。\n[BEST_PRACTICE] Codex 适合本地文件、FFmpeg、批处理、动画、音频和蓝图执行；导演判断前移。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- Codex无需重新导演\n- 所有引用路径/权限/时间真实可执行\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- CODEX_EDIT_BLUEPRINT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S17",
+      "name": "SEVERIAN · Codex Build",
+      "purpose": "严格按蓝图执行本地视频与背景声构建。",
+      "executor": "Codex",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S16"
+      ],
+      "requiredInput": [
+        "CODEX_EDIT_BLUEPRINT",
+        "实际本地素材"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "CODEX_BUILD",
+      "expectedOutput": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "BUILD_REPORT.md"
+      ],
+      "saveAs": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "BUILD_REPORT.md"
+      ],
+      "qualityGate": [
+        "ffprobe/音频探测通过",
+        "同00:00",
+        "无口播/字幕混入对应输出"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S17｜SEVERIAN · Codex Build】\n【Executor】Codex\n【Capability】CODEX_BUILD / Codex Build\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n严格按蓝图执行本地视频与背景声构建。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S16\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CODEX_EDIT_BLUEPRINT\n- 实际本地素材\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 先预检路径/时长/权限/缺失，再执行。\n- 画面输出FINAL_VIDEO_SILENT.mp4；背景声输出FINAL_BGM_SFX.wav。\n- 不临场换素材/改脚本/重新导演。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 不得擅自把本地制作素材、大视频、音频或项目工作目录推到 Git。\n[BEST_PRACTICE] Codex 适合本地文件、FFmpeg、批处理、动画、音频和蓝图执行；导演判断前移。\n[HARD_CONSTRAINT] 没有真实渲染结果和探测验证，不能声称 FINAL_VIDEO_SILENT / FINAL_BGM_SFX 已完成。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- ffprobe/音频探测通过\n- 同00:00\n- 无口播/字幕混入对应输出\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- FINAL_VIDEO_SILENT.mp4\n- FINAL_BGM_SFX.wav\n- BUILD_REPORT.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n\n【CHAT_FALLBACK】\nChat生成可执行构建脚本；用户/本地执行器运行并回传验证。"
+    },
+    {
+      "promptId": "PF-S18",
+      "name": "SEVERIAN · Final Human Assembly",
+      "purpose": "在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。",
+      "executor": "Human",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S17"
+      ],
+      "requiredInput": [
+        "FINAL_VIDEO_SILENT.mp4",
+        "FINAL_BGM_SFX.wav",
+        "AUDIO_MASTER",
+        "FINAL.srt"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "FINAL_ASSEMBLY",
+      "expectedOutput": [
+        "ASSEMBLY_CHECKLIST.md",
+        "用户实际导出的FINAL_MASTER.mp4"
+      ],
+      "saveAs": [
+        "ASSEMBLY_CHECKLIST.md",
+        "用户实际导出的FINAL_MASTER.mp4"
+      ],
+      "qualityGate": [
+        "成片完整播放、字幕同步、口播清楚"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q3",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S18｜SEVERIAN · Final Human Assembly】\n【Executor】Human\n【Capability】FINAL_ASSEMBLY / Final Human Assembly\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S17\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- FINAL_VIDEO_SILENT.mp4\n- FINAL_BGM_SFX.wav\n- AUDIO_MASTER\n- FINAL.srt\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 四件套同00:00。\n- 人工调整总背景声与口播听感，不反向改变锁稿/Timeline。\n- 导出FINAL_MASTER.mp4。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q3】\n- 成片完整播放、字幕同步、口播清楚\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- ASSEMBLY_CHECKLIST.md\n- 用户实际导出的FINAL_MASTER.mp4\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    },
+    {
+      "promptId": "PF-S19",
+      "name": "SEVERIAN · Platform Rule Verification",
+      "purpose": "实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S18"
+      ],
+      "requiredInput": [
+        "目标六平台"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "PLATFORM_RULE_VERIFICATION",
+      "expectedOutput": [
+        "PLATFORM_RULES_CHECK.md"
+      ],
+      "saveAs": [
+        "PLATFORM_RULES_CHECK.md"
+      ],
+      "qualityGate": [
+        "动态规则有当前来源/日期"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q1",
+      "reviewMode": "REVIEW_OPTIONAL",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S19｜SEVERIAN · Platform Rule Verification】\n【Executor】Work\n【Capability】PLATFORM_RULE_VERIFICATION / Platform Rule Verification\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S18\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- 目标六平台\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- 优先官方投稿UI/帮助/规范。\n- 无法确认数字就写投稿时按实时UI最终确认，不编。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[HARD_CONSTRAINT] 平台投稿字段、字数、封面、版权、AI披露规则必须实时核验。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q1】\n- 动态规则有当前来源/日期\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- PLATFORM_RULES_CHECK.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。\n"
+    },
+    {
+      "promptId": "PF-S20",
+      "name": "SEVERIAN · Six-platform Publish Package",
+      "purpose": "生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。",
+      "executor": "Work",
+      "when": "依赖满足后执行",
+      "dependencies": [
+        "PF-S19"
+      ],
+      "requiredInput": [
+        "CORE_THESIS/最终稿",
+        "FINAL.srt/Timeline",
+        "COVER_PACKAGE_INDEX",
+        "PLATFORM_RULES_CHECK"
+      ],
+      "optionalInput": [],
+      "readFromPrevious": [],
+      "capabilityUsed": "SIX_PLATFORM_PUBLISH_PACKAGE",
+      "expectedOutput": [
+        "PUBLISH_PACKAGE.md"
+      ],
+      "saveAs": [
+        "PUBLISH_PACKAGE.md"
+      ],
+      "qualityGate": [
+        "字段符合当前平台规则",
+        "标题/封面/正文一致"
+      ],
+      "hardStop": [],
+      "softUncertaintyPolicy": [
+        "机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。",
+        "配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。",
+        "资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。",
+        "普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。",
+        "缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。",
+        "版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。"
+      ],
+      "skipCondition": [],
+      "next": [],
+      "chatFallback": "",
+      "qcLevel": "Q2",
+      "reviewMode": "APPROVAL_REQUIRED",
+      "status": "PENDING",
+      "branch": "SEVERIAN",
+      "notes": "",
+      "prompt": "【PROJECT PROMPT NODE · PF-S20｜SEVERIAN · Six-platform Publish Package】\n【Executor】Work\n【Capability】SIX_PLATFORM_PUBLISH_PACKAGE / Six-platform Publish Package\n【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。\n\n【Project】\nPROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW\nGAME: 绝区零\nSERVER: 国际服\nVERSION: 3.3\nPRODUCT_TYPE: preview\nAUTONOMY_LEVEL: L2\nDO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻\nSHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕\n\n【Purpose】\n生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。\n\n【Dependencies / Read From Previous】\nDependencies: PF-S19\nRead: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件\n\n【Required Input】\n- CORE_THESIS/最终稿\n- FINAL.srt/Timeline\n- COVER_PACKAGE_INDEX\n- PLATFORM_RULES_CHECK\n\n【Optional Input】\n- 无\n\n【CORE METHOD】\n- B站/抖音/小红书/视频号简中；YouTube/TikTok繁中。\n- 标题≥5候选且与封面互补。\n- B站/YouTube按真实Timeline生成3–9章节；B站给2–4弹幕投票建议。\n- 处理署名与AI披露。\n\n【MANDATORY GUARDRAILS】\n- 默认 AUTONOMY_LEVEL=L2。\n- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。\n- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。\n[BEST_PRACTICE] B站/抖音/小红书/视频号简体；YouTube/TikTok繁体，除非项目覆盖。\n[HARD_CONSTRAINT] 标题与封面不能夸大到正文无法兑现。\n[HARD_CONSTRAINT] ATTRIBUTION_REQUIRED / AI disclosure 在发布前必须处理。\n\n【HARD STOP】\n- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT\n- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT\n- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT\n- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT\n- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT\n\n【SOFT UNCERTAINTY】\n- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。\n- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。\n- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。\n- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。\n- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。\n- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。\n\n【QUALITY GATE · Q2】\n- 字段符合当前平台规则\n- 标题/封面/正文一致\n\n【Skip Condition】\n- 无\n\n【Output / Save As】\n- PUBLISH_PACKAGE.md\n\n【Task】\n只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。\n完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。\n本节点完成后等待 Human Approval。\n"
+    }
+  ],
+  "flowRevision": 1,
+  "createdAt": "2026-10-07T07:49:26.017Z",
+  "updatedAt": "2026-10-07T07:49:26.018Z",
+  "history": [
+    {
+      "at": "2026-10-07T07:49:26.017Z",
+      "action": "PROJECT_CREATED_V2"
+    },
+    {
+      "at": "2026-10-07T07:49:26.018Z",
+      "action": "PROMPT_FLOW_BUILT",
+      "revision": 1
+    }
+  ]
+}

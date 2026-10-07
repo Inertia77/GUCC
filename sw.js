@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v28";
-const RUNTIME_CACHE = "gucc-runtime-v28";
+const STATIC_CACHE = "gucc-static-v29";
+const RUNTIME_CACHE = "gucc-runtime-v29";
 
 const APP_SHELL = [
   "./",
@@ -82,12 +82,21 @@ const APP_SHELL = [
   "./apps/command-center/src/features/versions.js",
   "./apps/video-workspace/",
   "./apps/video-workspace/index.html",
-  "./apps/video-workspace/ai-prompts.js?v=6.0.0",
-  "./apps/video-workspace/studio.js?v=6.0.0",
-  "./apps/video-workspace/studio.css?v=6.0.0",
+  "./apps/video-workspace/legacy-prompt-studio-v6.html",
+  "./apps/video-workspace/ai-prompts.js?v=6.1.4",
+  "./apps/video-workspace/studio.js?v=6.1.4",
+  "./apps/video-workspace/studio.css?v=6.1.4",
   "./apps/video-workspace/production-system/",
   "./docs/ai-video-production/CREATOR_CONSTITUTION.md",
   "./apps/video-workspace/production-system/index.html",
+  "./apps/video-workspace/production-system/creator-os.css?v=2.0.0",
+  "./apps/video-workspace/production-system/core-rules.js?v=2.0.0",
+  "./apps/video-workspace/production-system/failure-prevention.js?v=2.0.0",
+  "./apps/video-workspace/production-system/capability-library.js?v=2.0.0",
+  "./apps/video-workspace/production-system/orchestrator.js?v=2.0.0",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=2.0.0",
+  "./apps/video-workspace/production-system/legacy-prompt-migration.json?v=2.0.0",
+  "./apps/video-workspace/production-system/legacy-v1.html",
   "./apps/video-workspace/production-system/styles.css?v=5",
   "./apps/video-workspace/production-system/engine.js",
   "./apps/video-workspace/production-system/app.js?v=5",

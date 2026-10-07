@@ -1402,20 +1402,111 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F09｜FIONI · Reading Script / TTS Prep
+## PF-F09｜FIONI · SCRIPT_LOCK Gate
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-F08
+- CAPABILITY: SCRIPT_LOCK_GATE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: SCRIPT_LOCK状态/锁定稿引用
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-F09｜FIONI · SCRIPT_LOCK Gate】
+【Executor】Human
+【Capability】SCRIPT_LOCK_GATE / SCRIPT_LOCK Gate
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+把三类真实审核结果与当前稿绑定，只有真正通过时由用户确认 SCRIPT_LOCK。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-F08
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- 当前稿
+- SCRIPT_REVIEW_FACT
+- SCRIPT_REVIEW_VALUE
+- SCRIPT_REVIEW_NATURALNESS
+
+【Optional Input】
+- 无
+
+【CORE METHOD】
+- 确认三类审核针对同一当前稿。
+- 存在未解决P0/P1时不锁。
+- 用户确认后记录锁定稿身份/版本；AI不能自行设置Human Lock。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。
+[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+- 审核未完成或锁定稿身份不明确
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 三类审核真实PASS
+- 用户明确确认SCRIPT_LOCK
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- SCRIPT_LOCK状态/锁定稿引用
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只汇总是否满足锁定条件并指出缺口；不能替用户宣告Human Lock。
+```
+
+## PF-F10｜FIONI · Reading Script / TTS Prep
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F08
+- DEPENDENCIES: PF-F09
 - CAPABILITY: READING_SCRIPT
 - QC: Q1
-- REVIEW: APPROVAL_REQUIRED
+- REVIEW: REVIEW_OPTIONAL
 - STATUS: PENDING
 - SAVE_AS: SCRIPT_READ.md 或 TTS_TEMP.srt, TTS_PRONUNCIATION_MAP.md, TTS_README.md
 
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F09｜FIONI · Reading Script / TTS Prep】
+【PROJECT PROMPT NODE · PF-F10｜FIONI · Reading Script / TTS Prep】
 【Executor】Chat
 【Capability】READING_SCRIPT / Reading Script / TTS Prep
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1434,7 +1525,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F08
+Dependencies: PF-F09
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1486,14 +1577,192 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 【Task】
 只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
 完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
-本节点完成后等待 Human Approval。
+本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。
 
 ```
 
-## PF-F10｜FIONI · Precise SRT Alignment
+## PF-F11｜FIONI · AUDIO_MASTER Capture
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-F10
+- CAPABILITY: AUDIO_MASTER_CAPTURE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: AUDIO_MASTER, AUDIO_MASTER_METADATA.md
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-F11｜FIONI · AUDIO_MASTER Capture】
+【Executor】Human
+【Capability】AUDIO_MASTER_CAPTURE / AUDIO_MASTER Capture
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+取得最终连续旁白音频，作为之后时间轴唯一WHEN真值。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-F10
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- SCRIPT_LOCK正文
+- 朗读/录音方式
+
+【Optional Input】
+- TTS_TEMP.srt
+- 多人朗读拆分
+
+【CORE METHOD】
+- 真人录音或AI朗读均需最终导出连续音频。
+- 不把临时TTS字幕时码当真实Timeline。
+- 记录最终音频文件名、时长、采样率与版本。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。
+[FAILURE_WARNING] TTS_TEMP.srt 只用于 AI 朗读，临时时码不能污染最终时间线。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 真实AUDIO_MASTER可访问且完整
+- 内容对应当前SCRIPT_LOCK
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- AUDIO_MASTER
+- AUDIO_MASTER_METADATA.md
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只能准备朗读输入/检查元数据；最终真实音频仍需用户或实际音频工具产生。
+```
+
+## PF-F12｜FIONI · AUDIO_LOCK Gate
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-F11
+- CAPABILITY: AUDIO_LOCK_GATE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: AUDIO_LOCK状态
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-F12｜FIONI · AUDIO_LOCK Gate】
+【Executor】Human
+【Capability】AUDIO_LOCK_GATE / AUDIO_LOCK Gate
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+确认最终AUDIO_MASTER后冻结叙事时间源，允许进入精确字幕/Timeline。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-F11
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- AUDIO_MASTER
+- SCRIPT_LOCK引用
+
+【Optional Input】
+- 无
+
+【CORE METHOD】
+- 检查音频可访问、完整、对应当前锁稿。
+- 用户确认AUDIO_LOCK；随后所有真实时间只服从该音频。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。
+[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+- 最终AUDIO_MASTER不存在/不可访问
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 用户明确确认AUDIO_LOCK
+- AUDIO_MASTER身份唯一
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- AUDIO_LOCK状态
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只报告是否满足锁定前提，不可代替Human Lock。
+```
+
+## PF-F13｜FIONI · Precise SRT Alignment
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-F09
+- DEPENDENCIES: PF-F12
 - CAPABILITY: PRECISE_SRT_ALIGNMENT
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -1503,7 +1772,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F10｜FIONI · Precise SRT Alignment】
+【PROJECT PROMPT NODE · PF-F13｜FIONI · Precise SRT Alignment】
 【Executor】Work
 【Capability】PRECISE_SRT_ALIGNMENT / Precise SRT Alignment
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1522,7 +1791,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F09
+Dependencies: PF-F12
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1581,10 +1850,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。
 ```
 
-## PF-F11｜FIONI · TIMELINE_MASTER
+## PF-F14｜FIONI · TIMELINE_MASTER
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F10
+- DEPENDENCIES: PF-F13
 - CAPABILITY: TIMELINE_MASTER
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -1594,7 +1863,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F11｜FIONI · TIMELINE_MASTER】
+【PROJECT PROMPT NODE · PF-F14｜FIONI · TIMELINE_MASTER】
 【Executor】Chat
 【Capability】TIMELINE_MASTER / TIMELINE_MASTER
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1613,7 +1882,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F10
+Dependencies: PF-F13
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1668,10 +1937,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F12｜FIONI · Visual Direction
+## PF-F15｜FIONI · Visual Direction
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F11
+- DEPENDENCIES: PF-F14
 - CAPABILITY: VISUAL_DIRECTION
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -1681,7 +1950,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F12｜FIONI · Visual Direction】
+【PROJECT PROMPT NODE · PF-F15｜FIONI · Visual Direction】
 【Executor】Chat
 【Capability】VISUAL_DIRECTION / Visual Direction
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1700,7 +1969,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F11
+Dependencies: PF-F14
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1756,10 +2025,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F13｜FIONI · Sound Design Blueprint
+## PF-F16｜FIONI · Sound Design Blueprint
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F12
+- DEPENDENCIES: PF-F15
 - CAPABILITY: SOUND_DESIGN_BLUEPRINT
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -1769,7 +2038,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F13｜FIONI · Sound Design Blueprint】
+【PROJECT PROMPT NODE · PF-F16｜FIONI · Sound Design Blueprint】
 【Executor】Chat
 【Capability】SOUND_DESIGN_BLUEPRINT / Sound Design Blueprint
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1788,7 +2057,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F12
+Dependencies: PF-F15
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1844,10 +2113,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F14｜FIONI · Cover
+## PF-F17｜FIONI · Cover
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F13
+- DEPENDENCIES: PF-F16
 - CAPABILITY: COVER_DESIGN
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -1857,7 +2126,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F14｜FIONI · Cover】
+【PROJECT PROMPT NODE · PF-F17｜FIONI · Cover】
 【Executor】Chat
 【Capability】COVER_DESIGN / Cover
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1876,7 +2145,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F13
+Dependencies: PF-F16
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -1933,10 +2202,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F15｜FIONI · Asset Gap / ASSET_INDEX
+## PF-F18｜FIONI · Asset Gap / ASSET_INDEX
 
 - EXECUTOR: Codex
-- DEPENDENCIES: PF-F14
+- DEPENDENCIES: PF-F17
 - CAPABILITY: ASSET_GAP_AND_INDEX
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -1946,7 +2215,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F15｜FIONI · Asset Gap / ASSET_INDEX】
+【PROJECT PROMPT NODE · PF-F18｜FIONI · Asset Gap / ASSET_INDEX】
 【Executor】Codex
 【Capability】ASSET_GAP_AND_INDEX / Asset Gap / ASSET_INDEX
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -1965,7 +2234,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 知道现有素材是什么、缺什么、在哪里、能否用于最终成片。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F14
+Dependencies: PF-F17
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2022,10 +2291,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。
 ```
 
-## PF-F16｜FIONI · Editing Blueprint
+## PF-F19｜FIONI · Editing Blueprint
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-F15
+- DEPENDENCIES: PF-F18
 - CAPABILITY: EDITING_BLUEPRINT
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -2035,7 +2304,7 @@ Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F16｜FIONI · Editing Blueprint】
+【PROJECT PROMPT NODE · PF-F19｜FIONI · Editing Blueprint】
 【Executor】Chat
 【Capability】EDITING_BLUEPRINT / Editing Blueprint
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -2054,7 +2323,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F15
+Dependencies: PF-F18
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2111,10 +2380,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F17｜FIONI · Codex Build
+## PF-F20｜FIONI · Codex Build
 
 - EXECUTOR: Codex
-- DEPENDENCIES: PF-F16
+- DEPENDENCIES: PF-F19
 - CAPABILITY: CODEX_BUILD
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -2124,7 +2393,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F17｜FIONI · Codex Build】
+【PROJECT PROMPT NODE · PF-F20｜FIONI · Codex Build】
 【Executor】Codex
 【Capability】CODEX_BUILD / Codex Build
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -2143,7 +2412,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 严格按蓝图执行本地视频与背景声构建。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F16
+Dependencies: PF-F19
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2203,10 +2472,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。
 ```
 
-## PF-F18｜FIONI · Final Human Assembly
+## PF-F21｜FIONI · Final Human Assembly
 
 - EXECUTOR: Human
-- DEPENDENCIES: PF-F17
+- DEPENDENCIES: PF-F20
 - CAPABILITY: FINAL_ASSEMBLY
 - QC: Q3
 - REVIEW: APPROVAL_REQUIRED
@@ -2216,7 +2485,7 @@ Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F18｜FIONI · Final Human Assembly】
+【PROJECT PROMPT NODE · PF-F21｜FIONI · Final Human Assembly】
 【Executor】Human
 【Capability】FINAL_ASSEMBLY / Final Human Assembly
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -2235,7 +2504,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F17
+Dependencies: PF-F20
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2290,10 +2559,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F19｜FIONI · Platform Rule Verification
+## PF-F22｜FIONI · Platform Rule Verification
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-F18
+- DEPENDENCIES: PF-F21
 - CAPABILITY: PLATFORM_RULE_VERIFICATION
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -2303,7 +2572,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F19｜FIONI · Platform Rule Verification】
+【PROJECT PROMPT NODE · PF-F22｜FIONI · Platform Rule Verification】
 【Executor】Work
 【Capability】PLATFORM_RULE_VERIFICATION / Platform Rule Verification
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -2322,7 +2591,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F18
+Dependencies: PF-F21
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2372,10 +2641,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-F20｜FIONI · Six-platform Publish Package
+## PF-F23｜FIONI · Six-platform Publish Package
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-F19
+- DEPENDENCIES: PF-F22
 - CAPABILITY: SIX_PLATFORM_PUBLISH_PACKAGE
 - QC: Q2
 - REVIEW: APPROVAL_REQUIRED
@@ -2385,7 +2654,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-F20｜FIONI · Six-platform Publish Package】
+【PROJECT PROMPT NODE · PF-F23｜FIONI · Six-platform Publish Package】
 【Executor】Work
 【Capability】SIX_PLATFORM_PUBLISH_PACKAGE / Six-platform Publish Package
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -2404,7 +2673,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-F19
+Dependencies: PF-F22
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -2977,20 +3246,111 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S09｜SEVERIAN · Reading Script / TTS Prep
+## PF-S09｜SEVERIAN · SCRIPT_LOCK Gate
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-S08
+- CAPABILITY: SCRIPT_LOCK_GATE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: SCRIPT_LOCK状态/锁定稿引用
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-S09｜SEVERIAN · SCRIPT_LOCK Gate】
+【Executor】Human
+【Capability】SCRIPT_LOCK_GATE / SCRIPT_LOCK Gate
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+把三类真实审核结果与当前稿绑定，只有真正通过时由用户确认 SCRIPT_LOCK。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-S08
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- 当前稿
+- SCRIPT_REVIEW_FACT
+- SCRIPT_REVIEW_VALUE
+- SCRIPT_REVIEW_NATURALNESS
+
+【Optional Input】
+- 无
+
+【CORE METHOD】
+- 确认三类审核针对同一当前稿。
+- 存在未解决P0/P1时不锁。
+- 用户确认后记录锁定稿身份/版本；AI不能自行设置Human Lock。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。
+[HARD_CONSTRAINT] 未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+- 审核未完成或锁定稿身份不明确
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 三类审核真实PASS
+- 用户明确确认SCRIPT_LOCK
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- SCRIPT_LOCK状态/锁定稿引用
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只汇总是否满足锁定条件并指出缺口；不能替用户宣告Human Lock。
+```
+
+## PF-S10｜SEVERIAN · Reading Script / TTS Prep
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S08
+- DEPENDENCIES: PF-S09
 - CAPABILITY: READING_SCRIPT
 - QC: Q1
-- REVIEW: APPROVAL_REQUIRED
+- REVIEW: REVIEW_OPTIONAL
 - STATUS: PENDING
 - SAVE_AS: SCRIPT_READ.md 或 TTS_TEMP.srt, TTS_PRONUNCIATION_MAP.md, TTS_README.md
 
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S09｜SEVERIAN · Reading Script / TTS Prep】
+【PROJECT PROMPT NODE · PF-S10｜SEVERIAN · Reading Script / TTS Prep】
 【Executor】Chat
 【Capability】READING_SCRIPT / Reading Script / TTS Prep
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3009,7 +3369,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S08
+Dependencies: PF-S09
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3061,14 +3421,192 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 【Task】
 只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
 完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
-本节点完成后等待 Human Approval。
+本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。
 
 ```
 
-## PF-S10｜SEVERIAN · Precise SRT Alignment
+## PF-S11｜SEVERIAN · AUDIO_MASTER Capture
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-S10
+- CAPABILITY: AUDIO_MASTER_CAPTURE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: AUDIO_MASTER, AUDIO_MASTER_METADATA.md
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-S11｜SEVERIAN · AUDIO_MASTER Capture】
+【Executor】Human
+【Capability】AUDIO_MASTER_CAPTURE / AUDIO_MASTER Capture
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+取得最终连续旁白音频，作为之后时间轴唯一WHEN真值。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-S10
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- SCRIPT_LOCK正文
+- 朗读/录音方式
+
+【Optional Input】
+- TTS_TEMP.srt
+- 多人朗读拆分
+
+【CORE METHOD】
+- 真人录音或AI朗读均需最终导出连续音频。
+- 不把临时TTS字幕时码当真实Timeline。
+- 记录最终音频文件名、时长、采样率与版本。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。
+[FAILURE_WARNING] TTS_TEMP.srt 只用于 AI 朗读，临时时码不能污染最终时间线。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 真实AUDIO_MASTER可访问且完整
+- 内容对应当前SCRIPT_LOCK
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- AUDIO_MASTER
+- AUDIO_MASTER_METADATA.md
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只能准备朗读输入/检查元数据；最终真实音频仍需用户或实际音频工具产生。
+```
+
+## PF-S12｜SEVERIAN · AUDIO_LOCK Gate
+
+- EXECUTOR: Human
+- DEPENDENCIES: PF-S11
+- CAPABILITY: AUDIO_LOCK_GATE
+- QC: Q3
+- REVIEW: APPROVAL_REQUIRED
+- STATUS: PENDING
+- SAVE_AS: AUDIO_LOCK状态
+
+### PROMPT
+
+```text
+【PROJECT PROMPT NODE · PF-S12｜SEVERIAN · AUDIO_LOCK Gate】
+【Executor】Human
+【Capability】AUDIO_LOCK_GATE / AUDIO_LOCK Gate
+【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
+
+【Project】
+PROJECT_ID: ZZZ_3.3_FIONI_SEVERIAN_PREVIEW
+GAME: 绝区零
+SERVER: 国际服
+VERSION: 3.3
+PRODUCT_TYPE: preview
+AUTONOMY_LEVEL: L2
+DO_NOT_USE: 测试服 / 内鬼 / 拆包 / 二手未核实传闻
+SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
+
+【Purpose】
+确认最终AUDIO_MASTER后冻结叙事时间源，允许进入精确字幕/Timeline。
+
+【Dependencies / Read From Previous】
+Dependencies: PF-S11
+Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
+
+【Required Input】
+- AUDIO_MASTER
+- SCRIPT_LOCK引用
+
+【Optional Input】
+- 无
+
+【CORE METHOD】
+- 检查音频可访问、完整、对应当前锁稿。
+- 用户确认AUDIO_LOCK；随后所有真实时间只服从该音频。
+
+【MANDATORY GUARDRAILS】
+- 默认 AUTONOMY_LEVEL=L2。
+- HARD STOP 只用于继续会导致产物虚假、伪造或根本无法成立的关键缺失。
+- REVIEW_OPTIONAL 不阻塞；APPROVAL_REQUIRED 只用于 GO/CANCEL、LONG↔SHORT重大改变、SCRIPT_LOCK、修改LOCK、必须人类输入、最终成片与发布。
+[HARD_CONSTRAINT] 没有真实写入和回读就不能声称已保存、更新或同步。
+[HARD_CONSTRAINT] 最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。
+
+【HARD STOP】
+- HS_REAL_TIMELINE_WITHOUT_AUDIO: 要求真实精确 Timeline / SRT 时间，但最终 AUDIO_MASTER 不存在或不可访问 → NEED_INPUT
+- HS_VIDEO_VISUAL_INACCESSIBLE: 要求确认某视频具体画面 / UI / 动作，但视频或对应帧根本不可访问 → NEED_INPUT
+- HS_FORMAL_SERVER_CLAIM_NO_EVIDENCE: 要声称正式服实测 / 正式服机制，但没有任何正式服证据 → NEED_INPUT
+- HS_WRITE_NOT_CONFIRMED: 任务要求声称已写入 Notion / 本地 / GitHub / 数据库，但真实工具写入失败或未回读 → NEED_INPUT
+- HS_LOCKED_CHANGE: 需要修改已 LOCK 的正式内容，但没有新正式证据、严重事实错误或明确 Reopen → NEED_INPUT
+- 最终AUDIO_MASTER不存在/不可访问
+
+【SOFT UNCERTAINTY】
+- 机制尚未正式验证 → 标 REASONED_ANALYSIS / UNKNOWN，继续能完成的部分。
+- 配队或价值判断仍是公开信息推断 → 标 CONDITIONAL，不升级成 HARD STOP。
+- 资料不完整 / 社区不统一 → 保留分歧与置信度，继续构建可验证部分。
+- 普通字段未由用户亲自确认 → AI 合理补全，允许 UNKNOWN，不频繁打断。
+- 缺可选素材 / 可选视觉 → 标 OPTIONAL / REVIEW_REQUIRED，继续主线。
+- 版权状态待核 → 允许研究与索引，最终成片使用前必须 EDIT_USE_ALLOWED=YES。
+
+【QUALITY GATE · Q3】
+- 用户明确确认AUDIO_LOCK
+- AUDIO_MASTER身份唯一
+
+【Skip Condition】
+- 无
+
+【Output / Save As】
+- AUDIO_LOCK状态
+
+【Task】
+只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
+完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
+本节点完成后等待 Human Approval。
+
+【CHAT_FALLBACK】
+Chat只报告是否满足锁定前提，不可代替Human Lock。
+```
+
+## PF-S13｜SEVERIAN · Precise SRT Alignment
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-S09
+- DEPENDENCIES: PF-S12
 - CAPABILITY: PRECISE_SRT_ALIGNMENT
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -3078,7 +3616,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S10｜SEVERIAN · Precise SRT Alignment】
+【PROJECT PROMPT NODE · PF-S13｜SEVERIAN · Precise SRT Alignment】
 【Executor】Work
 【Capability】PRECISE_SRT_ALIGNMENT / Precise SRT Alignment
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3097,7 +3635,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 用真实 AUDIO_MASTER 对齐锁定文字，生成最终字幕。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S09
+Dependencies: PF-S12
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3156,10 +3694,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 只有当前Chat确实能处理音频对齐时执行；否则提供本地对齐方案，不能猜时间。
 ```
 
-## PF-S11｜SEVERIAN · TIMELINE_MASTER
+## PF-S14｜SEVERIAN · TIMELINE_MASTER
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S10
+- DEPENDENCIES: PF-S13
 - CAPABILITY: TIMELINE_MASTER
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -3169,7 +3707,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S11｜SEVERIAN · TIMELINE_MASTER】
+【PROJECT PROMPT NODE · PF-S14｜SEVERIAN · TIMELINE_MASTER】
 【Executor】Chat
 【Capability】TIMELINE_MASTER / TIMELINE_MASTER
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3188,7 +3726,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 从真实音频/最终字幕建立后续画面、声音、蓝图共同使用的语义时间锚点。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S10
+Dependencies: PF-S13
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3243,10 +3781,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S12｜SEVERIAN · Visual Direction
+## PF-S15｜SEVERIAN · Visual Direction
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S11
+- DEPENDENCIES: PF-S14
 - CAPABILITY: VISUAL_DIRECTION
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -3256,7 +3794,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S12｜SEVERIAN · Visual Direction】
+【PROJECT PROMPT NODE · PF-S15｜SEVERIAN · Visual Direction】
 【Executor】Chat
 【Capability】VISUAL_DIRECTION / Visual Direction
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3275,7 +3813,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 根据最终旁白/Timeline决定每段最有效的视觉语言与证据职责。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S11
+Dependencies: PF-S14
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3331,10 +3869,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S13｜SEVERIAN · Sound Design Blueprint
+## PF-S16｜SEVERIAN · Sound Design Blueprint
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S12
+- DEPENDENCIES: PF-S15
 - CAPABILITY: SOUND_DESIGN_BLUEPRINT
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -3344,7 +3882,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S13｜SEVERIAN · Sound Design Blueprint】
+【PROJECT PROMPT NODE · PF-S16｜SEVERIAN · Sound Design Blueprint】
 【Executor】Chat
 【Capability】SOUND_DESIGN_BLUEPRINT / Sound Design Blueprint
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3363,7 +3901,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 围绕真实口播时间线设计BGM、SFX、提示音、留白、Ducking与音画锚点。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S12
+Dependencies: PF-S15
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3419,10 +3957,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S14｜SEVERIAN · Cover
+## PF-S17｜SEVERIAN · Cover
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S13
+- DEPENDENCIES: PF-S16
 - CAPABILITY: COVER_DESIGN
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -3432,7 +3970,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S14｜SEVERIAN · Cover】
+【PROJECT PROMPT NODE · PF-S17｜SEVERIAN · Cover】
 【Executor】Chat
 【Capability】COVER_DESIGN / Cover
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3451,7 +3989,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 生成CTR友好、角色身份准确、与标题互补的三比例Canonical封面。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S13
+Dependencies: PF-S16
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3508,10 +4046,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S15｜SEVERIAN · Asset Gap / ASSET_INDEX
+## PF-S18｜SEVERIAN · Asset Gap / ASSET_INDEX
 
 - EXECUTOR: Codex
-- DEPENDENCIES: PF-S14
+- DEPENDENCIES: PF-S17
 - CAPABILITY: ASSET_GAP_AND_INDEX
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -3521,7 +4059,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S15｜SEVERIAN · Asset Gap / ASSET_INDEX】
+【PROJECT PROMPT NODE · PF-S18｜SEVERIAN · Asset Gap / ASSET_INDEX】
 【Executor】Codex
 【Capability】ASSET_GAP_AND_INDEX / Asset Gap / ASSET_INDEX
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3540,7 +4078,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 知道现有素材是什么、缺什么、在哪里、能否用于最终成片。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S14
+Dependencies: PF-S17
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3597,10 +4135,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。
 ```
 
-## PF-S16｜SEVERIAN · Editing Blueprint
+## PF-S19｜SEVERIAN · Editing Blueprint
 
 - EXECUTOR: Chat
-- DEPENDENCIES: PF-S15
+- DEPENDENCIES: PF-S18
 - CAPABILITY: EDITING_BLUEPRINT
 - QC: Q2
 - REVIEW: REVIEW_OPTIONAL
@@ -3610,7 +4148,7 @@ Chat根据tree /f设计Dry Run脚本；用户执行后回传新tree验证。
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S16｜SEVERIAN · Editing Blueprint】
+【PROJECT PROMPT NODE · PF-S19｜SEVERIAN · Editing Blueprint】
 【Executor】Chat
 【Capability】EDITING_BLUEPRINT / Editing Blueprint
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3629,7 +4167,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S15
+Dependencies: PF-S18
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3686,10 +4224,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S17｜SEVERIAN · Codex Build
+## PF-S20｜SEVERIAN · Codex Build
 
 - EXECUTOR: Codex
-- DEPENDENCIES: PF-S16
+- DEPENDENCIES: PF-S19
 - CAPABILITY: CODEX_BUILD
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -3699,7 +4237,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S17｜SEVERIAN · Codex Build】
+【PROJECT PROMPT NODE · PF-S20｜SEVERIAN · Codex Build】
 【Executor】Codex
 【Capability】CODEX_BUILD / Codex Build
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3718,7 +4256,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 严格按蓝图执行本地视频与背景声构建。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S16
+Dependencies: PF-S19
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3778,10 +4316,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。
 ```
 
-## PF-S18｜SEVERIAN · Final Human Assembly
+## PF-S21｜SEVERIAN · Final Human Assembly
 
 - EXECUTOR: Human
-- DEPENDENCIES: PF-S17
+- DEPENDENCIES: PF-S20
 - CAPABILITY: FINAL_ASSEMBLY
 - QC: Q3
 - REVIEW: APPROVAL_REQUIRED
@@ -3791,7 +4329,7 @@ Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S18｜SEVERIAN · Final Human Assembly】
+【PROJECT PROMPT NODE · PF-S21｜SEVERIAN · Final Human Assembly】
 【Executor】Human
 【Capability】FINAL_ASSEMBLY / Final Human Assembly
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3810,7 +4348,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 在剪映把Codex双输出、AUDIO_MASTER、FINAL.srt四件套对齐并人工调听感。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S17
+Dependencies: PF-S20
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3865,10 +4403,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S19｜SEVERIAN · Platform Rule Verification
+## PF-S22｜SEVERIAN · Platform Rule Verification
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-S18
+- DEPENDENCIES: PF-S21
 - CAPABILITY: PLATFORM_RULE_VERIFICATION
 - QC: Q1
 - REVIEW: REVIEW_OPTIONAL
@@ -3878,7 +4416,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S19｜SEVERIAN · Platform Rule Verification】
+【PROJECT PROMPT NODE · PF-S22｜SEVERIAN · Platform Rule Verification】
 【Executor】Work
 【Capability】PLATFORM_RULE_VERIFICATION / Platform Rule Verification
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3897,7 +4435,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 实时核验六平台当前真实投稿字段、限制、封面、字幕、版权与AI披露规则。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S18
+Dependencies: PF-S21
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】
@@ -3947,10 +4485,10 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 
 ```
 
-## PF-S20｜SEVERIAN · Six-platform Publish Package
+## PF-S23｜SEVERIAN · Six-platform Publish Package
 
 - EXECUTOR: Work
-- DEPENDENCIES: PF-S19
+- DEPENDENCIES: PF-S22
 - CAPABILITY: SIX_PLATFORM_PUBLISH_PACKAGE
 - QC: Q2
 - REVIEW: APPROVAL_REQUIRED
@@ -3960,7 +4498,7 @@ Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境�
 ### PROMPT
 
 ```text
-【PROJECT PROMPT NODE · PF-S20｜SEVERIAN · Six-platform Publish Package】
+【PROJECT PROMPT NODE · PF-S23｜SEVERIAN · Six-platform Publish Package】
 【Executor】Work
 【Capability】SIX_PLATFORM_PUBLISH_PACKAGE / Six-platform Publish Package
 【Autonomy】L2；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。
@@ -3979,7 +4517,7 @@ SHARED_SOURCE: 3.3 官方 Special Program Master / 3.3 官方字幕
 生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。
 
 【Dependencies / Read From Previous】
-Dependencies: PF-S19
+Dependencies: PF-S22
 Read: 沿用同一执行上下文中实际可读的已完成产物；跨环境只使用真实可访问文件
 
 【Required Input】

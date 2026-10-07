@@ -323,6 +323,48 @@
       defaultExecutor:"Chat",qcLevel:"Q1",legacyPromptIds:["08","08B","09"]
     }),
 
+    cap("SCRIPT_LOCK_GATE","Control","SCRIPT_LOCK Gate",{
+      purpose:"把三类真实审核结果与当前稿绑定，只有真正通过时由用户确认 SCRIPT_LOCK。",
+      whenToUse:["完整稿和锁稿前审核完成后"],
+      requiredInput:["当前稿","SCRIPT_REVIEW_FACT","SCRIPT_REVIEW_VALUE","SCRIPT_REVIEW_NATURALNESS"],
+      coreMethod:["确认三类审核针对同一当前稿。","存在未解决P0/P1时不锁。","用户确认后记录锁定稿身份/版本；AI不能自行设置Human Lock。"],
+      failureRefs:["SC_LOCK_PROTECTION","PM_WRITE_TRUTH"],
+      qualityGate:["三类审核真实PASS","用户明确确认SCRIPT_LOCK"],
+      outputSchema:["SCRIPT_LOCK状态/锁定稿引用"],
+      defaultExecutor:"Human",alternativeExecutor:["Chat"],
+      chatFallback:"Chat只汇总是否满足锁定条件并指出缺口；不能替用户宣告Human Lock。",
+      hardStopCondition:["审核未完成或锁定稿身份不明确"],
+      qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED"
+    }),
+
+    cap("AUDIO_MASTER_CAPTURE","Audio","AUDIO_MASTER Capture",{
+      purpose:"取得最终连续旁白音频，作为之后时间轴唯一WHEN真值。",
+      whenToUse:["SCRIPT_LOCK后"],
+      requiredInput:["SCRIPT_LOCK正文","朗读/录音方式"],
+      optionalInput:["TTS_TEMP.srt","多人朗读拆分"],
+      coreMethod:["真人录音或AI朗读均需最终导出连续音频。","不把临时TTS字幕时码当真实Timeline。","记录最终音频文件名、时长、采样率与版本。"],
+      failureRefs:["TL_TTS_TEMP_NOT_FINAL","TL_AUDIO_MASTER_TRUTH"],
+      qualityGate:["真实AUDIO_MASTER可访问且完整","内容对应当前SCRIPT_LOCK"],
+      outputSchema:["AUDIO_MASTER","AUDIO_MASTER_METADATA.md"],
+      defaultExecutor:"Human",alternativeExecutor:["Chat"],
+      chatFallback:"Chat只能准备朗读输入/检查元数据；最终真实音频仍需用户或实际音频工具产生。",
+      qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED"
+    }),
+
+    cap("AUDIO_LOCK_GATE","Control","AUDIO_LOCK Gate",{
+      purpose:"确认最终AUDIO_MASTER后冻结叙事时间源，允许进入精确字幕/Timeline。",
+      whenToUse:["最终AUDIO_MASTER完成后"],
+      requiredInput:["AUDIO_MASTER","SCRIPT_LOCK引用"],
+      coreMethod:["检查音频可访问、完整、对应当前锁稿。","用户确认AUDIO_LOCK；随后所有真实时间只服从该音频。"],
+      failureRefs:["TL_AUDIO_MASTER_TRUTH","PM_WRITE_TRUTH"],
+      qualityGate:["用户明确确认AUDIO_LOCK","AUDIO_MASTER身份唯一"],
+      outputSchema:["AUDIO_LOCK状态"],
+      defaultExecutor:"Human",alternativeExecutor:["Chat"],
+      chatFallback:"Chat只报告是否满足锁定前提，不可代替Human Lock。",
+      hardStopCondition:["最终AUDIO_MASTER不存在/不可访问"],
+      qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED"
+    }),
+
     cap("READING_SCRIPT","Audio","Reading Script / TTS Prep",{
       purpose:"把 SCRIPT_LOCK 准备成人类或剪映 AI 可稳定朗读的输入。",
       whenToUse:["SCRIPT_LOCK后","录音前"],

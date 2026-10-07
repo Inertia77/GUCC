@@ -70,7 +70,8 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel||"Q2";
   $("currentReview").textContent=t.reviewMode||"REVIEW_OPTIONAL";
   $("currentPrompt").textContent=t.prompt||"";
-  $("markDoneBtn").disabled=!p.promptFlow?.length||["COMPLETE"].includes(t.promptId)||t.status==="WAITING";
+  $("markDoneBtn").disabled=!p.promptFlow?.length||["COMPLETE"].includes(t.promptId);
+  $("markDoneBtn").textContent=t.status==="WAITING"?"确认条件 / Approval → 下一任务":"标记完成 → 下一任务";
   $("skipTaskBtn").disabled=!p.promptFlow?.length||!["CONDITIONAL","PENDING"].includes(t.status||"");
   $("flowRevision").textContent=`revision ${p.flowRevision||0}`;
   renderFlow(p);
@@ -116,9 +117,51 @@ function showArtifact(kind){
 function createDraft(data){
   const p=O.createProject(data);store.projects.unshift(p);store.selectedProjectId=p.projectId;save();render();$("currentPrompt").textContent=O.buildCreateProjectPrompt(p.idea);copy(O.buildCreateProjectPrompt(p.idea));
 }
+function applyHumanGateSideEffects(p,t){
+  if(!p||!t)return;
+  if(t.capabilityUsed==="SCRIPT_LOCK_GATE")p.locks.script=true;
+  if(t.capabilityUsed==="AUDIO_LOCK_GATE")p.locks.audio=true;
+  if(t.capabilityUsed==="FINAL_ASSEMBLY")p.locks.final=true;
+  if(t.capabilityUsed==="SIX_PLATFORM_PUBLISH_PACKAGE")p.locks.publish=true;
+}
 function setNode(status){
   const p=current(),t=currentTaskFor(p);if(!p?.promptFlow?.length||!t||t.promptId==="COMPLETE")return;
+  if(status==="DONE")applyHumanGateSideEffects(p,t);
   O.markNode(p,t.promptId,status);O.compilePromptFlow(p);save();render();
+}
+function mergeUnique(target,items){
+  const out=[...(Array.isArray(target)?target:[])];
+  for(const item of Array.isArray(items)?items:[])if(!out.includes(item))out.push(item);
+  return out;
+}
+function parseNodeResult(raw){
+  let text=String(raw||"").trim();
+  const fenced=text.match(/```(?:json)?\s*([\s\S]*?)```/i);if(fenced)text=fenced[1].trim();
+  return JSON.parse(text);
+}
+function applyNodeResult(result){
+  const p=current();if(!p)throw new Error("No project");
+  const t=currentTaskFor(p);
+  if(!result||!result.promptId)throw new Error("缺少 promptId");
+  if(t&&t.promptId!=="COMPLETE"&&result.promptId!==t.promptId)throw new Error("当前任务是 "+t.promptId+"，返回的是 "+result.promptId);
+  const n=(p.promptFlow||[]).find(x=>x.promptId===result.promptId);
+  if(!n)throw new Error("当前 Flow 中找不到该 Prompt Node");
+  p.availableArtifacts=mergeUnique(p.availableArtifacts,result.availableArtifacts||result.outputs);
+  p.verifiedFacts=mergeUnique(p.verifiedFacts,result.verifiedFacts);
+  p.reasonedAnalysis=mergeUnique(p.reasonedAnalysis,result.reasonedAnalysis);
+  p.unknowns=mergeUnique(p.unknowns,result.unknowns);
+  const patch=result.contractPatch&&typeof result.contractPatch==="object"?result.contractPatch:{};
+  for(const key of ["format","dataCutoff","currentStage","status"]){if(patch[key]!=null)p[key]=patch[key];}
+  if(patch.productionNeeds&&typeof patch.productionNeeds==="object")p.productionNeeds={...p.productionNeeds,...patch.productionNeeds};
+  if(Array.isArray(patch.doNotUse))p.doNotUse=mergeUnique(p.doNotUse,patch.doNotUse);
+  if(Array.isArray(patch.officialTerminology))p.officialTerminology=mergeUnique(p.officialTerminology,patch.officialTerminology);
+  if(Array.isArray(result.flowOps)&&result.flowOps.length)O.updatePromptFlow(p,result.flowOps);
+  const status=String(result.status||"DONE").toUpperCase();
+  if(result.requiresApproval===true||n.reviewMode==="APPROVAL_REQUIRED"){n.status="WAITING";n.notes="AI result 已应用，等待 Human Approval";}
+  else if(["DONE","WAITING","SKIPPED"].includes(status))n.status=status;
+  else if(status==="NEED_INPUT"){n.status="WAITING";n.notes="HARD STOP / NEED_INPUT";}
+  else n.status="DONE";
+  O.compilePromptFlow(p);save();render();
 }
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
@@ -127,6 +170,8 @@ $("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.targe
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("createPromptBtn").addEventListener("click",()=>{const idea=$("ideaInput").value.trim();if(!idea)return notify("先写一句项目想法");copy(O.buildCreateProjectPrompt(idea));});
 $("copyCurrentPrompt").addEventListener("click",()=>copy(currentTaskFor(current())?.prompt||""));
+$("applyResultBtn").addEventListener("click",()=>{$("resultInput").value="";$("resultDialog").showModal();});
+$("applyResultConfirm").addEventListener("click",e=>{e.preventDefault();try{applyNodeResult(parseNodeResult($("resultInput").value));$("resultDialog").close();notify("AI Result 已应用");}catch(err){notify("应用失败："+err.message);}});
 $("markDoneBtn").addEventListener("click",()=>setNode("DONE"));
 $("skipTaskBtn").addEventListener("click",()=>setNode("SKIPPED"));
 $("copyContractBtn").addEventListener("click",()=>copy(O.videoContractMd(current())));

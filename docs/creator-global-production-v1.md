@@ -1,6 +1,8 @@
 # GUCC Creator OS — Global Production v1
 
-Global Production v1 is an additive production layer over the existing 23-state Creator Project workflow. The legacy workflow, Timeline invariant, Publish Console and lightweight Drive archive remain compatible; child production state is no longer forced into `creator_projects.current_state`.
+> 2026-10 Creator OS v2 orchestration note: the human-facing 23-state production flow is now a **Legacy compatibility layer**, not the canonical Prompt execution order. The canonical execution model is `PROJECT → PROJECT_WORKFLOW → PROJECT_PROMPT_FLOW → CURRENT_TASK → Capability`. This document remains authoritative for global identity, artifact scope, locks, publication, analytics and database/storage contracts.
+
+Global Production v1 is an additive production/data layer over the existing Creator Project model. The legacy workflow, Timeline invariant, Publish Console and lightweight Drive archive remain compatible; child production state is no longer forced into `creator_projects.current_state`.
 
 ## Identity and storage
 

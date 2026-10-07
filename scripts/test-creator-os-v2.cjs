@@ -40,6 +40,7 @@ const legacy=JSON.parse(fs.readFileSync(path.join(root,"apps/video-workspace/not
 assert.deepEqual(new Set(migration.mappings.map(x=>x.legacyPromptId)),new Set(Object.keys(legacy)));
 assert(migration.mappings.some(x=>x.legacyPromptId==="03C"&&x.disposition==="CONDITIONAL"));
 assert(migration.mappings.some(x=>x.legacyPromptId==="20"&&x.disposition==="CONDITIONAL"));
+for (const row of migration.mappings) for (const id of row.capabilities || []) assert(Caps.get(id), `Migration references missing capability ${id} from legacy ${row.legacyPromptId}`);
 
 const fixtureDir=path.join(root,"apps/video-workspace/production-system/fixtures/ZZZ_3.3_FIONI_SEVERIAN_PREVIEW");
 for(const name of ["PROJECT_BRIEF.md","VIDEO_CONTRACT.md","PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","CURRENT_TASK.md","project.json"]){

@@ -195,10 +195,102 @@ function parseNodeResult(raw){
   else {const one=text.match(/```\s*([\s\S]*?)```/i);if(one)text=one[1].trim();}
   return JSON.parse(text);
 }
+
+function asList(value){return Array.isArray(value)?value:(value==null||value===""?[]:[value]);}
+
+function importProjectBrief(p,result){
+  const contract=result.VIDEO_CONTRACT||result.videoContract||result.contractPatch||result;
+  if(!contract||typeof contract!=="object"||Array.isArray(contract))throw Error("未找到 VIDEO_CONTRACT JSON");
+  const field=(a,b)=>contract[a]??contract[b];
+  const id=String(field("projectId","PROJECT_ID")||"").trim();
+  if(id&&id!==p.projectId){
+    if(store.projects.some(x=>x!==p&&x.projectId===id))throw Error("PROJECT_ID 与其他项目冲突");
+    p.projectId=id;store.selectedProjectId=id;
+  }
+  for(const [a,b] of [["name","PROJECT_NAME"],["game","GAME"],["server","SERVER"],["version","VERSION"],
+    ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"]]){
+    const v=field(a,b);if(v!=null)p[a]=String(v);
+  }
+  for(const [a,b] of [["verifiedFacts","VERIFIED_FACTS"],["reasonedAnalysis","REASONED_ANALYSIS"],["unknowns","UNKNOWNS"],
+    ["doNotUse","DO_NOT_USE"],["availableArtifacts","AVAILABLE_ARTIFACTS"],["officialTerminology","OFFICIAL_TERMINOLOGY"],
+    ["lockedArtifacts","LOCKED_ARTIFACTS"],["videos","VIDEOS"]]){
+    const v=field(a,b);if(v!=null)p[a]=asList(v);
+  }
+  const needs=field("productionNeeds","PRODUCTION_NEEDS");
+  if(needs&&typeof needs==="object"&&!Array.isArray(needs))p.productionNeeds={...p.productionNeeds,...needs};
+  const brief=result.projectBriefMarkdown||result.PROJECT_BRIEF_MD||result.PROJECT_BRIEF;
+  if(typeof brief==="string"&&brief.trim())p.projectBriefMarkdown=brief;
+  p.status="BRIEF_READY";
+  p.history||=[];p.history.push({at:new Date().toISOString(),action:"PROJECT_BRIEF_IMPORTED_LOCAL"});
+  save();render();notify("立项结果已导入本浏览器，下一步：AI 编排 Prompt Flow");
+}
+
+function importAiPromptFlow(p,result){
+  const payload=result.GUCC_FLOW_RESULT||result;
+  const original=payload.promptFlow||payload.PROJECT_PROMPT_FLOW;
+  if(!Array.isArray(original)||!original.length)throw Error("未找到 promptFlow 数组；需要完整 GUCC_FLOW_RESULT JSON");
+  const ids=new Set();
+  const nodes=original.map(raw=>{
+    const id=String(raw.promptId||raw.PROMPT_ID||"").trim();
+    const capId=String(raw.capabilityUsed||raw.CAPABILITY_USED||"").trim();
+    const capability=Caps.get(capId);
+    if(!id||ids.has(id))throw Error("节点 ID 缺失或重复："+id);
+    if(!capability)throw Error("未知 Capability："+capId);
+    ids.add(id);
+    const prompt=String(raw.prompt||raw.PROMPT||"").trim();
+    if(prompt.length<80)throw Error("节点 "+id+" 没有完整可复制 Prompt");
+    const dependencies=asList(raw.dependencies||raw.DEPENDENCIES);
+    return {
+      promptId:id,name:raw.name||raw.NAME||capability.name,
+      purpose:raw.purpose||raw.PURPOSE||capability.purpose,
+      executor:raw.executor||raw.EXECUTOR||capability.defaultExecutor,
+      when:raw.when||raw.WHEN||"前置任务完成后执行",
+      dependencies,
+      requiredInput:asList(raw.requiredInput||raw.REQUIRED_INPUT||capability.requiredInput),
+      optionalInput:asList(raw.optionalInput||raw.OPTIONAL_INPUT||capability.optionalInput),
+      readFromPrevious:asList(raw.readFromPrevious||raw.READ_FROM_PREVIOUS),
+      capabilityUsed:capId,prompt,
+      expectedOutput:asList(raw.expectedOutput||raw.EXPECTED_OUTPUT||capability.outputSchema),
+      saveAs:asList(raw.saveAs||raw.SAVE_AS||capability.outputSchema),
+      qualityGate:asList(raw.qualityGate||raw.QUALITY_GATE||capability.qualityGate),
+      hardStop:asList(raw.hardStop||raw.HARD_STOP||capability.hardStopCondition),
+      softUncertaintyPolicy:asList(raw.softUncertaintyPolicy||raw.SOFT_UNCERTAINTY_POLICY||Core.SOFT_UNCERTAINTY_POLICY),
+      skipCondition:asList(raw.skipCondition||raw.SKIP_CONDITION),
+      next:asList(raw.next||raw.NEXT),chatFallback:raw.chatFallback||raw.CHAT_FALLBACK||capability.chatFallback||"",
+      qcLevel:raw.qcLevel||raw.QC_LEVEL||capability.qcLevel,
+      reviewMode:raw.reviewMode||raw.REVIEW_MODE||capability.reviewMode,
+      status:raw.status||raw.STATUS||"PENDING",branch:raw.branch||raw.BRANCH||"SHARED",
+      isCompiledExternal:true,notes:"AI-compiled / imported locally"
+    };
+  });
+  const indexed=new Map(nodes.map(n=>[n.promptId,n]));
+  for(const n of nodes)for(const dep of n.dependencies){
+    if(!ids.has(dep)||dep===n.promptId)throw Error(n.promptId+" 引用了无效依赖："+dep);
+  }
+  const visited=new Set(),visiting=new Set();
+  function visit(id){
+    if(visiting.has(id))throw Error("Flow 依赖有环："+id);
+    if(visited.has(id))return;
+    visiting.add(id);
+    for(const dep of indexed.get(id).dependencies)visit(dep);
+    visiting.delete(id);visited.add(id);
+  }
+  for(const n of nodes)visit(n.promptId);
+  p.promptFlow=nodes;
+  p.workflow=nodes.map(n=>({promptId:n.promptId,name:n.name,capabilityUsed:n.capabilityUsed,executor:n.executor,
+    dependencies:n.dependencies,branch:n.branch,status:n.status,reviewMode:n.reviewMode,qcLevel:n.qcLevel}));
+  p.flowRevision=(p.flowRevision||0)+1;p.status="FLOW_READY";
+  p.history||=[];p.history.push({at:new Date().toISOString(),action:"AI_PROMPT_FLOW_IMPORTED_LOCAL",revision:p.flowRevision});
+  flowExpanded=false;save();render();notify("AI 编排的完整 Prompt Flow 已导入本浏览器");
+}
+
 function applyNodeResult(result){
   const p=current();if(!p)throw new Error("No project");
   const t=currentTaskFor(p);
-  if(!result||!result.promptId)throw new Error("缺少 promptId");
+  if(!result||typeof result!=="object")throw new Error("未检测到 JSON 回执");
+  if(t.promptId==="PROJECT_BUILDER")return importProjectBrief(p,result);
+  if(t.promptId==="PROMPT_FLOW_COMPILER")return importAiPromptFlow(p,result);
+  if(!result.promptId)throw new Error("缺少 promptId");
   if(t&&t.promptId!=="COMPLETE"&&result.promptId!==t.promptId)throw new Error("当前任务是 "+t.promptId+"，返回的是 "+result.promptId);
   const n=(p.promptFlow||[]).find(x=>x.promptId===result.promptId);
   if(!n)throw new Error("当前 Flow 中找不到该 Prompt Node");

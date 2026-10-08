@@ -203,3 +203,19 @@ dialog::backdrop{background:rgba(5,5,18,.82)}
 @media(prefers-reduced-motion:reduce){
  .cosmos-grid,.current-task-panel::after{animation:none!important}
 }
+
+.project-management-bar{
+ display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 18px;
+ border:1px solid rgba(173,169,244,.18);border-radius:5px 16px 5px 16px;
+ padding:12px;background:rgba(21,27,51,.69);
+}
+.project-management-bar input,.project-management-bar select{
+ background:#11182d;border:1px solid rgba(169,169,226,.29);color:#e5e8fe;
+ min-height:39px;border-radius:5px 11px 5px 11px;padding:8px 12px;font-size:12px;
+}
+.project-management-bar input{flex:1;min-width:210px}
+.project-management-bar select{min-width:125px}
+.project-card{transition:transform .2s,border-color .2s}
+.project-card:hover{transform:translateY(-2px);border-color:rgba(169,248,234,.46)}
+.project-card.active{background:linear-gradient(140deg,rgba(106,80,182,.24),rgba(26,53,63,.33));border-color:rgba(168,234,231,.49)}
+@media(max-width:760px){.project-management-bar{align-items:stretch}.project-management-bar>*{width:100%;flex:auto}}

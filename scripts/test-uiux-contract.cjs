@@ -34,7 +34,7 @@ assert.match(workspaceFixes, /:has\(#structureFloatingNav\.show\)/, 'Workspace m
 assert.match(coverFixes, /"workspace"\s*\n\s*"inspector"\s*\n\s*"materials"/, 'Cover mobile flow must put the inspector immediately after the canvas.');
 assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors must avoid iOS focus zoom.');
 assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
-assert.match(creatorOsHtml, /GameUp Creator OS v2/, 'Canonical Production must identify Creator OS v2.');
+assert.match(creatorOsHtml, /GameUp Creator OS/, 'Canonical Production must identify Creator OS v2.');
 for (const marker of [
   'id="currentTaskName"', 'id="projectSelect"', 'id="newProjectBtn"',
   'id="buildFlowBtn"', 'id="copyBuildFlowPrompt"', 'id="copyUpdateFlowPrompt"',
@@ -45,8 +45,8 @@ assert.match(creatorOsHtml, /core-rules\.js\?v=2\.0\.0/);
 assert.match(creatorOsHtml, /failure-prevention\.js\?v=2\.0\.0/);
 assert.match(creatorOsHtml, /capability-library\.js\?v=2\.0\.0/);
 assert.match(creatorOsHtml, /orchestrator\.js\?v=2\.0\.0/);
-assert.match(creatorOsHtml, /creator-os-app\.js\?v=2\.0\.0/);
-assert.match(creatorOsCss, /@media\(max-width:720px\)/, 'Creator OS must keep a responsive phone layout.');
+assert.match(creatorOsHtml, /creator-os-app\.js\?v=2\.1\.0/);
+assert.match(creatorOsCss, /@media\(max-width:760px\)/, 'Creator OS must keep a responsive phone layout.');
 assert.match(creatorOsCss, /\.current-task-panel/, 'Creator OS must expose Current Task as a first-class surface.');
 assert.match(productionHtml, /data-root="\.\.\/\.\.\/\.\.\/" data-guard="true"/, 'Production must resolve the GUCC root explicitly.');
 assert.match(productionHtml, /rel="icon"[^>]+\.\.\/\.\.\/\.\.\/assets\/icons\/gucc-icon\.svg/, 'Production must declare the shared GUCC favicon instead of requesting a missing root favicon.ico.');

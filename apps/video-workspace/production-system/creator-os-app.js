@@ -259,7 +259,9 @@ function importProjectBrief(p,result){
   const id=String(field("projectId","PROJECT_ID")||"").trim();
   if(id&&id!==p.projectId){
     if(store.projects.some(x=>x!==p&&x.projectId===id))throw Error("PROJECT_ID 与其他项目冲突");
+    const previousId=p.projectId;
     p.projectId=id;store.selectedProjectId=id;
+    window.dispatchEvent(new CustomEvent("gucc:creator-os:renamed",{detail:{from:previousId,to:id}}));
   }
   for(const [a,b] of [["name","PROJECT_NAME"],["game","GAME"],["server","SERVER"],["version","VERSION"],
     ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"]]){

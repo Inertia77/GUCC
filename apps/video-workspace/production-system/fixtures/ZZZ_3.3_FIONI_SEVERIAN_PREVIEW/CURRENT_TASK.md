@@ -3,7 +3,7 @@
 - PROMPT_ID: PF-001
 - NAME: 直播前项目基线与需求研究
 - EXECUTOR: Work
-- WHY_NOW: 依赖已满足，是当前最小可执行任务。
+- WHY_NOW: 所需前置任务已完成，可以执行当前节点。
 - REQUIRED_INPUT: 游戏/版本/主题
 - EXPECTED_OUTPUT: PROJECT_BRIEF.md / PRELIVE_BASELINE.md
 - QUALITY_GATE: 问题可追溯到真实讨论 / 不以单帖冒充社区共识

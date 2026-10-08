@@ -408,8 +408,32 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
     return `# CURRENT_TASK\n\n- PROMPT_ID: ${n.promptId}\n- NAME: ${n.name}\n- EXECUTOR: ${n.executor}\n- WHY_NOW: ${n.reason||n.purpose||""}\n- REQUIRED_INPUT: ${(n.requiredInput||[]).join(" / ")||"NONE"}\n- EXPECTED_OUTPUT: ${(n.expectedOutput||[]).join(" / ")||"NONE"}\n- QUALITY_GATE: ${(n.qualityGate||[]).join(" / ")||n.qcLevel||""}\n- REVIEW_MODE: ${n.reviewMode||""}\n\n## PROMPT\n\n${n.prompt||""}\n`;
   }
 
-  function buildCreateProjectPrompt(idea){
-    return `【GameUp Creator OS｜Create Project】\n默认 AUTONOMY_LEVEL=L2。用户只提供自然语言想法；你负责主动研究和补全普通字段。\n\n用户想法：\n${idea}\n\n请执行 PROJECT_BUILDER：\n1. 研究玩家为什么现在会点、看完解决什么、竞品饱和/缺口与信息增量。\n2. 给 GO/HOLD/SHORT/MERGE/CANCEL；普通未知用 UNKNOWN，不频繁追问。\n3. 自动提出人类可读 PROJECT_ID；不加随机哈希。\n4. 生成 PROJECT_BRIEF.md + VIDEO_CONTRACT.md。VIDEO_CONTRACT 至少包含 GAME/SERVER/VERSION/DATA_CUTOFF/PRODUCT_TYPE/FORMAT/PLATFORMS/CORE_PLAYER_QUESTION/CONTENT_INCREMENT/CORE_THESIS/VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE/OFFICIAL_TERMINOLOGY/AVAILABLE_ARTIFACTS/LOCKED_ARTIFACTS/PRODUCTION_NEEDS/CURRENT_STAGE/AUTONOMY_LEVEL/NEXT_HANDOFF。\n5. HARD STOP 只用于继续会制造虚假事实/时间线/写入状态的关键缺失；普通缺项继续。\n6. 不开始下游视频制作。\n\n最终额外输出一个 JSON 代码块，字段与 VIDEO_CONTRACT 对应，便于导入 Project System。\n`;
+  function buildCreateProjectPrompt(input){
+    const project=input&&typeof input==="object"?input:{idea:String(input||"")};
+    const idea=String(project.idea||"").trim();
+    const known=[
+      ["游戏",project.game],["区服",project.server],["版本",project.version],["内容类型",project.productType]
+    ].filter(([,value])=>value!=null&&String(value).trim()&&!["UNKNOWN","CURRENT"].includes(String(value).trim().toUpperCase()))
+      .map(([key,value])=>"- "+key+"："+String(value).trim()).join("\n");
+    return `【GameUp Creator OS｜Create Project】
+默认 AUTONOMY_LEVEL=L2。用户只提供自然语言想法；你负责主动研究和补全普通字段。
+
+用户原始想法（这是需求描述，绝对不要整段当作项目名称）：
+${idea}
+
+用户明确补充的信息（未提供的字段由你研究，不能猜）：
+${known||"- 无"}
+
+请执行 PROJECT_BUILDER：
+1. 研究玩家为什么现在会点、看完解决什么、竞品饱和/缺口与信息增量。
+2. 给 GO/HOLD/SHORT/MERGE/CANCEL；普通未知用 UNKNOWN，不频繁追问。
+3. 提出一个简洁、可辨识的 PROJECT_NAME 和人类可读 PROJECT_ID。项目名称要提炼具体题材与核心方向，不能复制长段用户想法；不加随机哈希。需要讨论多个方向时分别标注。
+4. 生成 PROJECT_BRIEF.md + VIDEO_CONTRACT.md。VIDEO_CONTRACT 至少包含 PROJECT_NAME/PROJECT_ID/GAME/SERVER/VERSION/DATA_CUTOFF/PRODUCT_TYPE/FORMAT/PLATFORMS/CORE_PLAYER_QUESTION/CONTENT_INCREMENT/CORE_THESIS/VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE/OFFICIAL_TERMINOLOGY/AVAILABLE_ARTIFACTS/LOCKED_ARTIFACTS/PRODUCTION_NEEDS/CURRENT_STAGE/AUTONOMY_LEVEL/NEXT_HANDOFF。
+5. HARD STOP 只用于继续会制造虚假事实/时间线/写入状态的关键缺失；普通缺项继续。
+6. 不开始下游视频制作。
+
+最终额外输出一个 JSON 代码块，字段与 VIDEO_CONTRACT 对应，并明确包含 PROJECT_NAME、PROJECT_ID，便于导入 Project System。
+`;
   }
 
   function buildFlowCompilerPrompt(project){

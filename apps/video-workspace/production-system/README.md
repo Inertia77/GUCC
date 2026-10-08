@@ -12,6 +12,29 @@ Legacy 固定 23-state 页面保留：
 /apps/video-workspace/production-system/legacy-v1.html
 ~~~
 
+
+## v2.1｜Studio Edition（界面与执行链修复）
+
+- 首页重构为 **Current Task** 单主操作：现在要做什么、由谁做、输入和产物是什么。完整 Prompt 默认收起，点击「复制当前 Prompt」无需反复查找。
+- 52 个测试 Node 不再在首页同时铺开：只展示近期 6 个节点，支持按需展开全部；点击任意节点先预览，再决定是否复制。
+- 01～07 宏观地图折叠至「制作生命周期」；Core Rules / Capability / Global Libraries 移到维护页面，避免与日常制作混在一起。
+- 视觉改为克制的深空蓝黑、薄荷青、低饱和金与精细线条；面向桌面 / 平板 / 手机独立响应。
+- 修复双视频分支：一个分支等待 Q3 或外部条件时，不会阻止另一分支继续执行已有依赖的任务。
+- Project Builder 的 VIDEO_CONTRACT JSON 可以直接导入；下一任务自动变成 AI Prompt Flow Compiler；编排 AI 产出 GUCC_FLOW_RESULT 后可导入完整 Prompt Flow。
+- AI 生成的外部 Flow 每节点自动补充稳定 Capability DNA / Guardrail；不可借导入把任务伪装成 DONE。导入流程校验未知 Capability、重复 ID、缺失依赖和依赖环。
+- 显式区分「AI 编排（推荐）」和「本地结构草案」。后者不会执行研究，且重新编译已有进度前要求确认。
+- 将旧 v1 Creator 浮层从 v2 页面隔离，避免旧同步/归档 UI 叠加。旧页面保留原功能。
+- LOCK 的人工确认只在浏览器项目分支记录，不声称已经触发正式云端 Human Lock。不能通过普通「标记完成」随意跳过尚未执行的 Node。
+- 可选择从旧浏览器 Production 存储只读导入项目基本信息；原项目/历史/锁状态不被修改。
+- **目前新版项目状态仅保存在该浏览器 localStorage；没有实现到生产 Supabase 的自动双向写入或实时同步。** 文件/云端写入仍须真实调用并回读，不能因 UI 显示就声称已完成。
+
+### QA
+
+- \`scripts/test-creator-os-v2.cjs\` 已加入离线 DOM 模拟的 Builder → Compiler → Flow → Current Task 功能回归。
+- \`scripts/check-project.mjs\`、\`scripts/test-uiux-contract.cjs\` 和 \`scripts/test-creator-workspace-root.cjs\` 已对齐新旧页面的职责。
+- \`sw.js\` 更新到缓存 v30；首页 CSS/JS 资源查询版本 v2.1.0。
+- 真实浏览器端到端截图/全仓 \`npm test\` 必须在可运行完整仓库的环境再执行；源代码静态检测不能替代视觉验收。
+
 ## 定位
 
 v2 不再把视频制作理解成一条固定 Prompt 流水线。

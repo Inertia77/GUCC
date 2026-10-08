@@ -2,49 +2,73 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07101b">
-<title>GameUp Creator OS v2｜GUCC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080e19">
+<title>GameUp Creator OS · 制作中枢｜GUCC</title>
 <link rel="icon" href="../../../assets/icons/gucc-icon.svg?v=5">
 <script src="../../../assets/access-guard.js?v=9" data-root="../../../" data-guard="true"></script>
 <link rel="stylesheet" href="../../../assets/gucc-theme.css">
-<link rel="stylesheet" href="./creator-os.css?v=2.0.0">
+<link rel="stylesheet" href="./creator-os.css?v=2.1.0">
 </head>
 <body class="creator-os-page">
+<div class="cosmos-grid" aria-hidden="true"></div>
 <header class="os-topbar">
-  <div>
-    <p class="eyebrow">GUCC · GAMEUP CREATOR OS</p>
-    <h1>AI-first Video Production <span>v2</span></h1>
-    <p class="subtitle">AI 主动研究、编排与制作；人只介入 Creative Direction、关键输入、Lock、最终成片与发布。</p>
+  <a class="os-wordmark" href="../../../" aria-label="返回 GUCC 首页">
+    <span class="os-monogram">G<span class="monogram-accent">.</span></span>
+    <span class="wordmark-copy"><strong>GAMEUP</strong><small>CREATOR / OS</small></span>
+  </a>
+  <div class="topbar-center"><span class="center-line"></span><span>CREATIVE OPERATIONS</span><span class="center-line"></span></div>
+  <div class="top-actions">
+    <span class="system-label"><span class="alive-dot"></span> AI-FIRST <i>/</i> HUMAN-REVIEW</span>
+    <a class="top-link" href="../legacy-prompt-studio-v6.html">旧版 Prompt</a>
+    <a class="top-link" href="./legacy-v1.html">旧版制作台</a>
+    <a class="top-link top-link-icon" href="../../publishing-console/" aria-label="发布控制台">投稿 <span aria-hidden="true">↗</span></a>
   </div>
-  <nav class="top-actions">
-    <a class="button ghost" href="../">Prompt Studio</a>
-    <a class="button ghost" href="./legacy-v1.html">Legacy v1</a>
-    <a class="button ghost" href="../../publishing-console/">投稿</a>
-  </nav>
 </header>
 
 <div class="os-shell">
   <aside class="os-nav">
-    <div class="nav-title">GameUp Creator OS</div>
-    <button data-view="core"><b>00</b><span>Core Rules</span></button>
-    <button data-view="system" class="active"><b>01</b><span>Project System</span></button>
-    <button data-view="capabilities"><b>02</b><span>Capability Library</span></button>
-    <button data-view="libraries"><b>03</b><span>Global Libraries</span></button>
-    <button data-view="projects"><b>04</b><span>Projects</span></button>
-    <div class="nav-note">01～07 继续作为人类理解生命周期的 Production Map，不再强制决定 Prompt 顺序。</div>
+    <div class="nav-title"><span>OPERATIONS</span><small>01 / 05</small></div>
+    <button data-view="system" class="active"><b>01</b><span>制作桌面</span><i>›</i></button>
+    <button data-view="projects"><b>02</b><span>项目档案</span><i>›</i></button>
+    <div class="nav-section-label">SYSTEM / REFERENCE</div>
+    <button data-view="core"><b>03</b><span>规则与防错</span><i>›</i></button>
+    <button data-view="capabilities"><b>04</b><span>能力模块库</span><i>›</i></button>
+    <button data-view="libraries"><b>05</b><span>公共资料库</span><i>›</i></button>
+    <div class="nav-spacer"></div>
+    <div class="nav-note">
+      <span class="tiny-sigil">✦</span>
+      <strong>AI 提案 · 人类定稿</strong>
+      <p>系统负责执行路径。你专注真正影响作品的判断。</p>
+      <small>LOCAL WORKSPACE / V2.1</small>
+    </div>
   </aside>
 
   <main class="os-main">
-    <section class="project-bar">
+    <div class="workspace-heading">
       <div>
-        <span class="micro">CURRENT PROJECT</span>
+        <p class="eyebrow"><span class="eyebrow-glyph">◉</span> GAMEUP <span class="slash">/</span> STUDIO</p>
+        <h1>创作<span>中枢</span><span class="heading-period">.</span></h1>
+        <p class="workspace-deck">一条可执行的当前任务。完整的创作流程，交给系统编排。</p>
+      </div>
+      <div class="heading-status">
+        <span class="status-line">WORKSPACE STATE</span>
+        <strong>LOCAL <span class="status-dot"></span></strong>
+        <small>本浏览器草稿 · 非云端已同步</small>
+      </div>
+    </div>
+
+    <section class="project-bar">
+      <div class="project-switcher">
+        <span class="micro">ACTIVE PROJECT <span class="micro-divider">/</span> 当前项目</span>
         <select id="projectSelect" aria-label="当前项目"></select>
       </div>
       <div class="project-actions">
-        <button class="button ghost" id="newProjectBtn">＋ Create Project</button>
-        <button class="button ghost" id="importBtn">导入项目 JSON</button>
-        <button class="button ghost" id="exportBtn">导出项目 JSON</button>
+        <button class="button primary" id="newProjectBtn"><span aria-hidden="true">＋</span> 新建项目</button>
+        <div class="project-file-actions">
+          <button class="button ghost" id="importBtn">导入</button>
+          <button class="button ghost" id="exportBtn">备份</button>
+        </div>
         <input id="importFile" type="file" accept=".json,application/json" hidden>
       </div>
     </section>
@@ -52,64 +76,91 @@
     <section id="view-system" class="view active">
       <div class="hero-grid">
         <article class="panel current-task-panel">
-          <div class="panel-head"><div><span class="micro">CURRENT TASK</span><h2 id="currentTaskName">—</h2></div><span id="currentExecutor" class="executor-badge">—</span></div>
-          <p id="currentTaskReason" class="lead"></p>
-          <div class="io-grid">
-            <div><span>Required Input</span><div id="currentInputs"></div></div>
-            <div><span>Expected Output</span><div id="currentOutputs"></div></div>
+          <div class="mission-line"><span class="live-indicator"></span><span>NOW / CURRENT TASK</span><span class="mission-line-right" id="currentTaskId">—</span></div>
+          <div class="task-main">
+            <p class="task-eyebrow">下一步，做这件事</p>
+            <h2 id="currentTaskName">—</h2>
+            <p id="currentTaskReason" class="lead"></p>
           </div>
-          <div class="gate-line"><span>Quality Gate</span><strong id="currentQc"></strong><span id="currentReview"></span></div>
+          <div class="task-runtime">
+            <span class="runtime-unit"><span>EXECUTOR</span><strong id="currentExecutor" class="executor-badge">—</strong></span>
+            <span class="runtime-sep"></span>
+            <span class="runtime-unit"><span>QUALITY</span><strong id="currentQc">—</strong></span>
+            <span class="runtime-sep"></span>
+            <span class="runtime-unit"><span>REVIEW</span><strong id="currentReview">—</strong></span>
+          </div>
           <div class="prompt-actions">
-            <button class="button primary" id="copyCurrentPrompt">复制 Current Prompt</button>
-            <button class="button ghost" id="applyResultBtn">应用 AI Result</button>
-            <button class="button ghost" id="markDoneBtn">标记完成 → 下一任务</button>
-            <button class="button ghost" id="skipTaskBtn">条件不需要 · Skip</button>
+            <button class="button primary mission-cta" id="copyCurrentPrompt"><span aria-hidden="true">⌁</span> 复制当前 Prompt <span class="cta-arrow">↗</span></button>
+            <button class="button secondary" id="applyResultBtn">导入 AI 执行结果 <span aria-hidden="true">↗</span></button>
           </div>
-          <pre id="currentPrompt" class="prompt-box"></pre>
+          <details class="task-details">
+            <summary>查看所需输入、预期产物及完整 Prompt <span aria-hidden="true">⌄</span></summary>
+            <div class="io-grid">
+              <div><span>REQUIRED INPUT</span><div id="currentInputs"></div></div>
+              <div><span>EXPECTED OUTPUT</span><div id="currentOutputs"></div></div>
+            </div>
+            <pre id="currentPrompt" class="prompt-box"></pre>
+          </details>
+          <details class="task-advanced">
+            <summary>手动状态操作 <span aria-hidden="true">⌄</span></summary>
+            <p>仅在实际完成并核验后确认。锁定类任务仍需真实人工批准。</p>
+            <div class="manual-controls">
+              <button class="button ghost" id="markDoneBtn">确认完成 / 条件满足</button>
+              <button class="button ghost" id="skipTaskBtn">条件不适用 · 跳过</button>
+            </div>
+          </details>
+          <div class="mission-bottom"><span>GUCC / EXECUTION CONTROL</span><span>INTEGRITY FIRST <span class="mini-star">✦</span></span></div>
         </article>
-
         <aside class="panel project-summary">
-          <span class="micro">PROJECT CONTRACT</span>
+          <div class="summary-top"><span class="micro">PROJECT DOSSIER</span><span class="card-sigil" aria-hidden="true">✳</span></div>
           <h3 id="projectName">—</h3>
+          <p class="project-caption">一个 Project 管理事实和流程；每条 Video 保持自己的产物与审核。</p>
           <div id="projectMeta" class="meta-stack"></div>
+          <div id="videoBranches" class="branch-list"></div>
           <div class="summary-actions">
-            <button class="button ghost" id="copyContractBtn">复制 VIDEO_CONTRACT</button>
-            <button class="button ghost" id="copyWorkflowBtn">复制 PROJECT_WORKFLOW</button>
+            <button class="text-action" id="copyContractBtn">VIDEO_CONTRACT <span aria-hidden="true">↗</span></button>
+            <button class="text-action" id="copyWorkflowBtn">PROJECT_WORKFLOW <span aria-hidden="true">↗</span></button>
           </div>
         </aside>
       </div>
 
-      <section class="panel">
-        <div class="panel-head"><div><span class="micro">HUMAN-FACING PRODUCTION MAP</span><h2>01～07 宏观制作地图</h2></div><span class="pill">不是固定 Prompt 流水线</span></div>
-        <div id="productionMap" class="production-map"></div>
+      <section class="launch-dock">
+        <div class="dock-heading"><span class="micro">QUICK OPERATIONS</span><h2>从想法到执行</h2></div>
+        <div class="dock-grid">
+          <article class="dock-item">
+            <div class="dock-number">A</div>
+            <div><h3>提出新选题</h3><p>从自然语言开始。受众、研究、制作路线交给 AI。</p></div>
+            <button class="dock-button" id="newProjectShortcut" aria-label="新建项目">↗</button>
+          </article>
+          <article class="dock-item">
+            <div class="dock-number">B</div>
+            <div><h3>生成项目执行流</h3><p>按 Capability 编译完整 Prompt Flow，保留 Guardrail。</p></div>
+            <div class="dock-item-actions"><button class="dock-button" id="buildFlowBtn" aria-label="生成项目执行流">↗</button><button class="text-action" id="copyBuildFlowPrompt">复制编排 Prompt</button></div>
+          </article>
+          <article class="dock-item">
+            <div class="dock-number">C</div>
+            <div><h3>调整制作路线</h3><p>新资料或条件变化，只修改受影响的节点。</p></div>
+            <button class="dock-button" id="copyUpdateFlowPrompt" aria-label="复制更新 Prompt">↗</button>
+          </article>
+        </div>
+        <details class="quick-idea">
+          <summary>快速为一句想法生成 Project Builder Prompt <span aria-hidden="true">⌄</span></summary>
+          <div><textarea id="ideaInput" rows="3" placeholder="用一句话描述你想做的视频……"></textarea><button class="button secondary" id="createPromptBtn">复制立项 Prompt</button></div>
+        </details>
       </section>
 
-      <section class="action-grid">
-        <article class="panel action-card">
-          <span class="micro">CREATE PROJECT</span>
-          <h3>一句话说想法</h3>
-          <p>AI 主动研究、补字段、判断 GO / SHORT / HOLD，并生成 PROJECT_BRIEF + VIDEO_CONTRACT。</p>
-          <textarea id="ideaInput" rows="5" placeholder="例如：我要做绝区零3.3菲欧妮和赛维里安前瞻，两个视频共用一个项目，前瞻结束后尽快做，不碰内鬼。"></textarea>
-          <button class="button primary" id="createPromptBtn">生成 Create Project Prompt</button>
-        </article>
-        <article class="panel action-card">
-          <span class="micro">BUILD PROJECT PROMPT FLOW</span>
-          <h3>让能力库编译项目专属执行流</h3>
-          <p>动态选择 Capability、Executor、Quality Gate 与 Chat Fallback；Proxy、Pixel、补拍、全片 QC 均按条件。</p>
-          <div class="button-row"><button class="button primary" id="buildFlowBtn">直接编译 Flow</button><button class="button ghost" id="copyBuildFlowPrompt">复制 Compiler Prompt</button></div>
-        </article>
-        <article class="panel action-card">
-          <span class="micro">UPDATE PROJECT PROMPT FLOW</span>
-          <h3>执行中只做 DIFF</h3>
-          <p>新资料、LONG→SHORT、任务失败或工具不可用时，只 ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。</p>
-          <button class="button ghost" id="copyUpdateFlowPrompt">复制 Update Prompt</button>
-        </article>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><div><span class="micro">PROJECT PROMPT FLOW</span><h2>当前执行流</h2></div><span id="flowRevision" class="pill"></span></div>
+      <section class="panel flow-panel">
+        <div class="panel-head">
+          <div><span class="micro">EXECUTION ROUTE</span><h2>制作路线 <span id="flowNodeCount" class="node-count"></span></h2><p>首页只展示近期节点；完整执行流及分支在此展开。</p></div>
+          <div class="flow-head-actions"><span id="flowRevision" class="pill"></span><button class="button ghost" id="toggleFlowBtn" aria-expanded="false">展开全部 <span aria-hidden="true">⌄</span></button></div>
+        </div>
         <div id="flowList" class="flow-list"></div>
       </section>
+
+      <details class="panel lifecycle-details">
+        <summary><span><span class="micro">PRODUCTION MAP</span><strong>01～07 制作生命周期</strong></span><span class="lifecycle-hint">查看宏观流程 · 不决定 Prompt 执行顺序 <span aria-hidden="true">⌄</span></span></summary>
+        <div id="productionMap" class="production-map"></div>
+      </details>
     </section>
 
     <section id="view-core" class="view">
@@ -178,6 +229,6 @@
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
 <script src="./orchestrator.js?v=2.0.0"></script>
-<script src="./creator-os-app.js?v=2.0.0"></script>
+<script src="./creator-os-app.js?v=2.1.0"></script>
 </body>
 </html>

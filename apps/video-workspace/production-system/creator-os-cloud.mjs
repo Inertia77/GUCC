@@ -5,6 +5,7 @@ import { getSession, getAccessToken } from "../../command-center/src/auth.js";
 
 const TABLE = "creator_os_workspace_snapshots";
 const BASE_KEY = "gucc_creator_os_cloud_bases_v1";
+const RENAME_KEY = "gucc_creator_os_pending_renames_v1";
 const REST = CONFIG.SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/" + TABLE;
 const $ = (id) => document.getElementById(id);
 const api = () => window.GuccCreatorOS;
@@ -23,6 +24,31 @@ function safeProject(project) {
 function canonical(project) { return JSON.stringify(safeProject(project)); }
 function bases() { try {return JSON.parse(localStorage.getItem(BASE_KEY) || "{}");} catch {return {};} }
 function baseFor(id) { return bases()[id] || null; }
+function renames(){try{return JSON.parse(localStorage.getItem(RENAME_KEY)||"{}");}catch{return {};}}
+function recordRename(from,to){
+  if(!String(from).startsWith("DRAFT-")||!to||from===to)return;
+  const items=renames();items[from]=to;
+  localStorage.setItem(RENAME_KEY,JSON.stringify(items));
+}
+async function cleanRenames(onlyTarget=""){
+  const items=renames();
+  for(const [from,to] of Object.entries(items)){
+    if(onlyTarget&&to!==onlyTarget)continue;
+    // Never delete a draft until the canonical replacement has an authenticated cloud row.
+    const replacement=await readRow(to);
+    if(!replacement||replacement.project_data?.projectId!==to)continue;
+    const prior=await readRow(from);
+    if(prior){
+      const user=sessionUser();
+      const query="?owner_user_id=eq."+encodeURIComponent(user)+"&project_id=eq."+encodeURIComponent(from)+"&revision=eq."+prior.revision;
+      const deleted=await request("DELETE",query);
+      if(!deleted?.length)continue; // concurrent update: protect the remote edit
+      remoteRows.delete(from);
+    }
+    const map=bases();delete map[from];localStorage.setItem(BASE_KEY,JSON.stringify(map));
+    delete items[from];localStorage.setItem(RENAME_KEY,JSON.stringify(items));
+  }
+}
 function remember(id, revision, project) {
   const all=bases();
   all[id]={revision,project:safeProject(project)};
@@ -113,6 +139,7 @@ async function pushOne(id,forceRevision=null) {
     // Do not mark a newer in-flight local edit as synced.
     if(latest&&canonical(latest)===canonical(p)) remember(id,result.revision,p);
     else {remember(id,result.revision,p);pending=true;}
+    await cleanRenames(id);
     status("云端已同步","ok");
   }catch(err){
     const remote=await readRow(id).catch(()=>null);
@@ -152,6 +179,8 @@ async function refresh(){
       if(!row.project_data||row.project_data.projectId!==row.project_id)continue;
       currentIds.add(row.project_id);
       remoteRows.set(row.project_id,row);
+      // A renamed draft is superseded by its canonical ID; do not resurrect it during reconciliation.
+      if(renames()[row.project_id])continue;
       const local=localById(row.project_id);
       if(!local){applyRemote(row);continue;}
       const b=baseFor(row.project_id);
@@ -169,6 +198,7 @@ async function refresh(){
       else status("已连接 Supabase · 项目可跨设备同步","ok");
     }
     ready=true;
+    if(!conflict)await cleanRenames();
   }catch(err){status("云端不可用 · 本地可继续："+(err.message||"连接失败"),"error");ready=false;}
   finally{busy=false;}
   if(ready&&!conflict)schedule();
@@ -201,6 +231,7 @@ $("cloudConflictDialog")?.querySelectorAll("[data-cloud-choice]").forEach(el=>{
   el.addEventListener("click",()=>{void resolve(el.dataset.cloudChoice);});
 });
 $("cloudConflictDialog")?.addEventListener("cancel",e=>{e.preventDefault();void resolve("later");});
+window.addEventListener("gucc:creator-os:renamed",e=>recordRename(e.detail?.from,e.detail?.to));
 window.addEventListener("gucc:creator-os:saved",schedule);
 window.addEventListener("online",()=>{void refresh();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)void refresh();});

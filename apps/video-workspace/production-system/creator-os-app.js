@@ -201,6 +201,7 @@ function asList(value){return Array.isArray(value)?value:(value==null||value==="
 function importProjectBrief(p,result){
   const contract=result.VIDEO_CONTRACT||result.videoContract||result.contractPatch||result;
   if(!contract||typeof contract!=="object"||Array.isArray(contract))throw Error("未找到 VIDEO_CONTRACT JSON");
+  p.rawVideoContract=JSON.parse(JSON.stringify(contract));
   const field=(a,b)=>contract[a]??contract[b];
   const id=String(field("projectId","PROJECT_ID")||"").trim();
   if(id&&id!==p.projectId){
@@ -237,8 +238,18 @@ function importAiPromptFlow(p,result){
     if(!id||ids.has(id))throw Error("节点 ID 缺失或重复："+id);
     if(!capability)throw Error("未知 Capability："+capId);
     ids.add(id);
-    const prompt=String(raw.prompt||raw.PROMPT||"").trim();
-    if(prompt.length<80)throw Error("节点 "+id+" 没有完整可复制 Prompt");
+    const projectPrompt=String(raw.prompt||raw.PROMPT||"").trim();
+    if(projectPrompt.length<80)throw Error("节点 "+id+" 没有完整可复制 Prompt");
+    const stableDNA=[
+      "【GameUp Creator OS / STABLE CAPABILITY CONTRACT】",
+      "CAPABILITY: "+capability.id+" · PROJECT: "+p.projectId,
+      "【成熟执行方法】",...capability.coreMethod.map(x=>"- "+x),
+      "【MANDATORY GUARDRAILS】",...capability.mandatoryGuardrails.map(x=>"- "+x),
+      Fail.render(capability.failureRefs||[]),
+      "【不可突破的 Core Rules】",...Core.CORE_RULES.autonomy.hard.map(x=>"- "+x),
+      "不假装读取文件、实机验证、真实写入或回读；HARD STOP仅限产物真实性无法成立。"
+    ].filter(Boolean).join("\n");
+    const prompt=stableDNA+"\n\n【PROJECT-SPECIFIC TASK】\n"+projectPrompt;
     const dependencies=asList(raw.dependencies||raw.DEPENDENCIES);
     return {
       promptId:id,name:raw.name||raw.NAME||capability.name,
@@ -259,7 +270,7 @@ function importAiPromptFlow(p,result){
       next:asList(raw.next||raw.NEXT),chatFallback:raw.chatFallback||raw.CHAT_FALLBACK||capability.chatFallback||"",
       qcLevel:raw.qcLevel||raw.QC_LEVEL||capability.qcLevel,
       reviewMode:raw.reviewMode||raw.REVIEW_MODE||capability.reviewMode,
-      status:raw.status||raw.STATUS||"PENDING",branch:raw.branch||raw.BRANCH||"SHARED",
+      status:["WAITING","CONDITIONAL"].includes(raw.status||raw.STATUS)?(raw.status||raw.STATUS):"PENDING",branch:raw.branch||raw.BRANCH||"SHARED",
       isCompiledExternal:true,notes:"AI-compiled / imported locally"
     };
   });

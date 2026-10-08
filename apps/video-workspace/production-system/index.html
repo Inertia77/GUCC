@@ -204,6 +204,15 @@
   </main>
 </div>
 
+<dialog id="nodeDialog">
+  <div class="dialog-card">
+    <div class="panel-head"><div><span class="micro">PROMPT FLOW / NODE PREVIEW</span><h2 id="nodePreviewTitle">节点详情</h2></div><button type="button" id="closeNodeDialog" class="icon-button" aria-label="关闭">×</button></div>
+    <p id="nodePreviewMeta"></p>
+    <pre id="nodePreview" class="artifact-preview"></pre>
+    <footer><button type="button" class="button primary" id="copyNodePrompt">复制此节点 Prompt ↗</button></footer>
+  </div>
+</dialog>
+
 <dialog id="resultDialog">
   <form method="dialog" class="dialog-card">
     <div class="panel-head"><div><span class="micro">APPLY NODE RESULT</span><h2>粘贴 GUCC_NODE_RESULT</h2></div><button value="cancel" class="icon-button">×</button></div>

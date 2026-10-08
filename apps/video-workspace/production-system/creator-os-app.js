@@ -10,6 +10,8 @@ let migration=[];
 let store=load();
 let activeView="system";
 let toastTimer;
+let flowExpanded=false;
+let selectedNodePrompt="";
 
 function load(){
   try{
@@ -41,9 +43,9 @@ function render(){
   renderNav();
   renderProjectBar();
   renderSystem();
-  renderCore();
-  renderCapabilities();
-  renderProjects();
+  if(activeView==="core")renderCore();
+  if(activeView==="capabilities")renderCapabilities();
+  if(activeView==="projects")renderProjects();
 }
 function renderNav(){
   document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
@@ -58,34 +60,72 @@ function renderSystem(){
   const p=current();if(!p)return;
   $("projectName").textContent=p.name;
   $("projectMeta").innerHTML=[
-    ["PROJECT_ID",p.projectId],["GAME",p.game||"UNKNOWN"],["SERVER",p.server||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
-    ["TYPE",p.productType||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`rev.${p.flowRevision||0}`]
+    ["PROJECT ID",p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
+    ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join("");
+  const videos=Array.isArray(p.videos)?p.videos:[];
+  $("videoBranches").innerHTML=videos.length?videos.map(v=>`<div class="branch-row"><span>${esc(v.name||v.videoId||"Video")}</span><span>${esc(v.decision||"PENDING")}</span></div>`).join(""):"";
   const t=currentTaskFor(p);
-  $("currentTaskName").textContent=`${t.promptId} · ${t.name}`;
+  $("currentTaskId").textContent=t.promptId||"—";
+  $("currentTaskName").textContent=t.name||"—";
   $("currentExecutor").textContent=t.executor||"—";
   $("currentTaskReason").textContent=t.reason||t.purpose||"";
   $("currentInputs").textContent=listText(t.requiredInput);
   $("currentOutputs").textContent=listText(t.expectedOutput||t.saveAs);
   $("currentQc").textContent=t.qcLevel||"Q2";
-  $("currentReview").textContent=t.reviewMode||"REVIEW_OPTIONAL";
+  $("currentReview").textContent=t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
   $("currentPrompt").textContent=t.prompt||"";
-  $("markDoneBtn").disabled=!p.promptFlow?.length||["COMPLETE"].includes(t.promptId);
-  $("markDoneBtn").textContent=t.status==="WAITING"?"确认条件 / Approval → 下一任务":"标记完成 → 下一任务";
-  $("skipTaskBtn").disabled=!p.promptFlow?.length||!["CONDITIONAL","PENDING"].includes(t.status||"");
-  $("flowRevision").textContent=`revision ${p.flowRevision||0}`;
+  const awaiting=Boolean(p.promptFlow?.length)&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
+  $("markDoneBtn").disabled=!awaiting;
+  $("markDoneBtn").textContent=t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
+  $("skipTaskBtn").disabled=!p.promptFlow?.length||t.status!=="CONDITIONAL";
+  $("applyResultBtn").disabled=t.promptId==="COMPLETE";
+  $("flowRevision").textContent=`REV ${p.flowRevision||0}`;
   renderFlow(p);
   $("productionMap").innerHTML=Core.HUMAN_PRODUCTION_MAP.map(s=>`<div class="map-step"><b>${s.id}</b><strong>${esc(s.name)}</strong><small>${esc(s.meaning)}</small></div>`).join("");
 }
 function renderFlow(p){
   const box=$("flowList");box.replaceChildren();
-  if(!p.promptFlow?.length){box.innerHTML='<p class="subtitle">尚未生成 PROJECT_PROMPT_FLOW。先完成 Project Builder，再 Build Prompt Flow。</p>';return;}
-  for(const n of p.promptFlow){
-    const row=document.createElement("div");row.className="flow-node";row.dataset.id=n.promptId;
-    row.innerHTML=`<span class="id">${esc(n.promptId)}</span><div><strong>${esc(n.name)}</strong><br><small>${esc(n.capabilityUsed)}</small></div><span class="executor">${esc(n.executor)}</span><span class="status ${esc(n.status)}">${esc(n.status)}</span><span class="branch">${esc(n.branch||"")}</span>`;
-    row.title="点击查看/复制此 Node Prompt";
-    row.addEventListener("click",()=>{const prompt=n.prompt||O.capabilityPrompt(p,n);$("currentPrompt").textContent=prompt;copy(prompt);});
+  const nodes=p.promptFlow||[];
+  const total=nodes.length;
+  const done=nodes.filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
+  $("flowNodeCount").textContent=total?`— ${done} / ${total}`:"";
+  const toggle=$("toggleFlowBtn");
+  toggle.disabled=total<7;
+  toggle.setAttribute("aria-expanded",String(flowExpanded));
+  toggle.innerHTML=flowExpanded?'收起路线 <span aria-hidden="true">⌃</span>':'查看完整路线 <span aria-hidden="true">⌄</span>';
+  if(!total){
+    const empty=document.createElement("p");empty.className="flow-empty";
+    empty.textContent="尚无项目专属执行流。先完成 Project Builder，再编译可执行 Prompt Flow。";
+    box.append(empty);return;
+  }
+  const currentTask=currentTaskFor(p);
+  const activeIndex=Math.max(0,nodes.findIndex(n=>n.promptId===currentTask.promptId));
+  const start=Math.max(0,activeIndex-1);
+  const visible=flowExpanded?nodes:nodes.slice(start,Math.min(nodes.length,start+6));
+  const statusName={DONE:"已完成",SKIPPED:"已跳过",PENDING:"待执行",CONDITIONAL:"条件任务",WAITING:"等待",NEED_INPUT:"需要输入"};
+  for(const n of visible){
+    const row=document.createElement("div");
+    row.className="flow-node"+(n.promptId===currentTask.promptId?" current":"");
+    row.tabIndex=0;row.setAttribute("role","button");
+    row.setAttribute("aria-label",`查看 ${n.promptId} ${n.name} 的完整 Prompt`);
+    row.dataset.id=n.promptId;
+    row.innerHTML=`<span class="id">${esc(n.promptId)}</span><div><strong>${esc(n.name)}</strong><br><small>${esc(n.capabilityUsed)}</small></div><span class="executor">${esc(n.executor)}</span><span class="status ${esc(n.status)}">${esc(statusName[n.status]||n.status)}</span><span class="branch">${esc(n.branch||"")}</span>`;
+    const open=()=>{
+      selectedNodePrompt=n.prompt||O.capabilityPrompt(p,n);
+      $("nodePreviewTitle").textContent=n.name;
+      $("nodePreviewMeta").textContent=`${n.promptId} · ${n.executor} · ${n.qcLevel||"Q1"} · ${n.reviewMode||"REVIEW_OPTIONAL"}`;
+      $("nodePreview").textContent=selectedNodePrompt;
+      $("nodeDialog").showModal();
+    };
+    row.addEventListener("click",open);
+    row.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
     box.append(row);
+  }
+  if(!flowExpanded&&start+visible.length<total){
+    const more=document.createElement("p");more.className="flow-empty";
+    more.textContent=`另有 ${total-start-visible.length} 个后续节点；任务完成后自动展示接下来的内容。`;
+    box.append(more);
   }
 }
 function renderCore(){

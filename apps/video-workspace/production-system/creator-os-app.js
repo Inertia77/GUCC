@@ -32,7 +32,10 @@ function load(){
   O.buildWorkflow(test);O.compilePromptFlow(test);
   return {projects:[test],selectedProjectId:test.projectId};
 }
-function save(){localStorage.setItem(O.STORAGE_KEY,JSON.stringify(store));}
+function save(broadcast=true){
+  localStorage.setItem(O.STORAGE_KEY,JSON.stringify(store));
+  if(broadcast)window.dispatchEvent(new CustomEvent("gucc:creator-os:saved",{detail:{projectId:store.selectedProjectId}}));
+}
 function current(){return store.projects.find(p=>p.projectId===store.selectedProjectId)||store.projects[0]||null;}
 function notify(msg){$("toast").textContent=msg;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600);}
 async function copy(text){try{await navigator.clipboard.writeText(text);notify("已复制");return true;}catch{notify("复制失败，请手动选择");return false;}}
@@ -60,6 +63,7 @@ function render(){
   if(activeView==="core")renderCore();
   if(activeView==="capabilities")renderCapabilities();
   if(activeView==="projects")renderProjects();
+  window.dispatchEvent(new CustomEvent("gucc:creator-os:rendered"));
 }
 function renderNav(){
   document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
@@ -459,5 +463,19 @@ $("createDialog").querySelectorAll("[data-close-create]").forEach(button=>button
 $("createDialog").addEventListener("close",()=>{$("createDialog").querySelector("form").reset();});
 
 function slugFile(v){return String(v||"project").replace(/[^\w\u4e00-\u9fff.-]+/g,"_").slice(0,90);}
+// Public, minimal integration for the two optional workspace modules.
+window.GuccCreatorOS={
+  projects:()=>JSON.parse(JSON.stringify(store.projects)),
+  selectedId:()=>store.selectedProjectId,
+  current:()=>JSON.parse(JSON.stringify(current())),
+  putProject:(project,{fromCloud=false}={})=>{
+    if(!project||typeof project!=="object"||!project.projectId||!project.name)throw Error("无效的云端项目");
+    const i=store.projects.findIndex(p=>p.projectId===project.projectId);
+    if(i>=0)store.projects[i]=JSON.parse(JSON.stringify(project));
+    else store.projects.unshift(JSON.parse(JSON.stringify(project)));
+    if(store.projects.length===1||current()?.status==="TEST_FIXTURE")store.selectedProjectId=project.projectId;
+    save(!fromCloud);render();
+  }
+};
 render();loadMigration();
 })();

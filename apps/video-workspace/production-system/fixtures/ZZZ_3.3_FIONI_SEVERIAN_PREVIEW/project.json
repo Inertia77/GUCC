@@ -3212,15 +3212,15 @@
     }
   ],
   "flowRevision": 1,
-  "createdAt": "2026-10-07T08:00:07.484Z",
-  "updatedAt": "2026-10-07T08:00:07.484Z",
+  "createdAt": "2026-10-08T01:51:27.301Z",
+  "updatedAt": "2026-10-08T01:51:27.302Z",
   "history": [
     {
-      "at": "2026-10-07T08:00:07.484Z",
+      "at": "2026-10-08T01:51:27.301Z",
       "action": "PROJECT_CREATED_V2"
     },
     {
-      "at": "2026-10-07T08:00:07.484Z",
+      "at": "2026-10-08T01:51:27.302Z",
       "action": "PROMPT_FLOW_BUILT",
       "revision": 1
     }

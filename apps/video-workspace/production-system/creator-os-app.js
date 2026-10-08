@@ -179,7 +179,7 @@ function setNode(status){
   if(!p||!t||t.promptId==="COMPLETE")return;
   if(t.promptId==="PROJECT_BRIEF_APPROVAL"&&status==="DONE"){
     if(!window.confirm("已检查 Project Brief 与 VIDEO_CONTRACT 的核心方向及事实边界，确认批准？\n\n这里只记录本浏览器审核，不表示云端同步。"))return;
-    p.status="BRIEF_REVIEW";save();render();notify("项目方向已批准，可以编译执行流");return;
+    p.status="BRIEF_READY";save();render();notify("项目方向已批准，可以编译执行流");return;
   }
   if(!p.promptFlow?.length)return;
   if(status==="DONE"){

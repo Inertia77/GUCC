@@ -251,7 +251,7 @@ for (const expected of [
   'src="./failure-prevention.js?v=2.0.0"',
   'src="./capability-library.js?v=2.0.0"',
   'src="./orchestrator.js?v=2.0.0"',
-  'src="./creator-os-app.js?v=2.0.0"'
+  'src="./creator-os-app.js?v=2.1.0"'
 ]) {
   if (!productionSystemSource.includes(expected)) errors.push(`Creator OS v2 缺少关键标记：${expected}`);
 }

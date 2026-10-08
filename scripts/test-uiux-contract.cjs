@@ -91,7 +91,7 @@ assert.match(uxBrowser, /1440, 900/, 'Creator UX browser acceptance must cover 1
 assert.match(uxBrowser, /Human Gate must never auto-fire/, 'Creator UX browser acceptance must protect human-only gates.');
 assert.match(uxBrowser, /first fold/, 'Creator UX browser acceptance must verify current-task-first mobile hierarchy.');
 assert.match(uxBrowser, /saveProject/, 'Creator UX browser acceptance must prove read/navigation smoke creates no Project write.');
-assert.match(serviceWorker, /gucc-static-v29[\s\S]*gucc-runtime-v29/, 'Creator OS v2 must bump the offline cache generation.');
+assert.match(serviceWorker, /gucc-static-v30[\s\S]*gucc-runtime-v30/, 'Creator OS v2 must bump the offline cache generation.');
 assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator UX simplification must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-os-app\.js\?v=2\.1\.0/, 'Creator OS v2 app must be available in the offline shell.');
 assert.match(serviceWorker, /creator-ai-task-core\.js\?v=1/, 'Creator AI Task core must remain available in the offline app shell.');

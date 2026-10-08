@@ -186,7 +186,7 @@
         <article class="panel"><h3>Project / Locks</h3><p>复用 <code>creator_projects</code>、Language Track / Visual Master / Variant 与现有 Human Lock。</p></article>
         <article class="panel"><h3>Platform Rules</h3><p>复用 Publishing Console；发布时仍需实时核验平台字段、版权与 AI 披露。</p><a href="../../publishing-console/">打开投稿控制台 →</a></article>
         <article class="panel"><h3>Analytics / Learning</h3><p>复用 publication / metric snapshot / performance report / learning proposal 结构。</p></article>
-        <article class="panel"><h3>Database Decision</h3><p><strong>本次不新增数据库表。</strong> PROJECT_WORKFLOW、PROJECT_PROMPT_FLOW、CURRENT_TASK 作为 project-scope logical artifacts 存入现有 artifact registry 即可。</p></article>
+        <article class="panel"><h3>Database Decision</h3><p><strong>本次不新增数据库表。</strong>这些文档可以复用现有 project-scope Artifact Registry；当前新版页面只保存浏览器草稿，尚未对 Supabase 执行自动同步。</p></article>
       </div>
     </section>
 
@@ -217,8 +217,8 @@
 <dialog id="resultDialog">
   <form method="dialog" class="dialog-card">
     <div class="panel-head"><div><span class="micro">APPLY NODE RESULT</span><h2>粘贴 GUCC_NODE_RESULT</h2></div><button value="cancel" class="icon-button">×</button></div>
-    <p>粘贴当前 AI 输出中的 JSON 代码块。系统只合并明确返回的事实、Artifact 与 Flow DIFF，不猜未写字段。</p>
-    <textarea id="resultInput" rows="16" placeholder='{"promptId":"PF-001","status":"DONE",...}'></textarea>
+    <p>立项时可直接粘贴 VIDEO_CONTRACT JSON；编排后粘贴 GUCC_FLOW_RESULT；正常任务粘贴 GUCC_NODE_RESULT。所有结果只更新本浏览器草稿，未经实际工具验证不代表已写入云端或本地文件。</p>
+    <textarea id="resultInput" rows="16" placeholder="粘贴 AI 返回的完整 JSON 或带 JSON 代码块的回执"></textarea>
     <footer><button value="cancel" class="button ghost">取消</button><button id="applyResultConfirm" value="default" class="button primary">应用并刷新 Current Task</button></footer>
   </form>
 </dialog>

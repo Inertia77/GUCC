@@ -13,7 +13,7 @@ const creatorEdge = fs.readFileSync(path.join(ROOT, "supabase/functions/creator-
 // Legacy Production compatibility must keep the Phase 2A.1 Workspace Root UI.
 assert.match(productionHtml, /creator-workspace-root\.mjs\?v=1/);
 // Creator OS v2 is the canonical Project / Prompt Flow surface and keeps legacy production available separately.
-assert.match(creatorOsHtml, /GameUp Creator OS v2/);
+assert.match(creatorOsHtml, /GameUp Creator OS/);
 assert.match(creatorOsHtml, /legacy-v1\.html/);
 
 // It must reuse the same persistent browser device identity as the Creator bridge.

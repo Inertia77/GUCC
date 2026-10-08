@@ -210,6 +210,11 @@
 
     <section id="view-projects" class="view">
       <div class="section-head"><span class="micro">04</span><h2>Projects</h2><p>当前项目事实、Prompt Flow 与执行状态。大媒体仍留本地，不进 Git。</p></div>
+      <div class="project-management-bar">
+        <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
+        <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="all">全部项目</option><option value="archived">已归档</option></select>
+        <button id="archiveCurrentProject" type="button" class="button ghost">归档当前项目</button>
+      </div>
       <div id="projectCards" class="project-cards"></div>
       <section class="panel">
         <div class="panel-head"><h3>当前项目 Artifact</h3><div class="button-row"><button class="button ghost" data-artifact="brief">PROJECT_BRIEF</button><button class="button ghost" data-artifact="contract">VIDEO_CONTRACT</button><button class="button ghost" data-artifact="workflow">PROJECT_WORKFLOW</button><button class="button ghost" data-artifact="flow">PROJECT_PROMPT_FLOW</button><button class="button ghost" data-artifact="task">CURRENT_TASK</button></div></div>

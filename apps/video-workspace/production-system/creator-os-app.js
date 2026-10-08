@@ -34,7 +34,10 @@ function download(name,text,type="application/json"){const a=document.createElem
 function currentTaskFor(p){
   if(!p) return null;
   if(!p.promptFlow?.length){
-    return {promptId:"PROJECT_BUILDER",name:"Create Project / Project Builder",executor:"Work",reason:"当前只有自然语言想法；先让 AI 主动研究并生成 PROJECT_BRIEF + VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项/事实边界自检"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p.idea||p.name),status:"PENDING"};
+    if(p.status==="BRIEF_READY"){
+      return {promptId:"PROMPT_FLOW_COMPILER",name:"编译项目专属 Prompt Flow",executor:"Chat / Work",reason:"已导入立项结果。现在根据成熟 Capability、事实边界与项目目标编排执行顺序。",requiredInput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],expectedOutput:["PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","GUCC_FLOW_RESULT JSON"],qualityGate:["Q2：完整 Prompt/Guardrail/依赖"],reviewMode:"REVIEW_OPTIONAL",prompt:O.buildFlowCompilerPrompt(p),status:"PENDING"};
+    }
+    return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"输入自然语言想法，让 AI 研究需求、定义项目并返回 VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项与事实边界"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p.idea||p.name),status:"PENDING"};
   }
   return O.currentTask(p);
 }
@@ -187,7 +190,9 @@ function mergeUnique(target,items){
 }
 function parseNodeResult(raw){
   let text=String(raw||"").trim();
-  const fenced=text.match(/```(?:json)?\s*([\s\S]*?)```/i);if(fenced)text=fenced[1].trim();
+  const matches=[...text.matchAll(/```(?:json|GUCC_NODE_RESULT|GUCC_FLOW_RESULT)\s*([\s\S]*?)```/gi)];
+  if(matches.length)text=matches[matches.length-1][1].trim();
+  else {const one=text.match(/```\s*([\s\S]*?)```/i);if(one)text=one[1].trim();}
   return JSON.parse(text);
 }
 function applyNodeResult(result){

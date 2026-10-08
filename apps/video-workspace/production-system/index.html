@@ -8,7 +8,7 @@
 <link rel="icon" href="../../../assets/icons/gucc-icon.svg?v=5">
 <script src="../../../assets/access-guard.js?v=9" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
 <link rel="stylesheet" href="../../../assets/gucc-theme.css">
-<link rel="stylesheet" href="./creator-os.css?v=2.1.0">
+<link rel="stylesheet" href="./creator-os.css?v=2.1.1">
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -116,6 +116,7 @@
           <div class="summary-top"><span class="micro">PROJECT DOSSIER</span><span class="card-sigil" aria-hidden="true">✳</span></div>
           <h3 id="projectName">—</h3>
           <p class="project-caption">一个 Project 管理事实和流程；每条 Video 保持自己的产物与审核。</p>
+          <p id="projectIdeaPreview" class="project-idea-preview" hidden></p>
           <div id="projectMeta" class="meta-stack"></div>
           <div id="videoBranches" class="branch-list"></div>
           <div class="summary-actions">
@@ -224,12 +225,12 @@
 </dialog>
 
 <dialog id="createDialog">
-  <form method="dialog" class="dialog-card">
-    <div class="panel-head"><div><span class="micro">CREATE PROJECT</span><h2>建立项目草案</h2></div><button value="cancel" class="icon-button">×</button></div>
-    <p>这里只录入最少上下文；普通字段交给 Project Builder AI 补全。</p>
-    <label>自然语言想法<textarea name="idea" rows="6" required></textarea></label>
-    <div class="form-grid"><label>游戏（可选）<input name="game"></label><label>区服（可选）<input name="server"></label><label>版本（可选）<input name="version"></label><label>类型（可选）<select name="productType"><option value="preview">前瞻解析</option><option value="guide">正式攻略</option><option value="rerun">复刻重评</option><option value="mechanism">机制专题</option><option value="decision">抽卡/决策</option><option value="rotation">实战/排轴</option><option value="story">人物/剧情</option><option value="creative">创意内容</option></select></label></div>
-    <footer><button value="cancel" class="button ghost">取消</button><button id="saveDraftProject" value="default" class="button primary">创建草案并生成 Project Builder Prompt</button></footer>
+  <form id="createProjectForm" class="dialog-card">
+    <div class="panel-head"><div><span class="micro">CREATE PROJECT</span><h2>建立项目草案</h2></div><button type="button" data-close-create class="icon-button" aria-label="关闭">×</button></div>
+    <p>随意写下视频构想即可。原始想法会完整保留，不会被当作项目标题。保存后复制立项 Prompt 交给 AI；正式名称和制作方向由 AI 研究后确定。</p>
+    <label for="projectIdea">视频想法（必填，仅作为创作输入）<textarea id="projectIdea" name="idea" rows="6" required placeholder="比如：想做一期绝区零新角色的抽取决策，但不想做重复的常规攻略；希望找到玩家最关心的争议点……"></textarea></label>
+    <div class="form-grid"><label>游戏（可选）<input name="game"></label><label>区服（可选）<input name="server"></label><label>版本（可选）<input name="version"></label><label>类型（可选）<select name="productType"><option value="" selected>交给 AI 判断</option><option value="preview">前瞻解析</option><option value="guide">正式攻略</option><option value="rerun">复刻重评</option><option value="mechanism">机制专题</option><option value="decision">抽卡/决策</option><option value="rotation">实战/排轴</option><option value="story">人物/剧情</option><option value="creative">创意内容</option></select></label></div>
+    <footer><button type="button" data-close-create class="button ghost">取消</button><button type="submit" id="saveDraftProject" class="button primary">保存想法并复制立项 Prompt</button></footer>
   </form>
 </dialog>
 
@@ -239,6 +240,6 @@
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
 <script src="./orchestrator.js?v=2.0.0"></script>
-<script src="./creator-os-app.js?v=2.1.0"></script>
+<script src="./creator-os-app.js?v=2.1.1"></script>
 </body>
 </html>

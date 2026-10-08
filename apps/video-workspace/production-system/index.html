@@ -9,6 +9,7 @@
 <script src="../../../assets/access-guard.js?v=9" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
 <link rel="stylesheet" href="../../../assets/gucc-theme.css">
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
+<link rel="stylesheet" href="./nte-urban-theme.css?v=1">
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -19,7 +20,7 @@
   </a>
   <div class="topbar-center"><span class="center-line"></span><span>CREATIVE OPERATIONS</span><span class="center-line"></span></div>
   <div class="top-actions">
-    <span class="system-label"><span class="alive-dot"></span> AI-FIRST <i>/</i> HUMAN-REVIEW</span>
+    <span class="system-label"><span class="alive-dot"></span> NEW ERIDU <i>/</i> CREATOR TERMINAL</span>
     <a class="top-link" href="../legacy-prompt-studio-v6.html">旧版 Prompt</a>
     <a class="top-link" href="./legacy-v1.html">旧版制作台</a>
     <a class="top-link top-link-icon" href="../../publishing-console/" aria-label="发布控制台">投稿 <span aria-hidden="true">↗</span></a>
@@ -40,7 +41,7 @@
       <span class="tiny-sigil">✦</span>
       <strong>AI 提案 · 人类定稿</strong>
       <p>系统负责执行路径。你专注真正影响作品的判断。</p>
-      <small>LOCAL WORKSPACE / V2.1</small>
+      <small>PROJECT TERMINAL / CLOUD-READY</small>
     </div>
   </aside>
 
@@ -53,8 +54,8 @@
       </div>
       <div class="heading-status">
         <span class="status-line">WORKSPACE STATE</span>
-        <strong>LOCAL <span class="status-dot"></span></strong>
-        <small>本浏览器草稿 · 非云端已同步</small>
+        <strong id="workspaceCloudLabel">LOCAL MODE</strong>
+        <small id="workspaceCloudNote">本机草稿 · 连接账号后可同步</small>
       </div>
     </div>
 
@@ -64,6 +65,7 @@
         <select id="projectSelect" aria-label="当前项目"></select>
       </div>
       <div class="project-actions">
+        <div class="cloud-actions"><span id="cloudSyncStatus" data-state="idle">检查云端连接…</span><button class="button ghost" id="cloudSyncNow" type="button" title="用 Supabase 登录状态检查项目云同步">↻ 云端同步</button><a class="cloud-login" href="../../command-center/" title="在 GUCC 中登录 Supabase 账户">账户 ↗</a></div>
         <button class="button primary" id="newProjectBtn"><span aria-hidden="true">＋</span> 新建项目</button>
         <div class="project-file-actions">
           <button class="button ghost" id="importLegacyBtn" title="只读取旧版浏览器项目，不覆盖旧数据">旧版项目</button>
@@ -151,6 +153,21 @@
         </details>
       </section>
 
+      <section class="panel local-folder-panel">
+        <div class="panel-head">
+          <div><span class="micro">LOCAL ASSET RADAR / ONLY ON THIS DEVICE</span><h2>本地项目工作目录 <span class="local-only-stamp">LOCAL ONLY</span></h2>
+          <p>按项目选择本机文件夹，读取目录与文件名生成 tree /f 风格快照；不打开素材内容，也不上传文件或绝对路径。</p></div>
+          <div class="button-row folder-toolbar"><button type="button" class="button secondary" id="chooseProjectFolder">▣ 选择工作文件夹</button><button type="button" class="button ghost" id="rescanProjectFolder">↻ 更新结构</button></div>
+        </div>
+        <input id="folderInputFallback" type="file" webkitdirectory multiple hidden>
+        <div class="folder-control">
+          <div><span class="micro">DEVICE ACCESS</span><strong id="folderSelectionStatus">尚未选择本地工作目录</strong></div>
+          <label>本机绝对路径（可选，仅保存在此浏览器）<input id="folderRootPath" type="text" autocomplete="off" placeholder="例如 C:\GameUp\绝区零3.3\视频名称"></label>
+        </div>
+        <details class="folder-tree-details"><summary>查看当前文件树 <span>⌄</span></summary><pre id="folderTreePreview" class="folder-tree-preview"></pre></details>
+        <div class="folder-footer"><span>无文件上传 · 文件夹授权只属于当前设备</span><button type="button" class="button primary" id="copyFolderOrganizePrompt">复制本地整理 Prompt ↗</button></div>
+      </section>
+
       <section class="panel flow-panel">
         <div class="panel-head">
           <div><span class="micro">EXECUTION ROUTE</span><h2>制作路线 <span id="flowNodeCount" class="node-count"></span></h2><p>首页只展示近期节点；完整执行流及分支在此展开。</p></div>
@@ -234,12 +251,23 @@
   </form>
 </dialog>
 
+<dialog id="cloudConflictDialog" aria-label="云端同步冲突">
+  <div class="dialog-card">
+    <div class="panel-head"><div><span class="micro">REVISION / CONFLICT</span><h2>项目版本冲突</h2></div></div>
+    <p><strong id="cloudConflictProject"></strong></p><p id="cloudConflictInfo"></p>
+    <p>请选择保留本机或云端项目快照。选择会更新整个项目的 Prompt Flow 和进度；必要时先备份本地 JSON。</p>
+    <footer><button class="button ghost" type="button" data-cloud-choice="later">稍后处理</button><button class="button secondary" type="button" data-cloud-choice="remote">保留云端</button><button class="button primary" type="button" data-cloud-choice="local">保留本机并上传</button></footer>
+  </div>
+</dialog>
+
 <div id="toast" class="toast" hidden></div>
 
 <script src="./core-rules.js?v=2.0.0"></script>
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
 <script src="./orchestrator.js?v=2.0.1"></script>
-<script src="./creator-os-app.js?v=2.1.2"></script>
+<script src="./creator-os-app.js?v=3.0.0"></script>
+<script type="module" src="./creator-os-cloud.mjs?v=1"></script>
+<script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 </body>
 </html>

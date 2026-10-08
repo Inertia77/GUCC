@@ -336,11 +336,16 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
 
   function currentTask(project){
     if(!project.promptFlow?.length) buildWorkflow(project);
-    for(const n of project.promptFlow){
-      if(n.status==="WAITING") return {...n,prompt:capabilityPrompt(project,n),reason:"等待外部条件，不应伪造后续事实。"};
-      if(["DONE","SKIPPED"].includes(n.status)) continue;
-      if(depsDone(project,n)) return {...n,prompt:capabilityPrompt(project,n),reason:"依赖已满足，是当前最小可执行任务。"};
-    }
+    const nodes=project.promptFlow;
+    // Prefer actionable work on the other video branch while a Q3 approval or
+    // external condition is waiting. A WAITING node never globally blocks
+    // unrelated branches. Dependencies still remain strict.
+    const runnable=nodes.find(n=>["PENDING","CONDITIONAL"].includes(n.status)&&depsDone(project,n));
+    if(runnable)return {...runnable,prompt:capabilityPrompt(project,runnable),reason:"所需前置任务已完成，可以执行当前节点。"};
+    const waiting=nodes.find(n=>n.status==="WAITING"&&depsDone(project,n));
+    if(waiting)return {...waiting,prompt:capabilityPrompt(project,waiting),reason:"目前需要处理外部条件或人工批准；其他分支没有更早的可执行任务。"};
+    const incomplete=nodes.some(n=>!["DONE","SKIPPED"].includes(n.status));
+    if(incomplete)return {promptId:"BLOCKED_DEPENDENCY",name:"检查前置依赖",executor:"Chat",reason:"仍有未完成节点，但依赖尚未满足。请检查相关节点回执、Skip条件与LOCK，不要直接标记完成。",prompt:""};
     return {promptId:"COMPLETE",name:"Prompt Flow 已完成",executor:"Human",reason:"没有待执行节点。",prompt:""};
   }
 

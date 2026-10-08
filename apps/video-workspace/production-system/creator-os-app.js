@@ -27,7 +27,7 @@ function load(){
 function save(){localStorage.setItem(O.STORAGE_KEY,JSON.stringify(store));}
 function current(){return store.projects.find(p=>p.projectId===store.selectedProjectId)||store.projects[0]||null;}
 function notify(msg){$("toast").textContent=msg;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600);}
-async function copy(text){try{await navigator.clipboard.writeText(text);notify("已复制");}catch{notify("复制失败，请手动选择");}}
+async function copy(text){try{await navigator.clipboard.writeText(text);notify("已复制");return true;}catch{notify("复制失败，请手动选择");return false;}}
 function listText(arr){return (arr||[]).length?(arr||[]).map(x=>"• "+x).join("\n"):"—";}
 function download(name,text,type="application/json"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);}
 
@@ -40,7 +40,7 @@ function currentTaskFor(p){
     if(p.status==="BRIEF_READY"){
       return {promptId:"PROMPT_FLOW_COMPILER",name:"编译项目专属 Prompt Flow",executor:"Chat / Work",reason:"已导入立项结果。现在根据成熟 Capability、事实边界与项目目标编排执行顺序。",requiredInput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],expectedOutput:["PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","GUCC_FLOW_RESULT JSON"],qualityGate:["Q2：完整 Prompt/Guardrail/依赖"],reviewMode:"REVIEW_OPTIONAL",prompt:O.buildFlowCompilerPrompt(p),status:"PENDING"};
     }
-    return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"输入自然语言想法，让 AI 研究需求、定义项目并返回 VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项与事实边界"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p.idea||p.name),status:"PENDING"};
+    return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"输入自然语言想法，让 AI 研究需求、定义项目并返回 VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项与事实边界"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p),status:"PENDING"};
   }
   return O.currentTask(p);
 }
@@ -59,12 +59,15 @@ function renderNav(){
 }
 function renderProjectBar(){
   const sel=$("projectSelect");sel.replaceChildren();
-  for(const p of store.projects){const o=document.createElement("option");o.value=p.projectId;o.textContent=`${p.status==="TEST_FIXTURE"?"[结构测试] ":""}${p.name}`;sel.append(o);}
+  for(const p of store.projects){const o=document.createElement("option");o.value=p.projectId;o.textContent=`${p.status==="TEST_FIXTURE"?"[结构测试] ":p.status==="DRAFT"?"[待 AI 立项] ":""}${p.name}`;sel.append(o);}
   sel.value=store.selectedProjectId;
 }
 function renderSystem(){
   const p=current();if(!p)return;
   $("projectName").textContent=p.status==="TEST_FIXTURE"?"[结构测试] "+p.name:p.name;
+  const ideaPreview=$("projectIdeaPreview");
+  ideaPreview.hidden=!(p.status==="DRAFT"&&p.idea);
+  ideaPreview.textContent=p.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
   $("projectMeta").innerHTML=[
     ["PROJECT ID",p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
     ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
@@ -161,8 +164,27 @@ function showArtifact(kind){
   const map={brief:O.projectBriefMd,contract:O.videoContractMd,workflow:O.workflowMd,flow:O.promptFlowMd,task:O.currentTaskMd};
   $("artifactPreview").textContent=(map[kind]||O.currentTaskMd)(p);
 }
-function createDraft(data){
-  const p=O.createProject(data);store.projects.unshift(p);store.selectedProjectId=p.projectId;save();render();$("currentPrompt").textContent=O.buildCreateProjectPrompt(p.idea);copy(O.buildCreateProjectPrompt(p.idea));
+function newDraftId(){
+  const base="DRAFT-"+Date.now();
+  let id=base,serial=1;
+  while(store.projects.some(p=>p.projectId===id))id=base+"-"+(++serial);
+  return id;
+}
+async function createDraft(data){
+  const meta=[data.game,data.version].map(x=>String(x||"").trim()).filter(Boolean).join(" ");
+  const p=O.createProject({
+    ...data,
+    projectId:newDraftId(),
+    name:meta?meta+" · 待 AI 定名":"待 AI 定名的项目",
+    productType:data.productType||"UNKNOWN"
+  });
+  store.projects.unshift(p);
+  store.selectedProjectId=p.projectId;
+  save();render();
+  const prompt=O.buildCreateProjectPrompt(p);
+  $("currentPrompt").textContent=prompt;
+  const copied=await copy(prompt);
+  notify(copied?"想法已保存，立项 Prompt 已复制；请交给 ChatGPT / Work 研究":"想法已保存；请点击“复制当前 Prompt”后交给 AI 研究");
 }
 function applyHumanGateSideEffects(p,t){
   // Browser-only approval record, scoped to the video branch. Never claim an upstream GUCC/cloud lock.
@@ -414,7 +436,19 @@ $("importFile").addEventListener("change",async e=>{
   }catch(err){notify("JSON 导入失败："+(err.message||"格式无效"));}
   finally{e.target.value="";}
 });
-$("saveDraftProject").addEventListener("click",e=>{e.preventDefault();const fd=new FormData($("createDialog").querySelector("form"));const idea=String(fd.get("idea")||"").trim();if(!idea)return notify("需要一句项目想法");createDraft({idea,name:idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),autonomyLevel:"L2"});$("createDialog").close();});
+$("createProjectForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const fd=new FormData(e.currentTarget);
+  const idea=String(fd.get("idea")||"").trim();
+  if(!idea){$("projectIdea").focus();return notify("请至少写一句视频想法");}
+  const submit=$("saveDraftProject");submit.disabled=true;
+  try{
+    await createDraft({idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),autonomyLevel:"L2"});
+    $("createDialog").close();
+  }catch(err){notify("保存失败："+(err.message||"请稍后重试"));}
+  finally{submit.disabled=false;}
+});
+$("createDialog").querySelectorAll("[data-close-create]").forEach(button=>button.addEventListener("click",()=>$("createDialog").close()));
 $("createDialog").addEventListener("close",()=>{$("createDialog").querySelector("form").reset();});
 
 function slugFile(v){return String(v||"project").replace(/[^\w\u4e00-\u9fff.-]+/g,"_").slice(0,90);}

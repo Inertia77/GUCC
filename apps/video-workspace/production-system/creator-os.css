@@ -216,6 +216,7 @@ small{line-height:1.5}
 .card-sigil{font-size:32px;line-height:1;color:#b4c69e;opacity:.44}
 .project-summary h3{font-size:clamp(19px,2.1vw,27px);line-height:1.42;letter-spacing:-.035em;font-weight:770;margin:26px 0 10px;overflow-wrap:anywhere}
 .project-caption{font-size:12px;line-height:1.8;color:#8ba1b3;margin:0 0 18px}
+.project-idea-preview{padding:12px 13px;margin:0 0 17px;max-height:125px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:rgba(6,16,27,.64);border:1px solid var(--os-hairline);border-radius:8px;color:#aac5d3;font-size:11px;line-height:1.7}
 .meta-stack{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;padding:18px 0;border-top:1px solid var(--os-hairline);border-bottom:1px solid var(--os-hairline)}
 .meta-stack>div{font-size:12px;font-weight:650;overflow-wrap:anywhere;color:#d6e2e8}
 .meta-stack b{display:block;margin-bottom:5px;color:#70869a;font:700 9px ui-monospace,monospace;letter-spacing:.09em}

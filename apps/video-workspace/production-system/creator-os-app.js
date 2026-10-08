@@ -53,12 +53,12 @@ function renderNav(){
 }
 function renderProjectBar(){
   const sel=$("projectSelect");sel.replaceChildren();
-  for(const p of store.projects){const o=document.createElement("option");o.value=p.projectId;o.textContent=`${p.name} · ${p.projectId}`;sel.append(o);}
+  for(const p of store.projects){const o=document.createElement("option");o.value=p.projectId;o.textContent=`${p.status==="TEST_FIXTURE"?"[结构测试] ":""}${p.name}`;sel.append(o);}
   sel.value=store.selectedProjectId;
 }
 function renderSystem(){
   const p=current();if(!p)return;
-  $("projectName").textContent=p.name;
+  $("projectName").textContent=p.status==="TEST_FIXTURE"?"[结构测试] "+p.name:p.name;
   $("projectMeta").innerHTML=[
     ["PROJECT ID",p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
     ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
@@ -158,15 +158,26 @@ function createDraft(data){
   const p=O.createProject(data);store.projects.unshift(p);store.selectedProjectId=p.projectId;save();render();$("currentPrompt").textContent=O.buildCreateProjectPrompt(p.idea);copy(O.buildCreateProjectPrompt(p.idea));
 }
 function applyHumanGateSideEffects(p,t){
+  // Browser-only approval record, scoped to the video branch. Never claim an upstream GUCC/cloud lock.
   if(!p||!t)return;
-  if(t.capabilityUsed==="SCRIPT_LOCK_GATE")p.locks.script=true;
-  if(t.capabilityUsed==="AUDIO_LOCK_GATE")p.locks.audio=true;
-  if(t.capabilityUsed==="FINAL_ASSEMBLY")p.locks.final=true;
-  if(t.capabilityUsed==="SIX_PLATFORM_PUBLISH_PACKAGE")p.locks.publish=true;
+  if(!["SCRIPT_LOCK_GATE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY","SIX_PLATFORM_PUBLISH_PACKAGE"].includes(t.capabilityUsed))return;
+  const branch=t.branch||"SHARED";
+  p.videoLocks ||= {};
+  p.videoLocks[branch] ||= {};
+  const lockKey={SCRIPT_LOCK_GATE:"script",AUDIO_LOCK_GATE:"audio",FINAL_ASSEMBLY:"final",SIX_PLATFORM_PUBLISH_PACKAGE:"publish"}[t.capabilityUsed];
+  p.videoLocks[branch][lockKey]={approvedLocallyAt:new Date().toISOString(),nodeId:t.promptId};
 }
 function setNode(status){
-  const p=current(),t=currentTaskFor(p);if(!p?.promptFlow?.length||!t||t.promptId==="COMPLETE")return;
-  if(status==="DONE")applyHumanGateSideEffects(p,t);
+  const p=current(),t=currentTaskFor(p);
+  if(!p?.promptFlow?.length||!t||t.promptId==="COMPLETE")return;
+  if(status==="DONE"){
+    if(t.status!=="WAITING")return notify("先导入 AI 执行回执，确认完成后再提交");
+    const message=t.reviewMode==="APPROVAL_REQUIRED"
+      ? `人工确认：${t.name}\n\n请确认已经实际审核输入和输出。此操作只更新本浏览器状态，不能代替真实 GUCC Cloud / Notion LOCK。`
+      : `确认 ${t.name} 的外部条件已真实满足？\n此操作不会自动查验官方资料。`;
+    if(!window.confirm(message))return;
+    applyHumanGateSideEffects(p,t);
+  }
   O.markNode(p,t.promptId,status);O.compilePromptFlow(p);save();render();
 }
 function mergeUnique(target,items){
@@ -205,9 +216,13 @@ function applyNodeResult(result){
 }
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
-document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;renderNav();}));
-$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;save();$("artifactPreview").textContent="";render();});
+document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
+$("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});
+$("toggleFlowBtn").addEventListener("click",()=>{flowExpanded=!flowExpanded;renderFlow(current());});
+$("closeNodeDialog").addEventListener("click",()=>{$("nodeDialog").close();});
+$("copyNodePrompt").addEventListener("click",()=>copy(selectedNodePrompt));
 $("createPromptBtn").addEventListener("click",()=>{const idea=$("ideaInput").value.trim();if(!idea)return notify("先写一句项目想法");copy(O.buildCreateProjectPrompt(idea));});
 $("copyCurrentPrompt").addEventListener("click",()=>copy(currentTaskFor(current())?.prompt||""));
 $("applyResultBtn").addEventListener("click",()=>{$("resultInput").value="";$("resultDialog").showModal();});
@@ -216,14 +231,48 @@ $("markDoneBtn").addEventListener("click",()=>setNode("DONE"));
 $("skipTaskBtn").addEventListener("click",()=>setNode("SKIPPED"));
 $("copyContractBtn").addEventListener("click",()=>copy(O.videoContractMd(current())));
 $("copyWorkflowBtn").addEventListener("click",()=>copy(O.workflowMd(current())));
-$("buildFlowBtn").addEventListener("click",()=>{const p=current();if(!p)return;O.buildWorkflow(p);O.compilePromptFlow(p);save();render();notify("已编译 PROJECT_PROMPT_FLOW");});
+$("buildFlowBtn").addEventListener("click",()=>{
+  const p=current();if(!p)return;
+  const progress=(p.promptFlow||[]).some(n=>["DONE","SKIPPED"].includes(n.status));
+  if(progress&&!window.confirm("此操作将重新编译流程并重置本浏览器已记录的节点状态。\n\n保留现有进度请选择“调整制作路线”生成 DIFF Prompt。\n\n仍要重新编译吗？"))return;
+  O.buildWorkflow(p);O.compilePromptFlow(p);save();render();
+  notify("已生成本地 Prompt Flow 草案（未自动开展研究）");
+});
 $("copyBuildFlowPrompt").addEventListener("click",()=>copy(O.buildFlowCompilerPrompt(current())));
 $("copyUpdateFlowPrompt").addEventListener("click",()=>copy(O.updateFlowPrompt(current())));
 $("capSearch").addEventListener("input",renderCapabilities);$("capDomain").addEventListener("change",renderCapabilities);
 document.querySelectorAll("[data-artifact]").forEach(b=>b.addEventListener("click",()=>showArtifact(b.dataset.artifact)));
 $("exportBtn").addEventListener("click",()=>{const p=current();if(p)download(slugFile(p.projectId)+".json",JSON.stringify(p,null,2));});
 $("importBtn").addEventListener("click",()=>{$("importFile").click();});
-$("importFile").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());const p=obj.projectId?obj:O.createProject(obj);const i=store.projects.findIndex(x=>x.projectId===p.projectId);if(i>=0)store.projects[i]=p;else store.projects.unshift(p);store.selectedProjectId=p.projectId;save();render();notify("项目已导入");}catch(err){notify("JSON 导入失败");}e.target.value="";});
+$("importFile").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{
+    const obj=JSON.parse(await file.text());
+    if(!obj||typeof obj!=="object")throw Error("不是项目对象");
+    const input=obj.videoContract||obj.VIDEO_CONTRACT||obj;
+    const data={
+      ...input,
+      projectId:input.projectId||input.PROJECT_ID,
+      name:input.name||input.PROJECT_NAME||input.NAME||input.idea,
+      game:input.game||input.GAME,
+      server:input.server||input.SERVER,
+      version:input.version||input.VERSION,
+      productType:input.productType||input.PRODUCT_TYPE||"preview",
+      autonomyLevel:input.autonomyLevel||input.AUTONOMY_LEVEL||"L2",
+      productionNeeds:input.productionNeeds||input.PRODUCTION_NEEDS||{},
+      verifiedFacts:input.verifiedFacts||input.VERIFIED_FACTS||[],
+      unknowns:input.unknowns||input.UNKNOWNS||[],
+      doNotUse:input.doNotUse||input.DO_NOT_USE||[]
+    };
+    const p=(obj.schemaVersion==="creator-os-v2"&&Array.isArray(obj.history))?obj:O.createProject(data);
+    if(!p.projectId||!p.name)throw Error("缺少项目标识");
+    const i=store.projects.findIndex(x=>x.projectId===p.projectId);
+    if(i>=0&&!window.confirm("发现同 ID 项目。确认覆盖本浏览器中该项目的记录？"))return;
+    if(i>=0)store.projects[i]=p;else store.projects.unshift(p);
+    store.selectedProjectId=p.projectId;save();render();notify("JSON 已导入本浏览器 · 未写入云端");
+  }catch(err){notify("JSON 导入失败："+(err.message||"格式无效"));}
+  finally{e.target.value="";}
+});
 $("saveDraftProject").addEventListener("click",e=>{e.preventDefault();const fd=new FormData($("createDialog").querySelector("form"));const idea=String(fd.get("idea")||"").trim();if(!idea)return notify("需要一句项目想法");createDraft({idea,name:idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),autonomyLevel:"L2"});$("createDialog").close();});
 $("createDialog").addEventListener("close",()=>{$("createDialog").querySelector("form").reset();});
 

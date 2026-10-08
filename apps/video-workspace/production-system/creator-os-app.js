@@ -34,6 +34,9 @@ function download(name,text,type="application/json"){const a=document.createElem
 function currentTaskFor(p){
   if(!p) return null;
   if(!p.promptFlow?.length){
+    if(p.status==="BRIEF_REVIEW"){
+      return {promptId:"PROJECT_BRIEF_APPROVAL",name:"确认项目方向",executor:"Human",reason:"AI 的立项结果已导入。请只审查 GO/SHORT/HOLD 方向、核心命题和事实边界；其他普通字段由系统处理。",requiredInput:["PROJECT_BRIEF","VIDEO_CONTRACT"],expectedOutput:["已确认的立项方向"],qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED",prompt:O.videoContractMd(p),status:"WAITING"};
+    }
     if(p.status==="BRIEF_READY"){
       return {promptId:"PROMPT_FLOW_COMPILER",name:"编译项目专属 Prompt Flow",executor:"Chat / Work",reason:"已导入立项结果。现在根据成熟 Capability、事实边界与项目目标编排执行顺序。",requiredInput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],expectedOutput:["PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","GUCC_FLOW_RESULT JSON"],qualityGate:["Q2：完整 Prompt/Guardrail/依赖"],reviewMode:"REVIEW_OPTIONAL",prompt:O.buildFlowCompilerPrompt(p),status:"PENDING"};
     }
@@ -80,6 +83,7 @@ function renderSystem(){
   $("currentPrompt").textContent=t.prompt||"";
   const awaiting=Boolean(p.promptFlow?.length)&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
   $("markDoneBtn").disabled=!awaiting;
+  if(t.promptId==="PROJECT_BRIEF_APPROVAL")$("markDoneBtn").textContent="批准立项方向";
   $("markDoneBtn").textContent=t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
   $("skipTaskBtn").disabled=!p.promptFlow?.length||t.status!=="CONDITIONAL";
   $("applyResultBtn").disabled=t.promptId==="COMPLETE";
@@ -172,7 +176,12 @@ function applyHumanGateSideEffects(p,t){
 }
 function setNode(status){
   const p=current(),t=currentTaskFor(p);
-  if(!p?.promptFlow?.length||!t||t.promptId==="COMPLETE")return;
+  if(!p||!t||t.promptId==="COMPLETE")return;
+  if(t.promptId==="PROJECT_BRIEF_APPROVAL"&&status==="DONE"){
+    if(!window.confirm("已检查 Project Brief 与 VIDEO_CONTRACT 的核心方向及事实边界，确认批准？\n\n这里只记录本浏览器审核，不表示云端同步。"))return;
+    p.status="BRIEF_REVIEW";save();render();notify("项目方向已批准，可以编译执行流");return;
+  }
+  if(!p.promptFlow?.length)return;
   if(status==="DONE"){
     if(t.status!=="WAITING")return notify("先导入 AI 执行回执，确认完成后再提交");
     const message=t.reviewMode==="APPROVAL_REQUIRED"
@@ -223,7 +232,7 @@ function importProjectBrief(p,result){
   if(typeof brief==="string"&&brief.trim())p.projectBriefMarkdown=brief;
   p.status="BRIEF_READY";
   p.history||=[];p.history.push({at:new Date().toISOString(),action:"PROJECT_BRIEF_IMPORTED_LOCAL"});
-  save();render();notify("立项结果已导入本浏览器，下一步：AI 编排 Prompt Flow");
+  save();render();notify("立项结果已导入，等待核对项目方向");
 }
 
 function importAiPromptFlow(p,result){

@@ -325,7 +325,7 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
 
   function compilePromptFlow(project){
     if(!project.promptFlow?.length) buildWorkflow(project);
-    project.promptFlow=project.promptFlow.map(n=>({...n,prompt:capabilityPrompt(project,n)}));
+    project.promptFlow=project.promptFlow.map(n=>({...n,prompt:n.isCompiledExternal&&typeof n.prompt==="string"&&n.prompt.trim()?n.prompt:capabilityPrompt(project,n)}));
     return project.promptFlow;
   }
 
@@ -341,9 +341,9 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
     // external condition is waiting. A WAITING node never globally blocks
     // unrelated branches. Dependencies still remain strict.
     const runnable=nodes.find(n=>["PENDING","CONDITIONAL"].includes(n.status)&&depsDone(project,n));
-    if(runnable)return {...runnable,prompt:capabilityPrompt(project,runnable),reason:"所需前置任务已完成，可以执行当前节点。"};
+    if(runnable)return {...runnable,prompt:runnable.isCompiledExternal&&runnable.prompt?runnable.prompt:capabilityPrompt(project,runnable),reason:"所需前置任务已完成，可以执行当前节点。"};
     const waiting=nodes.find(n=>n.status==="WAITING"&&depsDone(project,n));
-    if(waiting)return {...waiting,prompt:capabilityPrompt(project,waiting),reason:"目前需要处理外部条件或人工批准；其他分支没有更早的可执行任务。"};
+    if(waiting)return {...waiting,prompt:waiting.isCompiledExternal&&waiting.prompt?waiting.prompt:capabilityPrompt(project,waiting),reason:"目前需要处理外部条件或人工批准；其他分支没有更早的可执行任务。"};
     const incomplete=nodes.some(n=>!["DONE","SKIPPED"].includes(n.status));
     if(incomplete)return {promptId:"BLOCKED_DEPENDENCY",name:"检查前置依赖",executor:"Chat",reason:"仍有未完成节点，但依赖尚未满足。请检查相关节点回执、Skip条件与LOCK，不要直接标记完成。",prompt:""};
     return {promptId:"COMPLETE",name:"Prompt Flow 已完成",executor:"Human",reason:"没有待执行节点。",prompt:""};
@@ -380,6 +380,7 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }
 
   function projectBriefMd(project){
+    if(project.projectBriefMarkdown)return project.projectBriefMarkdown;
     return `# PROJECT_BRIEF\n\n- PROJECT_ID: ${project.projectId}\n- NAME: ${project.name}\n- IDEA: ${project.idea}\n- GAME: ${project.game||"UNKNOWN"}\n- SERVER: ${project.server||"UNKNOWN"}\n- VERSION: ${project.version||"UNKNOWN"}\n- PRODUCT_TYPE: ${project.productType}\n- AUTONOMY_LEVEL: ${project.autonomyLevel}\n\n## Why\n- 玩家为什么点：由 Project Builder / Research 补全\n- 看完解决什么：由 Project Builder / Research 补全\n- 信息增量：UNKNOWN（直到真实研究完成）\n\n## Status\n- 当前仅为项目定义 / 编排，不代表已完成视频研究或制作。\n`;
   }
 
@@ -407,7 +408,7 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }
 
   function buildFlowCompilerPrompt(project){
-    return `【GameUp Creator OS｜BUILD PROJECT PROMPT FLOW】\n读取当前 PROJECT_BRIEF + VIDEO_CONTRACT + Core Rules + Capability Library + Failure Prevention + 已有素材。\n不要机械复制01～07；01～07只做人类生命周期地图。\n\n当前项目：\n${videoContractMd(project)}\n\n请：\n- 为该项目选择最少但足够的 Capability；Proxy/Pixel/补录/Final AI QC均为条件能力。\n- 减少同Executor、同输入、低认知价值的人工中转；保留机制判断、核心命题、Script、SCRIPT_LOCK、真实Timeline、重大格式Gate、最终成片等高价值检查点。\n- Work/Codex不可用时为每个节点给CHAT_FALLBACK；长任务按Chat能力拆成连续子Prompt。\n- 生成 PROJECT_WORKFLOW.md 与 PROJECT_PROMPT_FLOW.md；每个Node必须含 PROMPT_ID/NAME/PURPOSE/EXECUTOR/WHEN/DEPENDENCIES/REQUIRED_INPUT/OPTIONAL_INPUT/READ_FROM_PREVIOUS/CAPABILITY_USED/完整PROMPT/EXPECTED_OUTPUT/SAVE_AS/QUALITY_GATE/HARD_STOP/SOFT_UNCERTAINTY_POLICY/SKIP_CONDITION/NEXT/CHAT_FALLBACK。\n- REVIEW_OPTIONAL不阻塞；APPROVAL_REQUIRED只用于重大方向、LOCK、必须人类输入、最终成片与发布。\n- 不执行任何视频下游Node。\n`;
+    return `【GameUp Creator OS｜BUILD PROJECT PROMPT FLOW】\n读取当前 PROJECT_BRIEF + VIDEO_CONTRACT + Core Rules + Capability Library + Failure Prevention + 已有素材。\n不要机械复制01～07；01～07只做人类生命周期地图。\n\n当前项目：\n${videoContractMd(project)}\n\n请：\n- 为该项目选择最少但足够的 Capability；Proxy/Pixel/补录/Final AI QC均为条件能力。\n- 减少同Executor、同输入、低认知价值的人工中转；保留机制判断、核心命题、Script、SCRIPT_LOCK、真实Timeline、重大格式Gate、最终成片等高价值检查点。\n- Work/Codex不可用时为每个节点给CHAT_FALLBACK；长任务按Chat能力拆成连续子Prompt。\n- 生成 PROJECT_WORKFLOW.md 与 PROJECT_PROMPT_FLOW.md；每个Node必须含 PROMPT_ID/NAME/PURPOSE/EXECUTOR/WHEN/DEPENDENCIES/REQUIRED_INPUT/OPTIONAL_INPUT/READ_FROM_PREVIOUS/CAPABILITY_USED/完整PROMPT/EXPECTED_OUTPUT/SAVE_AS/QUALITY_GATE/HARD_STOP/SOFT_UNCERTAINTY_POLICY/SKIP_CONDITION/NEXT/CHAT_FALLBACK。\n- REVIEW_OPTIONAL不阻塞；APPROVAL_REQUIRED只用于重大方向、LOCK、必须人类输入、最终成片与发布。\n- 不执行任何视频下游Node。\n- 在两个 Markdown 后附 GUCC_FLOW_RESULT JSON代码块：{"projectId":"...","promptFlow":[...]}；每个Node必须含完整可复制prompt正文、dependencies、capabilityUsed、executor、status、reviewMode、qcLevel、saveAs及其余要求字段，不能只放摘要。该JSON用于导回工作台。\n`;
   }
 
   function updateFlowPrompt(project){

@@ -166,11 +166,22 @@ function renderCapabilities(){
 }
 function renderProjects(){
   const p=current();
-  $("projectCards").innerHTML=store.projects.map(x=>`<article class="panel project-card ${x.projectId===store.selectedProjectId?"active":""}" data-project="${esc(x.projectId)}"><span class="micro">${esc(x.projectId)}</span><h3>${esc(x.name)}</h3><p>${esc(x.game||"UNKNOWN")} · ${esc(x.version||"UNKNOWN")} · ${esc(x.productType||"UNKNOWN")} · Flow rev.${x.flowRevision||0}</p></article>`).join("");
-  document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{store.selectedProjectId=card.dataset.project;save();render();}));
+  const q=($("projectSearch")?.value||"").trim().toLowerCase(),filter=$("projectArchiveFilter")?.value||"active";
+  const matching=store.projects.filter(x=>(!q||[x.name,x.game,x.version,x.projectId].join(" ").toLowerCase().includes(q))
+    &&(filter==="all"||(filter==="archived"?Boolean(x.archivedAt):!x.archivedAt)));
+  $("projectCards").innerHTML=matching.map(x=>`<article class="panel project-card ${x.projectId===store.selectedProjectId?"active":""}" data-project="${esc(x.projectId)}">
+    <span class="micro">${esc(x.projectId)}</span><h3>${esc(x.name)}</h3><p>${esc(x.game||"UNKNOWN")} · ${esc(x.version||"UNKNOWN")} · Flow rev.${x.flowRevision||0} ${x.archivedAt?"· 已归档":""}</p>
+    </article>`).join("")||'<p class="flow-empty">当前筛选下没有项目，可切换「全部项目」。</p>';
+  document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{
+    store.selectedProjectId=card.dataset.project;save();$("artifactPreview").textContent="";render();
+  }));
+  const archive=$("archiveCurrentProject");
+  archive.disabled=!p||p.status==="TEST_FIXTURE";
+  archive.textContent=p?.archivedAt?"恢复当前项目":"归档当前项目";
   if(!$("artifactPreview").textContent&&p)$("artifactPreview").textContent=O.currentTaskMd(p);
   $("migrationTable").innerHTML=migration.length?migration.map(m=>`<div class="migration-row"><code>${esc(m.legacyPromptId)}</code><strong>${esc(m.disposition)}</strong><span>${esc((m.capabilities||[]).join(" + "))}<br><small class="subtitle">${esc(m.reason)}</small></span></div>`).join(""):"<p class='subtitle'>Migration map 加载中…</p>";
 }
+
 function showArtifact(kind){
   const p=current();if(!p)return;
   const map={brief:O.projectBriefMd,contract:O.videoContractMd,workflow:O.workflowMd,flow:O.promptFlowMd,task:O.currentTaskMd};
@@ -367,6 +378,15 @@ function applyNodeResult(result){
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+$("projectSearch").addEventListener("input",renderProjects);
+$("projectArchiveFilter").addEventListener("change",renderProjects);
+$("archiveCurrentProject").addEventListener("click",()=>{
+  const p=current();if(!p||p.status==="TEST_FIXTURE")return;
+  const isArchive=!p.archivedAt;
+  if(isArchive&&!window.confirm("将项目移入归档视图，不删除项目、文件或锁定记录。继续吗？"))return;
+  p.archivedAt=isArchive?new Date().toISOString():null;
+  save();render();notify(isArchive?"项目已归档，数据仍保留":"项目已恢复");
+});
 $("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});

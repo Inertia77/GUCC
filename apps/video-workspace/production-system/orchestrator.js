@@ -385,7 +385,12 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }
 
   function videoContractMd(project){
-    return `# VIDEO_CONTRACT\n\n- PROJECT_ID: ${project.projectId}\n- PROJECT_NAME: ${project.name}\n- GAME: ${project.game||"UNKNOWN"}\n- SERVER: ${project.server||"UNKNOWN"}\n- VERSION: ${project.version||"UNKNOWN"}\n- DATA_CUTOFF: ${project.dataCutoff||"UNKNOWN"}\n- PRODUCT_TYPE: ${project.productType||"UNKNOWN"}\n- FORMAT: ${project.format||"UNKNOWN"}\n- AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}\n- CURRENT_STAGE: ${project.currentStage}\n\n## VERIFIED_FACTS\n${(project.verifiedFacts||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## REASONED_ANALYSIS\n${(project.reasonedAnalysis||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## UNKNOWNS\n${(project.unknowns||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## DO_NOT_USE\n${(project.doNotUse||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## PRODUCTION_NEEDS\n${Object.entries(project.productionNeeds||{}).map(([k,v])=>`- ${k}: ${v}`).join("\n")||"- UNKNOWN"}\n`;
+    const base=`# VIDEO_CONTRACT\n\n- PROJECT_ID: ${project.projectId}\n- PROJECT_NAME: ${project.name}\n- GAME: ${project.game||"UNKNOWN"}\n- SERVER: ${project.server||"UNKNOWN"}\n- VERSION: ${project.version||"UNKNOWN"}\n- DATA_CUTOFF: ${project.dataCutoff||"UNKNOWN"}\n- PRODUCT_TYPE: ${project.productType||"UNKNOWN"}\n- FORMAT: ${project.format||"UNKNOWN"}\n- AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}\n- CURRENT_STAGE: ${project.currentStage}\n\n## VERIFIED_FACTS\n${(project.verifiedFacts||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## REASONED_ANALYSIS\n${(project.reasonedAnalysis||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## UNKNOWNS\n${(project.unknowns||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## DO_NOT_USE\n${(project.doNotUse||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## PRODUCTION_NEEDS\n${Object.entries(project.productionNeeds||{}).map(([k,v])=>`- ${k}: ${v}`).join("\n")||"- UNKNOWN"}\n`;
+    // Preserve AI-researched fields not yet modeled in the compact UI;
+    // never silently discard CORE_PLAYER_QUESTION / CORE_THESIS / CONTENT_INCREMENT.
+    return base+(project.rawVideoContract?
+      "\n\n## IMPORTED_CONTRACT_FULL_JSON\n\n```json\n"+JSON.stringify(project.rawVideoContract,null,2)+"\n```\n":
+      "");
   }
 
   function workflowMd(project){

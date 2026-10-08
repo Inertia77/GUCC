@@ -81,7 +81,7 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel||"Q2";
   $("currentReview").textContent=t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
   $("currentPrompt").textContent=t.prompt||"";
-  const awaiting=Boolean(p.promptFlow?.length)&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
+  const awaiting=(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
   $("markDoneBtn").disabled=!awaiting;
   if(t.promptId==="PROJECT_BRIEF_APPROVAL")$("markDoneBtn").textContent="批准立项方向";
   $("markDoneBtn").textContent=t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";

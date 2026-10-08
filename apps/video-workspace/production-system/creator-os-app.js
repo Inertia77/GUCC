@@ -13,11 +13,19 @@ let toastTimer;
 let flowExpanded=false;
 let selectedNodePrompt="";
 
+function provisionalProjectName(data){
+  const meta=[data.game,data.version].map(x=>String(x||"").trim()).filter(Boolean).join(" ");
+  return meta?meta+" · 待 AI 定名":"待 AI 定名的项目";
+}
+
 function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(O.STORAGE_KEY)||"null");
     if(raw&&Array.isArray(raw.projects)){
-      return {projects:raw.projects,selectedProjectId:raw.selectedProjectId||raw.projects[0]?.projectId||""};
+      // Repair legacy drafts created before idea and title were separated; retain all user text and IDs.
+      const projects=raw.projects.map(p=>p&&p.status==="DRAFT"&&p.idea&&p.name===p.idea
+        ? {...p,name:provisionalProjectName(p)} : p);
+      return {projects,selectedProjectId:raw.selectedProjectId||projects[0]?.projectId||""};
     }
   }catch(e){console.warn("Creator OS v2 store reset",e);}
   const test=O.testFixture();
@@ -171,11 +179,10 @@ function newDraftId(){
   return id;
 }
 async function createDraft(data){
-  const meta=[data.game,data.version].map(x=>String(x||"").trim()).filter(Boolean).join(" ");
   const p=O.createProject({
     ...data,
     projectId:newDraftId(),
-    name:meta?meta+" · 待 AI 定名":"待 AI 定名的项目",
+    name:provisionalProjectName(data),
     productType:data.productType||"UNKNOWN"
   });
   store.projects.unshift(p);

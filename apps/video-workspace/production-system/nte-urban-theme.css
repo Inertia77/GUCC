@@ -337,3 +337,43 @@ body.creator-os-page .project-summary.is-empty .card-sigil{opacity:.24}
 body.creator-os-page #projectSelect:disabled{
   color:#b8c8d5;cursor:default;opacity:1;
 }
+
+/* Creator OS project metadata editor: part of dossier and global project controls. */
+body.creator-os-page .dossier-edit{
+  display:inline-flex;align-items:center;gap:7px;flex:none;
+  padding:7px 10px;border:1px solid rgba(168,163,243,.3);
+  border-radius:5px 12px 5px 12px;background:rgba(138,122,210,.12);
+  color:#d0cafa;font-size:11px;font-weight:760;cursor:pointer;
+  transition:background .18s,border-color .18s;
+}
+body.creator-os-page .dossier-edit:hover{
+  border-color:rgba(140,250,216,.55);background:rgba(113,171,198,.16);color:#adffe6;
+}
+body.creator-os-page .dossier-edit:disabled{opacity:.35;cursor:not-allowed}
+body.creator-os-page.gucc-enhanced .dossier-edit{
+  background:rgba(138,122,210,.12)!important;color:#d0cafa!important;
+  border:1px solid rgba(168,163,243,.3)!important;
+  box-shadow:none!important;min-height:32px!important;
+}
+body.creator-os-page.gucc-enhanced .dossier-edit:hover{
+  background:rgba(113,171,198,.16)!important;color:#adffe6!important;
+  border-color:rgba(140,250,216,.55)!important;
+}
+body.creator-os-page .project-summary .summary-top{align-items:center;gap:10px}
+body.creator-os-page .edit-project-notice{
+  border:1px solid rgba(180,171,245,.23);border-radius:6px 12px 6px 12px;
+  background:rgba(120,112,201,.1);padding:11px 13px;
+  color:#bfc7e8;line-height:1.7;font-size:12px;
+}
+body.creator-os-page .edit-project-top{white-space:nowrap}
+body.creator-os-page #editProjectDialog{width:min(830px,calc(100vw - 26px));max-height:min(90vh,900px);overflow-y:auto}
+body.creator-os-page #editProjectDialog .dialog-card{padding:clamp(18px,3vw,30px)}
+body.creator-os-page #editProjectDialog textarea{min-height:130px}
+body.creator-os-page #editProjectDialog :is(input,textarea,select):focus-visible{
+  outline:2px solid rgba(144,253,220,.65);outline-offset:2px;
+}
+@media(max-width:760px){
+  body.creator-os-page .edit-project-top{flex:1}
+  body.creator-os-page .summary-top{flex-wrap:wrap}
+  body.creator-os-page #editProjectDialog .form-grid{grid-template-columns:1fr}
+}

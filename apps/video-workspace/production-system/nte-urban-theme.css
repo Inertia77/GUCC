@@ -322,3 +322,18 @@ body.creator-os-page.gucc-enhanced .project-management-bar .button.danger:hover{
 .tool-link>span:last-child{grid-column:3;grid-row:1 / span 2;color:#86f4df}
 .tool-warning{font-size:11px;color:#788da9;line-height:1.6;margin:9px 0 0}
 @media(max-width:720px){.tool-links{grid-template-columns:1fr}.project-management-bar .button{flex:1;justify-content:center}}
+
+/* Empty project context is deliberate: don't present a QA fixture as real work. */
+body.creator-os-page .current-task-panel.is-empty{
+  background:linear-gradient(135deg,rgba(23,33,54,.87),rgba(14,22,40,.91));
+  border-color:rgba(156,179,208,.21);
+}
+body.creator-os-page .current-task-panel.is-empty .task-main h2{
+  font-size:clamp(25px,2.6vw,39px);line-height:1.3;color:#dcece9;
+}
+body.creator-os-page .current-task-panel.is-empty .mission-line-right,
+body.creator-os-page .current-task-panel.is-empty .task-eyebrow{color:#8397b0}
+body.creator-os-page .project-summary.is-empty .card-sigil{opacity:.24}
+body.creator-os-page #projectSelect:disabled{
+  color:#b8c8d5;cursor:default;opacity:1;
+}

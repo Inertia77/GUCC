@@ -55,9 +55,9 @@
 
   const childRoutes = {
     workspace: {
-      icon: 'WS', label: 'Studio', note: '策划、研究与内容草稿',
-      href: `${normalizedRoot}apps/video-workspace/`,
-      active: workspaceActive
+      icon: 'OS', label: '创作中枢', note: '项目 · 研究 · 文案 · 制作流程',
+      href: `${normalizedRoot}apps/video-workspace/production-system/`,
+      active: productionActive
     },
     production: {
       icon: 'PRD', label: 'Production', note: '正式制作、状态机与 Lock',
@@ -65,12 +65,12 @@
       active: productionActive
     },
     cover: {
-      icon: 'CG', label: '封面', note: 'Cover Generator',
+      icon: 'CG', label: '封面工具', note: '专业辅助工具 · 手动设计',
       href: `${normalizedRoot}apps/cover-generator/`,
       active: isActive('/apps/cover-generator/')
     },
     publish: {
-      icon: 'PUB', label: '发布', note: '发布与复盘',
+      icon: 'PUB', label: '发布工具', note: '投稿与数据复盘',
       href: `${normalizedRoot}apps/publishing-console/`,
       active: isActive('/apps/publishing-console/')
     },
@@ -109,8 +109,8 @@
   const groups = {
     create: {
       title: '创作流程',
-      hint: '策划 · 制作 · 封面 · 发布',
-      items: [childRoutes.workspace, childRoutes.production, childRoutes.cover, childRoutes.publish]
+      hint: '一个项目工作台 · 两个按需工具',
+      items: [childRoutes.workspace, childRoutes.cover, childRoutes.publish]
     },
     library: {
       title: '资料与研究',
@@ -173,32 +173,23 @@
     if (!document.body?.classList.contains('portal-page')) return;
     const grid = document.querySelector('.launch-grid');
     if (!grid) return;
-
-    let productionCard = grid.querySelector('[data-gucc-production-entry]');
-    if (!productionCard) {
-      productionCard = document.createElement('a');
-      productionCard.className = 'launch-card';
-      productionCard.dataset.guccProductionEntry = 'true';
-      productionCard.href = `${normalizedRoot}apps/video-workspace/production-system/`;
-      productionCard.style.setProperty('--accent', 'var(--violet)');
-      productionCard.innerHTML = `
-        <span class="launch-code">PRD</span>
-        <span><strong>Production</strong><small>正式制作 · 状态机 · Lock</small></span>
-        <span class="launch-arrow">›</span>`;
-      const studioCard = [...grid.querySelectorAll('.launch-card')]
-        .find((card) => card.getAttribute('href')?.includes('/apps/video-workspace/'));
-      if (studioCard?.nextSibling) grid.insertBefore(productionCard, studioCard.nextSibling);
-      else if (studioCard) studioCard.insertAdjacentElement('afterend', productionCard);
-      else grid.prepend(productionCard);
+    const primary=[...grid.querySelectorAll('a.launch-card')].find(card=>{
+      const href=card.getAttribute('href')||'';
+      return href.includes('apps/video-workspace')&&!href.includes('production-system');
+    });
+    if(primary){
+      primary.href=`${normalizedRoot}apps/video-workspace/production-system/`;
+      primary.querySelector('.launch-code')?.replaceChildren(document.createTextNode('OS'));
+      const title=primary.querySelector('strong'),note=primary.querySelector('small');
+      if(title)title.textContent='创作中枢';
+      if(note)note.textContent='项目 · 研究 · 制作 · 归档';
     }
-
-    const countLabel = document.querySelector('.section-head span');
-    if (countLabel && /核心区域/.test(countLabel.textContent || '')) {
-      countLabel.textContent = '8 个核心区域 · 直接进入';
-    }
-
-    document.querySelectorAll('.system-panel .system-link').forEach((link) => {
-      if (link.getAttribute('href')?.includes('/production-system/')) link.remove();
+    // Previous shell inserted an extra PRD entry. A single Creator OS tile is sufficient.
+    const duplicates=[...grid.querySelectorAll('a.launch-card')].filter(card=>
+      card!==primary&&(card.dataset.guccProductionEntry==='true'||card.getAttribute('href')?.includes('apps/video-workspace/production-system/')));
+    duplicates.forEach(card=>card.remove());
+    document.querySelectorAll('.system-panel .system-link').forEach(link=>{
+      if(link.getAttribute('href')?.includes('/production-system/'))link.remove();
     });
   };
 

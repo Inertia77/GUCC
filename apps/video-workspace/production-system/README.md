@@ -35,6 +35,8 @@
 ## 实际操作
 
 1. “新建项目”填写自然语言想法；创建本地草稿，复制 Project Builder Prompt。
+   - 在制作桌面顶部或右侧 PROJECT DOSSIER 点击「编辑项目 / 编辑资料」，也可从「项目档案」打开「编辑项目资料」。可以修改标题、原始想法、游戏、区服、版本、内容类型；保存后触发云同步。
+   - 稳定的项目 `projectId`、既有工作节点、正式稿件与 Lock 不因修改资料被自动更换或重算；立项后改动核心事实时须复查相关内容。已在回收站的项目需先恢复。
 2. Chat/Work 研究后返回 PROJECT_BRIEF、VIDEO_CONTRACT 以及对应 JSON；导入当前项目。
 3. 复制 AI 流程编排 Prompt，得到项目专属 GUCC_FLOW_RESULT；导入后 Current Task 开始按依赖显示。
 4. 每次复制 Current Task 给 Chat/Work/Codex，导入真实 GUCC_NODE_RESULT；重大 Lock 需要用户审核。没有自动调用 AI。

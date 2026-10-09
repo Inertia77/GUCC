@@ -98,7 +98,7 @@ async function send(project,expectedRevision=null) {
   if(!user)throw new Error("未登录");
   // One database transaction: ensure canonical creator_projects root, then CAS-save detail snapshot.
   const token=await getAccessToken();
-  const response=await fetch(CONFIG.SUPABASE_URL.replace(/\\/+$/,"")+"/rest/v1/rpc/creator_os_save_project",{
+  const response=await fetch(CONFIG.SUPABASE_URL.replace(/[/]+$/,"")+"/rest/v1/rpc/creator_os_save_project",{
     method:"POST",
     headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+token,
       "Content-Type":"application/json","Accept":"application/json"},

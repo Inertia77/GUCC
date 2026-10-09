@@ -289,3 +289,36 @@ body.creator-os-page.gucc-enhanced .button:focus-visible{
  outline:2px solid #a6f8df !important;
  outline-offset:2px !important;
 }
+
+/* Unified project registry and compact specialist-tool handoff. */
+.project-counts{font:650 11px/1.6 ui-monospace,Consolas,monospace;color:#abc4df;margin:0 0 12px;letter-spacing:.04em}
+body.creator-os-page.gucc-enhanced .project-management-bar .button.danger{
+ background:rgba(236,91,116,.12)!important;color:#ffb5c8!important;
+ border-color:rgba(246,132,153,.43)!important;box-shadow:none!important;
+}
+body.creator-os-page.gucc-enhanced .project-management-bar .button.danger:hover{
+ background:rgba(236,91,116,.19)!important;
+}
+.project-card h3{font-weight:740;line-height:1.45}
+.project-card p{color:#a5b4d1}
+.production-tools{margin:22px 0 16px}
+.tool-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tool-link{
+ display:grid;grid-template-columns:48px 1fr 18px;grid-template-rows:auto auto;
+ column-gap:11px;align-items:center;
+ text-decoration:none!important;padding:16px 19px;min-width:0;
+ background:linear-gradient(130deg,rgba(37,39,71,.88),rgba(14,27,48,.91));
+ border:1px solid rgba(167,164,234,.24);border-radius:5px 17px 5px 17px;
+ transition:border-color .2s,background .2s,transform .2s;
+}
+.tool-link:hover{border-color:rgba(149,247,218,.58);transform:translateY(-2px)}
+.tool-code{
+ grid-row:1 / span 2;display:flex;align-items:center;justify-content:center;
+ min-height:44px;border:1px solid rgba(157,153,240,.42);
+ background:rgba(141,111,214,.17);color:#befbec;font:800 12px ui-monospace,monospace;
+}
+.tool-link strong{font-size:14px;color:#f1efff}
+.tool-link small{font-size:11px;color:#9daece;line-height:1.55}
+.tool-link>span:last-child{grid-column:3;grid-row:1 / span 2;color:#86f4df}
+.tool-warning{font-size:11px;color:#788da9;line-height:1.6;margin:9px 0 0}
+@media(max-width:720px){.tool-links{grid-template-columns:1fr}.project-management-bar .button{flex:1;justify-content:center}}

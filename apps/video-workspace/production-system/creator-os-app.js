@@ -78,11 +78,31 @@ function renderNav(){
   document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
 }
+function projectLife(p){
+  if(p?.deletedAt)return "trash";
+  if(p?.archivedAt)return "archived";
+  if(p?.completedAt)return "completed";
+  return "active";
+}
+function lifeName(p){
+  return ({active:"进行中",completed:"已完成",archived:"已归档",trash:"回收站"})[projectLife(p)];
+}
+function selectActiveAfterMove(id){
+  if(store.selectedProjectId!==id)return;
+  store.selectedProjectId=store.projects.find(p=>p.projectId!==id&&projectLife(p)==="active"&&p.status!=="TEST_FIXTURE")?.projectId||id;
+}
 function renderProjectBar(){
   const sel=$("projectSelect");sel.replaceChildren();
-  for(const p of store.projects){const o=document.createElement("option");o.value=p.projectId;o.textContent=`${p.status==="TEST_FIXTURE"?"[结构测试] ":p.status==="DRAFT"?"[待 AI 立项] ":""}${p.name}`;sel.append(o);}
+  const visible=store.projects.filter(p=>projectLife(p)==="active"||p.projectId===store.selectedProjectId);
+  for(const p of visible){
+    const option=document.createElement("option");
+    option.value=p.projectId;
+    option.textContent=`${projectLife(p)!=="active"?"["+lifeName(p)+"] ":p.status==="DRAFT"?"[待立项] ":""}${p.name}`;
+    sel.append(option);
+  }
   sel.value=store.selectedProjectId;
 }
+
 function renderSystem(){
   const p=current();if(!p)return;
   $("projectName").textContent=p.status==="TEST_FIXTURE"?"[结构测试] "+p.name:p.name;
@@ -90,7 +110,7 @@ function renderSystem(){
   ideaPreview.hidden=!(p.status==="DRAFT"&&p.idea);
   ideaPreview.textContent=p.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
   $("projectMeta").innerHTML=[
-    ["PROJECT ID",p.status==="DRAFT"?"草稿 · AI 立项后生成":p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
+    ["PROJECT ID",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
     ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join("");
   const videos=Array.isArray(p.videos)?p.videos:[];
@@ -178,21 +198,40 @@ function renderCapabilities(){
   $("capabilityGrid").innerHTML=list.map(c=>`<details class="cap-card"><summary><span class="cap-id">${esc(c.id)}</span><strong>${esc(c.name)}</strong><span>${esc(c.defaultExecutor)}</span><span class="qc">${esc(c.qcLevel)}</span></summary><div class="cap-body"><section><h4>PURPOSE</h4><p>${esc(c.purpose)}</p><h4>WHEN TO USE</h4><ul>${c.whenToUse.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>按项目判断</li>"}</ul><h4>WHEN NOT TO USE</h4><ul>${c.whenNotToUse.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>无固定禁止</li>"}</ul></section><section><h4>CORE METHOD</h4><ul>${c.coreMethod.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4>QUALITY GATE</h4><ul>${c.qualityGate.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section><section><h4>REQUIRED INPUT</h4><ul>${c.requiredInput.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>按上下文</li>"}</ul><h4>OUTPUT</h4><ul>${c.outputSchema.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section><section><h4>EXECUTION</h4><p>Default: <strong>${esc(c.defaultExecutor)}</strong><br>Alternative: ${esc(c.alternativeExecutor.join(" / ")||"—")}<br>Review: ${esc(c.reviewMode)}</p><h4>CHAT FALLBACK</h4><p>${esc(c.chatFallback||"同一 Chat 按成熟方法执行；无法访问真实输入时不冒充完成。")}</p><h4>LEGACY</h4><p>${esc(c.legacyPromptIds.join(", ")||"—")}</p></section></div></details>`).join("");
 }
 function renderProjects(){
-  const p=current();
-  const q=($("projectSearch")?.value||"").trim().toLowerCase(),filter=$("projectArchiveFilter")?.value||"active";
-  const matching=store.projects.filter(x=>(!q||[x.name,x.game,x.version,x.projectId].join(" ").toLowerCase().includes(q))
-    &&(filter==="all"||(filter==="archived"?Boolean(x.archivedAt):!x.archivedAt)));
-  $("projectCards").innerHTML=matching.map(x=>`<article class="panel project-card ${x.projectId===store.selectedProjectId?"active":""}" data-project="${esc(x.projectId)}">
-    <span class="micro">${esc(x.projectId)}</span><h3>${esc(x.name)}</h3><p>${esc(x.game||"UNKNOWN")} · ${esc(x.version||"UNKNOWN")} · Flow rev.${x.flowRevision||0} ${x.archivedAt?"· 已归档":""}</p>
-    </article>`).join("")||'<p class="flow-empty">当前筛选下没有项目，可切换「全部项目」。</p>';
+  const selected=current();
+  const q=($("projectSearch")?.value||"").trim().toLowerCase();
+  const filter=$("projectArchiveFilter")?.value||"active";
+  const counts={active:0,completed:0,archived:0,trash:0};
+  store.projects.filter(p=>p.status!=="TEST_FIXTURE").forEach(p=>counts[projectLife(p)]++);
+  const matching=store.projects.filter(p=>p.status!=="TEST_FIXTURE"
+    &&(!q||[p.name,p.game,p.version,p.projectId,p.projectCode].join(" ").toLowerCase().includes(q))
+    &&(filter==="all"?projectLife(p)!=="trash":projectLife(p)===filter));
+  $("projectCounts").textContent=`进行中 ${counts.active} · 已完成 ${counts.completed} · 归档 ${counts.archived} · 回收站 ${counts.trash}`;
+  $("projectCards").innerHTML=matching.map(p=>{
+    const progress=(p.promptFlow||[]).filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
+    const total=p.promptFlow?.length||0;
+    return `<article class="panel project-card ${p.projectId===store.selectedProjectId?"active":""}" data-project="${esc(p.projectId)}">
+      <span class="micro">${esc(p.projectCode||p.projectId)}</span>
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.game||"未设定游戏")} · ${esc(p.version||"未设定版本")} · ${lifeName(p)} · ${progress}/${total} 节点</p>
+    </article>`;
+  }).join("")||'<p class="flow-empty">此筛选下暂无项目。</p>';
   document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{
-    store.selectedProjectId=card.dataset.project;save();$("artifactPreview").textContent="";render();
+    store.selectedProjectId=card.dataset.project;
+    $("artifactPreview").textContent="";save();render();
   }));
-  const archive=$("archiveCurrentProject");
-  archive.disabled=!p||p.status==="TEST_FIXTURE";
-  archive.textContent=p?.archivedAt?"恢复当前项目":"归档当前项目";
-  if(!$("artifactPreview").textContent&&p)$("artifactPreview").textContent=localCurrentTaskMd(p);
-  $("migrationTable").innerHTML=migration.length?migration.map(m=>`<div class="migration-row"><code>${esc(m.legacyPromptId)}</code><strong>${esc(m.disposition)}</strong><span>${esc((m.capabilities||[]).join(" + "))}<br><small class="subtitle">${esc(m.reason)}</small></span></div>`).join(""):"<p class='subtitle'>Migration map 加载中…</p>";
+  const enabled=Boolean(selected&&selected.status!=="TEST_FIXTURE");
+  $("completeCurrentProject").disabled=!enabled||Boolean(selected?.deletedAt);
+  $("completeCurrentProject").textContent=selected?.completedAt?"重新设为进行中":"标记已完成";
+  $("archiveCurrentProject").disabled=!enabled||Boolean(selected?.deletedAt);
+  $("archiveCurrentProject").textContent=selected?.archivedAt?"取消归档":"归档项目";
+  $("deleteCurrentProject").disabled=!enabled;
+  $("deleteCurrentProject").textContent=selected?.deletedAt?"从回收站恢复":"删除项目";
+  if(!$("artifactPreview").textContent&&selected)
+    $("artifactPreview").textContent=localCurrentTaskMd(selected);
+  if($("migrationTable"))$("migrationTable").innerHTML=migration.length
+    ?migration.map(m=>`<div class="migration-row"><code>${esc(m.legacyPromptId)}</code><strong>${esc(m.disposition)}</strong><span>${esc((m.capabilities||[]).join(" + "))}</span></div>`).join("")
+    :"";
 }
 
 function localCurrentTaskMd(p){
@@ -277,13 +316,10 @@ function importProjectBrief(p,result){
   if(!contract||typeof contract!=="object"||Array.isArray(contract))throw Error("未找到 VIDEO_CONTRACT JSON");
   p.rawVideoContract=JSON.parse(JSON.stringify(contract));
   const field=(a,b)=>contract[a]??contract[b];
+  // The canonical database identity stays immutable once created. AI-proposed
+  // human-readable PROJECT_ID is an alias, never a remote primary-key rename.
   const id=String(field("projectId","PROJECT_ID")||"").trim();
-  if(id&&id!==p.projectId){
-    if(store.projects.some(x=>x!==p&&x.projectId===id))throw Error("PROJECT_ID 与其他项目冲突");
-    const previousId=p.projectId;
-    p.projectId=id;store.selectedProjectId=id;
-    window.dispatchEvent(new CustomEvent("gucc:creator-os:renamed",{detail:{from:previousId,to:id,fromStatus:p.status}}));
-  }
+  if(id&&id!==p.projectId)p.projectCode=id;
   for(const [a,b] of [["name","PROJECT_NAME"],["game","GAME"],["server","SERVER"],["version","VERSION"],
     ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"]]){
     const v=field(a,b);if(v!=null)p[a]=String(v);
@@ -405,12 +441,40 @@ async function loadMigration(){try{const r=await fetch("./legacy-prompt-migratio
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
 $("projectSearch").addEventListener("input",renderProjects);
 $("projectArchiveFilter").addEventListener("change",renderProjects);
+$("completeCurrentProject").addEventListener("click",()=>{
+  const p=current();if(!p||p.status==="TEST_FIXTURE"||p.deletedAt)return;
+  if(!p.completedAt){
+    if(!window.confirm("标记为「已完成」？这是项目管理状态，不会伪造 Prompt 节点完成记录或正式发布状态。"))return;
+    p.completedAt=new Date().toISOString();
+    selectActiveAfterMove(p.projectId);
+  }else{
+    p.completedAt=null;
+  }
+  save();render();
+  notify(p.completedAt?"项目已完成 · 可在「已完成」查看":"项目重新设为进行中");
+});
 $("archiveCurrentProject").addEventListener("click",()=>{
+  const p=current();if(!p||p.status==="TEST_FIXTURE"||p.deletedAt)return;
+  if(!p.archivedAt){
+    if(!window.confirm("归档当前项目？项目和制作记录会保留，随时可以恢复。"))return;
+    p.archivedAt=new Date().toISOString();
+    selectActiveAfterMove(p.projectId);
+  }else p.archivedAt=null;
+  save();render();notify(p.archivedAt?"项目已归档":"项目已取消归档");
+});
+$("deleteCurrentProject").addEventListener("click",()=>{
   const p=current();if(!p||p.status==="TEST_FIXTURE")return;
-  const isArchive=!p.archivedAt;
-  if(isArchive&&!window.confirm("将项目移入归档视图，不删除项目、文件或锁定记录。继续吗？"))return;
-  p.archivedAt=isArchive?new Date().toISOString():null;
-  save();render();notify(isArchive?"项目已归档，数据仍保留":"项目已恢复");
+  if(p.deletedAt){
+    if(!window.confirm("从回收站恢复此项目？"))return;
+    p.deletedAt=null;
+    save();render();notify("项目已恢复");return;
+  }
+  if(!window.confirm("删除「"+p.name+"」？项目将移入回收站，不会删除本地文件、正式 Creator 项目主表或素材。"))return;
+  const typed=window.prompt("为避免误删，请输入 DELETE 确认（可取消）","");
+  if(typed!=="DELETE")return notify("未执行删除");
+  p.deletedAt=new Date().toISOString();
+  selectActiveAfterMove(p.projectId);
+  save();render();notify("已移入回收站；可恢复");
 });
 $("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});

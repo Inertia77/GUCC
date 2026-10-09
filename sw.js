@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v34";
-const RUNTIME_CACHE = "gucc-runtime-v34";
+const STATIC_CACHE = "gucc-static-v35";
+const RUNTIME_CACHE = "gucc-runtime-v35";
 
 const APP_SHELL = [
   "./",
@@ -102,9 +102,11 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-app.js?v=2.1.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=3.1.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=3.1.2",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=3.2.0",
   "./apps/video-workspace/production-system/creator-os-cloud.mjs?v=3",
   "./apps/video-workspace/production-system/creator-os-local-folder.mjs?v=1",
   "./apps/video-workspace/production-system/nte-urban-theme.css?v=4",
+  "./apps/video-workspace/production-system/nte-urban-theme.css?v=5",
   "./apps/video-workspace/production-system/legacy-prompt-migration.json?v=2.0.0",
   "./apps/video-workspace/production-system/legacy-v1.html",
   "./apps/video-workspace/production-system/styles.css?v=5",

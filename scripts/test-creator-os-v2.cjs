@@ -7,6 +7,7 @@ const Core=require("../apps/video-workspace/production-system/core-rules.js");
 const Caps=require("../apps/video-workspace/production-system/capability-library.js");
 const Fail=require("../apps/video-workspace/production-system/failure-prevention.js");
 const O=require("../apps/video-workspace/production-system/orchestrator.js");
+const Steps=require("../apps/video-workspace/production-system/creator-os-step-history.js");
 const migration=require("../apps/video-workspace/production-system/legacy-prompt-migration.json");
 
 assert.equal(Core.AUTONOMY_LEVELS.L2.label,"High Autonomy");
@@ -66,12 +67,12 @@ function testTaskFirstUiHandoff(){
   const draft=O.createProject({projectId:"QA_DRAFT",name:"QA 草案",idea:"测试 Project Builder 与 Flow Compiler"});
   storage.set(O.STORAGE_KEY,JSON.stringify({projects:[draft],selectedProjectId:draft.projectId}));
   const sandbox={
-    window:{GuccCreatorCoreRules:Core,GuccCreatorFailurePrevention:Fail,GuccCreatorCapabilities:Caps,GuccCreatorOrchestrator:O,confirm:()=>true,location:{search:""},dispatchEvent(){},addEventListener(){}},
+    window:{GuccCreatorCoreRules:Core,GuccCreatorFailurePrevention:Fail,GuccCreatorCapabilities:Caps,GuccCreatorOrchestrator:O,GuccCreatorStepHistory:Steps,confirm:()=>true,location:{search:""},dispatchEvent(){},addEventListener(){}},
     document:{getElementById:element,querySelectorAll:()=>[],createElement:t=>element(t+"_"+elements.size),body:{append(){}}},
     localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},
     navigator:{clipboard:{writeText:async()=>{}}},
     setTimeout:()=>1,clearTimeout:()=>{},fetch:async()=>({json:async()=>({mappings:[]})}),
-    Option:function(){},CustomEvent:function(){},console
+    Option:function(){},CustomEvent:function(){},URLSearchParams,console
   };
   vm.runInNewContext(source,sandbox,{filename:"creator-os-app.js"});
   assert.equal(element("currentTaskId").textContent,"PROJECT_BUILDER");

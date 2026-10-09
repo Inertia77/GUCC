@@ -25,8 +25,9 @@ function canonical(project) { return JSON.stringify(safeProject(project)); }
 function bases() { try {return JSON.parse(localStorage.getItem(BASE_KEY) || "{}");} catch {return {};} }
 function baseFor(id) { return bases()[id] || null; }
 function renames(){try{return JSON.parse(localStorage.getItem(RENAME_KEY)||"{}");}catch{return {};}}
-function recordRename(from,to){
-  if(!String(from).startsWith("DRAFT-")||!to||from===to)return;
+function recordRename(from,to,fromStatus){
+  // Includes legacy draft IDs (e.g. GAME-CURRENT-long-idea); only explicit DRAFT->canonical transitions are eligible.
+  if(fromStatus!=="DRAFT"||!from||!to||from===to)return;
   const items=renames();items[from]=to;
   localStorage.setItem(RENAME_KEY,JSON.stringify(items));
 }
@@ -231,7 +232,7 @@ $("cloudConflictDialog")?.querySelectorAll("[data-cloud-choice]").forEach(el=>{
   el.addEventListener("click",()=>{void resolve(el.dataset.cloudChoice);});
 });
 $("cloudConflictDialog")?.addEventListener("cancel",e=>{e.preventDefault();void resolve("later");});
-window.addEventListener("gucc:creator-os:renamed",e=>recordRename(e.detail?.from,e.detail?.to));
+window.addEventListener("gucc:creator-os:renamed",e=>recordRename(e.detail?.from,e.detail?.to,e.detail?.fromStatus));
 window.addEventListener("gucc:creator-os:saved",schedule);
 window.addEventListener("online",()=>{void refresh();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)void refresh();});

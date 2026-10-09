@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="./assets/icons/gucc-icon-192.png?v=2" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./assets/pwa-install.css?v=1" />
-  <link rel="stylesheet" href="./assets/creator-dashboard.css?v=1" />
+  <link rel="stylesheet" href="./assets/creator-portal-dashboard.css?v=1" />
   <link rel="stylesheet" href="./assets/gucc-shell-nav-v2.css?v=1" data-gucc-shell-nav-v2 />
   <script src="./assets/access-guard.js?v=11" data-root="./"></script>
   <style>
@@ -346,7 +346,7 @@
     <section class="intro" aria-labelledby="portalTitle">
       <p class="eyebrow">GUCC / QUICK LAUNCH</p>
       <h1 id="portalTitle">打开就<span>开工</span></h1>
-      <p>不再把 Portal 做成展示页。数据库、创作、Prompt、剧情、封面、发布和资料全部直接到达；维护文档退到第二层。</p>
+      <p>项目状态与当前任务实时读取 Creator OS。进行中聚焦制作；已完成、归档和回收站各自独立管理。</p>
     </section>
 
     <section class="creator-dashboard" id="creatorDashboard" aria-live="polite">
@@ -408,7 +408,7 @@
         <a class="system-link" href="./reference/query-guides/query-manual.md"><strong>Query Manual</strong>查询与 SQL 维护手册</a>
         <a class="system-link" href="./data/schema.md"><strong>DB Structure</strong>数据库结构说明</a>
         <a class="system-link" href="./docs/supabase-setup.html"><strong>System Guide</strong>Supabase 与部署指南</a>
-        <a class="system-link" href="./apps/video-workspace/production-system/"><strong>Production System</strong>视频生产系统高级入口</a>
+        <a class="system-link" href="./apps/video-workspace/production-system/"><strong>Creator OS</strong>统一项目档案与制作流程</a>
       </div>
     </details>
 
@@ -470,9 +470,8 @@
       });
     })();
   </script>
-  <script src="./assets/gucc-shell.js?v=8" data-root="./" defer></script>
+  <script src="./assets/gucc-shell.js?v=12" data-root="./" defer></script>
   <script src="./assets/pwa-install.js?v=2" data-root="./"></script>
-  <script src="./assets/creator-global-production-core.js?v=1"></script>
-  <script type="module" src="./assets/creator-dashboard.mjs?v=4"></script>
+  <script type="module" src="./assets/creator-portal-dashboard.mjs?v=1"></script>
 </body>
 </html>

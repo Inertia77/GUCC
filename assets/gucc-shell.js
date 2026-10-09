@@ -173,10 +173,8 @@
     if (!document.body?.classList.contains('portal-page')) return;
     const grid = document.querySelector('.launch-grid');
     if (!grid) return;
-    const primary=[...grid.querySelectorAll('a.launch-card')].find(card=>{
-      const href=card.getAttribute('href')||'';
-      return href.includes('apps/video-workspace')&&!href.includes('production-system');
-    });
+    const primary=[...grid.querySelectorAll('a.launch-card')].find(card=>
+      (card.getAttribute('href')||'').includes('apps/video-workspace/'));
     if(primary){
       primary.href=`${normalizedRoot}apps/video-workspace/production-system/`;
       primary.querySelector('.launch-code')?.replaceChildren(document.createTextNode('OS'));

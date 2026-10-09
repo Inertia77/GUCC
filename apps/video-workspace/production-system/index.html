@@ -9,7 +9,7 @@
 <script src="../../../assets/access-guard.js?v=11" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
 <link rel="stylesheet" href="../../../assets/gucc-theme.css">
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
-<link rel="stylesheet" href="./nte-urban-theme.css?v=5">
+<link rel="stylesheet" href="./nte-urban-theme.css?v=6">
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -95,6 +95,7 @@
           <div class="prompt-actions">
             <button class="button primary mission-cta" id="copyCurrentPrompt"><span aria-hidden="true">⌁</span> 复制当前 Prompt <span class="cta-arrow">↗</span></button>
             <button class="button secondary" id="applyResultBtn">导入 AI 执行结果 <span aria-hidden="true">↗</span></button>
+            <button type="button" class="button ghost rewind-task-btn" id="rewindTaskBtn" title="撤回上一步的已导入结果，重新提交">← 返回上一步</button>
           </div>
           <details class="task-details">
             <summary>查看所需输入、预期产物及完整 Prompt <span aria-hidden="true">⌄</span></summary>
@@ -298,6 +299,22 @@
   </form>
 </dialog>
 
+<dialog id="rewindDialog" aria-label="确认返回上一步">
+  <div class="dialog-card">
+    <div class="panel-head">
+      <div><span class="micro">WORKFLOW / REWIND</span><h2>返回上一步</h2></div>
+      <button type="button" data-close-rewind class="icon-button" aria-label="关闭返回操作">×</button>
+    </div>
+    <h3 id="rewindTarget" class="rewind-target"></h3>
+    <p id="rewindDescription" class="rewind-description"></p>
+    <p class="rewind-caution">返回后可以重新复制对应 Prompt、重新导入 AI 结果。项目身份、原始想法与本地素材不会被删除。已撤回回执保留在项目修订记录中，不再作为有效结果。云端同步使用版本号避免静默覆盖。</p>
+    <footer>
+      <button type="button" data-close-rewind class="button ghost">取消</button>
+      <button type="button" id="confirmRewindBtn" class="button secondary">确认返回并重新提交</button>
+    </footer>
+  </div>
+</dialog>
+
 <dialog id="cloudConflictDialog" aria-label="云端同步冲突">
   <div class="dialog-card">
     <div class="panel-head"><div><span class="micro">REVISION / CONFLICT</span><h2>项目版本冲突</h2></div></div>
@@ -313,7 +330,8 @@
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
 <script src="./orchestrator.js?v=2.0.1"></script>
-<script src="./creator-os-app.js?v=3.2.0"></script>
+<script src="./creator-os-step-history.js?v=1"></script>
+<script src="./creator-os-app.js?v=3.3.0"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=3"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 </body>

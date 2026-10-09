@@ -16,6 +16,7 @@ let activeView="system";
 let toastTimer;
 let flowExpanded=false;
 let selectedNodePrompt="";
+let editInitialFields=null;
 
 function provisionalProjectName(data){
   const meta=[data.game,data.version].map(x=>String(x||"").trim()).filter(Boolean).join(" ");
@@ -122,6 +123,9 @@ function renderProjectBar(){
 
 function renderSystem(){
   const p=current();
+  const canEdit=Boolean(p&&p.status!=="TEST_FIXTURE"&&!p.deletedAt);
+  $("editProjectTopBtn").disabled=!canEdit;
+  $("editProjectBtn").disabled=!canEdit;
   $("projectName").textContent=p?.name||"尚未选择项目";
   $("projectName").closest(".project-summary")?.classList.toggle("is-empty",!p);
   const ideaPreview=$("projectIdeaPreview");
@@ -250,6 +254,7 @@ function renderProjects(){
   $("archiveCurrentProject").textContent=selected?.archivedAt?"取消归档":"归档项目";
   $("deleteCurrentProject").disabled=!enabled;
   $("deleteCurrentProject").textContent=selected?.deletedAt?"从回收站恢复":"删除项目";
+  $("editProjectArchiveBtn").disabled=!enabled||Boolean(selected?.deletedAt);
   if(!$("artifactPreview").textContent&&selected)
     $("artifactPreview").textContent=localCurrentTaskMd(selected);
   if($("migrationTable"))$("migrationTable").innerHTML=migration.length
@@ -290,6 +295,71 @@ async function createDraft(data){
   $("currentPrompt").textContent=prompt;
   const copied=await copy(prompt);
   notify(copied?"想法已保存，立项 Prompt 已复制；请交给 ChatGPT / Work 研究":"想法已保存；请点击“复制当前 Prompt”后交给 AI 研究");
+}
+function editFields(p){
+  return {
+    name:String(p?.name||""),
+    idea:String(p?.idea||""),
+    game:String(p?.game||""),
+    server:String(p?.server||""),
+    version:String(p?.version||""),
+    productType:String(p?.productType||"UNKNOWN")
+  };
+}
+function openProjectEditor(){
+  const p=current();
+  if(!p||p.status==="TEST_FIXTURE")return notify("请先选择正式项目");
+  if(p.deletedAt)return notify("项目在回收站，请先恢复后再编辑");
+  const dialog=$("editProjectDialog"),form=$("editProjectForm"),fields=editFields(p);
+  form.reset();
+  const choices=form.elements.namedItem("productType");
+  for(const opt of [...choices.options])if(opt.dataset.temporary==="true")opt.remove();
+  for(const [key,value] of Object.entries(fields)){
+    const input=form.elements.namedItem(key);
+    if(!input)continue;
+    if(key==="productType"&&![...choices.options].some(option=>option.value===value)){
+      const option=new Option("当前类型："+value,value);
+      option.dataset.temporary="true";
+      choices.add(option);
+    }
+    input.value=value;
+  }
+  dialog.dataset.projectId=p.projectId;
+  editInitialFields=fields;
+  $("editProjectNotice").textContent=["DRAFT","IMPORTED_LEGACY"].includes(p.status)
+    ?"仍处于立项阶段。修改想法后，下一次复制 Project Builder Prompt 将使用最新资料。"
+    :"项目已有立项或制作进度。修改基础资料不会自动改写 VIDEO_CONTRACT、已有 Prompt、字幕、音频或 LOCK；如涉及机制结论或重大方向变化，后续应重新核验受影响内容。";
+  dialog.showModal();
+}
+function saveProjectEditor(e){
+  e.preventDefault();
+  const dialog=$("editProjectDialog");
+  const p=current();
+  if(!p||p.projectId!==dialog.dataset.projectId||p.deletedAt){
+    return notify("当前项目已变化，请重新打开编辑窗口");
+  }
+  if(!editInitialFields||JSON.stringify(editFields(p))!==JSON.stringify(editInitialFields)){
+    $("editProjectNotice").textContent="项目资料在编辑期间发生了变化，请取消并重新打开编辑窗口以避免覆盖。";
+    return;
+  }
+  const form=$("editProjectForm"),data=new FormData(form);
+  const next={};
+  for(const key of ["name","idea","game","server","version","productType"])
+    next[key]=String(data.get(key)||"").trim();
+  next.productType ||= "UNKNOWN";
+  if(!next.name){form.elements.namedItem("name").focus();return;}
+  if(p.status==="DRAFT"&&!next.idea){
+    $("editProjectNotice").textContent="草稿需要保留至少一句视频想法。";
+    form.elements.namedItem("idea").focus();return;
+  }
+  const changes=Object.keys(next).filter(key=>next[key]!==editInitialFields[key]);
+  if(!changes.length){dialog.close();return notify("资料没有变化");}
+  for(const [key,value] of Object.entries(next))p[key]=value;
+  p.lastEditedAt=new Date().toISOString();
+  p.history ||= [];
+  p.history.push({at:p.lastEditedAt,action:"PROJECT_FIELDS_EDITED",fields:changes});
+  save();render();dialog.close();
+  notify("修改已保存在本机，登录后将自动尝试云同步");
 }
 function applyHumanGateSideEffects(p,t){
   // Browser-only approval record, scoped to the video branch. Never claim an upstream GUCC/cloud lock.
@@ -462,6 +532,16 @@ function applyNodeResult(result){
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+$("editProjectBtn").addEventListener("click",openProjectEditor);
+$("editProjectTopBtn").addEventListener("click",openProjectEditor);
+$("editProjectArchiveBtn").addEventListener("click",openProjectEditor);
+$("editProjectForm").addEventListener("submit",saveProjectEditor);
+$("editProjectDialog").querySelectorAll("[data-close-edit]").forEach(button=>
+  button.addEventListener("click",()=>$("editProjectDialog").close()));
+$("editProjectDialog").addEventListener("close",()=>{
+  editInitialFields=null;
+  $("editProjectDialog").dataset.projectId="";
+});
 $("projectSearch").addEventListener("input",renderProjects);
 $("projectArchiveFilter").addEventListener("change",renderProjects);
 $("completeCurrentProject").addEventListener("click",()=>{

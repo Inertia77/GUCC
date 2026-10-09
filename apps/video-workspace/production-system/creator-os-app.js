@@ -507,30 +507,6 @@ $("capSearch").addEventListener("input",renderCapabilities);$("capDomain").addEv
 document.querySelectorAll("[data-artifact]").forEach(b=>b.addEventListener("click",()=>showArtifact(b.dataset.artifact)));
 $("exportBtn").addEventListener("click",()=>{const p=current();if(p)download(slugFile(p.projectId)+".json",JSON.stringify(p,null,2));});
 $("importBtn").addEventListener("click",()=>{$("importFile").click();});
-$("importLegacyBtn").addEventListener("click",()=>{
-  let raw;
-  try{raw=JSON.parse(localStorage.getItem("gucc_ai_video_production_v1")||"null");}
-  catch{notify("旧版浏览器数据无法解析");return;}
-  const items=Array.isArray(raw?.projects)?raw.projects:[];
-  if(!items.length)return notify("此浏览器暂无可迁移的旧版 Production 项目");
-  const pending=items.filter(item=>item.projectId&&!store.projects.some(p=>p.projectId===item.projectId));
-  if(!pending.length)return notify("可识别的旧项目已在当前列表；未修改原数据");
-  if(!window.confirm(`检测到 ${pending.length} 个旧版项目。\n只复制其项目名称与基础信息到新版草案，完整旧记录仍留原本地空间，不自动迁移锁定状态。\n\n现在创建新版草案？`))return;
-  for(const item of pending){
-    const p=O.createProject({
-      projectId:item.projectId,
-      name:item.name||"旧版项目",
-      idea:item.topic||item.name||"旧版项目导入",
-      game:item.game||"",productType:"UNKNOWN",
-      autonomyLevel:"L2",status:"IMPORTED_LEGACY"
-    });
-    p.legacyProjectReference={storageKey:"gucc_ai_video_production_v1",projectId:item.projectId,legacyState:item.currentState||"UNKNOWN"};
-    p.unknowns.push("旧版 Project / Lock / 本地文件引用尚未迁移验证；完整历史须在 Legacy v1 查看。");
-    store.projects.push(p);
-  }
-  store.selectedProjectId=pending[0].projectId;
-  save();render();notify(`已导入 ${pending.length} 个项目草案 · 旧记录未改动`);
-});
 $("importFile").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
   try{

@@ -4,6 +4,7 @@ const Core=window.GuccCreatorCoreRules;
 const Caps=window.GuccCreatorCapabilities;
 const Fail=window.GuccCreatorFailurePrevention;
 const O=window.GuccCreatorOrchestrator;
+const Steps=window.GuccCreatorStepHistory;
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
@@ -161,6 +162,9 @@ function renderSystem(){
     t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
   $("skipTaskBtn").disabled=!canExecute||!p?.promptFlow?.length||t.status!=="CONDITIONAL";
   $("applyResultBtn").disabled=!canExecute||t.promptId==="COMPLETE";
+  const rewind=Steps.describe(p);
+  $("rewindTaskBtn").disabled=!rewind.allowed;
+  $("rewindTaskBtn").title=rewind.allowed?rewind.label:rewind.reason;
   $("flowRevision").textContent=`REV ${p?.flowRevision||0}`;
   $("currentTaskName").closest(".current-task-panel")?.classList.toggle("is-empty",t.status==="INACTIVE");
   renderFlow(p);
@@ -376,6 +380,7 @@ function setNode(status){
   if(!p||!t||t.promptId==="COMPLETE")return;
   if(t.promptId==="PROJECT_BRIEF_APPROVAL"&&status==="DONE"){
     if(!window.confirm("已检查 Project Brief 与 VIDEO_CONTRACT 的核心方向及事实边界，确认批准？\n\n这里只记录本浏览器审核，不表示云端同步。"))return;
+    Steps.record(p,"NODE_STATUS");
     p.status="BRIEF_READY";save();render();notify("项目方向已批准，可以编译执行流");return;
   }
   if(!p.promptFlow?.length)return;
@@ -385,8 +390,9 @@ function setNode(status){
       ? `人工确认：${t.name}\n\n请确认已经实际审核输入和输出。此操作只更新本浏览器状态，不能代替真实 GUCC Cloud / Notion LOCK。`
       : `确认 ${t.name} 的外部条件已真实满足？\n此操作不会自动查验官方资料。`;
     if(!window.confirm(message))return;
-    applyHumanGateSideEffects(p,t);
   }
+  Steps.record(p,"NODE_STATUS");
+  if(status==="DONE")applyHumanGateSideEffects(p,t);
   O.markNode(p,t.promptId,status);O.compilePromptFlow(p);save();render();
 }
 function mergeUnique(target,items){
@@ -407,6 +413,7 @@ function asList(value){return Array.isArray(value)?value:(value==null||value==="
 function importProjectBrief(p,result){
   const contract=result.VIDEO_CONTRACT||result.videoContract||result.contractPatch||result;
   if(!contract||typeof contract!=="object"||Array.isArray(contract))throw Error("未找到 VIDEO_CONTRACT JSON");
+  Steps.record(p,"BRIEF_IMPORT");
   p.rawVideoContract=JSON.parse(JSON.stringify(contract));
   const field=(a,b)=>contract[a]??contract[b];
   // The canonical database identity stays immutable once created. AI-proposed
@@ -494,6 +501,7 @@ function importAiPromptFlow(p,result){
     visiting.delete(id);visited.add(id);
   }
   for(const n of nodes)visit(n.promptId);
+  Steps.record(p,"FLOW_IMPORT");
   p.promptFlow=nodes;
   p.workflow=nodes.map(n=>({promptId:n.promptId,name:n.name,capabilityUsed:n.capabilityUsed,executor:n.executor,
     dependencies:n.dependencies,branch:n.branch,status:n.status,reviewMode:n.reviewMode,qcLevel:n.qcLevel}));
@@ -512,6 +520,7 @@ function applyNodeResult(result){
   if(t&&t.promptId!=="COMPLETE"&&result.promptId!==t.promptId)throw new Error("当前任务是 "+t.promptId+"，返回的是 "+result.promptId);
   const n=(p.promptFlow||[]).find(x=>x.promptId===result.promptId);
   if(!n)throw new Error("当前 Flow 中找不到该 Prompt Node");
+  Steps.record(p,"NODE_RESULT");
   p.availableArtifacts=mergeUnique(p.availableArtifacts,result.availableArtifacts||result.outputs);
   p.verifiedFacts=mergeUnique(p.verifiedFacts,result.verifiedFacts);
   p.reasonedAnalysis=mergeUnique(p.reasonedAnalysis,result.reasonedAnalysis);
@@ -589,6 +598,35 @@ $("createPromptBtn").addEventListener("click",()=>{const idea=$("ideaInput").val
 $("copyCurrentPrompt").addEventListener("click",()=>copy(currentTaskFor(current())?.prompt||""));
 $("applyResultBtn").addEventListener("click",()=>{$("resultInput").value="";$("resultDialog").showModal();});
 $("applyResultConfirm").addEventListener("click",e=>{e.preventDefault();try{applyNodeResult(parseNodeResult($("resultInput").value));$("resultDialog").close();notify("AI Result 已应用");}catch(err){notify("应用失败："+err.message);}});
+let rewindCandidateId="";
+function openStepRewind(){
+  const p=current(),plan=Steps.describe(p);
+  if(!plan.allowed)return notify(plan.reason||"无法返回上一步");
+  rewindCandidateId=p.projectId;
+  $("rewindTarget").textContent=plan.label;
+  $("rewindDescription").textContent=plan.explanation;
+  $("rewindDialog").showModal();
+}
+function confirmStepRewind(){
+  const p=current();
+  if(!p||p.projectId!==rewindCandidateId)return notify("当前项目已切换，请重新选择");
+  const plan=Steps.describe(p);
+  if(!plan.allowed)return notify(plan.reason);
+  try{
+    // Keep a complete local backup before this potentially significant workflow change.
+    const copyBefore=JSON.parse(JSON.stringify(p));
+    Steps.rewind(p);
+    $("artifactPreview").textContent="";
+    save();render();
+    $("rewindDialog").close();
+    rewindCandidateId="";
+    notify("已返回上一步。旧结果已存档，请重新执行并导入正确回执");
+  }catch(err){notify("返回失败："+(err.message||"未知错误"));}
+}
+$("rewindTaskBtn").addEventListener("click",openStepRewind);
+$("confirmRewindBtn").addEventListener("click",confirmStepRewind);
+$("rewindDialog").querySelectorAll("[data-close-rewind]").forEach(btn=>btn.addEventListener("click",()=>$("rewindDialog").close()));
+$("rewindDialog").addEventListener("close",()=>{rewindCandidateId="";});
 $("markDoneBtn").addEventListener("click",()=>setNode("DONE"));
 $("skipTaskBtn").addEventListener("click",()=>setNode("SKIPPED"));
 $("copyContractBtn").addEventListener("click",()=>copy(O.videoContractMd(current())));

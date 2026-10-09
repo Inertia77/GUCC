@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v32";
-const RUNTIME_CACHE = "gucc-runtime-v32";
+const STATIC_CACHE = "gucc-static-v33";
+const RUNTIME_CACHE = "gucc-runtime-v33";
 
 const APP_SHELL = [
   "./",
@@ -18,7 +18,7 @@ const APP_SHELL = [
   "./assets/creator-dashboard.css?v=1",
   "./assets/creator-portal-core.mjs?v=1",
   "./assets/creator-portal-dashboard.mjs?v=1",
-  "./assets/creator-portal-dashboard.css?v=1",
+  "./assets/creator-portal-dashboard.css?v=2",
   "./assets/creator-ux-simplification-v1.mjs?v=1",
   "./assets/creator-ux-simplification-v1-closeout.mjs?v=1",
   "./assets/creator-local-project-contract.js?v=1",

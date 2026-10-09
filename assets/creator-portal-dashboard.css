@@ -82,3 +82,27 @@
 }
 @media(max-width:380px){.cp-counters{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-filters button{padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){.cp-task,.cp-project{transition:none}}
+
+/* Portal global chrome applies !important to generic button rules.
+   Keep dashboard state/filter controls subdued and reserve mint for the CTA. */
+body.portal-page.gucc-enhanced #creatorDashboard .cp-counter{
+ background:linear-gradient(132deg,rgba(25,38,56,.93),rgba(18,24,40,.9))!important;
+ color:#d5e1ec!important;border:1px solid rgba(156,177,219,.16)!important;
+ box-shadow:none!important;border-radius:6px 17px 6px 17px!important;
+ font-weight:600!important;
+}
+body.portal-page.gucc-enhanced #creatorDashboard .cp-filters button{
+ background:rgba(25,31,49,.74)!important;
+ color:#9cabc6!important;border:1px solid rgba(160,169,205,.2)!important;
+ box-shadow:none!important;border-radius:6px 12px 6px 12px!important;
+ font-weight:750!important;
+}
+body.portal-page.gucc-enhanced #creatorDashboard .cp-filters button.is-selected{
+ background:linear-gradient(110deg,rgba(88,213,188,.23),rgba(113,120,219,.17))!important;
+ color:#a9f7e0!important;border-color:rgba(128,239,209,.44)!important;
+}
+body.portal-page.gucc-enhanced #creatorDashboard .cp-refresh{
+ background:rgba(18,26,40,.85)!important;color:#dfeff4!important;
+ border:1px solid rgba(160,179,204,.22)!important;box-shadow:none!important;
+ border-radius:8px 13px 8px 13px!important;font-weight:720!important;
+}

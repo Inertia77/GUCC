@@ -44,6 +44,15 @@ function download(name,text,type="application/json"){const a=document.createElem
 
 function currentTaskFor(p){
   if(!p) return null;
+  // Project definition must always precede workflow execution, even if an earlier UI action generated a generic template.
+  if(p.status==="DRAFT"||p.status==="IMPORTED_LEGACY"){
+    return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"当前仍是原始想法草稿。先让 AI 研究并输出 VIDEO_CONTRACT，之后才能编排制作任务。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md","VIDEO_CONTRACT JSON"],qcLevel:"Q2",reviewMode:"REVIEW_OPTIONAL",prompt:O.buildCreateProjectPrompt(p),status:"PENDING"};
+  }
+  if(p.status==="BRIEF_READY"||p.status==="BRIEF_REVIEW"){
+    return p.status==="BRIEF_READY"
+      ? {promptId:"PROMPT_FLOW_COMPILER",name:"编译项目专属 Prompt Flow",executor:"Chat / Work",reason:"立项结果已导入。请先编排项目专属制作路线。",requiredInput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],expectedOutput:["PROJECT_WORKFLOW.md","PROJECT_PROMPT_FLOW.md","GUCC_FLOW_RESULT JSON"],qcLevel:"Q2",reviewMode:"REVIEW_OPTIONAL",prompt:O.buildFlowCompilerPrompt(p),status:"PENDING"}
+      : {promptId:"PROJECT_BRIEF_APPROVAL",name:"确认项目方向",executor:"Human",reason:"请核对项目方向和事实边界。",requiredInput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],expectedOutput:["已批准的立项方向"],qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED",prompt:O.videoContractMd(p),status:"WAITING"};
+  }
   if(!p.promptFlow?.length){
     if(p.status==="BRIEF_REVIEW"){
       return {promptId:"PROJECT_BRIEF_APPROVAL",name:"确认项目方向",executor:"Human",reason:"AI 的立项结果已导入。请只审查 GO/SHORT/HOLD 方向、核心命题和事实边界；其他普通字段由系统处理。",requiredInput:["PROJECT_BRIEF","VIDEO_CONTRACT"],expectedOutput:["已确认的立项方向"],qcLevel:"Q3",reviewMode:"APPROVAL_REQUIRED",prompt:O.videoContractMd(p),status:"WAITING"};
@@ -96,6 +105,10 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel||"Q2";
   $("currentReview").textContent=t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
   $("currentPrompt").textContent=t.prompt||"";
+  const hasApprovedBrief=!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
+  $("copyBuildFlowPrompt").disabled=!hasApprovedBrief;
+  $("buildFlowBtn").disabled=!hasApprovedBrief;
+  $("copyWorkflowBtn").disabled=!p.promptFlow?.length;
   const awaiting=(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
   $("markDoneBtn").disabled=!awaiting;
   if(t.promptId==="PROJECT_BRIEF_APPROVAL")$("markDoneBtn").textContent="批准立项方向";
@@ -178,14 +191,22 @@ function renderProjects(){
   const archive=$("archiveCurrentProject");
   archive.disabled=!p||p.status==="TEST_FIXTURE";
   archive.textContent=p?.archivedAt?"恢复当前项目":"归档当前项目";
-  if(!$("artifactPreview").textContent&&p)$("artifactPreview").textContent=O.currentTaskMd(p);
+  if(!$("artifactPreview").textContent&&p)$("artifactPreview").textContent=localCurrentTaskMd(p);
   $("migrationTable").innerHTML=migration.length?migration.map(m=>`<div class="migration-row"><code>${esc(m.legacyPromptId)}</code><strong>${esc(m.disposition)}</strong><span>${esc((m.capabilities||[]).join(" + "))}<br><small class="subtitle">${esc(m.reason)}</small></span></div>`).join(""):"<p class='subtitle'>Migration map 加载中…</p>";
 }
 
+function localCurrentTaskMd(p){
+  const t=currentTaskFor(p);
+  return `# CURRENT_TASK\n\n- PROMPT_ID: ${t.promptId}\n- NAME: ${t.name}\n- EXECUTOR: ${t.executor}\n- STATUS: ${t.status||"PENDING"}\n\n## PROMPT\n\n${t.prompt||""}\n`;
+}
 function showArtifact(kind){
   const p=current();if(!p)return;
-  const map={brief:O.projectBriefMd,contract:O.videoContractMd,workflow:O.workflowMd,flow:O.promptFlowMd,task:O.currentTaskMd};
-  $("artifactPreview").textContent=(map[kind]||O.currentTaskMd)(p);
+  if(["workflow","flow"].includes(kind)&&!p.promptFlow?.length){
+    $("artifactPreview").textContent="尚未完成项目专属流程编排。请先导入 AI 立项结果，再生成 GUCC_FLOW_RESULT。";
+    return;
+  }
+  const map={brief:O.projectBriefMd,contract:O.videoContractMd,workflow:O.workflowMd,flow:O.promptFlowMd,task:localCurrentTaskMd};
+  $("artifactPreview").textContent=(map[kind]||localCurrentTaskMd)(p);
 }
 function newDraftId(){
   const base="DRAFT-"+Date.now();
@@ -261,7 +282,7 @@ function importProjectBrief(p,result){
     if(store.projects.some(x=>x!==p&&x.projectId===id))throw Error("PROJECT_ID 与其他项目冲突");
     const previousId=p.projectId;
     p.projectId=id;store.selectedProjectId=id;
-    window.dispatchEvent(new CustomEvent("gucc:creator-os:renamed",{detail:{from:previousId,to:id}}));
+    window.dispatchEvent(new CustomEvent("gucc:creator-os:renamed",{detail:{from:previousId,to:id,fromStatus:p.status}}));
   }
   for(const [a,b] of [["name","PROJECT_NAME"],["game","GAME"],["server","SERVER"],["version","VERSION"],
     ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"]]){
@@ -277,6 +298,8 @@ function importProjectBrief(p,result){
   const brief=result.projectBriefMarkdown||result.PROJECT_BRIEF_MD||result.PROJECT_BRIEF;
   if(typeof brief==="string"&&brief.trim())p.projectBriefMarkdown=brief;
   p.status="BRIEF_READY";
+  // A generic template accidentally created for a draft is never treated as a researched/approved workflow.
+  if(p.promptFlow?.length&&!p.promptFlow.some(n=>["DONE","WAITING"].includes(n.status))){p.promptFlow=[];p.workflow=[];}
   p.history||=[];p.history.push({at:new Date().toISOString(),action:"PROJECT_BRIEF_IMPORTED_LOCAL"});
   save();render();notify("立项结果已导入，等待核对项目方向");
 }
@@ -405,12 +428,16 @@ $("copyContractBtn").addEventListener("click",()=>copy(O.videoContractMd(current
 $("copyWorkflowBtn").addEventListener("click",()=>copy(O.workflowMd(current())));
 $("buildFlowBtn").addEventListener("click",()=>{
   const p=current();if(!p)return;
+  if(["DRAFT","IMPORTED_LEGACY"].includes(p.status))return notify("项目尚未立项，请先导入 VIDEO_CONTRACT");
   const progress=(p.promptFlow||[]).some(n=>["DONE","SKIPPED"].includes(n.status));
   if(progress&&!window.confirm("此操作将重新编译流程并重置本浏览器已记录的节点状态。\n\n保留现有进度请选择“调整制作路线”生成 DIFF Prompt。\n\n仍要重新编译吗？"))return;
   O.buildWorkflow(p);O.compilePromptFlow(p);save();render();
   notify("已生成本地 Prompt Flow 草案（未自动开展研究）");
 });
-$("copyBuildFlowPrompt").addEventListener("click",()=>copy(O.buildFlowCompilerPrompt(current())));
+$("copyBuildFlowPrompt").addEventListener("click",()=>{
+  const p=current();if(["DRAFT","IMPORTED_LEGACY"].includes(p?.status))return notify("请先执行 Project Builder 并导入立项结果");
+  copy(O.buildFlowCompilerPrompt(p));
+});
 $("copyUpdateFlowPrompt").addEventListener("click",()=>copy(O.updateFlowPrompt(current())));
 $("capSearch").addEventListener("input",renderCapabilities);$("capDomain").addEventListener("change",renderCapabilities);
 document.querySelectorAll("[data-artifact]").forEach(b=>b.addEventListener("click",()=>showArtifact(b.dataset.artifact)));

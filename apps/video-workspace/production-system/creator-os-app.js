@@ -8,6 +8,10 @@ const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
 let store=load();
+const linkedProjectId=new URLSearchParams(window.location.search).get("project")||"";
+if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
+  store.selectedProjectId=linkedProjectId;
+}
 let activeView="system";
 let toastTimer;
 let flowExpanded=false;
@@ -557,12 +561,20 @@ window.GuccCreatorOS={
   projects:()=>JSON.parse(JSON.stringify(store.projects)),
   selectedId:()=>store.selectedProjectId,
   current:()=>JSON.parse(JSON.stringify(current())),
+  selectProject:(id)=>{
+    if(!store.projects.some(p=>p.projectId===id))return false;
+    if(store.selectedProjectId!==id){
+      store.selectedProjectId=id;
+      save(false);render();
+    }
+    return true;
+  },
   putProject:(project,{fromCloud=false}={})=>{
     if(!project||typeof project!=="object"||!project.projectId||!project.name)throw Error("无效的云端项目");
     const i=store.projects.findIndex(p=>p.projectId===project.projectId);
     if(i>=0)store.projects[i]=JSON.parse(JSON.stringify(project));
     else store.projects.unshift(JSON.parse(JSON.stringify(project)));
-    if(store.projects.length===1||current()?.status==="TEST_FIXTURE")store.selectedProjectId=project.projectId;
+    if(project.projectId===linkedProjectId||store.projects.length===1||current()?.status==="TEST_FIXTURE")store.selectedProjectId=project.projectId;
     save(!fromCloud);render();
   }
 };

@@ -9,7 +9,7 @@
 <script src="../../../assets/access-guard.js?v=9" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
 <link rel="stylesheet" href="../../../assets/gucc-theme.css">
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
-<link rel="stylesheet" href="./nte-urban-theme.css?v=2">
+<link rel="stylesheet" href="./nte-urban-theme.css?v=3">
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -21,9 +21,8 @@
   <div class="topbar-center"><span class="center-line"></span><span>CREATIVE OPERATIONS</span><span class="center-line"></span></div>
   <div class="top-actions">
     <span class="system-label"><span class="alive-dot"></span> NEW ERIDU <i>/</i> CREATOR TERMINAL</span>
-    <a class="top-link" href="../legacy-prompt-studio-v6.html">旧版 Prompt</a>
-    <a class="top-link" href="./legacy-v1.html">旧版制作台</a>
-    <a class="top-link top-link-icon" href="../../publishing-console/" aria-label="发布控制台">投稿 <span aria-hidden="true">↗</span></a>
+    <a class="top-link" href="../../cover-generator/">封面工具 ↗</a>
+    <a class="top-link top-link-icon" href="../../publishing-console/" aria-label="发布控制台">发布工具 ↗</a>
   </div>
 </header>
 
@@ -68,7 +67,7 @@
         <div class="cloud-actions"><span id="cloudSyncStatus" data-state="idle">检查云端连接…</span><button class="button ghost" id="cloudSyncNow" type="button" title="用 Supabase 登录状态检查项目云同步">↻ 云端同步</button><a class="cloud-login" href="../../command-center/" title="在 GUCC 中登录 Supabase 账户">账户 ↗</a></div>
         <button class="button primary" id="newProjectBtn"><span aria-hidden="true">＋</span> 新建项目</button>
         <div class="project-file-actions">
-          <button class="button ghost" id="importLegacyBtn" title="只读取旧版浏览器项目，不覆盖旧数据">旧版项目</button>
+          
           <button class="button ghost" id="importBtn">导入</button>
           <button class="button ghost" id="exportBtn">备份</button>
         </div>
@@ -153,6 +152,14 @@
         </details>
       </section>
 
+      <section class="production-tools">
+        <div class="dock-heading"><span class="micro">SPECIALIZED TOOLS</span><h2>当前项目的辅助工具</h2></div>
+        <div class="tool-links">
+          <a class="tool-link" href="../../cover-generator/"><span class="tool-code">CG</span><strong>封面编辑器</strong><small>可选独立制图工具 · 不会自动改动项目 Lock</small><span>↗</span></a>
+          <a class="tool-link" href="../../publishing-console/"><span class="tool-code">PUB</span><strong>发布控制台</strong><small>平台字段与发布复盘工具 · 发布仍需要实际确认</small><span>↗</span></a>
+        </div>
+        <p class="tool-warning">策划、研究、文案、制作节点统一在当前 Prompt Flow；封面与投稿两个独立工具按需使用，不会自动执行后续步骤。</p>
+      </section>
       <section class="panel local-folder-panel">
         <div class="panel-head">
           <div><span class="micro">LOCAL ASSET RADAR / ONLY ON THIS DEVICE</span><h2>本地项目工作目录 <span class="local-only-stamp">LOCAL ONLY</span></h2>
@@ -204,25 +211,27 @@
         <article class="panel"><h3>Project / Locks</h3><p>复用 <code>creator_projects</code>、Language Track / Visual Master / Variant 与现有 Human Lock。</p></article>
         <article class="panel"><h3>Platform Rules</h3><p>复用 Publishing Console；发布时仍需实时核验平台字段、版权与 AI 披露。</p><a href="../../publishing-console/">打开投稿控制台 →</a></article>
         <article class="panel"><h3>Analytics / Learning</h3><p>复用 publication / metric snapshot / performance report / learning proposal 结构。</p></article>
-        <article class="panel"><h3>Database Decision</h3><p><strong>本次不新增数据库表。</strong>这些文档可以复用现有 project-scope Artifact Registry；当前新版页面只保存浏览器草稿，尚未对 Supabase 执行自动同步。</p></article>
+        <article class="panel"><h3>云端项目身份</h3><p>Creator Project 以 <code>creator_projects</code> 作为正式身份；详细制作中枢状态使用关联的 Creator OS 快照表。素材本体保存在本地。</p></article>
       </div>
     </section>
 
     <section id="view-projects" class="view">
-      <div class="section-head"><span class="micro">04</span><h2>Projects</h2><p>当前项目事实、Prompt Flow 与执行状态。大媒体仍留本地，不进 Git。</p></div>
+      <div class="section-head"><span class="micro">PROJECT REGISTRY</span><h2>项目总览</h2><p>正式项目身份来自 creator_projects，详细制作资料同步到关联表。默认聚焦进行中；已完成、归档及回收站独立管理。</p></div>
       <div class="project-management-bar">
         <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
-        <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="all">全部项目</option><option value="archived">已归档</option></select>
-        <button id="archiveCurrentProject" type="button" class="button ghost">归档当前项目</button>
+        <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="completed">已完成</option><option value="archived">已归档</option><option value="all">全部（不含回收站）</option><option value="trash">回收站</option></select>
+        <button id="completeCurrentProject" type="button" class="button secondary">标记已完成</button>
+        <button id="archiveCurrentProject" type="button" class="button ghost">归档项目</button>
+        <button id="deleteCurrentProject" type="button" class="button danger">删除项目</button>
       </div>
+      <p id="projectCounts" class="project-counts" aria-live="polite"></p>
       <div id="projectCards" class="project-cards"></div>
       <section class="panel">
         <div class="panel-head"><h3>当前项目 Artifact</h3><div class="button-row"><button class="button ghost" data-artifact="brief">PROJECT_BRIEF</button><button class="button ghost" data-artifact="contract">VIDEO_CONTRACT</button><button class="button ghost" data-artifact="workflow">PROJECT_WORKFLOW</button><button class="button ghost" data-artifact="flow">PROJECT_PROMPT_FLOW</button><button class="button ghost" data-artifact="task">CURRENT_TASK</button></div></div>
         <pre id="artifactPreview" class="artifact-preview"></pre>
       </section>
       <section class="panel">
-        <div class="panel-head"><h3>旧 Prompt 迁移</h3><span class="pill">Legacy retained</span></div>
-        <div id="migrationTable"></div>
+        <details><summary>成熟 Prompt 方法继承记录（历史参考）</summary><div id="migrationTable"></div></details>
       </section>
     </section>
   </main>
@@ -271,8 +280,8 @@
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
 <script src="./orchestrator.js?v=2.0.1"></script>
-<script src="./creator-os-app.js?v=3.0.1"></script>
-<script type="module" src="./creator-os-cloud.mjs?v=2"></script>
+<script src="./creator-os-app.js?v=3.1.0"></script>
+<script type="module" src="./creator-os-cloud.mjs?v=3"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 </body>
 </html>

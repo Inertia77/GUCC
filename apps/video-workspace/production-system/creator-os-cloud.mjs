@@ -95,19 +95,22 @@ async function readRow(id){
 }
 async function send(project,expectedRevision=null) {
   const id=project.projectId,user=sessionUser();
-  if(!user) throw new Error("未登录");
-  const body={owner_user_id:user,project_id:id,project_data:safeProject(project)};
-  if(expectedRevision===null) {
-    const rows=await request("POST","",[ {...body,revision:1} ]);
-    if(!rows?.length) throw new Error("创建云端项目失败");
-    return rows[0];
-  }
-  body.revision=expectedRevision+1;
-  body.updated_at=new Date().toISOString();
-  const rows=await request("PATCH","?owner_user_id=eq."+encodeURIComponent(user)+"&project_id=eq."+encodeURIComponent(id)+"&revision=eq."+expectedRevision,body);
-  if(!rows?.length) throw new Error("云端版本已变化，需要处理同步冲突");
-  return rows[0];
+  if(!user)throw new Error("未登录");
+  // One database transaction: ensure canonical creator_projects root, then CAS-save detail snapshot.
+  const token=await getAccessToken();
+  const response=await fetch(CONFIG.SUPABASE_URL.replace(/\\/+$/,"")+"/rest/v1/rpc/creator_os_save_project",{
+    method:"POST",
+    headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+token,
+      "Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify({p_project:safeProject(project),p_expected_revision:expectedRevision})
+  });
+  const data=await response.json().catch(()=>null);
+  if(!response.ok)throw new Error(data?.message||data?.error||"Creator OS save HTTP "+response.status);
+  if(!data||data.project_id!==id||!Number.isInteger(Number(data.revision)))
+    throw new Error("云端没有返回有效的项目保存回执");
+  return data;
 }
+
 function isRealProject(p){return Boolean(p?.projectId&&p.status!=="TEST_FIXTURE");}
 function setConflict(id,local,remote) {
   conflict={id,local:safeProject(local),remote};

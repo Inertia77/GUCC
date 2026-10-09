@@ -44,9 +44,10 @@
       // If the project has already moved to an unrelated stage, do not blindly
       // apply a snapshot from a previous, unrelated action.
       if(last.kind==="BRIEF_IMPORT"&&p.status!=="BRIEF_READY")return {allowed:false,reason:"项目已进入下游流程，请先处理当前阶段"};
-      if(["FLOW_IMPORT","NODE_RESULT","NODE_STATUS","LOCAL_FLOW"].includes(last.kind)&&p.status!=="FLOW_READY")
+      const reviewReturn=last.kind==="NODE_STATUS"&&p.status==="BRIEF_READY"&&last.snapshot?.status==="BRIEF_REVIEW";
+      if(["FLOW_IMPORT","NODE_RESULT","NODE_STATUS","LOCAL_FLOW"].includes(last.kind)&&p.status!=="FLOW_READY"&&!reviewReturn)
         return {allowed:false,reason:"快照所属阶段与当前阶段不一致"};
-      return {allowed:true,mode:"checkpoint",label:labels[last.kind],kind:last.kind,at:last.at,
+      return {allowed:true,mode:"checkpoint",label:reviewReturn?"返回立项人工审核":labels[last.kind],kind:last.kind,at:last.at,
         explanation:"将使用导入/确认前的状态快照恢复这个项目。期间后续的项目内部改动也会撤回；撤回前的资料会保留在项目的修订历史中。"};
     }
     // Older projects predate checkpoint support. Never invent the earlier contents:

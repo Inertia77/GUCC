@@ -59,7 +59,7 @@ function testTaskFirstUiHandoff(){
       id,dataset:{},children:[],options:[],classList:{toggle(){}},style:{},value:"",textContent:"",innerHTML:"",hidden:false,
       replaceChildren(){this.children=[];},append(x){this.children.push(x);},
       addEventListener(type,fn){(callbacks[id] ||= {})[type]=fn;},
-      setAttribute(){},showModal(){},close(){},querySelector(){return {reset(){}};}
+      setAttribute(){},showModal(){},close(){},closest(){return {classList:{toggle(){}}};},querySelector(){return {reset(){}};}
     };
     elements.set(id,e);return e;
   };
@@ -75,6 +75,7 @@ function testTaskFirstUiHandoff(){
   };
   vm.runInNewContext(source,sandbox,{filename:"creator-os-app.js"});
   assert.equal(element("currentTaskId").textContent,"PROJECT_BUILDER");
+  assert.equal(element("projectSelect").disabled,false,"A real draft must remain selectable");
   const apply=result=>{
     callbacks.applyResultBtn.click();
     element("resultInput").value=JSON.stringify(result);

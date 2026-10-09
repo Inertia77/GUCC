@@ -599,10 +599,12 @@ $("copyCurrentPrompt").addEventListener("click",()=>copy(currentTaskFor(current(
 $("applyResultBtn").addEventListener("click",()=>{$("resultInput").value="";$("resultDialog").showModal();});
 $("applyResultConfirm").addEventListener("click",e=>{e.preventDefault();try{applyNodeResult(parseNodeResult($("resultInput").value));$("resultDialog").close();notify("AI Result 已应用");}catch(err){notify("应用失败："+err.message);}});
 let rewindCandidateId="";
+let rewindOpenedVersion="";
 function openStepRewind(){
   const p=current(),plan=Steps.describe(p);
   if(!plan.allowed)return notify(plan.reason||"无法返回上一步");
   rewindCandidateId=p.projectId;
+  rewindOpenedVersion=JSON.stringify(p);
   $("rewindTarget").textContent=plan.label;
   $("rewindDescription").textContent=plan.explanation;
   $("rewindDialog").showModal();
@@ -610,23 +612,26 @@ function openStepRewind(){
 function confirmStepRewind(){
   const p=current();
   if(!p||p.projectId!==rewindCandidateId)return notify("当前项目已切换，请重新选择");
+  if(JSON.stringify(p)!==rewindOpenedVersion){
+    $("rewindDialog").close();
+    return notify("项目在确认期间已更新。请重新打开「返回上一步」核对最新状态");
+  }
   const plan=Steps.describe(p);
   if(!plan.allowed)return notify(plan.reason);
   try{
-    // Keep a complete local backup before this potentially significant workflow change.
-    const copyBefore=JSON.parse(JSON.stringify(p));
     Steps.rewind(p);
     $("artifactPreview").textContent="";
     save();render();
     $("rewindDialog").close();
     rewindCandidateId="";
+    rewindOpenedVersion="";
     notify("已返回上一步。旧结果已存档，请重新执行并导入正确回执");
   }catch(err){notify("返回失败："+(err.message||"未知错误"));}
 }
 $("rewindTaskBtn").addEventListener("click",openStepRewind);
 $("confirmRewindBtn").addEventListener("click",confirmStepRewind);
 $("rewindDialog").querySelectorAll("[data-close-rewind]").forEach(btn=>btn.addEventListener("click",()=>$("rewindDialog").close()));
-$("rewindDialog").addEventListener("close",()=>{rewindCandidateId="";});
+$("rewindDialog").addEventListener("close",()=>{rewindCandidateId="";rewindOpenedVersion="";});
 $("markDoneBtn").addEventListener("click",()=>setNode("DONE"));
 $("skipTaskBtn").addEventListener("click",()=>setNode("SKIPPED"));
 $("copyContractBtn").addEventListener("click",()=>copy(O.videoContractMd(current())));

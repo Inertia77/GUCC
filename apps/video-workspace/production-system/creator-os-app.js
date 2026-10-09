@@ -26,28 +26,33 @@ function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(O.STORAGE_KEY)||"null");
     if(raw&&Array.isArray(raw.projects)){
-      // Repair legacy drafts created before idea and title were separated; retain all user text and IDs.
-      const projects=raw.projects.map(p=>p&&p.status==="DRAFT"&&p.idea&&p.name===p.idea
-        ? {...p,name:provisionalProjectName(p)} : p);
-      return {projects,selectedProjectId:raw.selectedProjectId||projects[0]?.projectId||""};
+      // TEST_FIXTURE is an internal QA scenario, never a published Creator Project.
+      const projects=raw.projects.filter(p=>p&&p.status!=="TEST_FIXTURE").map(p=>
+        p.status==="DRAFT"&&p.idea&&p.name===p.idea
+          ? {...p,name:provisionalProjectName(p)} : p);
+      const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)==="active");
+      return {projects,selectedProjectId:selected?.projectId||projects.find(p=>projectLife(p)==="active")?.projectId||""};
     }
-  }catch(e){console.warn("Creator OS v2 store reset",e);}
-  const test=O.testFixture();
-  O.buildWorkflow(test);O.compilePromptFlow(test);
-  return {projects:[test],selectedProjectId:test.projectId};
+  }catch(e){console.warn("Creator OS store loaded without QA fixture",e);}
+  return {projects:[],selectedProjectId:""};
 }
 function save(broadcast=true){
   localStorage.setItem(O.STORAGE_KEY,JSON.stringify(store));
   if(broadcast)window.dispatchEvent(new CustomEvent("gucc:creator-os:saved",{detail:{projectId:store.selectedProjectId}}));
 }
-function current(){return store.projects.find(p=>p.projectId===store.selectedProjectId)||store.projects[0]||null;}
+function current(){return store.projects.find(p=>p.projectId===store.selectedProjectId&&p.status!=="TEST_FIXTURE")||null;}
 function notify(msg){$("toast").textContent=msg;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600);}
 async function copy(text){try{await navigator.clipboard.writeText(text);notify("已复制");return true;}catch{notify("复制失败，请手动选择");return false;}}
 function listText(arr){return (arr||[]).length?(arr||[]).map(x=>"• "+x).join("\n"):"—";}
 function download(name,text,type="application/json"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);}
 
 function currentTaskFor(p){
-  if(!p) return null;
+  if(!p)return {promptId:"—",name:"目前没有进行中的视频项目",executor:"—",reason:"正式项目都已完成、归档或移入回收站。可新建项目，或在「项目档案」中打开并恢复已有项目。",requiredInput:[],expectedOutput:[],qcLevel:"—",reviewMode:"REVIEW_OPTIONAL",prompt:"",status:"INACTIVE"};
+  const life=projectLife(p);
+  if(life!=="active"){
+    const labels={completed:"项目已完成",archived:"项目已归档",trash:"项目位于回收站"};
+    return {promptId:"—",name:labels[life],executor:"—",reason:"此项目当前不在制作队列中。请前往「项目档案」恢复为进行中，再继续制作。",requiredInput:[],expectedOutput:[],qcLevel:"—",reviewMode:"REVIEW_OPTIONAL",prompt:"",status:"INACTIVE"};
+  }
   // Project definition must always precede workflow execution, even if an earlier UI action generated a generic template.
   if(p.status==="DRAFT"||p.status==="IMPORTED_LEGACY"){
     return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"当前仍是原始想法草稿。先让 AI 研究并输出 VIDEO_CONTRACT，之后才能编排制作任务。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md","VIDEO_CONTRACT JSON"],qcLevel:"Q2",reviewMode:"REVIEW_OPTIONAL",prompt:O.buildCreateProjectPrompt(p),status:"PENDING"};
@@ -93,11 +98,19 @@ function lifeName(p){
 }
 function selectActiveAfterMove(id){
   if(store.selectedProjectId!==id)return;
-  store.selectedProjectId=store.projects.find(p=>p.projectId!==id&&projectLife(p)==="active"&&p.status!=="TEST_FIXTURE")?.projectId||id;
+  store.selectedProjectId=store.projects.find(p=>p.projectId!==id&&projectLife(p)==="active"&&p.status!=="TEST_FIXTURE")?.projectId||"";
 }
 function renderProjectBar(){
   const sel=$("projectSelect");sel.replaceChildren();
-  const visible=store.projects.filter(p=>projectLife(p)==="active"||p.projectId===store.selectedProjectId);
+  const visible=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&
+    (projectLife(p)==="active"||p.projectId===store.selectedProjectId));
+  if(!visible.length){
+    const option=document.createElement("option");
+    option.value="";option.textContent="暂无进行中的项目 · 请新建或恢复";
+    sel.append(option);sel.disabled=true;sel.value="";
+    return;
+  }
+  sel.disabled=false;
   for(const p of visible){
     const option=document.createElement("option");
     option.value=p.projectId;
@@ -108,16 +121,17 @@ function renderProjectBar(){
 }
 
 function renderSystem(){
-  const p=current();if(!p)return;
-  $("projectName").textContent=p.status==="TEST_FIXTURE"?"[结构测试] "+p.name:p.name;
+  const p=current();
+  $("projectName").textContent=p?.name||"尚未选择项目";
+  $("projectName").closest(".project-summary")?.classList.toggle("is-empty",!p);
   const ideaPreview=$("projectIdeaPreview");
-  ideaPreview.hidden=!(p.status==="DRAFT"&&p.idea);
-  ideaPreview.textContent=p.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
-  $("projectMeta").innerHTML=[
+  ideaPreview.hidden=!(p?.status==="DRAFT"&&p.idea);
+  ideaPreview.textContent=p?.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
+  $("projectMeta").innerHTML=p?[
     ["PROJECT ID",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
-    ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
-  ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join("");
-  const videos=Array.isArray(p.videos)?p.videos:[];
+    ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`],["LIFECYCLE",lifeName(p)]
+  ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join(""):"<p class='subtitle'>当前没有进行中项目。请打开「项目档案」恢复已有项目，或新建项目。</p>";
+  const videos=Array.isArray(p?.videos)?p.videos:[];
   $("videoBranches").innerHTML=videos.length?videos.map(v=>`<div class="branch-row"><span>${esc(v.name||v.videoId||"Video")}</span><span>${esc(v.decision||"PENDING")}</span></div>`).join(""):"";
   const t=currentTaskFor(p);
   $("currentTaskId").textContent=t.promptId||"—";
@@ -129,23 +143,27 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel||"Q2";
   $("currentReview").textContent=t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
   $("currentPrompt").textContent=t.prompt||"";
-  const hasApprovedBrief=!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
+  const canExecute=Boolean(p&&projectLife(p)==="active");
+  const hasApprovedBrief=canExecute&&!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
   $("copyBuildFlowPrompt").disabled=!hasApprovedBrief;
   $("buildFlowBtn").disabled=!hasApprovedBrief;
-  $("copyWorkflowBtn").disabled=!p.promptFlow?.length;
-  const awaiting=(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
+  $("copyUpdateFlowPrompt").disabled=!canExecute||!p?.promptFlow?.length;
+  $("copyWorkflowBtn").disabled=!p?.promptFlow?.length;
+  $("copyContractBtn").disabled=!p;
+  $("copyCurrentPrompt").disabled=!canExecute||!t.prompt;
+  const awaiting=canExecute&&(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
   $("markDoneBtn").disabled=!awaiting;
   if(t.promptId==="PROJECT_BRIEF_APPROVAL")$("markDoneBtn").textContent="批准立项方向";
   $("markDoneBtn").textContent=t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
-  $("skipTaskBtn").disabled=!p.promptFlow?.length||t.status!=="CONDITIONAL";
-  $("applyResultBtn").disabled=t.promptId==="COMPLETE";
-  $("flowRevision").textContent=`REV ${p.flowRevision||0}`;
+  $("skipTaskBtn").disabled=!canExecute||!p?.promptFlow?.length||t.status!=="CONDITIONAL";
+  $("applyResultBtn").disabled=!canExecute||t.promptId==="COMPLETE";
+  $("flowRevision").textContent=`REV ${p?.flowRevision||0}`;
   renderFlow(p);
   $("productionMap").innerHTML=Core.HUMAN_PRODUCTION_MAP.map(s=>`<div class="map-step"><b>${s.id}</b><strong>${esc(s.name)}</strong><small>${esc(s.meaning)}</small></div>`).join("");
 }
 function renderFlow(p){
   const box=$("flowList");box.replaceChildren();
-  const nodes=["DRAFT","IMPORTED_LEGACY","BRIEF_READY","BRIEF_REVIEW"].includes(p.status)?[]:(p.promptFlow||[]);
+  const nodes=!p||["DRAFT","IMPORTED_LEGACY","BRIEF_READY","BRIEF_REVIEW"].includes(p.status)?[]:(p.promptFlow||[]);
   const total=nodes.length;
   const done=nodes.filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
   $("flowNodeCount").textContent=total?`— ${done} / ${total}`:"";
@@ -155,7 +173,7 @@ function renderFlow(p){
   toggle.innerHTML=flowExpanded?'收起路线 <span aria-hidden="true">⌃</span>':'查看完整路线 <span aria-hidden="true">⌄</span>';
   if(!total){
     const empty=document.createElement("p");empty.className="flow-empty";
-    empty.textContent=["DRAFT","IMPORTED_LEGACY"].includes(p.status)?"目前还是项目想法草稿。请先复制 Project Builder Prompt，完成 AI 立项后再生成制作路线。":"尚未导入项目专属执行流。请先让 AI 编排，再导入 GUCC_FLOW_RESULT。";
+    empty.textContent=!p?"当前没有进行中项目。可在项目档案恢复已有项目，或新建项目。":projectLife(p)!=="active"?"此项目目前未处于进行中，制作任务暂停。":["DRAFT","IMPORTED_LEGACY"].includes(p.status)?"目前还是项目想法草稿。请先复制 Project Builder Prompt，完成 AI 立项后再生成制作路线。":"尚未导入项目专属执行流。请先让 AI 编排，再导入 GUCC_FLOW_RESULT。";
     box.append(empty);return;
   }
   const currentTask=currentTaskFor(p);
@@ -574,7 +592,8 @@ window.GuccCreatorOS={
     const i=store.projects.findIndex(p=>p.projectId===project.projectId);
     if(i>=0)store.projects[i]=JSON.parse(JSON.stringify(project));
     else store.projects.unshift(JSON.parse(JSON.stringify(project)));
-    if(project.projectId===linkedProjectId||store.projects.length===1||current()?.status==="TEST_FIXTURE")store.selectedProjectId=project.projectId;
+    if(project.projectId===linkedProjectId||(!current()&&projectLife(project)==="active"))
+      store.selectedProjectId=project.projectId;
     save(!fromCloud);render();
   }
 };

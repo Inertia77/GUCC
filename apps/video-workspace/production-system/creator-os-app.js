@@ -141,7 +141,7 @@ function renderSystem(){
   $("currentInputs").textContent=listText(t.requiredInput);
   $("currentOutputs").textContent=listText(t.expectedOutput||t.saveAs);
   $("currentQc").textContent=t.qcLevel||"Q2";
-  $("currentReview").textContent=t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
+  $("currentReview").textContent=t.status==="INACTIVE"?"未安排":t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
   $("currentPrompt").textContent=t.prompt||"";
   const canExecute=Boolean(p&&projectLife(p)==="active");
   const hasApprovedBrief=canExecute&&!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
@@ -153,11 +153,12 @@ function renderSystem(){
   $("copyCurrentPrompt").disabled=!canExecute||!t.prompt;
   const awaiting=canExecute&&(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
   $("markDoneBtn").disabled=!awaiting;
-  if(t.promptId==="PROJECT_BRIEF_APPROVAL")$("markDoneBtn").textContent="批准立项方向";
-  $("markDoneBtn").textContent=t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
+  $("markDoneBtn").textContent=t.promptId==="PROJECT_BRIEF_APPROVAL"?"批准立项方向":
+    t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
   $("skipTaskBtn").disabled=!canExecute||!p?.promptFlow?.length||t.status!=="CONDITIONAL";
   $("applyResultBtn").disabled=!canExecute||t.promptId==="COMPLETE";
   $("flowRevision").textContent=`REV ${p?.flowRevision||0}`;
+  $("currentTaskName").closest(".current-task-panel")?.classList.toggle("is-empty",t.status==="INACTIVE");
   renderFlow(p);
   $("productionMap").innerHTML=Core.HUMAN_PRODUCTION_MAP.map(s=>`<div class="map-step"><b>${s.id}</b><strong>${esc(s.name)}</strong><small>${esc(s.meaning)}</small></div>`).join("");
 }

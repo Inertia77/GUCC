@@ -377,3 +377,28 @@ body.creator-os-page #editProjectDialog :is(input,textarea,select):focus-visible
   body.creator-os-page .summary-top{flex-wrap:wrap}
   body.creator-os-page #editProjectDialog .form-grid{grid-template-columns:1fr}
 }
+
+/* Reversible workflow corrections */
+body.creator-os-page.gucc-enhanced .rewind-task-btn{
+  border-color:rgba(161,155,235,.35)!important;
+  background:rgba(92,86,165,.13)!important;
+  color:#d4cfff!important;white-space:nowrap;
+}
+body.creator-os-page.gucc-enhanced .rewind-task-btn:not(:disabled):hover{
+  border-color:rgba(169,251,224,.56)!important;background:rgba(91,129,157,.22)!important;
+}
+body.creator-os-page .rewind-target{
+  color:#c4fcf0;font-size:clamp(16px,2.1vw,22px);line-height:1.4;margin:14px 0 7px;
+}
+body.creator-os-page .rewind-description{
+  color:#d1dbee;line-height:1.75;font-size:13px;
+}
+body.creator-os-page .rewind-caution{
+  border-left:3px solid #c7bcff;padding:10px 12px;
+  background:rgba(145,121,226,.11);border-radius:0 10px 10px 0;
+}
+body.creator-os-page #rewindDialog{width:min(660px,calc(100vw - 28px))}
+body.creator-os-page .prompt-actions{flex-wrap:wrap;align-items:center}
+@media(max-width:760px){
+  body.creator-os-page .prompt-actions .rewind-task-btn{flex:1}
+}

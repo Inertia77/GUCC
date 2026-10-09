@@ -90,7 +90,7 @@ function renderSystem(){
   ideaPreview.hidden=!(p.status==="DRAFT"&&p.idea);
   ideaPreview.textContent=p.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
   $("projectMeta").innerHTML=[
-    ["PROJECT ID",p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
+    ["PROJECT ID",p.status==="DRAFT"?"草稿 · AI 立项后生成":p.projectId],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
     ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join("");
   const videos=Array.isArray(p.videos)?p.videos:[];
@@ -121,7 +121,7 @@ function renderSystem(){
 }
 function renderFlow(p){
   const box=$("flowList");box.replaceChildren();
-  const nodes=p.promptFlow||[];
+  const nodes=["DRAFT","IMPORTED_LEGACY","BRIEF_READY","BRIEF_REVIEW"].includes(p.status)?[]:(p.promptFlow||[]);
   const total=nodes.length;
   const done=nodes.filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
   $("flowNodeCount").textContent=total?`— ${done} / ${total}`:"";
@@ -131,7 +131,7 @@ function renderFlow(p){
   toggle.innerHTML=flowExpanded?'收起路线 <span aria-hidden="true">⌃</span>':'查看完整路线 <span aria-hidden="true">⌄</span>';
   if(!total){
     const empty=document.createElement("p");empty.className="flow-empty";
-    empty.textContent="尚无项目专属执行流。先完成 Project Builder，再编译可执行 Prompt Flow。";
+    empty.textContent=["DRAFT","IMPORTED_LEGACY"].includes(p.status)?"目前还是项目想法草稿。请先复制 Project Builder Prompt，完成 AI 立项后再生成制作路线。":"尚未导入项目专属执行流。请先让 AI 编排，再导入 GUCC_FLOW_RESULT。";
     box.append(empty);return;
   }
   const currentTask=currentTaskFor(p);

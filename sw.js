@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v31";
-const RUNTIME_CACHE = "gucc-runtime-v31";
+const STATIC_CACHE = "gucc-static-v32";
+const RUNTIME_CACHE = "gucc-runtime-v32";
 
 const APP_SHELL = [
   "./",
@@ -16,6 +16,9 @@ const APP_SHELL = [
   "./assets/creator-dashboard-core.mjs",
   "./assets/creator-dashboard.mjs?v=4",
   "./assets/creator-dashboard.css?v=1",
+  "./assets/creator-portal-core.mjs?v=1",
+  "./assets/creator-portal-dashboard.mjs?v=1",
+  "./assets/creator-portal-dashboard.css?v=1",
   "./assets/creator-ux-simplification-v1.mjs?v=1",
   "./assets/creator-ux-simplification-v1-closeout.mjs?v=1",
   "./assets/creator-local-project-contract.js?v=1",
@@ -98,6 +101,7 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/orchestrator.js?v=2.0.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=2.1.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=3.1.0",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=3.1.1",
   "./apps/video-workspace/production-system/creator-os-cloud.mjs?v=3",
   "./apps/video-workspace/production-system/creator-os-local-folder.mjs?v=1",
   "./apps/video-workspace/production-system/nte-urban-theme.css?v=3",

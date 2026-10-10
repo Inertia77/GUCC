@@ -40,7 +40,7 @@
   function guardPage() { if (hasAccess()) return true; window.location.replace(portalUrlWithRedirect()); return false; }
   function bootstrapGlobalShell() {
     if (document.querySelector('script[data-gucc-shell-bootstrap]')) return;
-    const shell = document.createElement('script'); shell.src = new URL('assets/gucc-shell.js?v=12', rootHref).href; shell.dataset.root = rootHref; shell.dataset.guccShellBootstrap = 'true'; document.head.appendChild(shell);
+    const shell = document.createElement('script'); shell.src = new URL('assets/gucc-shell.js?v=13', rootHref).href; shell.dataset.root = rootHref; shell.dataset.guccShellBootstrap = 'true'; document.head.appendChild(shell);
   }
   function bootstrapCreatorPipeline() {
     // The v6 prompt catalog has its own local draft model. Legacy Studio bridge

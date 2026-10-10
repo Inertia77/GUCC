@@ -1,6 +1,15 @@
-# GameUp Creator OS｜统一创作中枢
+# GameUp Creator OS｜动态制作中枢
 
 正式入口：https://inertia77.github.io/GUCC/apps/video-workspace/production-system/
+
+## 固定 / 动态两种制作模式并行
+
+本轮恢复原固定制作 Prompt Studio v6.1.4 为正式并列入口：
+
+- **固定版**：`/apps/video-workspace/legacy-prompt-studio-v6.html`。读取仓库原有 `studio.js`、`studio.css`、`ai-prompts.js`（原 Prompt、Chat 备用拆分与游戏类型分支均不重写）。本浏览器草稿 key 为 `gucc_creator_prompt_v6`，支持导入/导出，但不自动写入本动态制作中枢的 Supabase 项目。
+- **动态版**：`/apps/video-workspace/production-system/`。现有 Project Builder / VIDEO_CONTRACT / AI 编排 Prompt Flow、节点回执、Supabase 云同步和项目生命周期保持不变。
+- **统一选择页**：`/apps/video-workspace/`。两张平级卡片，GUCC 首页与全局导航也都有独立入口。
+- 两种路线是不同的工作方式。固定模板不会自动保证更高质量；每轮仍需验证来源、机制、去 AI 味与 Lock。暂时禁止自动互相同步状态，也不进行破坏性迁移。
 
 ## 当前架构
 

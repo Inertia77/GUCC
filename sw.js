@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v36";
-const RUNTIME_CACHE = "gucc-runtime-v36";
+const STATIC_CACHE = "gucc-static-v37";
+const RUNTIME_CACHE = "gucc-runtime-v37";
 
 const APP_SHELL = [
   "./",
@@ -46,6 +46,8 @@ const APP_SHELL = [
   "./assets/gucc-shell.js",
   "./assets/gucc-shell.js?v=11",
   "./assets/access-guard.js?v=11",
+  "./assets/access-guard.js?v=14",
+  "./assets/gucc-shell.js?v=13",
   "./assets/pwa-install.css",
   "./assets/pwa-install.js",
   "./assets/icons/gucc-icon.svg",

@@ -6,7 +6,8 @@
   const path = window.location.pathname.replace(/\/index\.html$/, '/');
   const isActive = (needle) => path.includes(needle);
   const productionActive = isActive('/apps/video-workspace/production-system/');
-  const workspaceActive = isActive('/apps/video-workspace/') && !productionActive;
+  const fixedActive = isActive('/apps/video-workspace/legacy-prompt-studio-v6.html');
+  const workspaceActive = isActive('/apps/video-workspace/') && !productionActive && !fixedActive;
 
   const ensureStylesheet = (selector, href, dataKey) => {
     const desiredHref = new URL(href, normalizedRoot).href;
@@ -55,14 +56,14 @@
 
   const childRoutes = {
     workspace: {
-      icon: 'OS', label: '创作中枢', note: '项目 · 研究 · 文案 · 制作流程',
+      icon: 'OS', label: '动态 Creator OS', note: 'AI 编排 · 项目与云端进度',
       href: `${normalizedRoot}apps/video-workspace/production-system/`,
       active: productionActive
     },
-    production: {
-      icon: 'PRD', label: 'Production', note: '正式制作、状态机与 Lock',
-      href: `${normalizedRoot}apps/video-workspace/production-system/`,
-      active: productionActive
+    fixed: {
+      icon: 'FX', label: '固定 Prompt Studio', note: '成熟固定 Prompt · 分类型流程',
+      href: `${normalizedRoot}apps/video-workspace/legacy-prompt-studio-v6.html`,
+      active: fixedActive
     },
     cover: {
       icon: 'CG', label: '封面工具', note: '专业辅助工具 · 手动设计',
@@ -109,8 +110,8 @@
   const groups = {
     create: {
       title: '创作流程',
-      hint: '一个项目工作台 · 两个按需工具',
-      items: [childRoutes.workspace, childRoutes.cover, childRoutes.publish]
+      hint: '固定流程 / 动态编排 · 两种制作方式',
+      items: [childRoutes.fixed, childRoutes.workspace, childRoutes.cover, childRoutes.publish]
     },
     library: {
       title: '资料与研究',
@@ -174,17 +175,17 @@
     const grid = document.querySelector('.launch-grid');
     if (!grid) return;
     const primary=[...grid.querySelectorAll('a.launch-card')].find(card=>
-      (card.getAttribute('href')||'').includes('apps/video-workspace/'));
+      (card.getAttribute('href')||'').includes('apps/video-workspace/production-system/'));
     if(primary){
       primary.href=`${normalizedRoot}apps/video-workspace/production-system/`;
       primary.querySelector('.launch-code')?.replaceChildren(document.createTextNode('OS'));
       const title=primary.querySelector('strong'),note=primary.querySelector('small');
-      if(title)title.textContent='创作中枢';
-      if(note)note.textContent='项目 · 研究 · 制作 · 归档';
+      if(title)title.textContent='动态 Creator OS';
+      if(note)note.textContent='AI 编排 · 项目进度 · 云同步';
     }
-    // Previous shell inserted an extra PRD entry. A single Creator OS tile is sufficient.
+    // Keep one fixed and one dynamic production entry; only remove stale PRD clones.
     const duplicates=[...grid.querySelectorAll('a.launch-card')].filter(card=>
-      card!==primary&&(card.dataset.guccProductionEntry==='true'||card.getAttribute('href')?.includes('apps/video-workspace/production-system/')));
+      card!==primary&&card.dataset.guccProductionEntry==='true');
     duplicates.forEach(card=>card.remove());
     document.querySelectorAll('.system-panel .system-link').forEach(link=>{
       if(link.getAttribute('href')?.includes('/production-system/'))link.remove();

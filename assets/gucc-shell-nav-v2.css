@@ -1,6 +1,8 @@
 /* GUCC global navigation v2: five stable destinations, grouped popover menus. */
 .gucc-shell-dock[hidden],
 .gucc-shell-menu[hidden],
+.gucc-enhanced.editor-open .gucc-shell-dock,
+.gucc-enhanced.editor-open .gucc-shell-menu,
 .is-locked .gucc-shell-dock {
   display: none !important;
 }

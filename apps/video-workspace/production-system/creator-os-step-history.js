@@ -5,27 +5,27 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   "use strict";
   const KINDS={
-    BRIEF_IMPORT:"立项结果导入", FLOW_IMPORT:"制作路线导入",
+    BRIEF_IMPORT:"立项结果导入", FLOW_IMPORT:"制作路线导入", FLOW_DIFF:"制作路线修订",
     NODE_RESULT:"节点回执导入", NODE_STATUS:"人工确认节点",
     LOCAL_FLOW:"本地编排流程"
   };
-  const MAX_CHECKPOINTS=4,MAX_RETRACTED=2;
   function deep(value){return JSON.parse(JSON.stringify(value));}
   function snapshot(p){
     return JSON.parse(JSON.stringify(p,(key,value)=>
-      ["stepUndoHistory","retractedStages"].includes(key)?undefined:value));
+      ["stepUndoHistory","retractedStages","conflictBackups","historyCodec"].includes(key)?undefined:value));
   }
   function checkLocks(p){
     const lockedVideo=Object.values(p.videoLocks||{}).some(branch=>
       Object.values(branch||{}).some(v=>v&&typeof v==="object"&&v.approvedLocallyAt));
     const l=p.locks||{};
-    return lockedVideo||["script","audio","timeline","final","publish"].some(key=>l[key]===true);
+    return lockedVideo||Object.values(l).some(value=>value===true||value?.approvedLocallyAt||value?.approvedAt);
   }
   function record(p,kind){
     if(!p||!KINDS[kind])throw Error("Invalid Creator OS checkpoint kind");
     p.stepUndoHistory=Array.isArray(p.stepUndoHistory)?p.stepUndoHistory:[];
-    p.stepUndoHistory.push({kind,at:new Date().toISOString(),snapshot:snapshot(p)});
-    if(p.stepUndoHistory.length>MAX_CHECKPOINTS)p.stepUndoHistory.splice(0,p.stepUndoHistory.length-MAX_CHECKPOINTS);
+    const next=snapshot(p),last=p.stepUndoHistory.at(-1);
+    if(last?.kind===kind&&JSON.stringify(last.snapshot)===JSON.stringify(next))return;
+    p.stepUndoHistory.push({kind,at:new Date().toISOString(),snapshot:next});
   }
   function describe(p){
     if(!p||p.status==="TEST_FIXTURE")return {allowed:false,reason:"请先选择真实项目"};
@@ -37,6 +37,7 @@
       const labels={
         BRIEF_IMPORT:"返回 Project Builder，重新提交立项结果",
         FLOW_IMPORT:"返回 Prompt Flow 编排，重新导入制作路线",
+        FLOW_DIFF:"撤回最近一次制作路线修订",
         NODE_RESULT:"撤回最近一次节点回执，重新执行该任务",
         NODE_STATUS:"撤回最近一次人工确认，重新审核",
         LOCAL_FLOW:"撤回本地结构草案"
@@ -45,7 +46,7 @@
       // apply a snapshot from a previous, unrelated action.
       if(last.kind==="BRIEF_IMPORT"&&p.status!=="BRIEF_READY")return {allowed:false,reason:"项目已进入下游流程，请先处理当前阶段"};
       const reviewReturn=last.kind==="NODE_STATUS"&&p.status==="BRIEF_READY"&&last.snapshot?.status==="BRIEF_REVIEW";
-      if(["FLOW_IMPORT","NODE_RESULT","NODE_STATUS","LOCAL_FLOW"].includes(last.kind)&&p.status!=="FLOW_READY"&&!reviewReturn)
+      if(["FLOW_IMPORT","FLOW_DIFF","NODE_RESULT","NODE_STATUS","LOCAL_FLOW"].includes(last.kind)&&p.status!=="FLOW_READY"&&!reviewReturn)
         return {allowed:false,reason:"快照所属阶段与当前阶段不一致"};
       return {allowed:true,mode:"checkpoint",label:reviewReturn?"返回立项人工审核":labels[last.kind],kind:last.kind,at:last.at,
         explanation:"将使用导入/确认前的状态快照恢复这个项目。期间后续的项目内部改动也会撤回；撤回前的资料会保留在项目的修订历史中。"};
@@ -91,7 +92,7 @@
       kind:plan.kind,at:new Date().toISOString(),
       label:plan.label,previousStatus:previous.status,
       snapshot:previous
-    }].slice(-MAX_RETRACTED);
+    }];
     p.history=Array.isArray(p.history)?p.history:[];
     p.history.push({at:new Date().toISOString(),action:"STAGE_REWOUND",kind:plan.kind,from:previous.status,to:p.status});
     p.updatedAt=new Date().toISOString();

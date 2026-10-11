@@ -12,7 +12,7 @@ async function main(){
  await context.addInitScript(value=>localStorage.setItem('gucc_access_hash_v2',value),hash);
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  try{
-  await page.setViewportSize({width:1440,height:1000});await page.goto(origin+'/apps/video-workspace/');await page.waitForSelector('#promptText');await page.waitForTimeout(600);
+  await page.setViewportSize({width:1440,height:1000});await page.goto(origin+'/apps/video-workspace/legacy-prompt-studio-v6.html');await page.waitForSelector('#promptText');await page.waitForTimeout(600);
   assert.equal(await page.locator('.stage-button').count(),7);assert.equal(await page.locator('#taskList .task-card').count(),5);
   await page.selectOption('#routeSelect','story');await page.locator('#taskList .task-card').filter({hasText:'视听解析与证据结论'}).click();await page.locator('#modeTabs button').filter({hasText:'Work',exact:true}).click();assert.match(await page.inputValue('#promptText'),/说话者、语气、上下文/);assert.doesNotMatch(await page.inputValue('#promptText'),/STATE_BEFORE/);
   await page.locator('#modeTabs button').filter({hasText:'Chat 备用'}).click();assert.equal(await page.locator('#partTabs button').count(),3);await page.click('#nextPartButton');assert.match(await page.inputValue('#promptText'),/Chat备用 2\/3/);

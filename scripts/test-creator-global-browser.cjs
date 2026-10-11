@@ -22,7 +22,7 @@ const snapshots = Object.fromEntries(["A", "B"].map((id) => [id, {
 
 async function main() {
   const channel = process.env.GUCC_TEST_BROWSER || (process.platform === "win32" ? "msedge" : undefined);
-  const browser = await chromium.launch({ ...(channel ? { channel } : {}), headless: true });
+  const browser = await chromium.launch({ ...(channel ? { channel } : {}), ...(process.env.GUCC_TEST_BROWSER_PATH ? {executablePath:process.env.GUCC_TEST_BROWSER_PATH} : {}), headless: true, args:['--no-sandbox','--disable-dev-shm-usage'] });
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
   const requests = [], failures = [], blocked = [];
   let holdB = false, releaseB = null, notifyHeldB = null;
@@ -90,7 +90,7 @@ async function main() {
     }, projects);
     page = await context.newPage();
     page.on("pageerror", (error) => failures.push(error.message));
-    await page.goto(`${origin}/apps/video-workspace/production-system/?project=A`);
+    await page.goto(`${origin}/apps/video-workspace/production-system/legacy-v1.html?project=A`);
     await page.locator('#globalProduction [data-human-lock][data-scope-id="A"]').first().waitFor();
     await page.waitForFunction(() => typeof window.fixtureAutosync === "function");
     await page.locator('.gcb-integrated-host .gcb-inline').waitFor();

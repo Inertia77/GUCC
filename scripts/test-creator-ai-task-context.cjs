@@ -184,7 +184,7 @@ for (const marker of [
 }
 
 const ui = fs.readFileSync(path.join(root, "assets", "creator-ai-task-ui.mjs"), "utf8");
-const html = fs.readFileSync(path.join(root, "apps", "video-workspace", "production-system", "index.html"), "utf8");
+const html = fs.readFileSync(path.join(root, "apps", "video-workspace", "production-system", "legacy-v1.html"), "utf8");
 assert.match(ui, /action: "getProject"/, "AI Task UI must use the existing read-only getProject snapshot");
 assert.doesNotMatch(ui, /action:\s*"(?:saveProject|humanLock|savePublication|saveLanguageTrack|saveVariant|savePublishPackage)"/, "AI Task UI must not add a write path");
 assert.match(ui, /复制当前 AI Prompt/);

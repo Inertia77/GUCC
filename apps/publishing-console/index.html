@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="./styles.css?v=1" />
   <script src="../../assets/creator-publish-cloud-safety.js?v=1"></script>
   <script src="../../assets/access-guard.js" data-root="../../" data-guard="true"></script>
+<link rel="stylesheet" href="../../assets/gucc-premium.css?v=2" data-gucc-premium>
 </head>
-<body>
+<body class="publishing-console-page">
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
 
@@ -21,7 +22,9 @@
     </a>
     <div class="top-actions">
       <span id="assistantState" class="assistant-state offline"><i></i>本机助手未连接</span>
-      <span id="saveState" class="save-state">浏览器草稿已就绪</span>
+      <span id="saveState" class="save-state">本浏览器草稿 · 尚未修改</span>
+      <span id="publishCloudState" class="save-state" role="status" aria-live="polite">云端 · 尚未检查</span>
+      <button id="publishCloudSync" class="button subtle" type="button">检查云端草稿</button>
       <button id="importWorkspaceButton" class="button subtle" type="button">导入 WorkSpace JSON</button>
       <input id="workspaceFile" type="file" accept=".json,application/json" hidden />
       <button id="exportProjectButton" class="button subtle" type="button">导出控制台 JSON</button>
@@ -31,7 +34,7 @@
   <main class="shell">
     <section class="hero">
       <div>
-        <p class="eyebrow">ONE SOURCE · SIX PLATFORMS · TRACEABLE REVIEW</p>
+        <p class="eyebrow">发布工作台 / 按平台确认</p>
         <h1>一次准备，逐个平台准确落地。</h1>
         <p>接收 GUCC WorkSpace 发布包，拆分字段、预检、复制执行、记录链接，再把各阶段数据整理成可直接交给 AI 的复盘包。</p>
       </div>
@@ -56,7 +59,7 @@
       </div>
 
       <div class="panel project-panel">
-        <div class="panel-title"><h3>项目与母版素材</h3><span class="pill">本地保存</span></div>
+        <label class="field"><span>本浏览器的独立视频发布单</span><select id="publishDraftSelect" aria-label="切换视频发布单"></select></label><p id="creatorIdentity" class="hint" hidden></p><div class="panel-title"><h3>项目与母版素材</h3><span class="pill">本地保存</span></div>
         <div class="assistant-setup">
           <div>
             <strong>本机发布助手</strong>
@@ -84,7 +87,7 @@
             <span><strong>选择母版封面</strong><small id="coverMeta">可选；各平台封面仍在发布页确认裁切</small></span>
           </label>
           <div class="local-paths span-3">
-            <label class="field"><span>成片本地路径 <b>*</b></span><input id="localVideoPath" data-state="common.videoPath" placeholder="由本机助手选择，供自动上传使用" /></label>
+            <label class="field"><span>助手上传使用的本机路径（可选）</span><input id="localVideoPath" data-state="common.videoPath" placeholder="由本机助手选择，供自动上传使用" /></label>
             <button id="pickVideoPathButton" class="button subtle" type="button">选择成片</button>
             <label class="field"><span>封面本地路径</span><input id="localCoverPath" data-state="common.coverPath" placeholder="由本机助手选择，供自动上传使用" /></label>
             <button id="pickCoverPathButton" class="button subtle" type="button">选择封面</button>
@@ -98,6 +101,7 @@
         <div id="platformToggles" class="platform-toggles"></div>
       </div>
 
+      <nav id="platformEditorNav" class="platform-editor-nav" aria-label="选择要编辑的平台"></nav>
       <div id="platformForms" class="platform-forms"></div>
 
       <div class="sticky-actions">
@@ -216,7 +220,8 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="./platform-rules.js?v=1"></script>
-  <script src="./app.js?v=1"></script>
+  <script src="./app.js?v=2"></script>
+  <script type="module" src="./publish-cloud.mjs?v=1"></script>
   <script src="../../assets/creator-publish-asset-discovery.js?v=1"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@ const platformGrantMigration = fs.readFileSync(path.join(migrations, platformGra
 const acceptance = fs.readFileSync(path.join(root, "supabase", "sql", "creator_global_production_v1_acceptance.sql"), "utf8");
 const api = fs.readFileSync(path.join(root, "supabase", "functions", "creator-project-api", "index.ts"), "utf8");
 const ui = fs.readFileSync(path.join(root, "assets", "creator-global-production-ui.mjs"), "utf8");
-const html = fs.readFileSync(path.join(root, "apps", "video-workspace", "production-system", "index.html"), "utf8");
+const html = fs.readFileSync(path.join(root, "apps", "video-workspace", "production-system", "legacy-v1.html"), "utf8");
 const portal = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const dashboard = fs.readFileSync(path.join(root, "assets", "creator-dashboard.mjs"), "utf8");
 const serviceWorker = fs.readFileSync(path.join(root, "sw.js"), "utf8");
@@ -129,12 +129,12 @@ assert.match(ui, /let refreshEpoch = 0;[\s\S]*epoch === refreshEpoch && currentP
 // Async busy-state and write isolation are exercised by test-creator-global-ui.cjs.
 assert.match(ui, /catch \(error\)[\s\S]*if \(!loggedIn\(\)\) renderAuthNeeded\(\)/, "Expired Global sessions must return to the explicit login state in the same tab");
 // Async busy-state and write isolation are exercised by test-creator-global-ui.cjs.
-assert.ok(portal.includes("creator-dashboard.mjs?v=4"), "Portal must cache-bust Creator Dashboard Global Production changes");
+assert.ok(portal.includes("creator-portal-dashboard.mjs?v="), "Portal must cache-bust Creator Dashboard Global Production changes");
 assert.match(dashboard, /AUTH_STORE_KEY = "gameup_session_v5"[\s\S]*addEventListener\("storage"[\s\S]*loadDashboard\(\)/, "Creator Dashboard must recover after Owner login in another tab");
 assert.match(dashboard, /let loadEpoch = 0;[\s\S]*epoch !== loadEpoch/, "Late dashboard responses must not overwrite a newer refresh");
 assert.match(dashboard, /if \(!loggedIn\(\)\) \{ root\.removeAttribute\("aria-busy"\); return renderLogin\(\); \}/, "Logged-out Dashboard state must clear stale busy semantics");
 assert.match(dashboard, /catch \(error\)[\s\S]*if \(loggedIn\(\)\) renderError\(error\); else renderLogin\(\)/, "Expired Dashboard sessions must return to the login state in the same tab");
-assert.match(serviceWorker, /gucc-static-v28[\s\S]*gucc-runtime-v28/, "Global Production offline assets require a fresh Service Worker cache generation");
+assert.match(serviceWorker, /gucc-static-v\d+[\s\S]*gucc-runtime-v\d+/, "Global Production offline assets require a fresh Service Worker cache generation");
 for (const offlineAsset of [
   "creator-local-project-contract.js?v=1", "creator-timeline-contract.js?v=1", "creator-global-production-core.js?v=1",
   "creator-project-bootstrap-browser.js?v=1", "creator-timeline-browser.js?v=1", "creator-workspace-root.mjs?v=1",

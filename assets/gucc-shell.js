@@ -33,12 +33,15 @@
       'assets/gucc-shell-nav-v2.css?v=3',
       'guccShellNavV2'
     );
-    ensureStylesheet(
+    if (!document.querySelector('link[data-gucc-premium]')) ensureStylesheet(
       'link[data-gucc-uiux-v1]',
       'assets/gucc-uiux-v1.css?v=2',
       'guccUiuxV1'
     );
+    if (document.querySelector('link[data-gucc-premium]')) ensurePremium();
   };
+
+  const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=2', 'guccPremium');
 
   const ensureViewportFit = () => {
     let meta = document.querySelector('meta[name="viewport"]');

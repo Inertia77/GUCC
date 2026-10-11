@@ -11,6 +11,7 @@
   let saveTimer = 0;
   let assistantOnline = false;
   let jobPollTimer = 0;
+  let editingPlatform = window.matchMedia("(max-width: 700px)").matches ? "bilibili" : "all";
 
   function defaultState() {
     const enabled = {};
@@ -32,7 +33,7 @@
     return {
       schemaVersion: SCHEMA_VERSION,
       updatedAt: new Date().toISOString(),
-      project: { title: "", shortName: "", game: "", note: "" },
+      project: { title: "", shortName: "", game: "", note: "", creatorProjectId: "", videoId: "" },
       common: { publishAt: "", timezone: "Asia/Tokyo", video: null, cover: null, videoPath: "", coverPath: "" },
       enabled,
       platforms,
@@ -84,16 +85,67 @@
     target[last] = value;
   }
 
-  function saveState(message = "已自动保存") {
+  function saveState(message = "草稿已保存") {
     clearTimeout(saveTimer);
     const indicator = $("#saveState");
     if (indicator) indicator.textContent = "正在保存…";
     saveTimer = window.setTimeout(() => {
       state.updatedAt = new Date().toISOString();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      if (indicator) indicator.textContent = message;
+      try {
+        persistDraft();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (indicator) { indicator.textContent = "本浏览器 · " + message; indicator.removeAttribute("role"); }
+        window.dispatchEvent(new CustomEvent("gucc-publish-draft-saved"));
+      } catch {
+        if (indicator) { indicator.textContent = "未保存：本浏览器空间不足，请立即导出 JSON 备份"; indicator.setAttribute("role", "alert"); }
+        toast("保存失败；当前内容仍在页面中，请导出备份后再关闭");
+      }
     }, 180);
   }
+
+  const DRAFTS_KEY="gucc_publish_video_drafts_v1";
+  const draftKey=project=>project.creatorProjectId&&project.videoId?JSON.stringify([project.creatorProjectId,project.videoId]):"legacy";
+  function drafts(){return JSON.parse(localStorage.getItem(DRAFTS_KEY)||"{}");}
+  function persistDraft(){const all=drafts();all[draftKey(state.project)]=state;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));}
+  function archiveBeforeImport(){
+    const all=drafts();all[draftKey(state.project)]=state;
+    if(state.project.title||state.project.videoId)all["backup:"+Date.now()]=JSON.parse(JSON.stringify(state));
+    localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));
+  }
+  function renderDrafts(){
+    const select=$("#publishDraftSelect");if(!select)return;
+    let all;try{all=drafts();}catch{return;}all[draftKey(state.project)]=state;
+    select.innerHTML=Object.entries(all).map(([key,value])=>`<option value="${escapeHtml(key)}">${escapeHtml(value.project.title||"未命名发布单")}</option>`).join("");select.value=draftKey(state.project);
+    const identity=$("#creatorIdentity");identity.hidden=!state.project.videoId;
+    identity.textContent=state.project.videoId?`来源：${state.project.creatorProjectId} · 视频：${state.project.videoId} · 文件尚需在本机核验`:"";
+  }
+  // Cloud metadata has its own project + video identity and revision. It must
+  // never call the compatibility release API or transfer browser File handles.
+  window.GuccPublishDrafts = {
+    current:()=>JSON.parse(JSON.stringify(state)),
+    read:key=>draftKey(state.project)===key?JSON.parse(JSON.stringify(state)):drafts()[key]||null,
+    receive(key,next,expected){
+      if(draftKey(next.project)!==key)throw Error("发布单身份不匹配");
+      const isActive=draftKey(state.project)===key;
+      const current=isActive?state:drafts()[key]||null;
+      if(JSON.stringify(current)!==JSON.stringify(expected))throw Error("本机内容已变化，请重新检查云端版本");
+      const all=drafts();
+      if(current)all["backup:"+Date.now()+":"+key]=JSON.parse(JSON.stringify(current));
+      // Paths belong to this device, not to the cloud draft. All actual file and
+      // quality checks must run again after restoring cloud metadata.
+      const restored=mergeState(next);
+      restored.common.videoPath=current?.common?.videoPath||"";
+      restored.common.coverPath=current?.common?.coverPath||"";
+      restored.preflight={checkedAt:"",errors:0,warnings:0};
+      all[key]=restored;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));
+      if(isActive){state=restored;runtimeAssets.video=null;runtimeAssets.cover=null;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));hydrateAll();}
+      else renderDrafts();
+    },
+    backup(key,value){const all=drafts();all["backup:"+Date.now()+":"+key]=value;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));}
+  };
+  $("#publishDraftSelect")?.addEventListener("change",event=>{
+    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState("发布单已切换");}catch{toast("切换失败，请先导出当前草稿备份");}
+  });
 
   function toast(message) {
     const box = $("#toast");
@@ -264,6 +316,7 @@
   }
 
   function updateHero() {
+    renderDrafts();
     const enabled = enabledKeys();
     const published = enabled.filter((key) => state.execution[key]?.status === "已发布").length;
     $("#heroPlatformCount").textContent = String(enabled.length);
@@ -336,6 +389,10 @@
 
   function renderPlatformForms() {
     const container = $("#platformForms");
+    const keys=enabledKeys();
+    if(editingPlatform!=="all"&&!keys.includes(editingPlatform))editingPlatform=keys[0]||"all";
+    const tabs=$("#platformEditorNav");
+    tabs.innerHTML=keys.map(key=>`<button type="button" data-edit-platform="${key}" aria-pressed="${editingPlatform===key}">${escapeHtml(Rules.PLATFORMS[key].label)}</button>`).join("")+`<button type="button" data-edit-platform="all" aria-pressed="${editingPlatform==='all'}">展开全部</button>`;
     container.innerHTML = enabledKeys().map((key) => {
       const platform = Rules.PLATFORMS[key];
       const fields = platform.fields.map((rule) => `
@@ -344,7 +401,7 @@
           ${fieldControl(key, rule)}
           <small class="field-meta" data-field-meta="${key}.${rule.key}">${fieldMeta(state.platforms[key]?.[rule.key], rule)}</small>
         </label>`).join("");
-      return `<section class="panel platform-form" style="--platform-accent:${platform.accent}">
+      return `<section class="panel platform-form" data-platform-form="${key}" ${editingPlatform!=="all"&&editingPlatform!==key?"hidden":""} style="--platform-accent:${platform.accent}">
         <div class="panel-title">
           <div class="platform-heading"><span class="platform-code">${platform.code}</span><h3>${escapeHtml(platform.label)}</h3></div>
           <button class="text-button" type="button" data-copy-platform="${key}">复制整包</button>
@@ -352,6 +409,12 @@
         <div class="form-grid columns-2">${fields}</div>
       </section>`;
     }).join("");
+
+    tabs.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+      editingPlatform=button.dataset.editPlatform;
+      tabs.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===button)));
+      container.querySelectorAll("[data-platform-form]").forEach(form=>form.hidden=editingPlatform!=="all"&&form.dataset.platformForm!==editingPlatform);
+    }));
 
     $$('[data-platform-field]', container).forEach((element) => {
       const handler = () => {
@@ -403,10 +466,10 @@
     const video = state.common.video;
     const cover = state.common.cover;
     $("#videoMeta").textContent = video
-      ? `${video.name}${video.size ? ` · ${formatBytes(video.size)}` : ""}${state.common.videoPath ? " · 本机助手可用" : runtimeAssets.video ? " · 本次会话已选中" : " · 刷新后需重新选择"}`
+      ? `${video.name}${video.size ? ` · ${formatBytes(video.size)}` : ""}${state.common.videoPath ? " · 路径已登记，执行前需核验" : runtimeAssets.video ? " · 本次会话已选中" : " · 刷新后需重新选择"}`
       : "支持拖放；文件只在本机检查，不会上传到 GUCC";
     $("#coverMeta").textContent = cover
-      ? `${cover.name}${cover.size ? ` · ${formatBytes(cover.size)}` : ""}${state.common.coverPath ? " · 本机助手可用" : runtimeAssets.cover ? " · 本次会话已选中" : " · 刷新后需重新选择"}`
+      ? `${cover.name}${cover.size ? ` · ${formatBytes(cover.size)}` : ""}${state.common.coverPath ? " · 路径已登记，执行前需核验" : runtimeAssets.cover ? " · 本次会话已选中" : " · 刷新后需重新选择"}`
       : "可选；各平台封面仍在发布页确认裁切";
   }
 
@@ -420,7 +483,18 @@
   }
 
   function importProjectData(data) {
+    if(data?.schemaVersion==="gucc-creator-handoff-1"){
+      if(!data.projectId||!data.videoId)throw Error("交接包缺少项目或视频身份");
+      clearTimeout(saveTimer);persistDraft();
+      const key=draftKey({creatorProjectId:data.projectId,videoId:data.videoId});
+      state=mergeState(drafts()[key]||defaultState());
+      state.project={...state.project,title:data.projectTitle||data.projectName,shortName:data.videoId,game:data.game||"",creatorProjectId:data.projectId,videoId:data.videoId};
+      state.source={...state.source,workspaceVersion:"creator-os-v3",handoff:data};
+      runtimeAssets.video=null;runtimeAssets.cover=null;state.preflight.checkedAt="";
+      hydrateAll();saveState("资料交接包已导入");toast("已打开该视频的独立发布单；请选择真实成片与封面");return;
+    }
     if (data?.schemaVersion === SCHEMA_VERSION) {
+      clearTimeout(saveTimer);archiveBeforeImport();
       state = mergeState(data);
       runtimeAssets.video = null;
       runtimeAssets.cover = null;
@@ -432,6 +506,7 @@
     if (!data || typeof data !== "object" || (!data.__workspaceName && !Object.prototype.hasOwnProperty.call(data, "publishCN"))) {
       throw new Error("不是可识别的 GUCC WorkSpace 或发布控制台 JSON");
     }
+    clearTimeout(saveTimer);archiveBeforeImport();
     state.project.title = data.projectTitle || state.project.title;
     state.project.shortName = data.projectShortName || state.project.shortName;
     state.project.game = data.game || state.project.game;

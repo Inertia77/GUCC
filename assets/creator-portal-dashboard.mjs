@@ -79,8 +79,16 @@ function render(){
   }));
   renderProjects();
 }
+function localResume(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("gucc_creator_os_v2")||"null");
+    const project=saved?.projects?.find(p=>p.projectId===saved.selectedProjectId&&!p.deletedAt&&!p.archivedAt&&!p.completedAt&&p.status!=="TEST_FIXTURE");
+    if(!project)return "";
+    return '<a class="cp-task" href="'+url(project.projectId)+'"><span class="cp-task-copy"><small>继续上次工作 · 本浏览器记录，尚未核对云端</small><strong>'+esc(project.name)+'</strong><span>打开创作中枢后核对最新任务与同步状态。</span></span><span class="cp-task-go">继续 ↗</span></a>';
+  }catch{return "";}
+}
 function login(){
-  root.innerHTML='<div class="cp-connect"><p class="cp-overline">CREATOR / SIGN IN</p><h2>我的创作</h2>'+
+  root.innerHTML=localResume()+'<div class="cp-connect"><p class="cp-overline">CREATOR / SIGN IN</p><h2>连接云端项目</h2>'+
     '<p>通过 GUCC 现有账户登录，读取你的 Creator OS 云端项目。</p>'+
     '<a class="cp-launch" href="./apps/command-center/">前往登录 ↗</a></div>';
 }
@@ -88,7 +96,7 @@ function errorView(error){
   root.innerHTML='<div class="cp-connect cp-error"><p class="cp-overline">CLOUD / UNAVAILABLE</p>'+
     '<h2>暂时无法读取项目状态</h2><p>'+esc(error.message||"未知错误")+'</p>'+
     '<p>为避免误导，不会退回旧版 Production 待办。</p>'+
-    '<button id="cpRetry" class="cp-refresh" type="button">重试</button></div>';
+    '<button id="cpRetry" class="cp-refresh" type="button">重试</button></div>'+localResume();
   root.querySelector("#cpRetry")?.addEventListener("click",()=>{void load();});
 }
 async function load(){

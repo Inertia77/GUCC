@@ -34,7 +34,7 @@ const snapshot = {
 
 async function main() {
   const channel = process.env.GUCC_TEST_BROWSER || (process.platform === "win32" ? "msedge" : undefined);
-  const browser = await chromium.launch({ ...(channel ? { channel } : {}), headless: true });
+  const browser = await chromium.launch({ ...(channel ? { channel } : {}), ...(process.env.GUCC_TEST_BROWSER_PATH ? {executablePath:process.env.GUCC_TEST_BROWSER_PATH} : {}), headless: true, args:['--no-sandbox','--disable-dev-shm-usage'] });
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 844 } });
   const requests = [], failures = [], consoleErrors = [], blocked = [];
   let page;

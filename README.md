@@ -2,6 +2,14 @@
 
 GUCC 是我的 GameUp Creator Command Center：一个放在 GitHub Pages 上的个人游戏内容工作台，包含数据管理、视频项目工作台、封面生成器、资料库、Prompt 库和剧情资料库。
 
+## 当前创作方式
+
+固定 Prompt Studio 与动态 Creator OS 并列保留。固定版的成熟 Prompt 不被动态编排覆盖；两者通过显式导入资料交接。动态项目下的每条视频有独立分支、人工批准记录与发布单，共享研究可复用。
+
+浏览器草稿、云端快照、真实本机素材分别保存。AI 回执不等于文件存在或质量通过。动态版的历史文本做无损去重，不裁剪历史；云冲突保留两端版本。发布仍需真实文件及人工确认。
+
+设计与验证说明：[GUCC Atelier](docs/gucc-atelier.md)。
+
 ## 快速启动
 
 本地统一使用 `localhost:8000`。Command Center 的 Supabase CORS 默认允许 `http://localhost:8000`，不要用 `127.0.0.1:8000` 测后端。
@@ -51,8 +59,10 @@ Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 | 页面 | 路径 | 用途 |
 |---|---|---|
 | GameUp Command Center | `apps/command-center/` | 查询和维护角色、配队、版本、资源链接 |
-| GUCC WorkSpace | `apps/video-workspace/` | 视频项目模板、WIP/DONE Markdown 与 JSON |
-| AI Video Production System | `apps/video-workspace/production-system/` | Audio-Locked 状态机、阶段 Prompt、素材、Storyboard 与 Review |
+| 创作模式入口 | `apps/video-workspace/` | 固定与动态流程并列选择 |
+| 固定 Prompt Studio | `apps/video-workspace/legacy-prompt-studio-v6.html` | 成熟七阶段 Prompt、输入草稿、复制与资料导入 |
+| 动态 Creator OS | `apps/video-workspace/production-system/` | AI 自适应路线、项目及视频分支、回退、云端快照 |
+| 兼容版 Production | `apps/video-workspace/production-system/legacy-v1.html` | 原有 Audio-Locked 状态机与本机助手兼容入口 |
 | Cover Generator | `apps/cover-generator/` | 多比例视频封面生成 |
 | Publish Console | `apps/publishing-console/` | 分平台发布单、预检、执行记录与数据复盘 |
 | AI Prompt Library | `reference/ai-prompts.html` | 公告整理、兑换码、前瞻、SQL、剧情资料维护 Prompt |
@@ -129,7 +139,7 @@ Distribution Identity、未来 Artifact Scope 与 child-state 边界见 [docs/cr
 
 ## Creator Project 本地 Workspace
 
-Production 中的 Creator Project 以 Project ID 作为本机目录身份。日常直接点击：
+兼容版 Production（`production-system/legacy-v1.html`）中的 Creator Project 以 Project ID 作为本机目录身份。日常直接点击：
 
 ```text
 创建 / 同步本地 Workspace

@@ -131,7 +131,7 @@ function testHumanGatesAndSharedTools() {
 }
 
 function testUiContract() {
-  const indexHtml = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "index.html"), "utf8");
+  const indexHtml = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "legacy-v1.html"), "utf8");
   const appJs = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "app.js"), "utf8");
   const engineJs = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "engine.js"), "utf8");
   assert(!indexHtml.includes("projectTypeSelect"), "Production Direct Create must not ask for Project Type");

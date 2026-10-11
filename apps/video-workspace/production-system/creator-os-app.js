@@ -5,9 +5,12 @@ const Caps=window.GuccCreatorCapabilities;
 const Fail=window.GuccCreatorFailurePrevention;
 const O=window.GuccCreatorOrchestrator;
 const Steps=window.GuccCreatorStepHistory;
+const Storage=window.GuccCreatorStorage;
+const Validation=window.GuccCreatorValidation;
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
+let storageCorrupt=false;
 let store=load();
 const linkedProjectId=new URLSearchParams(window.location.search).get("project")||"";
 if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
@@ -16,6 +19,7 @@ if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
 let activeView="system";
 let toastTimer;
 let flowExpanded=false;
+let selectedBranch="";
 let selectedNodePrompt="";
 let editInitialFields=null;
 
@@ -29,21 +33,32 @@ function load(){
     const raw=JSON.parse(localStorage.getItem(O.STORAGE_KEY)||"null");
     if(raw&&Array.isArray(raw.projects)){
       // TEST_FIXTURE is an internal QA scenario, never a published Creator Project.
-      const projects=raw.projects.filter(p=>p&&p.status!=="TEST_FIXTURE").map(p=>
+      const projects=raw.projects.filter(p=>p&&p.status!=="TEST_FIXTURE").map(p=>Storage?Storage.unpackProject(p):p).map(p=>
         p.status==="DRAFT"&&p.idea&&p.name===p.idea
           ? {...p,name:provisionalProjectName(p)} : p);
       const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)==="active");
       return {projects,selectedProjectId:selected?.projectId||projects.find(p=>projectLife(p)==="active")?.projectId||""};
     }
-  }catch(e){console.warn("Creator OS store loaded without QA fixture",e);}
+  }catch(e){storageCorrupt=true;console.warn("Creator OS store requires recovery",e);}
   return {projects:[],selectedProjectId:""};
 }
 function save(broadcast=true){
-  localStorage.setItem(O.STORAGE_KEY,JSON.stringify(store));
+  try{
+    if(storageCorrupt)throw Error("原有浏览器记录无法解析，禁止覆盖");
+    localStorage.setItem(O.STORAGE_KEY,JSON.stringify({...store,projects:store.projects.map(p=>Storage?Storage.packProject(p):p)}));
+    $("localSaveNotice")?.setAttribute("hidden","");
+  }catch(error){
+    const notice=$("localSaveNotice");
+    if(notice){notice.hidden=false;notice.textContent="浏览器保存失败。最新修改仍在当前页面内存中，请立即用「备份」导出，关闭页面前勿丢失这些修改。";}
+    window.dispatchEvent(new CustomEvent("gucc:creator-os:storage-error"));
+    if(broadcast)window.dispatchEvent(new CustomEvent("gucc:creator-os:saved",{detail:{projectId:store.selectedProjectId,localSaveFailed:true}}));
+    return false;
+  }
   if(broadcast)window.dispatchEvent(new CustomEvent("gucc:creator-os:saved",{detail:{projectId:store.selectedProjectId}}));
+  return true;
 }
 function current(){return store.projects.find(p=>p.projectId===store.selectedProjectId&&p.status!=="TEST_FIXTURE")||null;}
-function notify(msg){$("toast").textContent=msg;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600);}
+function notify(msg){if(!$("localSaveNotice")?.hidden)msg+=" · 浏览器未保存，请备份";$("toast").textContent=msg;$("toast").hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").hidden=true,2600);}
 async function copy(text){try{await navigator.clipboard.writeText(text);notify("已复制");return true;}catch{notify("复制失败，请手动选择");return false;}}
 function listText(arr){return (arr||[]).length?(arr||[]).map(x=>"• "+x).join("\n"):"—";}
 function download(name,text,type="application/json"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);}
@@ -73,7 +88,12 @@ function currentTaskFor(p){
     }
     return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"输入自然语言想法，让 AI 研究需求、定义项目并返回 VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项与事实边界"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p),status:"PENDING"};
   }
-  return O.currentTask(p);
+  const task=O.currentTask(p);
+  if(task.promptId!=="COMPLETE"&&task.prompt){
+    const video=Validation?.tracks(p).find(v=>v.branch===task.branch);
+    task.prompt+="\n\n【GUCC 结果交接校验】\n保持上述完整任务方法。回执必须包含 projectId: "+p.projectId+"、promptId: "+task.promptId+(video?"、videoId: "+video.videoId:"")+"。status 必须明确选 DONE、WAITING 或 NEED_INPUT。DONE 只表示 AI 执行回执，不表示文件已经核验或人工已批准。路线变化另交 GUCC_FLOW_DIFF，不能夹带在节点回执中。";
+  }
+  return task;
 }
 
 function render(){
@@ -133,11 +153,24 @@ function renderSystem(){
   ideaPreview.hidden=!(p?.status==="DRAFT"&&p.idea);
   ideaPreview.textContent=p?.status==="DRAFT"&&p.idea?"原始想法："+p.idea:"";
   $("projectMeta").innerHTML=p?[
-    ["PROJECT ID",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["GAME",p.game||"UNKNOWN"],["VERSION",p.version||"UNKNOWN"],
-    ["SERVER",p.server||"UNKNOWN"],["AUTONOMY",p.autonomyLevel||"L2"],["FLOW",`R${p.flowRevision||0}`],["LIFECYCLE",lifeName(p)]
+    ["项目编号",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["游戏",p.game||"未设置"],["版本",p.version||"未设置"],
+    ["区服",p.server||"未设置"],["AI 自主级别",p.autonomyLevel||"L2"],["路线版本",`R${p.flowRevision||0}`],["项目状态",lifeName(p)]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join(""):"<p class='subtitle'>当前没有进行中项目。请打开「项目档案」恢复已有项目，或新建项目。</p>";
-  const videos=Array.isArray(p?.videos)?p.videos:[];
-  $("videoBranches").innerHTML=videos.length?videos.map(v=>`<div class="branch-row"><span>${esc(v.name||v.videoId||"Video")}</span><span>${esc(v.decision||"PENDING")}</span></div>`).join(""):"";
+  const videos=p&&Validation?Validation.tracks(p):(Array.isArray(p?.videos)?p.videos:[]);
+  if(selectedBranch&&!videos.some(v=>v.branch===selectedBranch))selectedBranch="";
+  $("clearBranchFilter").hidden=!selectedBranch;
+  $("videoBranches").innerHTML=videos.length?videos.map(v=>{
+    const nodes=(p.promptFlow||[]).filter(n=>n.branch===v.branch);
+    const done=nodes.filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
+    const locks=Object.entries(p.videoLocks?.[v.branch]||{}).filter(([,value])=>value?.approvedLocallyAt).map(([key])=>({script:"文案",audio:"音频",final:"成片",publish:"发布包"})[key]||key);
+    return `<div class="branch-row"><div><strong>${esc(v.name||v.videoId)}</strong><small>${esc(v.videoId)}</small><span>${done} / ${nodes.length} 个任务已回执${locks.length?" · 本地批准："+esc(locks.join("、")):" · 尚无本地批准"}</span></div><progress value="${done}" max="${nodes.length||1}" aria-label="${esc(v.name)}任务进度"></progress><button class="text-action" type="button" data-branch="${esc(v.branch)}">查看分支 ↗</button><button type="button" class="text-action" data-handoff="${esc(v.videoId)}">导出资料交接包 ↗</button></div>`;
+  }).join(""):"";
+  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;$("clearBranchFilter").hidden=false;flowExpanded=true;renderFlow(p);$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
+  $("videoBranches").querySelectorAll("[data-handoff]").forEach(button=>button.addEventListener("click",()=>{
+    const video=videos.find(v=>v.videoId===button.dataset.handoff);
+    download(slugFile(video.videoId)+".handoff.json",JSON.stringify(window.GuccCreatorHandoff.build(p,video),null,2));
+    notify("已导出资料交接包；可显式导入固定 Studio 或发布控制台，素材文件需另行选择");
+  }));
   const t=currentTaskFor(p);
   $("currentTaskId").textContent=t.promptId||"—";
   $("currentTaskName").textContent=t.name||"—";
@@ -145,8 +178,11 @@ function renderSystem(){
   $("currentTaskReason").textContent=t.reason||t.purpose||"";
   $("currentInputs").textContent=listText(t.requiredInput);
   $("currentOutputs").textContent=listText(t.expectedOutput||t.saveAs);
-  $("currentQc").textContent=t.qcLevel||"Q2";
-  $("currentReview").textContent=t.status==="INACTIVE"?"未安排":t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"可自动继续";
+  const evidence=t.receiptEvidence;
+  $("currentEvidence").textContent=evidence?`AI 回执：${evidence.aiReportedStatus} · 文件：${evidence.fileVerified?"人工已核对":"未核验"} · 质量：${evidence.qualityVerified?"人工已检查":"未核验"} · 批准：${evidence.humanApproved?"已批准":"未批准"}`:"回执、真实文件、质量检查与人工批准分别记录。";
+  $("fileEvidenceCheck").checked=false;$("qualityEvidenceCheck").checked=false;
+  $("currentQc").textContent=t.qcLevel?`${t.qcLevel} · 待核验`:"未核验";
+  $("currentReview").textContent=t.status==="INACTIVE"?"未安排":t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"回执后继续";
   $("currentPrompt").textContent=t.prompt||"";
   const canExecute=Boolean(p&&projectLife(p)==="active");
   const hasApprovedBrief=canExecute&&!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
@@ -157,7 +193,7 @@ function renderSystem(){
   $("copyContractBtn").disabled=!p;
   $("copyCurrentPrompt").disabled=!canExecute||!t.prompt;
   const awaiting=canExecute&&(Boolean(p.promptFlow?.length)||t.promptId==="PROJECT_BRIEF_APPROVAL")&&t.status==="WAITING"&&t.promptId!=="COMPLETE";
-  $("markDoneBtn").disabled=!awaiting;
+  $("markDoneBtn").disabled=!awaiting||Boolean(t.receiptEvidence?.blocked);
   $("markDoneBtn").textContent=t.promptId==="PROJECT_BRIEF_APPROVAL"?"批准立项方向":
     t.capabilityUsed==="OFFICIAL_SOURCE_RESEARCH"&&t.executor==="System"?"确认官方节目已发布":"已审核 · 确认通过";
   $("skipTaskBtn").disabled=!canExecute||!p?.promptFlow?.length||t.status!=="CONDITIONAL";
@@ -188,8 +224,9 @@ function renderFlow(p){
   const currentTask=currentTaskFor(p);
   const activeIndex=Math.max(0,nodes.findIndex(n=>n.promptId===currentTask.promptId));
   const start=Math.max(0,activeIndex-1);
-  const visible=flowExpanded?nodes:nodes.slice(start,Math.min(nodes.length,start+6));
-  const statusName={DONE:"已完成",SKIPPED:"已跳过",PENDING:"待执行",CONDITIONAL:"条件任务",WAITING:"等待",NEED_INPUT:"需要输入"};
+  const branchNodes=selectedBranch?nodes.filter(n=>n.branch===selectedBranch||n.branch==="SHARED"):nodes;
+  const visible=flowExpanded?branchNodes:nodes.slice(start,Math.min(nodes.length,start+6));
+  const statusName={DONE:"已回执",SKIPPED:"已跳过",PENDING:"待执行",CONDITIONAL:"条件任务",WAITING:"待检查",NEED_INPUT:"需要输入"};
   for(const n of visible){
     const row=document.createElement("div");
     row.className="flow-node"+(n.promptId===currentTask.promptId?" current":"");
@@ -385,14 +422,16 @@ function setNode(status){
   }
   if(!p.promptFlow?.length)return;
   if(status==="DONE"){
+    if(t.receiptEvidence?.blocked)return notify("当前回执仍有未解决输入或质量问题，请重新执行并导入");
     if(t.status!=="WAITING")return notify("先导入 AI 执行回执，确认完成后再提交");
+    if(t.reviewMode==="APPROVAL_REQUIRED"&&(!$("fileEvidenceCheck").checked||!$("qualityEvidenceCheck").checked))return notify("请先完成真实文件与质量检查，并勾选核验记录");
     const message=t.reviewMode==="APPROVAL_REQUIRED"
       ? `人工确认：${t.name}\n\n请确认已经实际审核输入和输出。此操作只更新本浏览器状态，不能代替真实 GUCC Cloud / Notion LOCK。`
       : `确认 ${t.name} 的外部条件已真实满足？\n此操作不会自动查验官方资料。`;
     if(!window.confirm(message))return;
   }
   Steps.record(p,"NODE_STATUS");
-  if(status==="DONE")applyHumanGateSideEffects(p,t);
+  if(status==="DONE"){applyHumanGateSideEffects(p,t);const node=p.promptFlow.find(n=>n.promptId===t.promptId);if(node.receiptEvidence){node.receiptEvidence.humanApproved=true;node.receiptEvidence.fileVerified=$("fileEvidenceCheck").checked;node.receiptEvidence.qualityVerified=$("qualityEvidenceCheck").checked;node.receiptEvidence.verificationMethod="human-confirmed";}}
   O.markNode(p,t.promptId,status);O.compilePromptFlow(p);save();render();
 }
 function mergeUnique(target,items){
@@ -411,6 +450,8 @@ function parseNodeResult(raw){
 function asList(value){return Array.isArray(value)?value:(value==null||value===""?[]:[value]);}
 
 function importProjectBrief(p,result){
+  Validation?.identity(p,result);
+  if(Steps.checkLocks(p))throw Error("项目已有批准记录，请使用差异修订，不能重新覆盖立项");
   const contract=result.VIDEO_CONTRACT||result.videoContract||result.contractPatch||result;
   if(!contract||typeof contract!=="object"||Array.isArray(contract))throw Error("未找到 VIDEO_CONTRACT JSON");
   Steps.record(p,"BRIEF_IMPORT");
@@ -429,6 +470,7 @@ function importProjectBrief(p,result){
     ["lockedArtifacts","LOCKED_ARTIFACTS"],["videos","VIDEOS"]]){
     const v=field(a,b);if(v!=null)p[a]=asList(v);
   }
+  if(!p.videos?.length&&Validation)p.videos=Validation.tracks(p);
   const needs=field("productionNeeds","PRODUCTION_NEEDS");
   if(needs&&typeof needs==="object"&&!Array.isArray(needs))p.productionNeeds={...p.productionNeeds,...needs};
   const brief=result.projectBriefMarkdown||result.PROJECT_BRIEF_MD||result.PROJECT_BRIEF;
@@ -442,6 +484,8 @@ function importProjectBrief(p,result){
 
 function importAiPromptFlow(p,result){
   const payload=result.GUCC_FLOW_RESULT||result;
+  Validation?.identity(p,payload);
+  if(Steps.checkLocks(p)||(p.promptFlow||[]).some(n=>["DONE","SKIPPED"].includes(n.status)))throw Error("已有执行或批准记录，请用差异修订保留进度，不能整体替换路线");
   const original=payload.promptFlow||payload.PROJECT_PROMPT_FLOW;
   if(!Array.isArray(original)||!original.length)throw Error("未找到 promptFlow 数组；需要完整 GUCC_FLOW_RESULT JSON");
   const ids=new Set();
@@ -483,7 +527,7 @@ function importAiPromptFlow(p,result){
       skipCondition:asList(raw.skipCondition||raw.SKIP_CONDITION),
       next:asList(raw.next||raw.NEXT),chatFallback:raw.chatFallback||raw.CHAT_FALLBACK||capability.chatFallback||"",
       qcLevel:raw.qcLevel||raw.QC_LEVEL||capability.qcLevel,
-      reviewMode:raw.reviewMode||raw.REVIEW_MODE||capability.reviewMode,
+      reviewMode:capability.reviewMode==="APPROVAL_REQUIRED"?"APPROVAL_REQUIRED":(raw.reviewMode||raw.REVIEW_MODE||capability.reviewMode),
       status:["WAITING","CONDITIONAL"].includes(raw.status||raw.STATUS)?(raw.status||raw.STATUS):"PENDING",branch:raw.branch||raw.BRANCH||"SHARED",
       isCompiledExternal:true,notes:"AI-compiled / imported locally"
     };
@@ -512,6 +556,14 @@ function importAiPromptFlow(p,result){
 
 function applyNodeResult(result){
   const p=current();if(!p)throw new Error("No project");
+  if(result?.GUCC_FLOW_DIFF||Array.isArray(result?.flowOps)){
+    const payload=result.GUCC_FLOW_DIFF||result;
+    const next=Validation.diff(p,payload,O,Caps);
+    if(!window.confirm(`应用 ${payload.flowOps.length} 项路线修订？已执行节点和批准记录会保留；修订前状态可回退。`))return;
+    Steps.record(p,"FLOW_DIFF");
+    p.promptFlow=next.promptFlow;p.workflow=next.workflow;p.flowRevision=next.flowRevision;p.history=next.history;
+    save();render();return;
+  }
   const t=currentTaskFor(p);
   if(!result||typeof result!=="object")throw new Error("未检测到 JSON 回执");
   if(t.promptId==="PROJECT_BUILDER")return importProjectBrief(p,result);
@@ -520,21 +572,26 @@ function applyNodeResult(result){
   if(t&&t.promptId!=="COMPLETE"&&result.promptId!==t.promptId)throw new Error("当前任务是 "+t.promptId+"，返回的是 "+result.promptId);
   const n=(p.promptFlow||[]).find(x=>x.promptId===result.promptId);
   if(!n)throw new Error("当前 Flow 中找不到该 Prompt Node");
+  const reportedStatus=Validation?Validation.result(p,n,result):String(result.status||"").toUpperCase();
+  if(!["DONE","WAITING","NEED_INPUT"].includes(reportedStatus))throw Error("回执缺少有效执行状态");
+  if(!result.projectId&&!result.WORKSPACE_PROJECT_ID&&!window.confirm("此旧版回执缺少项目身份。确认它属于「"+p.name+"」的当前任务 "+t.promptId+"？"))return;
+  if(Array.isArray(result.flowOps)&&result.flowOps.length)throw Error("节点回执不能同时修改路线；请单独提交并核对路线修订");
   Steps.record(p,"NODE_RESULT");
+  n.receiptEvidence={aiReportedStatus:reportedStatus,fileVerified:false,qualityVerified:false,humanApproved:false,receivedAt:new Date().toISOString()};
   p.availableArtifacts=mergeUnique(p.availableArtifacts,result.availableArtifacts||result.outputs);
   p.verifiedFacts=mergeUnique(p.verifiedFacts,result.verifiedFacts);
   p.reasonedAnalysis=mergeUnique(p.reasonedAnalysis,result.reasonedAnalysis);
   p.unknowns=mergeUnique(p.unknowns,result.unknowns);
   const patch=result.contractPatch&&typeof result.contractPatch==="object"?result.contractPatch:{};
-  for(const key of ["format","dataCutoff","currentStage","status"]){if(patch[key]!=null)p[key]=patch[key];}
+  for(const key of ["dataCutoff"]){if(patch[key]!=null)p[key]=patch[key];}
   if(patch.productionNeeds&&typeof patch.productionNeeds==="object")p.productionNeeds={...p.productionNeeds,...patch.productionNeeds};
   if(Array.isArray(patch.doNotUse))p.doNotUse=mergeUnique(p.doNotUse,patch.doNotUse);
   if(Array.isArray(patch.officialTerminology))p.officialTerminology=mergeUnique(p.officialTerminology,patch.officialTerminology);
-  if(Array.isArray(result.flowOps)&&result.flowOps.length)O.updatePromptFlow(p,result.flowOps);
-  const status=String(result.status||"DONE").toUpperCase();
-  if(result.requiresApproval===true||n.reviewMode==="APPROVAL_REQUIRED"){n.status="WAITING";n.notes="AI result 已应用，等待 Human Approval";}
-  else if(["DONE","WAITING","SKIPPED"].includes(status))n.status=status;
-  else if(status==="NEED_INPUT"){n.status="WAITING";n.notes="HARD STOP / NEED_INPUT";}
+
+  const status=reportedStatus;
+  if(status==="NEED_INPUT"||status==="WAITING"){n.status="WAITING";n.notes="输入未满足或执行未完成；不能批准为完成";n.receiptEvidence.blocked=true;}
+  else if(result.qualityStatus&&result.qualityStatus!=="PASS"){n.status="WAITING";n.notes="AI 回执报告质量检查未通过";n.receiptEvidence.blocked=true;}
+  else if(result.requiresApproval===true||n.reviewMode==="APPROVAL_REQUIRED"){n.status="WAITING";n.notes="AI 回执已导入；文件与质量仍需实际核验，等待人工批准";}
   else n.status="DONE";
   O.compilePromptFlow(p);save();render();
 }
@@ -597,6 +654,7 @@ $("copyNodePrompt").addEventListener("click",()=>copy(selectedNodePrompt));
 $("createPromptBtn").addEventListener("click",()=>{const idea=$("ideaInput").value.trim();if(!idea)return notify("先写一句项目想法");copy(O.buildCreateProjectPrompt(idea));});
 $("copyCurrentPrompt").addEventListener("click",()=>copy(currentTaskFor(current())?.prompt||""));
 $("applyResultBtn").addEventListener("click",()=>{$("resultInput").value="";$("resultDialog").showModal();});
+$("clearBranchFilter").addEventListener("click",()=>{selectedBranch="";$("clearBranchFilter").hidden=true;renderFlow(current());});
 $("applyResultConfirm").addEventListener("click",e=>{e.preventDefault();try{applyNodeResult(parseNodeResult($("resultInput").value));$("resultDialog").close();notify("AI Result 已应用");}catch(err){notify("应用失败："+err.message);}});
 let rewindCandidateId="";
 let rewindOpenedVersion="";
@@ -651,7 +709,7 @@ $("copyBuildFlowPrompt").addEventListener("click",()=>{
 $("copyUpdateFlowPrompt").addEventListener("click",()=>copy(O.updateFlowPrompt(current())));
 $("capSearch").addEventListener("input",renderCapabilities);$("capDomain").addEventListener("change",renderCapabilities);
 document.querySelectorAll("[data-artifact]").forEach(b=>b.addEventListener("click",()=>showArtifact(b.dataset.artifact)));
-$("exportBtn").addEventListener("click",()=>{const p=current();if(p)download(slugFile(p.projectId)+".json",JSON.stringify(p,null,2));});
+$("exportBtn").addEventListener("click",()=>{const p=current();if(p)download(slugFile(p.projectId)+".json",JSON.stringify(p,null,2));else if(storageCorrupt)download("GUCC-browser-recovery.json",localStorage.getItem(O.STORAGE_KEY)||"{}");});
 $("importBtn").addEventListener("click",()=>{$("importFile").click();});
 $("importFile").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
@@ -714,12 +772,13 @@ window.GuccCreatorOS={
   putProject:(project,{fromCloud=false}={})=>{
     if(!project||typeof project!=="object"||!project.projectId||!project.name)throw Error("无效的云端项目");
     const i=store.projects.findIndex(p=>p.projectId===project.projectId);
-    if(i>=0)store.projects[i]=JSON.parse(JSON.stringify(project));
-    else store.projects.unshift(JSON.parse(JSON.stringify(project)));
+    const hydrated=Storage?Storage.unpackProject(project):JSON.parse(JSON.stringify(project));
+    if(i>=0)store.projects[i]=hydrated;
+    else store.projects.unshift(hydrated);
     if(project.projectId===linkedProjectId||(!current()&&projectLife(project)==="active"))
       store.selectedProjectId=project.projectId;
     save(!fromCloud);render();
   }
 };
-render();loadMigration();
+render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

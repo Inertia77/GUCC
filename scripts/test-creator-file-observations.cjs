@@ -31,9 +31,9 @@ const { pathToFileURL } = require("node:url");
 
   const productionUi = fs.readFileSync(path.join(__dirname, "..", "assets", "creator-file-observations.mjs"), "utf8");
   const dashboardUi = fs.readFileSync(path.join(__dirname, "..", "assets", "creator-dashboard.mjs"), "utf8");
-  assert.match(productionUi, /<strong>Expected<\/strong>/);
-  assert.match(productionUi, /<strong>Observed<\/strong>/);
-  assert.match(productionUi, /尚未由 Local Agent 验证/);
+  assert.match(fs.readFileSync(path.join(__dirname,"..","apps/video-workspace/production-system/app.js"),"utf8"), /标准位置/);
+  assert.match(productionUi, /本机状态/);
+  assert.match(productionUi, /尚未验证/);
   assert.match(productionUi, /上次存在，现在未找到/);
   assert.match(dashboardUi, /物理文件/);
   assert.match(dashboardUi, /Local Agent/);

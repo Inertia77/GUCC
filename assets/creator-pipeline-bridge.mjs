@@ -612,6 +612,10 @@ function hydratePublishReleases(state, releases) {
 }
 
 async function loadPublishProjectFromQuery(rules) {
+  // Creator OS has independent per-video drafts. Do not hydrate these through
+  // the legacy project-wide release model.
+  if (new URLSearchParams(window.location.search).get("video")) return false;
+  if (readJson(PUBLISH_STORAGE_KEY)?.project?.videoId) return false;
   const projectId = requestedProjectId();
   if (!projectId || !loggedIn()) return false;
   const response = await creatorApi("getProject", { projectId });
@@ -627,6 +631,10 @@ async function loadPublishProjectFromQuery(rules) {
 
 async function syncPublishState(panel) {
   const state = readJson(PUBLISH_STORAGE_KEY);
+  if (state?.project?.videoId) {
+    setPanelStatus(panel, "local", "多视频发布单使用独立云端草稿 · 见顶部保存状态");
+    return false;
+  }
   const projectId = state?.source?.creatorProjectId;
   if (!projectId || !loggedIn()) {
     setPanelStatus(panel, "local", projectId ? "发布记录仅本地 · 登录后自动上云" : "等待 Production 项目交接");
@@ -660,7 +668,8 @@ async function runPublish() {
     return;
   }
 
-  const panel = createPanel("Publish · Production 已直连", "从 Production 送来的 RELEASE_PACK 会直接拆成六个平台字段；公开发布按钮仍保留给你最后确认。");
+  if (readJson(PUBLISH_STORAGE_KEY)?.project?.videoId) return;
+  const panel = createPanel("兼容制作流程 · 发布交接", "旧版 Production 发布包使用项目级发布记录；多视频发布单另按项目与视频独立保存。");
   const actions = panel.querySelector("[data-gcb-actions]");
   const sync = actionButton("同步发布状态", true);
   const drive = actionLink("Drive 项目库", DRIVE_ROOT.url);

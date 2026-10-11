@@ -1859,7 +1859,8 @@
   </style>
   <link rel="stylesheet" href="../../assets/gucc-cover-workspace-fixes-v1.css?v=2" />
   <link rel="stylesheet" href="../../assets/gucc-floating-docks-v1.css" />
-  <script src="../../assets/gucc-shell.js?v=6" data-root="../../" defer></script>
+  <script src="../../assets/gucc-shell.js?v=14" data-root="../../" defer></script>
+<link rel="stylesheet" href="../../assets/gucc-premium.css?v=2" data-gucc-premium>
 </head>
 <body class="gucc-enhanced cover-generator-page">
   <div class="app">
@@ -1914,11 +1915,10 @@
           <p class="hint">文字也可以添加多个：主标题、副标题、角标、吐槽、期数都分开做，后期改起来不挠头。</p>
         </div>
 
-        <div class="section stack">
-          <h3>4. 自动设计模板</h3>
+        <details class="section stack"><summary>4. 自动设计模板 · 展开</summary>
           <div id="designPresetGrid" class="design-preset-grid"></div>
           <p class="hint">“无模板”只关闭设计叠层，不改变现有排版；其余模板会把素材重新编排到四个比例。模板不会删除素材，但会覆盖各比例的位置、大小和文字样式。</p>
-        </div>
+        </details>
 
         <div class="section">
           <h3>5. 元素列表</h3>
@@ -1934,7 +1934,7 @@
             <span class="badge">拖动元素移动，右下角缩放，顶部黄点旋转</span>
           </div>
           <div class="toolbar-right">
-            <button class="secondary small" id="toggleGuideBtn">安全区</button>
+            <label class="canvas-zoom">预览 <input id="canvasZoom" type="range" min="40" max="150" value="100" step="10" aria-label="画布预览缩放"><output id="canvasZoomLabel">100%</output></label><button class="secondary small" id="toggleGuideBtn">安全区</button>
             <button class="secondary small" id="copyLayoutBtn">当前比例布局应用到全部</button>
             <button class="secondary small" id="centerBtn">选中元素居中</button>
           </div>
@@ -2020,7 +2020,7 @@
       </aside>
     </main>
 
-    <section class="panel ai-prompt-lab" id="aiPromptLab">
+    <details class="panel ai-prompt-lab" id="aiPromptLab"><summary>AI 封面 Prompt 工作区 · 展开辅助工具</summary>
       <div class="ai-prompt-head">
         <div>
           <h2>AI 封面 Prompt 工作区</h2>
@@ -2051,7 +2051,7 @@
           <div class="prompt-status" id="promptStatus" aria-live="polite"></div>
         </div>
       </div>
-    </section>
+    </details>
   </div>
 
 <script>
@@ -2193,8 +2193,8 @@
 
   function fontFamilyById(id, style) {
     const stylePreset = style?.fontPreset && fontPresets.find(f => f.id === style.fontPreset)?.font;
-    if (!id || id === 'default') return stylePreset || style?.font || modernFont;
-    return (fontPresets.find(f => f.id === id)?.font) || stylePreset || style?.font || modernFont;
+    const chosen=(!id || id === 'default') ? stylePreset || style?.font || modernFont : (fontPresets.find(f => f.id === id)?.font) || stylePreset || style?.font || modernFont;
+    return chosen.replace(/(?:sans-serif|serif)$/, '"GUCC Sans", sans-serif');
   }
 
   const $ = id => document.getElementById(id);
@@ -2213,7 +2213,7 @@
     elements: [],
     aiPrompt: defaultAiPromptState()
   };
-  let previewScale = 0.35;
+  let previewScale = 0.35, previewZoom=1, exactPreviewFrame=0;
   let drag = null;
 
   function initTemplates() {
@@ -2611,7 +2611,7 @@ ${textInstruction}
     const r = ratio();
     const maxW = Math.max(120, shell.clientWidth - 32);
     const maxH = Math.max(180, shell.clientHeight - 32);
-    previewScale = Math.min(maxW / r.w, maxH / r.h, 0.6);
+    previewScale = Math.min(maxW / r.w, maxH / r.h, 0.6)*previewZoom;
   }
 
   function coverRect(img, W, H, bg) {
@@ -2665,7 +2665,7 @@ ${textInstruction}
       if (!lay) return;
       const node = document.createElement('div');
       node.className = `cover-element cover-${el.type}` + (el.id === state.selectedId ? ' selected' : '');
-      node.dataset.id = el.id;
+      node.dataset.id = el.id;node.tabIndex=0;node.setAttribute("role","button");node.setAttribute("aria-label",el.name||el.text||"图片元素");node.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();selectElement(el.id);}});
       node.style.left = lay.x * previewScale + 'px';
       node.style.top = lay.y * previewScale + 'px';
       node.style.width = lay.w * previewScale + 'px';
@@ -2698,6 +2698,13 @@ ${textInstruction}
       node.appendChild(handle);
       node.appendChild(rot);
       st.appendChild(node);
+    });
+    cancelAnimationFrame(exactPreviewFrame);
+    exactPreviewFrame=requestAnimationFrame(()=>{
+      const rendered=renderToCanvas(state.currentRatio);
+      let canvas=$('exactPreview');
+      if(!canvas){canvas=document.createElement('canvas');canvas.id='exactPreview';canvas.setAttribute('aria-label','与导出共用渲染器的封面预览');st.prepend(canvas);}
+      canvas.width=rendered.width;canvas.height=rendered.height;canvas.getContext('2d').drawImage(rendered,0,0);
     });
   }
 
@@ -2759,9 +2766,10 @@ ${textInstruction}
       const r = ratios[key];
       const s = Math.min(80 / r.w, 70 / r.h);
       return `<button class="mini ${key === state.currentRatio ? 'active' : ''}" type="button" data-ratio="${key}" aria-pressed="${key === state.currentRatio}">
-        <div class="mini-box" style="width:${r.w*s}px;height:${r.h*s}px"></div><span>${r.label}</span>
+        <div class="mini-box" style="width:${r.w*s}px;height:${r.h*s}px"><canvas data-mini-canvas="${key}" width="${Math.round(r.w*s)}" height="${Math.round(r.h*s)}" aria-label="${r.label}预览"></canvas></div><span>${r.label}</span>
       </button>`;
     }).join('');
+    $('miniPreviews').querySelectorAll('[data-mini-canvas]').forEach(canvas=>canvas.getContext('2d').drawImage(renderToCanvas(canvas.dataset.miniCanvas),0,0,canvas.width,canvas.height));
   }
 
   function renderAll() {
@@ -2792,6 +2800,7 @@ ${textInstruction}
   }
 
   function bindEvents() {
+    $('canvasZoom').addEventListener('input',()=>{previewZoom=Number($('canvasZoom').value)/100;$('canvasZoomLabel').textContent=$('canvasZoom').value+'%';renderStage();});
     $('setBgUrlBtn').onclick = () => {
       const url = $('bgUrl').value.trim();
       if (!url) return alert('先粘贴背景图 URL。');
@@ -3330,12 +3339,19 @@ ${textInstruction}
   let saveTimer = null;
   function autosave() {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState())), 250);
+    saveTimer = setTimeout(() => saveBrowserProject(false), 250);
   }
-  function manualSave() {
-    localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState()));
-    setStatus('项目已保存到浏览器本地。快捷键：Ctrl/⌘ + S');
+  function saveBrowserProject(manual) {
+    try {
+      localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState()));
+      if (manual) setStatus('项目已保存到本浏览器；图片文件需另行导出。');
+      return true;
+    } catch {
+      setStatus('未保存：浏览器空间不足。当前画布仍在内存中，请导出项目 JSON 备份。');
+      return false;
+    }
   }
+  function manualSave() { clearTimeout(saveTimer); return saveBrowserProject(true); }
   async function loadProjectFromLocal() {
     const raw = localStorage.getItem('gameCoverGeneratorProject');
     if (!raw) return alert('没有找到已保存的项目。');

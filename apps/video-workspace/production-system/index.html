@@ -7,9 +7,8 @@
 <title>GameUp Creator OS · 制作中枢｜GUCC</title>
 <link rel="icon" href="../../../assets/icons/gucc-icon.svg?v=5">
 <script src="../../../assets/access-guard.js?v=14" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
-<link rel="stylesheet" href="../../../assets/gucc-theme.css">
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
-<link rel="stylesheet" href="./nte-urban-theme.css?v=6">
+<link rel="stylesheet" href="../../../assets/gucc-premium.css?v=2" data-gucc-premium>
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -18,7 +17,7 @@
     <span class="os-monogram">G<span class="monogram-accent">.</span></span>
     <span class="wordmark-copy"><strong>GAMEUP</strong><small>CREATOR / OS</small></span>
   </a>
-  <div class="topbar-center"><span class="center-line"></span><span>CREATIVE OPERATIONS</span><span class="center-line"></span></div>
+  <div class="topbar-center"><span class="center-line"></span><span>CREATIVE 工作区</span><span class="center-line"></span></div>
   <div class="top-actions">
     <span class="system-label"><span class="alive-dot"></span> CITY SIGNAL <i>/</i> CREATOR TERMINAL</span>
     <a class="top-link mode-switch-link" href="../legacy-prompt-studio-v6.html">固定流程 Studio ↗</a>
@@ -29,10 +28,10 @@
 
 <div class="os-shell">
   <aside class="os-nav">
-    <div class="nav-title"><span>OPERATIONS</span><small>01 / 05</small></div>
+    <div class="nav-title"><span>工作区</span><small>01 / 05</small></div>
     <button data-view="system" class="active"><b>01</b><span>制作桌面</span><i>›</i></button>
     <button data-view="projects"><b>02</b><span>项目档案</span><i>›</i></button>
-    <div class="nav-section-label">SYSTEM / REFERENCE</div>
+    <div class="nav-section-label">规则与资料</div>
     <button data-view="core"><b>03</b><span>规则与防错</span><i>›</i></button>
     <button data-view="capabilities"><b>04</b><span>能力模块库</span><i>›</i></button>
     <button data-view="libraries"><b>05</b><span>公共资料库</span><i>›</i></button>
@@ -53,15 +52,15 @@
         <p class="workspace-deck">一条可执行的当前任务。完整的创作流程，交给系统编排。</p>
       </div>
       <div class="heading-status">
-        <span class="status-line">WORKSPACE STATE</span>
-        <strong id="workspaceCloudLabel">LOCAL MODE</strong>
-        <small id="workspaceCloudNote">本机草稿 · 连接账号后可同步</small>
+        <span class="status-line">保存状态</span>
+        <strong id="workspaceCloudLabel">本浏览器草稿</strong>
+        <small id="workspaceCloudNote">本浏览器草稿 · 登录后同步</small>
       </div>
     </div>
 
     <section class="project-bar">
       <div class="project-switcher">
-        <span class="micro">ACTIVE PROJECT <span class="micro-divider">/</span> 当前项目</span>
+        <span class="micro">当前项目</span>
         <select id="projectSelect" aria-label="当前项目"></select>
       </div>
       <div class="project-actions">
@@ -77,22 +76,24 @@
       </div>
     </section>
 
+    <p id="localSaveNotice" class="save-error" role="alert" hidden></p>
     <section id="view-system" class="view active">
       <div class="hero-grid">
         <article class="panel current-task-panel">
-          <div class="mission-line"><span class="live-indicator"></span><span>NOW / CURRENT TASK</span><span class="mission-line-right" id="currentTaskId">—</span></div>
+          <div class="mission-line"><span class="live-indicator"></span><span>当前制作任务</span><span class="mission-line-right" id="currentTaskId">—</span></div>
           <div class="task-main">
             <p class="task-eyebrow">下一步，做这件事</p>
             <h2 id="currentTaskName">—</h2>
             <p id="currentTaskReason" class="lead"></p>
           </div>
           <div class="task-runtime">
-            <span class="runtime-unit"><span>EXECUTOR</span><strong id="currentExecutor" class="executor-badge">—</strong></span>
+            <span class="runtime-unit"><span>执行环境</span><strong id="currentExecutor" class="executor-badge">—</strong></span>
             <span class="runtime-sep"></span>
-            <span class="runtime-unit"><span>QUALITY</span><strong id="currentQc">—</strong></span>
+            <span class="runtime-unit"><span>质量核验</span><strong id="currentQc">—</strong></span>
             <span class="runtime-sep"></span>
-            <span class="runtime-unit"><span>REVIEW</span><strong id="currentReview">—</strong></span>
+            <span class="runtime-unit"><span>审核方式</span><strong id="currentReview">—</strong></span>
           </div>
+          <p id="currentEvidence" class="evidence-line">回执、文件、质量检查与人工批准分别记录。</p>
           <div class="prompt-actions">
             <button class="button primary mission-cta" id="copyCurrentPrompt"><span aria-hidden="true">⌁</span> 复制当前 Prompt <span class="cta-arrow">↗</span></button>
             <button class="button secondary" id="applyResultBtn">导入 AI 执行结果 <span aria-hidden="true">↗</span></button>
@@ -101,14 +102,15 @@
           <details class="task-details">
             <summary>查看所需输入、预期产物及完整 Prompt <span aria-hidden="true">⌄</span></summary>
             <div class="io-grid">
-              <div><span>REQUIRED INPUT</span><div id="currentInputs"></div></div>
-              <div><span>EXPECTED OUTPUT</span><div id="currentOutputs"></div></div>
+              <div><span>所需输入</span><div id="currentInputs"></div></div>
+              <div><span>预期产物</span><div id="currentOutputs"></div></div>
             </div>
             <pre id="currentPrompt" class="prompt-box"></pre>
           </details>
           <details class="task-advanced">
             <summary>手动状态操作 <span aria-hidden="true">⌄</span></summary>
             <p>仅在实际完成并核验后确认。锁定类任务仍需真实人工批准。</p>
+            <div class="human-evidence"><label><input id="fileEvidenceCheck" type="checkbox"> 我已打开真实输出文件并确认版本</label><label><input id="qualityEvidenceCheck" type="checkbox"> 我已完成质量检查，结果通过</label><small>仅用于人工核验记录；不会自动扫描文件或建立云端 Lock。</small></div>
             <div class="manual-controls">
               <button class="button ghost" id="markDoneBtn">确认完成 / 条件满足</button>
               <button class="button ghost" id="skipTaskBtn">条件不适用 · 跳过</button>
@@ -117,21 +119,22 @@
           <div class="mission-bottom"><span>GUCC / EXECUTION CONTROL</span><span>INTEGRITY FIRST <span class="mini-star">✦</span></span></div>
         </article>
         <aside class="panel project-summary">
-          <div class="summary-top"><span class="micro">PROJECT DOSSIER</span><button id="editProjectBtn" type="button" class="dossier-edit" aria-label="编辑当前项目资料" title="修改标题、想法与项目基本信息"><span aria-hidden="true">✎</span> 编辑资料</button></div>
+          <div class="summary-top"><span class="micro">项目资料</span><button id="editProjectBtn" type="button" class="dossier-edit" aria-label="编辑当前项目资料" title="修改标题、想法与项目基本信息"><span aria-hidden="true">✎</span> 编辑资料</button></div>
           <h3 id="projectName">—</h3>
-          <p class="project-caption">一个 Project 管理事实和流程；每条 Video 保持自己的产物与审核。</p>
+          <p class="project-caption">共享研究只做一次。每条视频独立制作、核验与批准。</p>
           <p id="projectIdeaPreview" class="project-idea-preview" hidden></p>
           <div id="projectMeta" class="meta-stack"></div>
-          <div id="videoBranches" class="branch-list"></div>
           <div class="summary-actions">
-            <button class="text-action" id="copyContractBtn">VIDEO_CONTRACT <span aria-hidden="true">↗</span></button>
-            <button class="text-action" id="copyWorkflowBtn">PROJECT_WORKFLOW <span aria-hidden="true">↗</span></button>
+            <button class="text-action" id="copyContractBtn">项目约定 <span aria-hidden="true">↗</span></button>
+            <button class="text-action" id="copyWorkflowBtn">制作路线 <span aria-hidden="true">↗</span></button>
           </div>
         </aside>
       </div>
 
+      <section class="video-workbench" aria-label="视频分支"><div id="videoBranches" class="branch-list"></div><button class="text-action" id="clearBranchFilter" type="button" hidden>查看全部视频与共享任务</button></section>
+      <details class="support-workbench"><summary>项目编排与辅助工具 <small>修改路线 · 本地素材 · 封面与发布</small></summary>
       <section class="launch-dock">
-        <div class="dock-heading"><span class="micro">QUICK OPERATIONS</span><h2>从想法到执行</h2></div>
+        <div class="dock-heading"><span class="micro">QUICK 工作区</span><h2>从想法到执行</h2></div>
         <div class="dock-grid">
           <article class="dock-item">
             <div class="dock-number">A</div>
@@ -140,7 +143,7 @@
           </article>
           <article class="dock-item">
             <div class="dock-number">B</div>
-            <div><h3>生成项目执行流</h3><p>按 Capability 编译完整 Prompt Flow，保留 Guardrail。</p></div>
+            <div><h3>生成项目执行流</h3><p>让 AI 编排完整执行路线，保留成熟创作规则。</p></div>
             <div class="dock-item-actions"><button class="dock-button" id="copyBuildFlowPrompt" aria-label="复制 AI 编排 Prompt" title="推荐：让 Chat 或 Work 按项目事实编译">↗</button><button class="text-action" id="buildFlowBtn" title="仅本地生成结构模板，不运行研究">本地结构草案</button></div>
           </article>
           <article class="dock-item">
@@ -156,7 +159,7 @@
       </section>
 
       <section class="production-tools">
-        <div class="dock-heading"><span class="micro">SPECIALIZED TOOLS</span><h2>当前项目的辅助工具</h2></div>
+        <div class="dock-heading"><span class="micro">SPECIALIZED TOOLS</span><h2>素材与制作工具</h2></div>
         <div class="tool-links">
           <a class="tool-link" href="../../cover-generator/"><span class="tool-code">CG</span><strong>封面编辑器</strong><small>可选独立制图工具 · 不会自动改动项目 Lock</small><span>↗</span></a>
           <a class="tool-link" href="../../publishing-console/"><span class="tool-code">PUB</span><strong>发布控制台</strong><small>平台字段与发布复盘工具 · 发布仍需要实际确认</small><span>↗</span></a>
@@ -165,19 +168,20 @@
       </section>
       <section class="panel local-folder-panel">
         <div class="panel-head">
-          <div><span class="micro">LOCAL ASSET RADAR / ONLY ON THIS DEVICE</span><h2>本地项目工作目录 <span class="local-only-stamp">LOCAL ONLY</span></h2>
-          <p>按项目选择本机文件夹，读取目录与文件名生成 tree /f 风格快照；不打开素材内容，也不上传文件或绝对路径。</p></div>
+          <div><span class="micro">本机素材</span><h2>本地项目工作目录 <span class="local-only-stamp">仅本机</span></h2>
+          <p>按项目选择本机文件夹，读取目录与文件名生成 文件树快照；不打开素材内容，也不上传文件或绝对路径。</p></div>
           <div class="button-row folder-toolbar"><button type="button" class="button secondary" id="chooseProjectFolder">▣ 选择工作文件夹</button><button type="button" class="button ghost" id="rescanProjectFolder">↻ 更新结构</button></div>
         </div>
         <input id="folderInputFallback" type="file" webkitdirectory multiple hidden>
         <div class="folder-control">
-          <div><span class="micro">DEVICE ACCESS</span><strong id="folderSelectionStatus">尚未选择本地工作目录</strong></div>
+          <div><span class="micro">目录授权</span><strong id="folderSelectionStatus">尚未选择本地工作目录</strong></div>
           <label>本机绝对路径（可选，仅保存在此浏览器）<input id="folderRootPath" type="text" autocomplete="off" placeholder="例如 C:\GameUp\绝区零3.3\视频名称"></label>
         </div>
         <details class="folder-tree-details"><summary>查看当前文件树 <span>⌄</span></summary><pre id="folderTreePreview" class="folder-tree-preview"></pre></details>
         <div class="folder-footer"><span>无文件上传 · 文件夹授权只属于当前设备</span><button type="button" class="button primary" id="copyFolderOrganizePrompt">复制本地整理 Prompt ↗</button></div>
       </section>
 
+      </details>
       <section class="panel flow-panel">
         <div class="panel-head">
           <div><span class="micro">EXECUTION ROUTE</span><h2>制作路线 <span id="flowNodeCount" class="node-count"></span></h2><p>首页只展示近期节点；完整执行流及分支在此展开。</p></div>
@@ -219,7 +223,7 @@
     </section>
 
     <section id="view-projects" class="view">
-      <div class="section-head"><span class="micro">PROJECT REGISTRY</span><h2>项目总览</h2><p>正式项目身份来自 creator_projects，详细制作资料同步到关联表。默认聚焦进行中；已完成、归档及回收站独立管理。</p></div>
+      <a class="top-link" href="./legacy-v1.html">兼容版 Production ↗</a><div class="section-head"><span class="micro">PROJECT REGISTRY</span><h2>项目总览</h2><p>正式项目身份来自 creator_projects，详细制作资料同步到关联表。默认聚焦进行中；已完成、归档及回收站独立管理。</p></div>
       <div class="project-management-bar">
         <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
         <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="completed">已完成</option><option value="archived">已归档</option><option value="all">全部（不含回收站）</option><option value="trash">回收站</option></select>
@@ -243,7 +247,7 @@
 
 <dialog id="nodeDialog">
   <div class="dialog-card">
-    <div class="panel-head"><div><span class="micro">PROMPT FLOW / NODE PREVIEW</span><h2 id="nodePreviewTitle">节点详情</h2></div><button type="button" id="closeNodeDialog" class="icon-button" aria-label="关闭">×</button></div>
+    <div class="panel-head"><div><span class="micro">PROMPT FLOW / NODE P审核方式</span><h2 id="nodePreviewTitle">节点详情</h2></div><button type="button" id="closeNodeDialog" class="icon-button" aria-label="关闭">×</button></div>
     <p id="nodePreviewMeta"></p>
     <pre id="nodePreview" class="artifact-preview"></pre>
     <footer><button type="button" class="button primary" id="copyNodePrompt">复制此节点 Prompt ↗</button></footer>
@@ -252,10 +256,10 @@
 
 <dialog id="resultDialog">
   <form method="dialog" class="dialog-card">
-    <div class="panel-head"><div><span class="micro">APPLY NODE RESULT</span><h2>粘贴 GUCC_NODE_RESULT</h2></div><button value="cancel" class="icon-button">×</button></div>
-    <p>立项时可直接粘贴 VIDEO_CONTRACT JSON；编排后粘贴 GUCC_FLOW_RESULT；正常任务粘贴 GUCC_NODE_RESULT。所有结果只更新本浏览器草稿，未经实际工具验证不代表已写入云端或本地文件。</p>
+    <div class="panel-head"><div><span class="micro">APPLY NODE RESULT</span><h2>导入当前任务回执</h2></div><button value="cancel" class="icon-button">×</button></div>
+    <p>立项时可直接粘贴 VIDEO_CONTRACT JSON；编排后粘贴 GUCC_FLOW_RESULT；正常任务导入当前任务回执。回执登记执行结果；它不能证明真实文件存在或质量通过。先在本浏览器保存，云同步成功后另有状态提示。</p>
     <textarea id="resultInput" rows="16" placeholder="粘贴 AI 返回的完整 JSON 或带 JSON 代码块的回执"></textarea>
-    <footer><button value="cancel" class="button ghost">取消</button><button id="applyResultConfirm" value="default" class="button primary">应用并刷新 Current Task</button></footer>
+    <footer><button value="cancel" class="button ghost">取消</button><button id="applyResultConfirm" value="default" class="button primary">核对并导入</button></footer>
   </form>
 </dialog>
 
@@ -320,7 +324,7 @@
   <div class="dialog-card">
     <div class="panel-head"><div><span class="micro">REVISION / CONFLICT</span><h2>项目版本冲突</h2></div></div>
     <p><strong id="cloudConflictProject"></strong></p><p id="cloudConflictInfo"></p>
-    <p>请选择保留本机或云端项目快照。选择会更新整个项目的 Prompt Flow 和进度；必要时先备份本地 JSON。</p>
+    <p>请选择保留本机或云端项目快照。选择会更新整个项目的 Prompt Flow 和进度；另一端版本会同时保存在可导出的冲突历史中；素材本体不会被改动。</p>
     <footer><button class="button ghost" type="button" data-cloud-choice="later">稍后处理</button><button class="button secondary" type="button" data-cloud-choice="remote">保留云端</button><button class="button primary" type="button" data-cloud-choice="local">保留本机并上传</button></footer>
   </div>
 </dialog>
@@ -330,10 +334,13 @@
 <script src="./core-rules.js?v=2.0.0"></script>
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.0.0"></script>
-<script src="./orchestrator.js?v=2.0.1"></script>
-<script src="./creator-os-step-history.js?v=1"></script>
-<script src="./creator-os-app.js?v=3.3.0"></script>
-<script type="module" src="./creator-os-cloud.mjs?v=3"></script>
+<script src="./orchestrator.js?v=2.1.0"></script>
+<script src="./creator-os-handoff.js?v=1"></script>
+<script src="./creator-os-storage.js?v=1"></script>
+<script src="./creator-os-validation.js?v=1"></script>
+<script src="./creator-os-step-history.js?v=2"></script>
+<script src="./creator-os-app.js?v=3.4.0"></script>
+<script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 </body>
 </html>

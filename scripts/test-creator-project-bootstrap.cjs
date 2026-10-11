@@ -94,7 +94,7 @@ async function exists(target) {
     }
 
     const browserSource = await fsp.readFile(path.join(__dirname, "..", "assets", "creator-project-bootstrap-browser.js"), "utf8");
-    const productionHtml = await fsp.readFile(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "index.html"), "utf8");
+    const productionHtml = await fsp.readFile(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "legacy-v1.html"), "utf8");
     assert.match(browserSource, /canonicalProjectFolderName/, "Browser bootstrap must use shared canonical contract");
     assert.match(browserSource, /projectId/, "Browser folder resolution must use projectId");
     assert.match(browserSource, /conflict/i, "Browser bootstrap must surface local conflicts");

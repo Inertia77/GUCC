@@ -46,6 +46,15 @@ jobs:
       - name: Run isolated Creator browser regression
         run: node scripts/test-creator-global-browser.cjs
 
+      - name: Run premium workspace regression
+        run: node scripts/test-gucc-premium-browser.cjs
+
+      - name: Run cloud concurrency regression
+        run: node scripts/test-gucc-cloud-browser.cjs
+
+      - name: Run per-video publish cloud regression
+        run: node scripts/test-gucc-publish-cloud-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
@@ -54,5 +63,6 @@ jobs:
           path: |
             tmp/creator-global-browser/
             tmp/creator-ux-browser/
+            tmp/gucc-premium-browser/
           if-no-files-found: ignore
           retention-days: 7

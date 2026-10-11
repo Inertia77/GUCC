@@ -15,7 +15,8 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
   ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
   ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
-  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=2']
+  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=2'],
+  ['gucc-premium-final', '../../../assets/gucc-premium.css?v=2']
 ];
 
 const TAB_LOADERS = {
@@ -36,7 +37,8 @@ const GAME_THEME_CODES = [
 
 function ensureFinalStyleSheets({ reorder = false } = {}) {
   FINAL_STYLE_SHEETS.forEach(([id, relativePath]) => {
-    let link = document.getElementById(id);
+    let link = document.getElementById(id) || (id === "gucc-premium-final" ? document.querySelector("link[data-gucc-premium]") : null);
+    if (link && id === "gucc-premium-final") link.id=id;
     if (!link) {
       link = document.createElement('link');
       link.id = id;
@@ -177,7 +179,6 @@ function initTabs() {
 }
 
 function initAuth() {
-  $('#signupBtn')?.remove();
 
   $('#loginView').addEventListener('submit', async (event) => {
     event.preventDefault();

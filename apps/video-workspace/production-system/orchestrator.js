@@ -317,8 +317,8 @@ ${(n.saveAs||[]).map(x=>"- "+x).join("\n")}
 只完成当前 Node。默认能查就查、能做就做、普通未知用 UNKNOWN / CONDITIONAL / REVIEW_REQUIRED 表达。不要自动执行下一个 Node。
 完成后输出：实际使用的真值 / 实际产物 / 未解决问题 / Quality Gate结果 / 是否触碰Lock / NEXT_HANDOFF。
 最后额外输出一个 \`GUCC_NODE_RESULT\` JSON 代码块，至少包含：
-{"promptId":"${n.promptId}","status":"DONE|WAITING|NEED_INPUT","outputs":[],"availableArtifacts":[],"verifiedFacts":[],"reasonedAnalysis":[],"unknowns":[],"contractPatch":{},"flowOps":[],"requiresApproval":${n.reviewMode==="APPROVAL_REQUIRED"?"true":"false"}}
-只写本次真实完成/确认的内容；不要把计划文件写成已存在。普通未知放 unknowns；确有重大流程变化才给 flowOps。
+{"projectId":"${project.projectId}","promptId":"${n.promptId}","status":"DONE|WAITING|NEED_INPUT","outputs":[],"availableArtifacts":[],"verifiedFacts":[],"reasonedAnalysis":[],"unknowns":[],"contractPatch":{},"flowOps":[],"requiresApproval":${n.reviewMode==="APPROVAL_REQUIRED"?"true":"false"}}
+只写本次真实完成/确认的内容；不要把计划文件写成已存在。普通未知放 unknowns；路线变化单独用 GUCC_FLOW_DIFF，不在此回执修改。
 ${n.reviewMode==="APPROVAL_REQUIRED"?"本节点完成后等待 Human Approval。":"本节点为 REVIEW_OPTIONAL；完成即可由编排器继续。"}
 ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }
@@ -441,7 +441,7 @@ ${known||"- 无"}
   }
 
   function updateFlowPrompt(project){
-    return `【GameUp Creator OS｜UPDATE PROJECT PROMPT FLOW】\n基于当前 VIDEO_CONTRACT、已有 PROJECT_PROMPT_FLOW 与新变化做 DIFF MODE 更新。只允许 ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。\n不要整套推翻；保留已完成Node、成熟Capability Guardrail和Lock。普通变化AI自动调整，重大方向变化才请求Human Approval。\n\n当前项目：${project.projectId}\nFlow revision: ${project.flowRevision}\n当前节点数: ${project.promptFlow?.length||0}\n`;
+    return `【GameUp Creator OS｜UPDATE PROJECT PROMPT FLOW】\n基于当前 VIDEO_CONTRACT、已有 PROJECT_PROMPT_FLOW 与新变化做 DIFF MODE 更新。只允许 ADD / REMOVE / MERGE / SKIP / REORDER / REPLACE。\n不要整套推翻；保留已完成Node、成熟Capability Guardrail和Lock。普通变化AI自动调整，重大方向变化才请求Human Approval。\n\n当前项目：${project.projectId}\nFlow revision: ${project.flowRevision}\n当前节点数: ${project.promptFlow?.length||0}\n\n项目约定：\n${videoContractMd(project)}\n\n完整现有路线：\n${promptFlowMd(project)}\n\n输出 GUCC_FLOW_DIFF JSON：{"projectId":"${project.projectId}","expectedFlowRevision":${project.flowRevision||0},"flowOps":[...]}。新增或替换节点必须含有效 capabilityUsed、完整 prompt、dependencies、branch、executor、reviewMode。不得改写 DONE、SKIPPED、WAITING 节点；不得伪造状态或修改任何 Lock。新增 Prompt 保留成熟能力规则与防错方法。` ;
   }
 
   return {

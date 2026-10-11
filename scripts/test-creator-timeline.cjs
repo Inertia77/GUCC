@@ -146,7 +146,7 @@ function testHumanLocksUnchanged() {
 
 function testBrowserAndPageContract() {
   const browser = fs.readFileSync(path.join(__dirname, "..", "assets", "creator-timeline-browser.js"), "utf8");
-  const index = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "index.html"), "utf8");
+  const index = fs.readFileSync(path.join(__dirname, "..", "apps", "video-workspace", "production-system", "legacy-v1.html"), "utf8");
   const contractPos = index.indexOf("creator-timeline-contract.js");
   const enginePos = index.indexOf("./engine.js");
   const appPos = index.indexOf("./app.js");

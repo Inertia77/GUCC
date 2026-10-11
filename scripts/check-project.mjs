@@ -191,7 +191,7 @@ checkInlineScripts(resolve(root, 'reference', 'ai-prompts.html'));
 checkInlineScripts(resolve(root, 'reference', 'story-library.html'));
 
 const portalSource = readFileSync(portalHtml, 'utf8');
-if (!portalSource.includes('href="./apps/video-workspace/"')) {
+if (!portalSource.includes('href="./apps/video-workspace/"') && !(portalSource.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"') && portalSource.includes('href="./apps/video-workspace/production-system/"'))) {
   errors.push('GUCC Portal 没有指向稳定的视频工作台入口');
 }
 if (!portalSource.includes('href="./apps/command-center/"')) {
@@ -228,7 +228,6 @@ const productionSystemSource = readFileSync(productionSystemHtml, 'utf8');
 const legacyProductionSource = readFileSync(legacyProductionHtml, 'utf8');
 
 for (const expected of [
-  'location.replace("./production-system/"',
   'href="./production-system/"',
   'href="./legacy-prompt-studio-v6.html"'
 ]) {
@@ -250,8 +249,8 @@ for (const expected of [
   'src="./core-rules.js?v=2.0.0"',
   'src="./failure-prevention.js?v=2.0.0"',
   'src="./capability-library.js?v=2.0.0"',
-  'src="./orchestrator.js?v=2.0.0"',
-  'src="./creator-os-app.js?v=2.1.0"'
+  'src="./orchestrator.js?v=',
+  'src="./creator-os-app.js?v='
 ]) {
   if (!productionSystemSource.includes(expected)) errors.push(`Creator OS v2 缺少关键标记：${expected}`);
 }

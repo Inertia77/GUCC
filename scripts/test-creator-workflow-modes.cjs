@@ -15,14 +15,15 @@ const worker=read("sw.js");
 assert.equal(P.STAGES.length,7,"fixed workflow still has seven phases");
 assert(P.tasks.length>=20,"fixed catalog must not silently shrink");
 assert(P.ROUTES.length>=8,"keep topic-specific paths");
-assert(studio.includes("ai-prompts.js?v=6.1.4")&&studio.includes("studio.js?v=6.1.4"),"original fixed catalog must load untouched");
+assert(studio.includes("ai-prompts.js?v=6.1.5")&&studio.includes("studio.js?v=6.1.4"),"original fixed catalog must load untouched");
 assert(read("apps/video-workspace/studio.js").includes("KEY='gucc_creator_prompt_v6'"),"fixed drafts remain isolated");
 assert(chooser.includes('href="./legacy-prompt-studio-v6.html"')&&chooser.includes('href="./production-system/"'),"two equal chooser entries");
 assert(!chooser.includes("location.replace("),"chooser must never auto-redirect");
 assert(portal.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"')&&portal.includes('href="./apps/video-workspace/production-system/"'),"both options available on portal");
 assert(shell.includes("childRoutes.fixed, childRoutes.workspace"),"both options in global creative menu");
 assert(dynamic.includes('href="../legacy-prompt-studio-v6.html"'),"dynamic creator has a return link");
-assert(worker.includes("gucc-static-v37"),"new PWA cache");
+const cacheVersion=Number(worker.match(/gucc-static-v(\d+)/)?.[1]);
+assert(cacheVersion>=38,"PWA cache must invalidate the pre-upgrade shell");
 
 const context={route:"preview",title:"角色前瞻分析",game:"绝区零",server:"国际服",version:"3.3",format:"long"};
 const preview=P.build("analysis",context,"Chat");

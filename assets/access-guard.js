@@ -40,7 +40,7 @@
   function guardPage() { if (hasAccess()) return true; window.location.replace(portalUrlWithRedirect()); return false; }
   function bootstrapGlobalShell() {
     if (document.querySelector('script[data-gucc-shell-bootstrap]')) return;
-    const shell = document.createElement('script'); shell.src = new URL('assets/gucc-shell.js?v=13', rootHref).href; shell.dataset.root = rootHref; shell.dataset.guccShellBootstrap = 'true'; document.head.appendChild(shell);
+    const shell = document.createElement('script'); shell.src = new URL('assets/gucc-shell.js?v=14', rootHref).href; shell.dataset.root = rootHref; shell.dataset.guccShellBootstrap = 'true'; document.head.appendChild(shell);
   }
   function bootstrapCreatorPipeline() {
     // The v6 prompt catalog has its own local draft model. Legacy Studio bridge
@@ -50,7 +50,7 @@
     const eligible = pathname.includes('/apps/video-workspace/') || pathname.includes('/apps/publishing-console/');
     if (!eligible) return;
     if (!document.querySelector('script[data-gucc-creator-pipeline]')) {
-      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=7', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
+      const bridge = document.createElement('script'); bridge.type = 'module'; bridge.src = new URL('assets/creator-pipeline-bridge.mjs?v=8', rootHref).href; bridge.dataset.guccCreatorPipeline = 'true'; document.head.appendChild(bridge);
     }
     if (!document.querySelector('script[data-gucc-creator-pipeline-ux]')) {
       const ux = document.createElement('script'); ux.type = 'module'; ux.src = new URL('assets/creator-pipeline-ux.mjs?v=2', rootHref).href; ux.dataset.guccCreatorPipelineUx = 'true'; document.head.appendChild(ux);

@@ -1,7 +1,18 @@
-const STATIC_CACHE = "gucc-static-v37";
-const RUNTIME_CACHE = "gucc-runtime-v37";
+const STATIC_CACHE = "gucc-static-v39";
+const RUNTIME_CACHE = "gucc-runtime-v39";
 
 const APP_SHELL = [
+  "./assets/gucc-premium.css?v=2",
+  "./assets/gucc-shell.js?v=14",
+  "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
+  "./apps/video-workspace/ai-prompts.js?v=6.1.5",
+  "./apps/video-workspace/production-system/creator-os-storage.js?v=1",
+  "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
+  "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
+  "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=3.4.0",
+  "./apps/video-workspace/production-system/orchestrator.js?v=2.1.0",
+  "./apps/video-workspace/production-system/creator-os-cloud.mjs?v=4",
   "./",
   "./index.html",
   "./offline.html",
@@ -12,6 +23,7 @@ const APP_SHELL = [
   "./assets/creator-pipeline-core.mjs",
   "./assets/creator-pipeline-core.mjs?v=2",
   "./assets/creator-pipeline-bridge.mjs?v=7",
+  "./assets/creator-pipeline-bridge.mjs?v=8",
   "./assets/creator-pipeline-ux.mjs?v=2",
   "./assets/creator-dashboard-core.mjs",
   "./assets/creator-dashboard.mjs?v=4",
@@ -124,6 +136,8 @@ const APP_SHELL = [
   "./apps/publishing-console/styles.css",
   "./apps/publishing-console/platform-rules.js",
   "./apps/publishing-console/app.js",
+  "./apps/publishing-console/app.js?v=2",
+  "./apps/publishing-console/publish-cloud.mjs?v=1",
   "./reference/resource-library.html",
   "./reference/resource-library.js"
 ];

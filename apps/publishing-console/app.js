@@ -107,15 +107,16 @@
   const draftKey=project=>project.creatorProjectId&&project.videoId?JSON.stringify([project.creatorProjectId,project.videoId]):"legacy";
   function drafts(){return JSON.parse(localStorage.getItem(DRAFTS_KEY)||"{}");}
   function persistDraft(){const all=drafts();all[draftKey(state.project)]=state;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));}
-  function archiveBeforeImport(){
+  function archiveBeforeImport(targetKey){
     const all=drafts();all[draftKey(state.project)]=state;
-    if(state.project.title||state.project.videoId)all["backup:"+Date.now()]=JSON.parse(JSON.stringify(state));
+    if(state.project.title||state.project.videoId)all["backup:"+Date.now()+":"+draftKey(state.project)]=JSON.parse(JSON.stringify(state));
+    if(targetKey&&targetKey!==draftKey(state.project)&&all[targetKey])all["backup:"+Date.now()+":"+targetKey]=JSON.parse(JSON.stringify(all[targetKey]));
     localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));
   }
   function renderDrafts(){
     const select=$("#publishDraftSelect");if(!select)return;
     let all;try{all=drafts();}catch{return;}all[draftKey(state.project)]=state;
-    select.innerHTML=Object.entries(all).map(([key,value])=>`<option value="${escapeHtml(key)}">${escapeHtml(value.project.title||"未命名发布单")}</option>`).join("");select.value=draftKey(state.project);
+    select.innerHTML=Object.entries(all).map(([key,value])=>`<option value="${escapeHtml(key)}">${key.startsWith('backup:')?'备份 · ':''}${escapeHtml(value.project.title||"未命名发布单")}</option>`).join("");select.value=draftKey(state.project);
     const identity=$("#creatorIdentity");identity.hidden=!state.project.videoId;
     identity.textContent=state.project.videoId?`来源：${state.project.creatorProjectId} · 视频：${state.project.videoId} · 文件尚需在本机核验`:"";
   }
@@ -136,6 +137,7 @@
       const restored=mergeState(next);
       restored.common.videoPath=current?.common?.videoPath||"";
       restored.common.coverPath=current?.common?.coverPath||"";
+      restored.assistantJobId=current?.assistantJobId||"";
       restored.preflight={checkedAt:"",errors:0,warnings:0};
       all[key]=restored;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));
       if(isActive){state=restored;runtimeAssets.video=null;runtimeAssets.cover=null;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));hydrateAll();}
@@ -143,8 +145,14 @@
     },
     backup(key,value){const all=drafts();all["backup:"+Date.now()+":"+key]=value;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));}
   };
+  window.GuccPublishDrafts.registerAsset=(kind,result,identity)=>{
+    if(!["video","cover"].includes(kind)||JSON.stringify(identity)!==JSON.stringify({projectId:state.project.creatorProjectId||state.source.creatorProjectId||"",videoId:state.project.videoId||""}))return false;
+    if(result){state.common[kind]={name:result.name,size:result.sizeBytes,type:result.type||"",registration:"assistant-path"};runtimeAssets[kind]=null;}
+    else if(state.common[kind]?.registration==="assistant-path"&&!runtimeAssets[kind])state.common[kind]=null;
+    state.preflight.checkedAt="";renderAssetMeta();saveState("本机素材登记已更新");return true;
+  };
   $("#publishDraftSelect")?.addEventListener("change",event=>{
-    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState("发布单已切换");}catch{toast("切换失败，请先导出当前草稿备份");}
+    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;const restoring=event.target.value.startsWith('backup:');if(restoring)archiveBeforeImport(draftKey(next.project));state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState(restoring?"备份已恢复，原草稿另存备份":"发布单已切换");}catch{toast("切换失败，请先导出当前草稿备份");}
   });
 
   function toast(message) {
@@ -175,6 +183,7 @@
     indicator.innerHTML = `<i></i>${online ? "本机助手已连接" : "本机助手未连接"}`;
     indicator.title = detail;
     $("#oneClickPrepareButton").disabled = !online;
+    if(online&&state.assistantJobId)pollAutomationJob(state.assistantJobId);
   }
 
   async function checkAssistant(silent = false) {
@@ -191,10 +200,15 @@
   }
 
   async function pickAssistantFile(kind) {
+    const expectedDraft=draftKey(state.project);
     if (!assistantOnline && !await checkAssistant()) return;
+    if(draftKey(state.project)!==expectedDraft)return;
     try {
       const result = await assistantRequest("/api/select-file", { method: "POST", body: { kind } });
       if (!result.path) return;
+      if(draftKey(state.project)!==expectedDraft){toast("发布单已切换，上一条视频的文件选择未应用");return;}
+      const assetKind=kind==="video"?"video":"cover";
+      runtimeAssets[assetKind]=null;$(assetKind==="video"?"#videoFile":"#coverFile").value="";
       if (kind === "video") {
         state.common.videoPath = result.path;
         state.common.video = { name: result.name, size: null, type: "video/local" };
@@ -251,6 +265,7 @@
   }
 
   function finishAutomationJob(job) {
+    state.assistantJobStatus=job.status;
     Object.entries(job.platforms || {}).forEach(([key, item]) => {
       if (!state.execution[key]) return;
       if (item.status === "ready_for_review") state.execution[key].status = "等待最终检查";
@@ -265,16 +280,20 @@
     toast(job.status === "completed" ? "全部平台已准备好，请在浏览器中最终检查" : "自动准备已结束，部分平台需要登录或人工处理");
   }
 
-  async function pollAutomationJob(jobId) {
+  async function pollAutomationJob(jobId,expectedDraft=draftKey(state.project)) {
     clearTimeout(jobPollTimer);
     try {
       const result = await assistantRequest(`/api/jobs/${jobId}`);
+      if(draftKey(state.project)!==expectedDraft)return;
+      if(state.assistantJobId&&state.assistantJobId!==jobId)return;
+      if(result.job?.id!==jobId)throw Error("自动任务身份不匹配，未应用结果");
+      state.assistantJobStatus=result.job.status;
       renderAutomationJob(result.job);
       if (["completed", "needs_attention", "failed"].includes(result.job.status)) {
         finishAutomationJob(result.job);
         return;
       }
-      jobPollTimer = window.setTimeout(() => pollAutomationJob(jobId), 1400);
+      jobPollTimer = window.setTimeout(() => pollAutomationJob(jobId,expectedDraft), 1400);
     } catch (error) {
       $("#oneClickPrepareButton").disabled = false;
       toast(`读取自动任务失败：${error.message}`);
@@ -282,13 +301,17 @@
   }
 
   async function startOneClickPrepare() {
+    const expectedDraft=draftKey(state.project);
     if (!assistantOnline && !await checkAssistant()) return;
+    if(draftKey(state.project)!==expectedDraft)return;
+    if(state.assistantJobId&&!['completed','needs_attention','failed'].includes(state.assistantJobStatus)){pollAutomationJob(state.assistantJobId,expectedDraft);toast("这条视频已有自动任务，正在读取其结果");return;}
     const checks = runPreflight();
     if (checks.errors) { showView("preflight"); toast(`还有 ${checks.errors} 个硬错误，请先修复`); return; }
     if (!Rules.normalizeText(state.common.videoPath)) { showView("prepare"); toast("请先通过本机助手选择成片"); return; }
     const button = $("#oneClickPrepareButton");
     button.disabled = true;
     button.textContent = "正在启动…";
+    let startedJobId="";
     try {
       enabledKeys().forEach((key) => { state.execution[key].status = "准备中"; });
       renderExecution();
@@ -301,10 +324,20 @@
           platforms: state.platforms
         }
       });
+      if(!result.job?.id)throw Error("自动准备没有返回可追溯任务编号");
+      startedJobId=result.job.id;
+      const all=drafts(),original=draftKey(state.project)===expectedDraft?state:all[expectedDraft];
+      if(original){original.assistantJobId=result.job.id;all[expectedDraft]=original;localStorage.setItem(DRAFTS_KEY,JSON.stringify(all));}
+      if(draftKey(state.project)!==expectedDraft){toast("发布单已切换，请返回上一条视频检查其自动准备任务");return;}
+      state.assistantJobStatus=result.job.status;saveState("自动任务已登记");
       renderAutomationJob(result.job);
       button.textContent = "正在自动上传和填表…";
-      pollAutomationJob(result.job.id);
+      pollAutomationJob(result.job.id,expectedDraft);
     } catch (error) {
+      if(startedJobId){
+        if(draftKey(state.project)===expectedDraft){state.assistantJobId=startedJobId;button.disabled=true;button.textContent="自动任务已启动，正在检查结果";pollAutomationJob(startedJobId,expectedDraft);}
+        toast(`自动任务已启动，但本机记录保存失败：${error.message}；请保留此页面检查结果`);return;
+      }
       button.disabled = false;
       button.textContent = "一键准备全部平台";
       toast(`启动失败：${error.message}`);
@@ -455,6 +488,8 @@
       return;
     }
     runtimeAssets[kind] = file;
+    state.common[kind+"Path"]="";
+    $(kind==="video"?"#localVideoPath":"#localCoverPath").value="";
     state.common[kind] = { name: file.name, size: file.size, type: file.type || "unknown", lastModified: file.lastModified };
     state.preflight.checkedAt = "";
     renderAssetMeta();
@@ -494,7 +529,7 @@
       hydrateAll();saveState("资料交接包已导入");toast("已打开该视频的独立发布单；请选择真实成片与封面");return;
     }
     if (data?.schemaVersion === SCHEMA_VERSION) {
-      clearTimeout(saveTimer);archiveBeforeImport();
+      clearTimeout(saveTimer);archiveBeforeImport(draftKey(data.project||{}));
       state = mergeState(data);
       runtimeAssets.video = null;
       runtimeAssets.cover = null;
@@ -506,7 +541,8 @@
     if (!data || typeof data !== "object" || (!data.__workspaceName && !Object.prototype.hasOwnProperty.call(data, "publishCN"))) {
       throw new Error("不是可识别的 GUCC WorkSpace 或发布控制台 JSON");
     }
-    clearTimeout(saveTimer);archiveBeforeImport();
+    clearTimeout(saveTimer);archiveBeforeImport("legacy");
+    state=defaultState();runtimeAssets.video=null;runtimeAssets.cover=null;
     state.project.title = data.projectTitle || state.project.title;
     state.project.shortName = data.projectShortName || state.project.shortName;
     state.project.game = data.game || state.project.game;
@@ -547,7 +583,11 @@
     const commonWarnings = [];
     if (!Rules.normalizeText(state.project.title)) commonErrors.push("项目标题未填写");
     if (!state.common.video && !Rules.normalizeText(state.common.videoPath)) commonWarnings.push("尚未登记完整成片；可以继续准备文案，但执行投稿前需要选择视频文件");
-    else if (!/\.(mp4|mov|webm|mkv)$/i.test(state.common.video.name || "")) commonWarnings.push("视频扩展名不是常见的 mp4 / mov / webm / mkv，请在各发布页确认兼容性");
+    else if (!/\.(mp4|mov|webm|mkv)$/i.test(state.common.video?.name || state.common.videoPath || "")) commonWarnings.push("视频扩展名不是常见的 mp4 / mov / webm / mkv，请在各发布页确认兼容性");
+    if(state.common.video||state.common.videoPath){
+      if(!runtimeAssets.video)commonWarnings.push("成片只登记了资料或本机路径，执行投稿前仍需核验实际文件");
+      else if(!runtimeAssets.video.size)commonErrors.push("选择的视频文件为空，请重新选择真实成片");
+    }
     if (!state.common.cover) commonWarnings.push("尚未登记母版封面；请确认每个平台是否需要单独封面和裁切");
     if (!state.common.publishAt) commonWarnings.push("尚未填写计划发布时间");
     if (!enabledKeys().length) commonErrors.push("至少启用一个平台");
@@ -898,6 +938,8 @@
   }
 
   function hydrateAll() {
+    clearTimeout(jobPollTimer);renderAutomationJob(null);
+    runtimeAssets.video=null;runtimeAssets.cover=null;$("#videoFile").value="";$("#coverFile").value="";
     $$('[data-state]').forEach((element) => { element.value = getPath(state, element.dataset.state) || ""; });
     renderAssetMeta();
     renderPlatformToggles();
@@ -907,6 +949,7 @@
     populateSnapshotPlatforms();
     renderReview();
     updateHero();
+    if(state.assistantJobId&&assistantOnline)pollAutomationJob(state.assistantJobId);
   }
 
   bindStaticFields();

@@ -30,7 +30,7 @@ async function listSafeFiles(directory, projectRealRoot, predicate) {
     if (lst.isSymbolicLink() || !lst.isFile()) continue;
     const real = await fsp.realpath(full);
     if (!Core.isPathInside(projectRealRoot, real)) throw new Error(`Publish asset resolves outside Project Root: ${entry.name}`);
-    rows.push({ name: entry.name, path: full });
+    rows.push({ name: entry.name, path: full, sizeBytes:lst.size });
   }
   return rows.sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -41,7 +41,7 @@ async function regularSafeFile(filePath, projectRealRoot) {
     if (lst.isSymbolicLink() || !lst.isFile()) return null;
     const real = await fsp.realpath(filePath);
     if (!Core.isPathInside(projectRealRoot, real)) throw new Error(`Publish asset resolves outside Project Root: ${filePath}`);
-    return { name: path.basename(filePath), path: path.resolve(filePath) };
+    return { name: path.basename(filePath), path: path.resolve(filePath), sizeBytes:lst.size };
   } catch (error) {
     if (error?.code === "ENOENT") return null;
     throw error;
@@ -49,10 +49,15 @@ async function regularSafeFile(filePath, projectRealRoot) {
 }
 
 function publicCandidate(status, item, extra = {}) {
-  return { status, path: item?.path || "", name: item?.name || "", ...extra };
+  return { status, path: item?.path || "", name: item?.name || "", sizeBytes:item?.sizeBytes??null, ...extra };
 }
 
 async function discoverVideo(project) {
+  if(project.videoScoped){
+    const master=await listSafeFiles(project.projectRoot,project.realProjectRoot,name=>/^FINAL_MASTER\.(mp4|mov|webm|mkv)$/i.test(name));
+    if(master.length===1)return publicCandidate("found",master[0],{source:"video_scoped_final_master"});
+    if(master.length>1)return publicCandidate("ambiguous",null,{source:"video_scoped_final_master",candidates:master});
+  }
   const finalDir = path.join(project.projectRoot, "09_FINAL");
   const canonical = await regularSafeFile(path.join(finalDir, "VIDEO_V1.mp4"), project.realProjectRoot);
   if (canonical) return publicCandidate("found", canonical, { source: "canonical" });
@@ -76,7 +81,8 @@ function coverMatchesDefinition(name, definition) {
 
 async function discoverCovers(project) {
   const releaseDir = path.join(project.projectRoot, "10_RELEASE");
-  const allImages = await listSafeFiles(releaseDir, project.realProjectRoot, Contract.isImageName);
+  let allImages = await listSafeFiles(releaseDir, project.realProjectRoot, Contract.isImageName);
+  if(project.videoScoped&&!allImages.length)allImages=await listSafeFiles(project.projectRoot,project.realProjectRoot,name=>Object.values(Contract.COVER_ARTIFACTS).some(def=>coverMatchesDefinition(name,def)));
   const byKey = {};
   for (const [key, definition] of Object.entries(Contract.COVER_ARTIFACTS)) {
     const candidates = allImages.filter((item) => coverMatchesDefinition(item.name, definition));
@@ -114,11 +120,12 @@ function projectIdentity(project) {
   };
 }
 
-async function discoverProjectAssets({ workspaceRoot, projectId } = {}) {
-  const project = await resolveProjectRootById(workspaceRoot, projectId);
+async function discoverProjectAssets({ workspaceRoot, projectId, videoId="" } = {}) {
+  let project = await resolveProjectRootById(workspaceRoot, projectId);
   if (!project) {
     return {
       projectId: String(projectId || ""),
+      videoId,
       projectRoot: "",
       canonicalFolderName: "",
       reusedLegacyFolder: false,
@@ -128,15 +135,30 @@ async function discoverProjectAssets({ workspaceRoot, projectId } = {}) {
       warnings: ["未在已配置 Workspace Root 中找到该 creatorProjectId"],
     };
   }
+  const identity = projectIdentity(project);
+  if(videoId){
+    const tracks=project.projectData?.rawVideoContract?.VIDEO_TRACKS||project.projectData?.videoContract?.VIDEO_TRACKS||[];
+    const matches=Array.isArray(tracks)?tracks.filter(v=>(v.VIDEO_ID||v.videoId)===videoId):[];
+    if(matches.length!==1||!(matches[0].FOLDER||matches[0].folder))return {projectId:project.projectId,videoId,projectRoot:"",...identity,status:"video_scope_missing",video:publicCandidate("missing"),covers:{preferred:publicCandidate("missing")},warnings:["本机项目尚未登记此视频目录，请手动选择该视频的成片与封面"]};
+    const folder=Core.normalizeRelativePath(matches[0].FOLDER||matches[0].folder);
+    const scopedRoot=path.resolve(project.projectRoot,...folder.split("/"));
+    if(!Core.isPathInside(project.projectRoot,scopedRoot))throw Error("Video folder resolves outside Project Root");
+    let realScoped=project.realProjectRoot;
+    try{
+      if((await fsp.lstat(scopedRoot)).isSymbolicLink())throw Error("Video folder symlink is not accepted");
+      realScoped=await fsp.realpath(scopedRoot);
+      if(!Core.isPathInside(project.realProjectRoot,realScoped))throw Error("Video folder resolves outside Project Root");
+    }catch(error){if(error.code!=="ENOENT")throw error;}
+    project={...project,projectRoot:scopedRoot,realProjectRoot:realScoped,videoScoped:true};
+  }
   const video = await discoverVideo(project);
   const covers = await discoverCovers(project);
-  const identity = projectIdentity(project);
   const warnings = [];
   if (video.status === "missing") warnings.push("未找到本项目成片，请手动选择");
   if (video.status === "ambiguous") warnings.push("发现多个 Final Video 候选，必须手动选择");
   if (covers.preferred.status === "missing") warnings.push("未找到封面；封面是可选项，可手动选择");
   if (covers.preferred.status === "ambiguous") warnings.push("发现多个封面候选，必须手动选择");
-  return { projectId: project.projectId, projectRoot: project.projectRoot, ...identity, status: "resolved", video, covers, warnings };
+  return { projectId: project.projectId, videoId, projectRoot: project.projectRoot, ...identity, status: "resolved", video, covers, warnings };
 }
 
 module.exports = { resolveProjectRootById, discoverVideo, discoverCovers, discoverProjectAssets, projectIdentity };

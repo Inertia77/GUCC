@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v39";
-const RUNTIME_CACHE = "gucc-runtime-v39";
+const STATIC_CACHE = "gucc-static-v40";
+const RUNTIME_CACHE = "gucc-runtime-v40";
 
 const APP_SHELL = [
   "./assets/gucc-premium.css?v=2",
@@ -24,6 +24,7 @@ const APP_SHELL = [
   "./assets/creator-pipeline-core.mjs?v=2",
   "./assets/creator-pipeline-bridge.mjs?v=7",
   "./assets/creator-pipeline-bridge.mjs?v=8",
+  "./assets/creator-pipeline-bridge.mjs?v=9",
   "./assets/creator-pipeline-ux.mjs?v=2",
   "./assets/creator-dashboard-core.mjs",
   "./assets/creator-dashboard.mjs?v=4",
@@ -138,6 +139,9 @@ const APP_SHELL = [
   "./apps/publishing-console/app.js",
   "./apps/publishing-console/app.js?v=2",
   "./apps/publishing-console/publish-cloud.mjs?v=1",
+  "./apps/publishing-console/app.js?v=3",
+  "./apps/publishing-console/publish-cloud.mjs?v=2",
+  "./assets/creator-publish-asset-discovery.js?v=2",
   "./reference/resource-library.html",
   "./reference/resource-library.js"
 ];
@@ -211,7 +215,7 @@ async function networkFirst(request) {
   const cache = await caches.open(RUNTIME_CACHE);
   const cacheKey = runtimeCacheKey(request);
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, { cache: "no-cache" });
     if (response.ok) await cache.put(cacheKey, response.clone());
     return response;
   } catch {

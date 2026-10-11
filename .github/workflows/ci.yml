@@ -55,6 +55,9 @@ jobs:
       - name: Run per-video publish cloud regression
         run: node scripts/test-gucc-publish-cloud-browser.cjs
 
+      - name: Run publish asset identity regression
+        run: node scripts/test-gucc-publish-assets-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5

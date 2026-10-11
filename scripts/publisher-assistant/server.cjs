@@ -83,6 +83,7 @@ function validateFile(filePath, kind) {
   if (!value || !path.isAbsolute(value)) throw new Error(`${kind === "video" ? "视频" : "封面"}路径不是有效的绝对路径`);
   const stat = fs.statSync(value);
   if (!stat.isFile()) throw new Error(`${value} 不是普通文件`);
+  if (!stat.size) throw new Error(`${value} 是空文件，请重新选择真实素材`);
   const extension = path.extname(value).toLowerCase();
   const allowed = kind === "video" ? new Set([".mp4", ".mov", ".webm", ".mkv"]) : new Set([".png", ".jpg", ".jpeg", ".webp"]);
   if (!allowed.has(extension)) throw new Error(`${kind === "video" ? "视频" : "封面"}扩展名 ${extension || "未知"} 不在允许列表中`);
@@ -97,7 +98,7 @@ async function discoverProjectAssets(body) {
   }
   const config = await CreatorCore.loadConfig(CreatorCore.CONFIG_PATH);
   if (!config.workspaceRoot) throw new Error("Creator Local Agent Workspace Root is not configured; run creator:agent -- --setup first");
-  return ProjectAssets.discoverProjectAssets({ workspaceRoot: config.workspaceRoot, projectId });
+  return ProjectAssets.discoverProjectAssets({ workspaceRoot: config.workspaceRoot, projectId, videoId:String(body?.videoId||"").trim() });
 }
 
 async function ensureBrowser() {

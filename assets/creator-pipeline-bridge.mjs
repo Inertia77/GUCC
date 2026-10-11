@@ -574,6 +574,7 @@ async function consumePublishHandoff(rules) {
   const handoff = readJson(PUBLISH_HANDOFF_KEY);
   if (!handoff?.project?.projectId) return false;
   const existing = readJson(PUBLISH_STORAGE_KEY);
+  if(existing?.project?.videoId||window.GuccPublishDrafts?.current()?.project?.videoId)return false;
   const next = productionToPublishState(publishDefaultsExist(existing) ? existing : null, handoff.project, rules);
   writeJson(PUBLISH_STORAGE_KEY, next);
   if (loggedIn()) {
@@ -590,7 +591,7 @@ async function consumePublishHandoff(rules) {
     }
   }
   localStorage.removeItem(PUBLISH_HANDOFF_KEY);
-  return true;
+  return !window.GuccPublishDrafts?.current()?.project?.videoId;
 }
 
 function hydratePublishReleases(state, releases) {
@@ -622,6 +623,7 @@ async function loadPublishProjectFromQuery(rules) {
   const raw = response.project?.project_data;
   if (!raw?.projectId) return false;
   const existing = readJson(PUBLISH_STORAGE_KEY);
+  if(existing?.project?.videoId||window.GuccPublishDrafts?.current()?.project?.videoId)return false;
   const next = hydratePublishReleases(productionToPublishState(existing, raw, rules), response.releases || []);
   next.source = { ...(next.source || {}), cloudRevision: Number(response.project.revision || 0) };
   if (JSON.stringify(existing) === JSON.stringify(next)) return false;

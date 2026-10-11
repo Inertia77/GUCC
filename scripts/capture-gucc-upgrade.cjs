@@ -32,7 +32,13 @@ const paths={portal:'/',studio:'/apps/video-workspace/legacy-prompt-studio-v6.ht
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   for(const [name,url] of Object.entries(paths)){
    await page.goto('https://gucc.test'+url);await page.addStyleTag({content:['Noto Sans SC','Microsoft YaHei','PingFang SC','Noto Sans CJK SC','Source Han Sans SC'].map(f=>`@font-face{font-family:"${f}";src:url('/__test-font.woff2') format('woff2');font-weight:100 900;font-display:swap}`).join('')});await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(350);await page.screenshot({path:path.join(output,`${name}-${width}.png`),fullPage:true});
+   await page.screenshot({path:path.join(output,`${name}-${width}-viewport.png`)});
    const dimensions=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));results.push({name,width,...dimensions,errors:errors.splice(0)});
+  }
+  if(!process.env.GUCC_CAPTURE_ROOT&&[1280,390].includes(width)){
+   await page.goto('https://gucc.test/apps/video-workspace/production-system/');await page.waitForFunction(()=>window.GuccCreatorOS);
+   await page.click('#applyResultBtn');await page.screenshot({path:path.join(output,`creator-import-${width}.png`)});await page.locator('#resultDialog').evaluate(d=>d.close());
+   await page.click('#editProjectBtn');await page.screenshot({path:path.join(output,`creator-project-${width}.png`)});await page.locator('#editProjectDialog').evaluate(d=>d.close());
   }
   await context.close();
  }

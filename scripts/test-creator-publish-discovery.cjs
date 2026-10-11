@@ -107,6 +107,19 @@ async function touch(filePath, content = "fixture") {
     assert.equal(missing.status, "project_missing");
     assert.equal(missing.projectRoot, "");
 
+    // A video-scoped request must never fall back to a project-wide or sibling
+    // final, nor choose a silent intermediate instead of the finished master.
+    await fsp.writeFile(path.join(beta,"00_CONTROL","PROJECT_DATA.json"),JSON.stringify({projectId:betaId,name:"双视频项目",rawVideoContract:{VIDEO_TRACKS:[{VIDEO_ID:"ONE",FOLDER:"ONE"},{VIDEO_ID:"TWO",FOLDER:"TWO"}]}}));
+    await fsp.mkdir(path.join(beta,"ONE"));await fsp.mkdir(path.join(beta,"TWO"));
+    const first=await touch(path.join(beta,"ONE","FINAL_MASTER.mp4"));
+    await touch(path.join(beta,"TWO","FINAL_VIDEO_SILENT.mp4"));
+    result=await Assets.discoverProjectAssets({workspaceRoot:workspace,projectId:betaId,videoId:"ONE"});
+    assert.equal(result.video.path,first);assert.equal(result.videoId,"ONE");assert(result.video.sizeBytes>0);
+    result=await Assets.discoverProjectAssets({workspaceRoot:workspace,projectId:betaId,videoId:"TWO"});assert.equal(result.video.status,"missing");
+    const second=await touch(path.join(beta,"TWO","FINAL_MASTER.mp4"));
+    result=await Assets.discoverProjectAssets({workspaceRoot:workspace,projectId:betaId,videoId:"TWO"});assert.equal(result.video.path,second);
+    result=await Assets.discoverProjectAssets({workspaceRoot:workspace,projectId:betaId,videoId:"UNKNOWN"});assert.equal(result.status,"video_scope_missing");assert.equal(result.video.path,"");
+
     if (process.platform !== "win32") {
       const outside = await fsp.mkdtemp(path.join(os.tmpdir(), "gucc-phase2c1-assets-outside-"));
       await touch(path.join(outside, "evil.mp4"));
@@ -156,7 +169,8 @@ async function touch(filePath, content = "fixture") {
     assert.match(consoleHtml, /creator-publish-asset-discovery\.js/, "Publishing Console must load auto discovery UI");
     assert.match(ui, /creatorProjectId/, "Publishing Console discovery must use creatorProjectId");
     assert.match(ui, /ambiguous/, "Publishing Console must render ambiguity instead of guessing");
-    assert.match(ui, /DataTransfer/, "discovered local paths must hydrate existing Console asset metadata contract");
+    assert.match(ui, /registerAsset/, "discovered paths must register metadata without fabricating browser files");
+    assert.doesNotMatch(ui, /new File\(|DataTransfer/, "discovery must not create zero-byte browser File placeholders");
     assert.match(ui, /PROVENANCE_KEY/, "auto discovery provenance must survive page reload without entering publish state");
     assert.match(ui, /clearStaleAutoDiscovered/, "ambiguous/missing rediscovery must clear stale auto-filled values");
     assert.match(ui, /manual-preserved/, "manual local selection must take precedence over automatic discovery");

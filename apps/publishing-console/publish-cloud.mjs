@@ -12,7 +12,7 @@ function sort(value){if(Array.isArray(value))return value.map(sort);if(value&&ty
 // The cloud holds authored publish metadata, never local paths, browser File
 // handles, inherited research, or a claim that media/quality was checked here.
 function clean(draft){
-  const d=copy(draft);delete d.updatedAt;delete d.preflight;
+  const d=copy(draft);delete d.updatedAt;delete d.preflight;delete d.assistantJobId;delete d.assistantJobStatus;
   d.common={...d.common,videoPath:"",coverPath:""};
   d.source={workspaceVersion:d.source?.workspaceVersion||"",publishPackage:d.source?.publishPackage||""};
   return d;

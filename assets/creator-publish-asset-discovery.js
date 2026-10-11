@@ -10,7 +10,9 @@
     catch { return {}; }
   }
 
-  function projectId() { return String(savedState()?.source?.creatorProjectId || "").trim(); }
+  function identity(){const state=window.GuccPublishDrafts?.current()||savedState();return {projectId:String(state.project?.creatorProjectId||state.source?.creatorProjectId||"").trim(),videoId:String(state.project?.videoId||"").trim()};}
+  function projectId() { return identity().projectId; }
+  function provenanceId(){const id=identity();return id.videoId?JSON.stringify([id.projectId,id.videoId]):id.projectId;}
 
   function provenanceStore() {
     try {
@@ -20,13 +22,13 @@
   }
 
   function projectProvenance() {
-    const id = projectId();
+    const id = provenanceId();
     const record = provenanceStore()[id];
     return record && typeof record === "object" ? record : {};
   }
 
   function saveProvenance(kind, value) {
-    const id = projectId();
+    const id = provenanceId();
     if (!id) return;
     const store = provenanceStore();
     const current = store[id] && typeof store[id] === "object" ? store[id] : {};
@@ -44,7 +46,7 @@
     const response = await fetch(`${ASSISTANT_URL}/api/discover-project-assets`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectId: id }),
+      body: JSON.stringify(id),
       cache: "no-store",
     });
     const data = await response.json().catch(() => ({}));
@@ -68,38 +70,13 @@
   }
 
   function canAutoFill(kind) {
+    if(document.querySelector(fileSelector(kind))?.files?.length)return false;
     const input = document.querySelector(pathSelector(kind));
     if (!input) return false;
     const current = String(input.value || "");
     if (!current) return true;
     const autoPath = String(currentAutoRecord(kind).path || "");
     return Boolean(autoPath && current === autoPath);
-  }
-
-  function mimeFor(kind, name) {
-    const lower = String(name || "").toLowerCase();
-    if (kind === "video") {
-      if (lower.endsWith(".webm")) return "video/webm";
-      if (lower.endsWith(".mov")) return "video/quicktime";
-      if (lower.endsWith(".mkv")) return "video/x-matroska";
-      return "video/mp4";
-    }
-    if (lower.endsWith(".webp")) return "image/webp";
-    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-    return "image/png";
-  }
-
-  function hydrateExistingConsoleAsset(kind, name) {
-    const input = document.querySelector(fileSelector(kind));
-    if (!input || typeof DataTransfer === "undefined" || typeof File === "undefined") return;
-    // The bytes remain on disk and Publisher Assistant uploads by absolute local path.
-    // This zero-byte File only reuses the Console's existing metadata/state path so
-    // preflight behaves exactly like the manual Windows picker without cloud upload.
-    const transfer = new DataTransfer();
-    transfer.items.add(new File([], name, { type: mimeFor(kind, name), lastModified: Date.now() }));
-    input.files = transfer.files;
-    input.dataset.autoDiscoveredName = name || "";
-    input.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   function applyAutoResult(kind, result) {
@@ -109,7 +86,9 @@
     if (!input) return false;
     setStateInput(selector, result.path);
     input.dataset.autoDiscoveredPath = result.path || "";
-    hydrateExistingConsoleAsset(kind, result.name);
+    // Register actual assistant-observed metadata; never create a placeholder
+    // browser File or imply that its media bytes were selected in this session.
+    window.GuccPublishDrafts?.registerAsset(kind,result,identity());
     saveProvenance(kind, { path: result.path, name: result.name });
     return true;
   }
@@ -121,13 +100,7 @@
     if (pathInput && autoPath && pathInput.value === autoPath) setStateInput(pathSelector(kind), "");
     if (pathInput) delete pathInput.dataset.autoDiscoveredPath;
 
-    const fileInput = document.querySelector(fileSelector(kind));
-    const autoName = String(record.name || fileInput?.dataset.autoDiscoveredName || "");
-    if (fileInput && typeof DataTransfer !== "undefined" && autoName && fileInput.files?.length === 1 && fileInput.files[0]?.name === autoName && fileInput.files[0]?.size === 0) {
-      fileInput.files = new DataTransfer().files;
-      fileInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (fileInput) delete fileInput.dataset.autoDiscoveredName;
+    if(autoPath)window.GuccPublishDrafts?.registerAsset(kind,null,identity());
     saveProvenance(kind, null);
   }
 
@@ -170,25 +143,27 @@
   }
 
   async function discover(silent = false) {
-    const id = projectId();
+    const id = identity();
     const button = document.querySelector("#discoverProjectAssetsButton");
-    if (!id) {
-      if (!silent) window.alert("当前发布单没有 creatorProjectId；请从同一个 Creator Project handoff 进入 Publish，或继续使用手动选择。");
+    if (!id.projectId) {
+      if (!silent) window.alert("当前发布单还没有连接创作项目；请导入该视频的资料交接包，或手动选择成片与封面。");
       return null;
     }
     if (button) { button.disabled = true; button.textContent = "查找中…"; }
     try {
       const result = await requestDiscovery(id);
+      if(JSON.stringify(identity())!==JSON.stringify(id))return null;
+      if(result.projectId!==id.projectId||String(result.videoId||"")!==id.videoId)throw Error("本机素材结果与当前项目或视频不匹配");
       showVideo(result.video || { status: "missing" });
       showCover(result.covers?.preferred || { status: "missing" });
       const hint = document.querySelector("#assetDiscoveryHint");
-      if (hint) hint.textContent = result.status === "resolved" ? `Project ID 已定位本机 Workspace · ${id}` : `本机未找到 ${id}`;
+      if (hint) hint.textContent = result.status === "resolved" ? `已定位此${id.videoId?'视频':'项目'}的本机目录；执行前仍会核验文件` : (result.warnings?.[0]||"本机尚未登记该项目目录，请手动选择文件");
       return result;
     } catch (error) {
       if (!silent) window.alert(`自动查找失败：${error.message}\n\n仍可使用现有“选择成片 / 选择封面”。`);
       return null;
     } finally {
-      if (button) { button.disabled = false; button.textContent = "自动查找本项目成片 / 封面"; }
+      if (button) { button.disabled = false; button.textContent = "查找此视频的成片 / 封面"; }
     }
   }
 
@@ -212,7 +187,7 @@
     wrap.style.display = "grid";
     wrap.style.gap = "6px";
     wrap.style.marginTop = "8px";
-    wrap.innerHTML = `<button id="discoverProjectAssetsButton" class="button subtle" type="button">自动查找本项目成片 / 封面</button><small id="assetDiscoveryHint" style="color:var(--muted,#8e9aab)">按 creatorProjectId 定位，不按标题或最近文件猜测。</small>`;
+    wrap.innerHTML = `<button id="discoverProjectAssetsButton" class="button subtle" type="button">查找此视频的成片 / 封面</button><small id="assetDiscoveryHint" style="color:var(--muted,#8e9aab)">使用项目与视频身份查找；多个候选需手动选择。</small>`;
     setup.after(wrap);
     wrap.querySelector("button").addEventListener("click", () => discover(false));
   }

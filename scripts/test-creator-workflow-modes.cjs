@@ -15,7 +15,7 @@ const worker=read("sw.js");
 assert.equal(P.STAGES.length,7,"fixed workflow still has seven phases");
 assert(P.tasks.length>=20,"fixed catalog must not silently shrink");
 assert(P.ROUTES.length>=8,"keep topic-specific paths");
-assert(studio.includes("ai-prompts.js?v=6.1.5")&&studio.includes("studio.js?v=6.1.4"),"original fixed catalog must load untouched");
+assert(studio.includes("ai-prompts.js?v=6.2.0")&&studio.includes("studio.js?v=6.1.4"),"original fixed catalog must load untouched");
 assert(read("apps/video-workspace/studio.js").includes("KEY='gucc_creator_prompt_v6'"),"fixed drafts remain isolated");
 assert(chooser.includes('href="./legacy-prompt-studio-v6.html"')&&chooser.includes('href="./production-system/"'),"two equal chooser entries");
 assert(!chooser.includes("location.replace("),"chooser must never auto-redirect");

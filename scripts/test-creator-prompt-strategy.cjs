@@ -24,7 +24,7 @@ const chatStep=P.build("audit",{route:"mechanism"},"Chat",0);
 const completeStep=P.build("audit",{route:"mechanism"},"Work");
 assert(chatStep.includes("本轮专项质量底线"));
 assert(!chatStep.includes("【执行要求】"));
-assert(completeStep.includes("事实审核"));
+assert(completeStep.includes("事实/术语"));
 assert(chatStep.length<completeStep.length,"Chat subtask should be cheaper than entire audit");
 
 // Explicit acquisition content gets a lean path; unclassified legacy projects

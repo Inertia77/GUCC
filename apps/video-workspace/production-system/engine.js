@@ -476,6 +476,11 @@
 ## Goal
 ${action.description}
 
+## Content Quality (CURRENT Channel Strategy)
+- 先以当前项目已确定的受众问题、核心命题和事实依据执行；ACQUISITION 走轻量可信路线，CONVERSION/GOLDEN 优先真实作者问题与可验证的独立贡献。
+- AI 汇总不得冒充用户本人亲测；只有证据支持时才描述作者观察。
+- 本轮只交当前实际任务的产物，不为了补齐无关中间文件而增加工作量。
+
 ## Current Project State
 - Project ID: ${project.projectId}
 - Project: ${project.name}

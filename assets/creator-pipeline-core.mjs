@@ -244,7 +244,7 @@ export function releasePackageFromProject(project = {}) {
 }
 
 export function buildReleasePrompt(basePrompt, project = {}) {
-  return `${text(basePrompt)}\n\n# GUCC Publish Console 固定交接合同\n你现在输出的是 10_RELEASE/RELEASE_PACK.md。必须让 Publish Console 可以直接解析，不要改下面的二级标题和三级字段名。没有必要的字段可以留空，但不要发明数据。\n\n## B站\n### 最终标题\n### 最终简介\n### 普通标签\n### 置顶评论\n\n## 抖音\n### 最终发布文案\n### 置顶评论\n\n## 小红书视频\n### 最终标题\n### 最终正文\n### 话题\n### 置顶评论\n\n## 微信视频号\n### 最终完整描述\n### 话题\n### 置顶评论\n\n## YouTube 简体中文\n### 最终标题\n### 最终简介\n### Hashtags\n### 后台 Tags\n\n## TikTok 简体中文\n### 最终 Caption\n### 置顶评论\n\n项目：${text(project.name)}\n游戏：${text(project.game)}\nProject ID：${text(project.projectId)}\n最终发布动作仍由用户确认。`;
+  return `${text(basePrompt)}\n\n# GUCC Publish Console 固定交接合同\n你现在输出的是 10_RELEASE/RELEASE_PACK.md。必须让 Publish Console 可以直接解析，不要改下面的二级标题和三级字段名。没有必要的字段可以留空，但不要发明数据。\n\n本期内容定位与作者贡献：仅基于当前锁稿/真实成片的证据进行表达，不把没有实测的经历写成“我发现”。每个平台默认一套最终可复制文案，最多两套有明显角度差异的备选由用户另要；章节及互动仅在本期实际有用时提供。B站/抖音/小红书/视频号文案简体；YouTube/TikTok 的**文案正文必须繁體中文**。以下两处“简体中文”仅是 Publish Console 旧版解析器的机器字段标题，不代表内容语言，不得修改字段标题。\n\n## B站\n### 最终标题\n### 最终简介\n### 普通标签\n### 置顶评论\n\n## 抖音\n### 最终发布文案\n### 置顶评论\n\n## 小红书视频\n### 最终标题\n### 最终正文\n### 话题\n### 置顶评论\n\n## 微信视频号\n### 最终完整描述\n### 话题\n### 置顶评论\n\n## YouTube 简体中文\n### 最终标题\n### 最终简介\n### Hashtags\n### 后台 Tags\n\n## TikTok 简体中文\n### 最终 Caption\n### 置顶评论\n\n项目：${text(project.name)}\n游戏：${text(project.game)}\nProject ID：${text(project.projectId)}\n最终发布动作仍由用户确认。`;
 }
 
 function defaultPlatformValues(key) {

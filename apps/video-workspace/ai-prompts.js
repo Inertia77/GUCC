@@ -1,6 +1,6 @@
 /* Canonical prompt catalog. Pure builders; no network or implicit project writes. */
 (function(root){'use strict';
-const VERSION='6.1.4';
+const VERSION='6.2.0';
 const STAGES=[['research','01','选题与证据'],['script','02','结构与文案'],['timeline','03','录音与时间线'],['assets','04','画面与声音'],['blueprint','05','剪辑蓝图'],['assembly','06','执行与合成'],['publish','07','发布与复盘']].map(([id,no,name])=>({id,no,name}));
 const ROUTES=[
 {id:'mechanism',name:'机制专题',hint:'规则、触发、状态与资源',source:'正式技能与系统文本、官方演示、当前区服真实实机。看清关键 UI、状态、数值与连续过程。',research:'规则→触发条件→状态/资源变化→边界条件→操作结果；分别核实共存、覆盖、延迟、离场生效与例外。只研究核心问题，不扩成养成百科。',structure:'从真实现象建立因果模型，用具体操作及边界反例验证；配队养成只留会改变该模型的部分。',analysis:'同步看动作、听音频、读 UI，记录 STATE_BEFORE / TRIGGER / STATE_AFTER 与资源增减；单帧不能证明触发顺序。',recording:'设计能区分两种解释的控制变量测试，明确起手资源、可用配置、输入、可见 UI 与成功标准，必要时重复。',visual:'真实镜头承担 PROOF；资源回路、状态与时间轴动画承担 EXPLAIN。图形运动对应含义，不生成假实机。',audit:'核对触发顺序、状态归属、伤害标签、边界反例和因果，看不清的数字不能猜。',sound:'资源满足、状态切换、关键触发设少量提示；解释密集处降低背景声。',promise:'兑现一个系统关系与操作收益，不承诺未验证数值。'},
@@ -70,6 +70,13 @@ taskExtra('sound', 'SOUND_CUE_MAP逐行包含 TIMELINE_IN/OUT、VOICE_ANCHOR、V
 taskExtra('blueprint', '最新 ASSET_INDEX.md / PATH_REMAP.md 决定当前路径，描述MD的旧路径不能覆盖它。蓝图按 GLOBAL_RULES / VISUAL_TRACK / AUDIO_DESIGN_TRACK / OUTPUT_SPECS / MISSING_ASSET / MISSING_AUDIO_ASSET / RIGHTS_REVIEW_REQUIRED 组织；Shot加SHOT_TYPE、EDIT_ACTION、QC_CHECK，音频加PAN、PURPOSE、QC_CHECK。保留实际静音段，不把声音前移。背景预混默认约-24 LUFS Integrated、True Peak≤-6 dBTP、足够Headroom，不做响度最大化；蓝图具体Gain/Ducking优先。');
 taskExtra('render', '视频 yuv420p、CRF18–20或等效高质量、合理preset、Fast Start、正确比例不拉伸；背景WAV Stereo/优先PCM24-bit，默认约-24 LUFS Integrated/True Peak≤-6 dBTP，具体蓝图优先，不响度最大化。无声区保留静音。主素材缺失仅用蓝图已明确fallback，没有则报告，不临时替换。');
 function taskExtra(id,extra){const t=tasks.find(x=>x.id===id);t.body+='\n'+extra;}
+taskExtra('brief', '遵守频道 CURRENT 战略：先分类 ACQUISITION / CONVERSION / GOLDEN。获客快线验证版本需求、时间窗口、事实可靠及制作ROI；CONVERSION/GOLDEN 必须明确作者本人会不会看、AUTHOR_QUESTION、可验证 AUTHOR_CONTRIBUTION。作者贡献没有证据时标 UNCONFIRMED，不虚构亲测；不能成立高成本长视频则建议 SHORT/HOLD/CANCEL。');
+taskExtra('discovery', '区分社区高热度问题和作者本人实际好奇/想验证的问题；研究优先提供能够改变结论的证据与反例，不重复铺满竞品百科。');
+taskExtra('outline', '除 CORE_THESIS 外明确观众价值与作者可验证贡献。版本获客快线只保证可靠且高效解决需求；作者深度线说明本片独有发现、论证链和反例。未有一手证据时禁止捏造作者试验。');
+taskExtra('script', '按内容路线写：ACQUISITION 简短清楚解决高频问题，CONVERSION/GOLDEN 围绕真实作者问题与可证实发现组织论证。每段有新信息、具体动作或反例；用户没有亲自实测时不要写“我实测发现”。自然口播优先于规则化句式规避。');
+taskExtra('audit', '对同一正式稿件版本核三维标准，避免跨版本来回修改；必要问题一次合并修订，保留已经自然且正确的原句。CONVERSION/GOLDEN 核作者贡献与一手证据，ACQUISITION 核实内容ROI。');
+taskExtra('publish', '默认每平台1套推荐成品文案及最多2套有明确差异的备选，更多标题仅用户明确要求时提供；不要凑章节和投票。优先交能直接复制发布的最终稿。');
+taskExtra('retrospective', '获客内容对照成本与有效新增观众；作者型内容重点看每千播放涨粉、观众能否记住独有论证、作者是否仍愿完整看一遍与可复用的研究资产。');
 const PART_IO={
 brief:[
  {inputs:'游戏 / 区服 / 版本 / 视频想法；同一Chat已有热点、观众问题与限制直接沿用',outputs:'PROJECT_BRIEF.md（立项结论、信息增量、风险、建议形式）'},
@@ -138,7 +145,7 @@ retrospective:[
  {inputs:'沿用本Chat刚整理的METRICS_SNAPSHOT.md + 本期命题 / 发布包',outputs:'PERFORMANCE_REVIEW.md、新问题池、下一期可测试改法'}
 ]
 };
-const COMMON=`【单步约定】只完成本条明确工作；合并的子工作属于本轮范围，不自动执行下游。编号仅查找。同一Chat已实际取得的文件/结论直接复用，跨环境只继承真实可读输入；Contract可用则读，缺可选资料先完成能确定部分，缺关键事实/时间/身份才NEED_INPUT。
+const COMMON=`【频道战略｜当前正式目标】先区分 ACQUISITION 获客快线、CONVERSION 作者转粉、GOLDEN 高价值作品；未确认就给候选和依据，不把 AI 的归纳写成用户亲自发现或亲测。获客内容核需求、时效和制作ROI，轻量完成；作者型内容必须明确 AUTHOR_QUESTION 与可验证的 AUTHOR_CONTRIBUTION，并允许没有好题时停止高成本长视频。用户当前决定的单片命题与锁定成果高于通用模板。\n【单步约定】只完成本条明确工作；合并的子工作属于本轮范围，不自动执行下游。编号仅查找。同一Chat已实际取得的文件/结论直接复用，跨环境只继承真实可读输入；Contract可用则读，缺可选资料先完成能确定部分，缺关键事实/时间/身份才NEED_INPUT。
 【真值与LOCK】使用当前游戏/区服官方简中术语；区分官方确认、真实画面/实机、公开分析、未知、未公开资料。不能把传闻/拆包当官方。修订默认DIFF MODE，不改已确认LOCK；最终录音是时间真值，锁文是字幕文字真值，时间锁后同00:00。用户当前要求优先于早期资源计划。
 【真实交付】实际工具写入并回读才称已保存/更新；无工具交完整可保存内容/可运行脚本并标待执行，文件存在且验证才FILE_EXISTS=YES。不把制作文件推Git，大素材留本地。只交正式产物、真实完成/缺项与短NEXT_HANDOFF，不展开下游。
 【素材】保持ASSET_ID、路径/basename、时长、真实时间、对应旁白、用途/限制与描述MD；记SOURCE_URL/OWNER、RIGHTS_STATUS、EDIT_USE_ALLOWED、ATTRIBUTION_REQUIRED/TEXT、AI_GENERATED_OR_ASSISTED/GENERATOR_TOOL及许可备注。官方公开≠无限制许可，社区未授权只研究。观众产物不夹LOCK/TODO/Prompt/工作日志。`;
@@ -147,13 +154,13 @@ function task(id){return tasks.find(x=>x.id===id)||tasks[0];}
 function parts(id,mode){const t=task(id);if(mode==='Chat'&&t.fallback?.length){const io=PART_IO[id]||[];return t.fallback.map(([name,body],index)=>({name,body,index,inputs:io[index]?.inputs||t.inputs,outputs:io[index]?.outputs||t.outputs}));}return[{name:t.name,body:'',index:0,inputs:t.inputs,outputs:t.outputs}];}
 function build(id,c={},mode='Chat',partIndex=0){
  const t=task(id),r=route(c.route),ps=parts(id,mode),p=ps[partIndex]||ps[0],split=mode==='Chat'&&Boolean(t.fallback?.length);
- const ctxLines=[['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['目标时长',c.duration],['本轮补充（可选覆盖）',c.notes]].filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}：${String(v).trim()}`);
+ const ctxLines=[['项目',c.title],['游戏',c.game],['区服',c.server],['版本/截止',c.version],['内容定位',c.contentLane],['作者问题',c.authorQuestion],['作者贡献（需有证据）',c.authorContribution],['核心命题',c.coreThesis],['目标时长',c.duration],['本轮补充（可选覆盖）',c.notes]].filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}：${String(v).trim()}`);
  const ctx=ctxLines.length?`【项目上下文｜仅列工作台已填写项】\n${ctxLines.join('\n')}\n未填写项直接沿用同一Chat已经确认的上下文；不要为了模板完整逐项追问。\n`:'【项目上下文】直接沿用同一Chat已确认的项目与文件；没有新的补充项，不要要求用户逐项填写。\n';
  const lens=t.lens?`【${r.name}分支】\n${r[t.lens]}\n${['brief','analysis','outline','script','audit'].includes(id)?r.research:''}\n`:'';
  const format=c.format==='short'?'短内容：只解一个问题，减非必要证据/章节/流程，开场按实际时长缩短，不硬扩长攻略。':'长内容：解释深度与章节服务命题，不为完整而拉长。';
- const voice=id==='read'?(c.voiceMode==='ai'?`【朗读方式】剪映AI朗读。必须输出TTS_TEMP.srt与TTS_PRONUNCIATION_MAP.md；临时SRT每cue≤500可见字符、尽量430–490，专为正确发音改写，绝不作为最终字幕/真实时间线。\n`:`【朗读方式】真人录音。输出自然朗读稿，不生成虚构时间戳。\n`):''; const scope=split?`【Chat备用 ${p.index+1}/${ps.length}：${p.name}】\n本条只执行这个子任务；以下总规格仅约束，不授权提前执行其余子任务。同一Chat沿用上轮结果，换Chat需提供已完成产物。\n${p.body}\n`:'';
+ const voice=id==='read'?(c.voiceMode==='ai'?`【朗读方式】剪映AI朗读。必须输出TTS_TEMP.srt与TTS_PRONUNCIATION_MAP.md；临时SRT每cue≤500可见字符，优先完整语义与自然停顿，专为正确发音改写，绝不作为最终字幕/真实时间线。\n`:`【朗读方式】真人录音。输出自然朗读稿，不生成虚构时间戳。\n`):''; const scope=split?`【Chat备用 ${p.index+1}/${ps.length}：${p.name}】\n本条只执行这个子任务；以下总规格仅约束，不授权提前执行其余子任务。同一Chat沿用上轮结果，换Chat需提供已完成产物。\n${p.body}\n`:'';
  const capability=['ingest','organise','render','visualpack','sound'].includes(id)?'检查真实文件/执行工具；Chat无本地执行能力时给脚本与回读步骤，不称已渲染。':id==='align'?'必须真实音频/对齐工具；纯文字不能推精确时间。':id==='analysis'||id==='qc'?'先确认实际看/听能力，不能以字幕冒充画面确认。':id==='cover'?'成图需图像生成/编辑工具，无工具明确待成图。':'使用实际可用工具。';
- return `【任务：${t.name}${split?'／'+p.name:''}】\n【环境】${mode}。${capability}\n\n${ctx}内容类型：${r.name}\n${format}\n${voice}\n${COMMON}\n\n【所需输入】${p.inputs||t.inputs}\n\n${lens}\n${scope}\n【${split?'任务总规格（本轮范围以上述子任务为准）':'执行要求'}】\n${t.body}\n\n【正式输出${split?'：本轮仅交子任务对应产物':''}】${p.outputs||t.outputs}\n【NEXT_HANDOFF】简短说明实际产物、关键缺项、以后需提交的真实文件，不自动执行下一条。`;
+ return `【任务：${t.name}${split?'／'+p.name:''}】\n【环境】${mode}。${capability}\n\n${ctx}内容类型：${r.name}\n${format}\n${voice}\n${COMMON}\n\n【所需输入】${p.inputs||t.inputs}\n\n${lens}\n${scope}\n${split?'【本轮专项质量底线】'+({align:'真实音频决定时间，锁文决定字幕字形；无法真实对齐就如实标记未完成。',audit:'同一个当前稿件版本分别审核事实、内容价值与自然度，保留合格段落，只对定位问题给出差异修订。',publish:'标题和封面必须兑现正文；平台规则要有实时官方来源；每平台默认一套推荐正式文案和至多两套实质不同的备选，只有需要才提供更多。',visualpack:'实际生成动态成品、验证文件与角色官方身份，不用静态PPT冒充动态视觉；无本地执行条件明确交付状态。',render:'严格遵守LOCK与蓝图，无真实渲染不得称文件已生成；音画时间从00:00对齐。',analysis:'必须区分真实音画证据与推论；不能把只读字幕当成已看过视频。',ingest:'文件真值由实际下载探测决定；保留Master/Proxy时间映射，不得虚构路径或文件。'}[id]||'当前子任务必须保留原任务的事实边界、正式LOCK和交付真实性，不提前执行其余步骤。')+'\n':'【执行要求】\n'+t.body+'\n'}\n\n【正式输出${split?'：本轮仅交子任务对应产物':''}】${p.outputs||t.outputs}\n【NEXT_HANDOFF】简短说明实际产物、关键缺项、以后需提交的真实文件，不自动执行下一条。`;
 }
 const api={VERSION,STAGES,ROUTES,tasks,COMMON,route,task,parts,build};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;

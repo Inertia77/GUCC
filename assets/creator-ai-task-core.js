@@ -336,6 +336,10 @@
         game: effective.game || cloudRow.game || "",
         version: findVersion(effective, cloudData),
         topic: effective.topic || cloudRow.topic || "",
+        contentLane: effective.contentLane || cloudData.contentLane || "UNCONFIRMED",
+        authorQuestion: effective.authorQuestion || cloudData.authorQuestion || "",
+        authorContribution: effective.authorContribution || cloudData.authorContribution || "",
+        coreThesis: effective.coreThesis || cloudData.coreThesis || "",
         targetPublishDate: effective.targetPublishDate || cloudRow.target_publish_date || "",
       },
       stage: { legacy: legacyState, globalNext: globalNext ? { stage: globalNext.stage, title: globalNext.title, owner: globalNext.owner, humanRequired: Boolean(globalNext.humanRequired) } : null },
@@ -408,6 +412,10 @@
 - Game: ${c.project.game || "未填写"}
 - Version: ${c.project.version || "未填写"}
 - Core Topic: ${c.project.topic || "未填写"}
+- Content Lane: ${c.project.contentLane || "UNCONFIRMED"}
+- Author Question: ${c.project.authorQuestion || "UNCONFIRMED"}
+- Author Contribution (must be evidenced): ${c.project.authorContribution || "UNCONFIRMED"}
+- Core Thesis: ${c.project.coreThesis || "UNCONFIRMED"}
 - Legacy Stage: ${c.stage.legacy}
 - Global Next: ${c.stage.globalNext ? `${c.stage.globalNext.stage} · ${c.stage.globalNext.title}` : "无 / 未读取云端"}
 - Canonical Next Action: ${c.nextAction || "未计算"}
@@ -584,6 +592,12 @@ ${formatVideoContract(contract)}
 
 ## Canonical Creator Constitution
 ${text(input.constitutionText) || "（Constitution 未载入；Fail Closed，不应执行正式任务。）"}
+
+## Content Quality and Author Value
+- 先按当前单片确定的 ACQUISITION / CONVERSION / GOLDEN 定位决定投入与表达；不能为了流程完整制造多余工作。
+- 个人实测/发现需要真实作者证据或确认；AI不能捏造第一人称经验。高投入长视频应当有可验证的独立贡献。
+- 语言、画面和发布素材都必须兑现本片 CORE_THESIS，不套通用百科结构；不同类型内容使用适合自己的叙事。
+- 只完成当前短指令的工作，不重新生成全套工作流；质量复核针对本次相关部分，不为了改稿而改稿。
 
 ## Task-specific Rules
 ${rules.map((rule) => `- ${rule}`).join("\n")}

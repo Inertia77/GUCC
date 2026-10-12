@@ -37,6 +37,11 @@
       dataCutoff:String(input.dataCutoff||""),
       productType:String(input.productType||"preview"),
       format:String(input.format||"UNKNOWN"),
+      contentLane:["ACQUISITION","CONVERSION","GOLDEN"].includes(input.contentLane)?input.contentLane:"UNCONFIRMED",
+      authorQuestion:String(input.authorQuestion||""),
+      authorContribution:String(input.authorContribution||""),
+      coreThesis:String(input.coreThesis||""),
+      audienceQuestion:String(input.audienceQuestion||""),
       platforms:Array.isArray(input.platforms)?input.platforms:["Bilibili","YouTube","抖音","TikTok","小红书","微信视频号"],
       autonomyLevel:String(input.autonomyLevel||"L2"),
       videos:Array.isArray(input.videos)?clone(input.videos):[],
@@ -63,6 +68,12 @@
 
   function commonPlan(project){
     const t=project.productType;
+    // Existing projects keep their prior compilation; only an explicitly selected
+    // acquisition lane gets a cheaper default workflow.
+    if(project.contentLane==="ACQUISITION"){
+      const fast=["PLAYER_DEMAND_RESEARCH","OFFICIAL_SOURCE_RESEARCH","CORE_THESIS","CONTENT_STRUCTURE","SCRIPT_DRAFT","SCRIPT_FACT_QC","SCRIPT_VALUE_QC","SCRIPT_LOCK_GATE","READING_SCRIPT","AUDIO_MASTER_CAPTURE","AUDIO_LOCK_GATE","PRECISE_SRT_ALIGNMENT","VISUAL_DIRECTION","EDITING_BLUEPRINT","CODEX_BUILD","FINAL_ASSEMBLY","PLATFORM_RULE_VERIFICATION","SIX_PLATFORM_PUBLISH_PACKAGE"];
+      return fast.map(capabilityId=>({capabilityId,conditional:capabilityId==="VISUAL_DIRECTION"}));
+    }
     const plan=[];
     const add=(id,opts={})=>plan.push({capabilityId:id,...opts});
     add("PLAYER_DEMAND_RESEARCH");
@@ -83,7 +94,7 @@
     add("SCRIPT_FACT_QC");
     add("SCRIPT_VALUE_QC");
     add("SCRIPT_NATURALNESS_QC");
-    add("SCRIPT_DIFF_REVISION");
+    add("SCRIPT_DIFF_REVISION",{conditional:true});
     add("SCRIPT_LOCK_GATE");
     add("READING_SCRIPT");
     add("AUDIO_MASTER_CAPTURE");
@@ -266,6 +277,12 @@
       `SERVER: ${project.server||"UNKNOWN"}`,
       `VERSION: ${project.version||"UNKNOWN"}`,
       `PRODUCT_TYPE: ${project.productType||"UNKNOWN"}`,
+      `CONTENT_LANE: ${project.contentLane||"UNCONFIRMED"}`,
+      `AUDIENCE_QUESTION: ${project.audienceQuestion||"UNCONFIRMED"}`,
+      `AUTHOR_QUESTION: ${project.authorQuestion||"UNCONFIRMED"}`,
+      `AUTHOR_CONTRIBUTION: ${project.authorContribution||"UNCONFIRMED; no invented first-person experience"}`,
+      `CORE_THESIS: ${project.coreThesis||"UNCONFIRMED"}`,
+      `VIDEO_BRANCH: ${n.branch||"SHARED"}`,
       `AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}`,
       project.doNotUse?.length?`DO_NOT_USE: ${project.doNotUse.join(" / ")}`:"",
       project.sharedSources?.length?`SHARED_SOURCE: ${project.sharedSources.join(" / ")}`:""
@@ -290,6 +307,9 @@ ${(n.requiredInput||[]).map(x=>"- "+x).join("\n")||"- 无额外关键输入"}
 
 【Optional Input】
 ${(n.optionalInput||[]).map(x=>"- "+x).join("\n")||"- 无"}
+
+【CHANNEL STRATEGY / AUTHOR VALUE】
+${["Project","Research","Writing","Visual","Publish"].includes(c.domain)?Core.CORE_RULES.contentStrategy.hard.map(x=>"- "+x).join("\n"):"本节点保持当前项目内容定位，不伪造作者实测或改变已确认命题。"}
 
 【CORE METHOD】
 ${c.coreMethod.map(x=>"- "+x).join("\n")}
@@ -385,7 +405,7 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
   }
 
   function videoContractMd(project){
-    const base=`# VIDEO_CONTRACT\n\n- PROJECT_ID: ${project.projectId}\n- PROJECT_NAME: ${project.name}\n- GAME: ${project.game||"UNKNOWN"}\n- SERVER: ${project.server||"UNKNOWN"}\n- VERSION: ${project.version||"UNKNOWN"}\n- DATA_CUTOFF: ${project.dataCutoff||"UNKNOWN"}\n- PRODUCT_TYPE: ${project.productType||"UNKNOWN"}\n- FORMAT: ${project.format||"UNKNOWN"}\n- AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}\n- CURRENT_STAGE: ${project.currentStage}\n\n## VERIFIED_FACTS\n${(project.verifiedFacts||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## REASONED_ANALYSIS\n${(project.reasonedAnalysis||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## UNKNOWNS\n${(project.unknowns||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## DO_NOT_USE\n${(project.doNotUse||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## PRODUCTION_NEEDS\n${Object.entries(project.productionNeeds||{}).map(([k,v])=>`- ${k}: ${v}`).join("\n")||"- UNKNOWN"}\n`;
+    const base=`# VIDEO_CONTRACT\n\n- PROJECT_ID: ${project.projectId}\n- PROJECT_NAME: ${project.name}\n- GAME: ${project.game||"UNKNOWN"}\n- SERVER: ${project.server||"UNKNOWN"}\n- VERSION: ${project.version||"UNKNOWN"}\n- DATA_CUTOFF: ${project.dataCutoff||"UNKNOWN"}\n- PRODUCT_TYPE: ${project.productType||"UNKNOWN"}\n- CONTENT_LANE: ${project.contentLane||"UNCONFIRMED"}\n- AUTHOR_QUESTION: ${project.authorQuestion||"UNCONFIRMED"}\n- AUTHOR_CONTRIBUTION: ${project.authorContribution||"UNCONFIRMED"}\n- CORE_THESIS: ${project.coreThesis||"UNCONFIRMED"}\n- FORMAT: ${project.format||"UNKNOWN"}\n- AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}\n- CURRENT_STAGE: ${project.currentStage}\n\n## VERIFIED_FACTS\n${(project.verifiedFacts||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## REASONED_ANALYSIS\n${(project.reasonedAnalysis||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## UNKNOWNS\n${(project.unknowns||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## DO_NOT_USE\n${(project.doNotUse||[]).map(x=>"- "+x).join("\n")||"- NONE"}\n\n## PRODUCTION_NEEDS\n${Object.entries(project.productionNeeds||{}).map(([k,v])=>`- ${k}: ${v}`).join("\n")||"- UNKNOWN"}\n`;
     // Preserve AI-researched fields not yet modeled in the compact UI;
     // never silently discard CORE_PLAYER_QUESTION / CORE_THESIS / CONTENT_INCREMENT.
     return base+(project.rawVideoContract?
@@ -427,17 +447,20 @@ ${known||"- 无"}
 请执行 PROJECT_BUILDER：
 1. 研究玩家为什么现在会点、看完解决什么、竞品饱和/缺口与信息增量。
 2. 给 GO/HOLD/SHORT/MERGE/CANCEL；普通未知用 UNKNOWN，不频繁追问。
-3. 提出一个简洁、可辨识的 PROJECT_NAME 和人类可读 PROJECT_ID。项目名称要提炼具体题材与核心方向，不能复制长段用户想法；不加随机哈希。需要讨论多个方向时分别标注。
-4. 生成 PROJECT_BRIEF.md + VIDEO_CONTRACT.md。VIDEO_CONTRACT 至少包含 PROJECT_NAME/PROJECT_ID/GAME/SERVER/VERSION/DATA_CUTOFF/PRODUCT_TYPE/FORMAT/PLATFORMS/CORE_PLAYER_QUESTION/CONTENT_INCREMENT/CORE_THESIS/VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE/OFFICIAL_TERMINOLOGY/AVAILABLE_ARTIFACTS/LOCKED_ARTIFACTS/PRODUCTION_NEEDS/CURRENT_STAGE/AUTONOMY_LEVEL/NEXT_HANDOFF。
-5. HARD STOP 只用于继续会制造虚假事实/时间线/写入状态的关键缺失；普通缺项继续。
-6. 不开始下游视频制作。
+3. 判定 CONTENT_LANE（ACQUISITION / CONVERSION / GOLDEN）和制作投入；作者型内容标明 AUTHOR_QUESTION 和可验证 AUTHOR_CONTRIBUTION，不能编造用户亲历；获客快线验证时效、需求、事实和ROI。
+4. 提出一个简洁、可辨识的 PROJECT_NAME 和人类可读 PROJECT_ID。项目名称要提炼具体题材与核心方向，不能复制长段用户想法；不加随机哈希。需要讨论多个方向时分别标注。
+5. 生成 PROJECT_BRIEF.md + VIDEO_CONTRACT.md。VIDEO_CONTRACT 至少包含 PROJECT_NAME/PROJECT_ID/GAME/SERVER/VERSION/DATA_CUTOFF/PRODUCT_TYPE/FORMAT/PLATFORMS/CONTENT_LANE/AUTHOR_QUESTION/AUTHOR_CONTRIBUTION/CORE_PLAYER_QUESTION/CONTENT_INCREMENT/CORE_THESIS/VERIFIED_FACTS/REASONED_ANALYSIS/UNKNOWNS/DO_NOT_USE/OFFICIAL_TERMINOLOGY/AVAILABLE_ARTIFACTS/LOCKED_ARTIFACTS/PRODUCTION_NEEDS/CURRENT_STAGE/AUTONOMY_LEVEL/NEXT_HANDOFF。
+6. HARD STOP 只用于继续会制造虚假事实/时间线/写入状态的关键缺失；普通缺项继续。
+7. 不开始下游视频制作。
 
 最终额外输出一个 JSON 代码块，字段与 VIDEO_CONTRACT 对应，并明确包含 PROJECT_NAME、PROJECT_ID，便于导入 Project System。
 `;
   }
 
   function buildFlowCompilerPrompt(project){
-    return `【GameUp Creator OS｜BUILD PROJECT PROMPT FLOW】\n读取当前 PROJECT_BRIEF + VIDEO_CONTRACT + Core Rules + Capability Library + Failure Prevention + 已有素材。\n不要机械复制01～07；01～07只做人类生命周期地图。\n\n当前项目：\n${videoContractMd(project)}\n\n请：\n- 为该项目选择最少但足够的 Capability；Proxy/Pixel/补录/Final AI QC均为条件能力。\n- 减少同Executor、同输入、低认知价值的人工中转；保留机制判断、核心命题、Script、SCRIPT_LOCK、真实Timeline、重大格式Gate、最终成片等高价值检查点。\n- Work/Codex不可用时为每个节点给CHAT_FALLBACK；长任务按Chat能力拆成连续子Prompt。\n- 生成 PROJECT_WORKFLOW.md 与 PROJECT_PROMPT_FLOW.md；每个Node必须含 PROMPT_ID/NAME/PURPOSE/EXECUTOR/WHEN/DEPENDENCIES/REQUIRED_INPUT/OPTIONAL_INPUT/READ_FROM_PREVIOUS/CAPABILITY_USED/完整PROMPT/EXPECTED_OUTPUT/SAVE_AS/QUALITY_GATE/HARD_STOP/SOFT_UNCERTAINTY_POLICY/SKIP_CONDITION/NEXT/CHAT_FALLBACK。\n- REVIEW_OPTIONAL不阻塞；APPROVAL_REQUIRED只用于重大方向、LOCK、必须人类输入、最终成片与发布。\n- 不执行任何视频下游Node。\n- 在两个 Markdown 后附 GUCC_FLOW_RESULT JSON代码块：{"projectId":"...","promptFlow":[...]}；每个Node必须含完整可复制prompt正文、dependencies、capabilityUsed、executor、status、reviewMode、qcLevel、saveAs及其余要求字段，不能只放摘要。该JSON用于导回工作台。\n`;
+    return `【GameUp Creator OS｜BUILD PROJECT PROMPT FLOW】\n读取当前 PROJECT_BRIEF + VIDEO_CONTRACT + Core Rules + Capability Library + Failure Prevention + 已有素材。\n不要机械复制01～07；01～07只做人类生命周期地图。\n\n当前项目：\n${videoContractMd(project)}\n\n请：\n- 先判定内容投入：ACQUISITION 为获客快线（真实事实、简洁稿、轻量制作）；CONVERSION/GOLDEN 为作者深度线（问题、实测、反例、可验证贡献）。
+- 为该项目选择最少但足够的 Capability；Proxy/Pixel/补录/Final AI QC均为条件能力。\n- 同一Executor且无真实人工Gate的连续小任务尽量在一次执行中完成，可保留独立Capability作为后台能力；不要为中间MD反复要求用户复制与上传。
+- 减少同Executor、同输入、低认知价值的人工中转；保留机制判断、核心命题、Script、SCRIPT_LOCK、真实Timeline、重大格式Gate、最终成片等高价值检查点。\n- Work/Codex不可用时为每个节点给CHAT_FALLBACK；长任务按Chat能力拆成连续子Prompt。\n- 生成 PROJECT_WORKFLOW.md 与 PROJECT_PROMPT_FLOW.md；每个Node必须含 PROMPT_ID/NAME/PURPOSE/EXECUTOR/WHEN/DEPENDENCIES/REQUIRED_INPUT/OPTIONAL_INPUT/READ_FROM_PREVIOUS/CAPABILITY_USED/完整PROMPT/EXPECTED_OUTPUT/SAVE_AS/QUALITY_GATE/HARD_STOP/SOFT_UNCERTAINTY_POLICY/SKIP_CONDITION/NEXT/CHAT_FALLBACK。\n- REVIEW_OPTIONAL不阻塞；APPROVAL_REQUIRED只用于重大方向、LOCK、必须人类输入、最终成片与发布。\n- 不执行任何视频下游Node。\n- 在两个 Markdown 后附 GUCC_FLOW_RESULT JSON代码块：{"projectId":"...","promptFlow":[...]}；每个Node必须含完整可复制prompt正文、dependencies、capabilityUsed、executor、status、reviewMode、qcLevel、saveAs及其余要求字段，不能只放摘要。该JSON用于导回工作台。\n`;
   }
 
   function updateFlowPrompt(project){

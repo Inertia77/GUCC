@@ -83,7 +83,7 @@ function testTaskFirstUiHandoff(){
     callbacks.applyResultConfirm.click({preventDefault(){}});
   };
   apply({PROJECT_ID:"QA_DRAFT",PROJECT_NAME:"已研究草案",GAME:"绝区零",VERSION:"3.3",
-    VERIFIED_FACTS:["真实来源须独立核验"],PRODUCTION_NEEDS:{PROXY:"NOT_PLANNED"}});
+    VERIFIED_FACTS:["真实来源须独立核验"],CONTENT_LANE:"CONVERSION",AUTHOR_QUESTION:"为什么这个角色的状态会延迟触发",AUTHOR_CONTRIBUTION:"待验证的个人测试，不得当作已实测",CORE_THESIS:"解释延迟触发机制",PRODUCTION_NEEDS:{PROXY:"NOT_PLANNED"}});
   assert.equal(element("currentTaskId").textContent,"PROMPT_FLOW_COMPILER");
   apply({GUCC_FLOW_RESULT:{promptFlow:[{
     promptId:"PF-001",name:"玩家需求研究",capabilityUsed:"PLAYER_DEMAND_RESEARCH",executor:"Chat",dependencies:[],
@@ -91,6 +91,10 @@ function testTaskFirstUiHandoff(){
   }]}});
   const saved=JSON.parse(storage.get(O.STORAGE_KEY)).projects[0];
   assert.equal(saved.promptFlow.length,1);
+  assert.equal(saved.contentLane,"CONVERSION");
+  assert.equal(saved.authorQuestion,"为什么这个角色的状态会延迟触发");
+  assert.equal(saved.authorContribution,"待验证的个人测试，不得当作已实测");
+  assert.equal(saved.coreThesis,"解释延迟触发机制");
   assert.equal(element("currentTaskId").textContent,"PF-001");
   assert.match(element("currentPrompt").textContent,/STABLE CAPABILITY CONTRACT/);
   assert.match(html,/data-creator-prompts="true"/,"Canonical OS must not auto-inject legacy pipeline overlays");

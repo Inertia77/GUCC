@@ -80,6 +80,21 @@
   ]);
 
   const CORE_RULES=Object.freeze({
+    contentStrategy:Object.freeze({
+      title:"Channel Strategy / Author Value",
+      hard:[
+        "先区分 ACQUISITION（版本获客）、CONVERSION（作者转粉）、GOLDEN（增长与高作者价值）；未确定写 UNCONFIRMED。",
+        "获客快线重真实需求、时效、事实可靠和制作ROI，允许低成本短内容，不自动套旗舰流程。",
+        "作者深度/黄金内容必须有明确 AUTHOR_QUESTION 和真实、可验证的 AUTHOR_CONTRIBUTION（个人观察/实测/反例/解释模型/独特表达）。",
+        "AI 归纳不能伪装成作者亲测或第一人称经验；只有真实来源或用户确认后才写作亲历。",
+        "标题、封面、开场与正文必须兑现同一个价值命题；已有素材和已完成流程不能成为硬做长视频的理由。"
+      ],
+      best:[
+        "模七余三：模负责提问与判断，七负责解释，余三负责验证或反例；只在单片实际启用时采用多角色。",
+        "写作先问：观众解决什么，作者发现了什么，证据是什么；信息密度决定篇幅。",
+        "复盘将获客、每千播放涨粉、作者独特贡献、制作工时、可复用成果分开评估。"
+      ]
+    }),
     evidence:Object.freeze({
       title:"Evidence Rules",
       hard:[

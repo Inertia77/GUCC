@@ -1,17 +1,17 @@
-const STATIC_CACHE = "gucc-static-v40";
+const STATIC_CACHE = "gucc-static-v41";
 const RUNTIME_CACHE = "gucc-runtime-v40";
 
 const APP_SHELL = [
   "./assets/gucc-premium.css?v=2",
   "./assets/gucc-shell.js?v=14",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
-  "./apps/video-workspace/ai-prompts.js?v=6.1.5",
+  "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/production-system/creator-os-storage.js?v=1",
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
   "./apps/video-workspace/production-system/creator-os-app.js?v=3.4.0",
-  "./apps/video-workspace/production-system/orchestrator.js?v=2.1.0",
+  "./apps/video-workspace/production-system/orchestrator.js?v=2.2.0",
   "./apps/video-workspace/production-system/creator-os-cloud.mjs?v=4",
   "./",
   "./index.html",
@@ -110,9 +110,9 @@ const APP_SHELL = [
   "./docs/ai-video-production/CREATOR_CONSTITUTION.md",
   "./apps/video-workspace/production-system/index.html",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.0",
-  "./apps/video-workspace/production-system/core-rules.js?v=2.0.0",
+  "./apps/video-workspace/production-system/core-rules.js?v=2.2.0",
   "./apps/video-workspace/production-system/failure-prevention.js?v=2.0.0",
-  "./apps/video-workspace/production-system/capability-library.js?v=2.0.0",
+  "./apps/video-workspace/production-system/capability-library.js?v=2.2.0",
   "./apps/video-workspace/production-system/orchestrator.js?v=2.0.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=2.1.0",
   "./apps/video-workspace/production-system/creator-os-app.js?v=3.1.0",

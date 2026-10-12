@@ -462,9 +462,12 @@ function importProjectBrief(p,result){
   const id=String(field("projectId","PROJECT_ID")||"").trim();
   if(id&&id!==p.projectId)p.projectCode=id;
   for(const [a,b] of [["name","PROJECT_NAME"],["game","GAME"],["server","SERVER"],["version","VERSION"],
-    ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"]]){
+    ["format","FORMAT"],["productType","PRODUCT_TYPE"],["dataCutoff","DATA_CUTOFF"],["autonomyLevel","AUTONOMY_LEVEL"],
+    ["authorQuestion","AUTHOR_QUESTION"],["authorContribution","AUTHOR_CONTRIBUTION"],["coreThesis","CORE_THESIS"],["audienceQuestion","CORE_PLAYER_QUESTION"]]){
     const v=field(a,b);if(v!=null)p[a]=String(v);
   }
+  const lane=String(field("contentLane","CONTENT_LANE")||"").trim().toUpperCase();
+  if(["ACQUISITION","CONVERSION","GOLDEN"].includes(lane))p.contentLane=lane;
   for(const [a,b] of [["verifiedFacts","VERIFIED_FACTS"],["reasonedAnalysis","REASONED_ANALYSIS"],["unknowns","UNKNOWNS"],
     ["doNotUse","DO_NOT_USE"],["availableArtifacts","AVAILABLE_ARTIFACTS"],["officialTerminology","OFFICIAL_TERMINOLOGY"],
     ["lockedArtifacts","LOCKED_ARTIFACTS"],["videos","VIDEOS"]]){

@@ -2,6 +2,17 @@
 
 本文件是 AI Video Production System 的**统一长期规则来源（Canonical Creator Constitution）**。项目 Stage Prompt、AI Task Prompt、Codex Build、人工 Review 都必须服从这里；项目状态、Lock 和当前正式 Artifact 决定某一条视频此刻能做什么。
 
+## Current Channel Content Strategy
+
+本系统对齐频道正式总纲（CURRENT）：**作者贡献 × 可信事实 × 观众价值 × 制作成本**。本文件是执行摘要；单片已确认的 CORE_THESIS / LOCK 仍是具体项目真值。
+
+- 首先判断 `CONTENT_LANE`：`ACQUISITION`（版本获客 / 搜索需求，快速可信且低成本）、`CONVERSION`（个人问题、解释模型、实战与作者转粉）、`GOLDEN`（高价值研究和创作，同时追求增长）。未知时 `UNCONFIRMED`，不可自动用高投入默认填满。
+- 高投入长视频明确 `AUTHOR_QUESTION` 和可验证的 `AUTHOR_CONTRIBUTION`；作者的亲历、实测、发现不可由 AI 凭空宣称。AI 可以提出研究假设和模型草案，但作者确认与真实证据需单独记录。
+- 获客内容可以只满足观众真实问题、可靠事实、可用时间窗口和合理 ROI；无需为“流程完整”制造大量素材或旗舰动画。
+- 写作优先交付发现、因果、反例、可操作认识；句式禁忌是风险信号，不能机械删除自然且正确的表达。
+- 事实/价值/自然度三项审核可在同一版本上集中执行，修订仅改真实问题，禁止多轮为了改稿而改稿。
+- 发布后除播放量，还应检查每千播放涨粉、评论是否记住本期结论、作者是否仍然愿意看、成本与可复用资产。
+
 ## Workflow Authority
 
 1. AI 只执行当前被允许的任务，不得为了“顺手完成”擅自跨阶段、推进状态、设置 Human Lock 或触发 Final Publish。

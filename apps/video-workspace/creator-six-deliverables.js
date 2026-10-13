@@ -30,7 +30,7 @@
 【交付方式】优先直接交一个完整、可用的正式成果；仅附必要的证据说明、真正影响下一步的缺口与最短 NEXT_HANDOFF。不要强制多份重复 MD、JSON、全阶段计划。`;
   function get(id){return ITEMS.find(x=>x.id===id)||ITEMS[0];}
   function build(id,context={}){
-    const item=get(id),r=String(context.route||"mechanism"),shape=String(context.format||"long")==="short"?"短内容：按照真实信息密度精简。":"长内容：允许深入，但不为时长或章节数量灌水。";
+    const item=get(id),routes={mechanism:"机制专题",preview:"前瞻解析",guide:"正式攻略",rerun:"复刻重评",decision:"抽卡决策",rotation:"实战排轴",story:"剧情人物",creative:"创意内容"};const r=routes[context.route]||String(context.route||"机制专题"),shape=String(context.format||"long")==="short"?"短内容：按照真实信息密度精简。":"长内容：允许深入，但不为时长或章节数量灌水。";
     const field=[["项目",context.title],["游戏",context.game],["区服",context.server],["版本／资料截止",context.version],["内容形式",shape],["观众问题",context.audienceQuestion],["作者问题",context.authorQuestion],["作者贡献（必须可核实）",context.authorContribution],["核心命题",context.coreThesis],["用户补充",context.notes]].filter(([,v])=>typeof v==="string"&&v.trim()).map(([k,v])=>k+"："+v.trim()).join("\n");
     return `【GUCC 六项创作成果 · ${item.no}／06 · ${item.name}】
 【本轮目标】${item.goal}

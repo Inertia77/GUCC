@@ -23,7 +23,8 @@ import {
   withBusy
 } from '../ui.js';
 import { bindPersistentFilters, persistFilters } from '../ux-state.js';
-import { renderFixedFieldOptions } from '../fixed-field-options.js';
+import { renderFixedFieldOptions, displayCharacterStatus } from '../fixed-field-options.js';
+import { initCharacterStatusWizard } from './character-status-wizard.js';
 import { assertNewCharacterUnique } from '../record-guards.mjs';
 import {
   bindClearFilters,
@@ -318,8 +319,8 @@ export async function searchCharacters({ visibleCount = 0, revealId = '' } = {})
               row.rarity,
               row.element,
               row.game_code === '阴' && row.profession === '式神' ? null : row.profession,
-              { value: row.research_status, tone: 'progress' },
-              { value: row.build_status, tone: 'state' },
+              { value: '研究 ' + displayCharacterStatus(row.research_status), tone: 'progress' },
+              { value: '养成 ' + displayCharacterStatus(row.build_status), tone: 'state' },
               row.like_level,
               row.role_type,
               row.power_rank
@@ -366,6 +367,7 @@ export function initCharacters() {
   searchButton.addEventListener('click', runSearch);
   bindEnterSearch(searchButton.closest('.toolbar'), searchButton, '搜索中...', searchCharacters);
   $('#newCharBtn').addEventListener('click', () => openEditor({ links: [] }));
+  initCharacterStatusWizard({ onSaved: searchCharacters });
   $('#characterResults').addEventListener('click', async (event) => {
     const detailButton = event.target.closest('[data-detail-char]');
     const deleteButton = event.target.closest('[data-delete-char]');

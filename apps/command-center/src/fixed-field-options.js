@@ -1,6 +1,6 @@
 const FIXED_FIELD_OPTIONS = Object.freeze({
-  characterResearchStatus: Object.freeze(['待研究', '查攻略', 'OK']),
-  characterBuildStatus: Object.freeze(['待养成', 'DONE', 'NOT']),
+  characterResearchStatus: Object.freeze(['◯', '△', '✕', '対象外']),
+  characterBuildStatus: Object.freeze(['◯', '△', '✕', '対象外']),
   partyStatus: Object.freeze(['待研究', 'OK']),
   partyHoldStatus: Object.freeze(['YES', 'NO'])
 });
@@ -32,7 +32,7 @@ export function renderFixedFieldOptions(field, value, {
   if (emptyLabel) {
     rendered.push(`<option value=""${selectedValue ? '' : ' selected'}>${escapeHtml(emptyLabel)}</option>`);
   } else if (current && !isValidCurrent) {
-    rendered.push(`<option value="" selected disabled>旧值「${escapeHtml(current)}」不符合当前规则，请重新选择</option>`);
+    rendered.push(`<option value="" selected disabled>旧状态待核实，请选择新分类</option>`);
   } else if (!selectedValue) {
     rendered.push('<option value="" selected disabled>请选择</option>');
   }
@@ -50,5 +50,8 @@ export function hydrateFixedFieldFilters(root = document) {
     });
   });
 }
+
+export const isCanonicalCharacterStatus = (value) => FIXED_FIELD_OPTIONS.characterResearchStatus.includes(value);
+export const displayCharacterStatus = (value) => isCanonicalCharacterStatus(value) ? value : '待核实';
 
 export { FIXED_FIELD_OPTIONS };

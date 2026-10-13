@@ -43,11 +43,45 @@ export async function callApi(action, payload = {}) {
   return json.data ?? json;
 }
 
+// A status-only RPC keeps unrelated character fields, notes and resources untouched.
+// Authorization is enforced inside the RPC against auth.uid() and public.app_users.
+async function updateCharacterStatus(payload) {
+  assertConfigured();
+  const accessToken = await getAccessToken();
+  const url = CONFIG.SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/rpc/app_update_character_status';
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'apikey': CONFIG.SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + accessToken
+      },
+      body: JSON.stringify({ p_payload: payload })
+    });
+  } catch (error) {
+    throw new Error('无法连接角色状态保存接口：' + error.message);
+  }
+  const response = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401) clearSession();
+    throw new Error(response.message || response.error || '状态保存失败：HTTP ' + res.status);
+  }
+  if (response?.id !== payload.id
+      || response?.research_status !== payload.research_status
+      || response?.build_status !== payload.build_status) {
+    throw new Error('状态保存回读不一致，已停止进入下一位角色。');
+  }
+  return response;
+}
+
 export const API = {
   ping: () => callApi('ping'),
   searchCharacters: (payload) => callApi('searchCharacters', payload),
   getCharacterDetail: (payload) => callApi('getCharacterDetail', payload),
   saveCharacter: (payload) => callApi('saveCharacter', payload),
+  updateCharacterStatus,
   deleteCharacter: (payload) => callApi('deleteCharacter', payload),
   searchParties: (payload) => callApi('searchParties', payload),
   saveParty: (payload) => callApi('saveParty', payload),

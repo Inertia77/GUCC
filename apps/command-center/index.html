@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="styles/mobile-layout.css" />
   <link rel="stylesheet" href="styles/expanded-details.css" />
   <link rel="stylesheet" href="styles/interaction-contrast.css" />
+  <link rel="stylesheet" href="styles/character-status-wizard.css?v=1" />
   <script src="../../assets/gucc-shell.js?v=14" data-root="../../" defer></script>
 <link rel="stylesheet" href="../../assets/gucc-premium.css?v=2" data-gucc-premium>
 </head>
@@ -91,9 +92,10 @@
               <button id="searchCharBtn" type="button">搜索角色</button>
               <button id="clearCharFilters" type="button" class="secondary filter-clear">清空筛选</button>
               <button id="newCharBtn" type="button" class="secondary">新增角色</button>
+              <button id="startCharacterStatusWizard" type="button" class="secondary status-wizard-start">逐个校准状态</button>
               <aside class="status-convention-note filter-guidance" aria-label="角色研究与养成状态记录规则">
                 <strong>状态记录规则</strong>
-                <span>研究状态只用「待研究 → 查攻略 → OK」；养成状态只用「待养成 → DONE / NOT」，其中「NOT」表示不养成。其他信息写入「研究/养成备注」。</span>
+                <span>研究与养成分别选择「◯ 完成 / △ 进行中 / ✕ 未开始 / 対象外」。旧记录显示「待核实」，由你逐个确认；备注保持不变。</span>
               </aside>
               <div id="characterResultControls" class="result-view-controls" hidden>
                 <span>结果视图</span>
@@ -106,6 +108,7 @@
           </div>
           <div id="characterResults" class="list"></div>
           <div id="characterEditor" class="card editor hidden"></div>
+          <div id="characterStatusWizard" class="card editor status-wizard hidden"></div>
         </section>
 
         <section id="parties" class="tab-panel" role="tabpanel" aria-labelledby="tab-parties">

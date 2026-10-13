@@ -34,6 +34,8 @@ assert.deepEqual(simple.promptFlow.map(x=>x.sixOutcomeId),ids);
 assert(simple.promptFlow.every(x=>x.prompt.length>350&&["Work","Codex"].includes(x.executor)));
 assert.equal(simple.promptFlow[0].reviewMode,"APPROVAL_REQUIRED");
 assert.equal(simple.promptFlow[1].reviewMode,"APPROVAL_REQUIRED","Real-audio subtitle requires explicit verified approval");
+assert(simple.promptFlow.slice(0,5).every(n=>n.reviewMode==="APPROVAL_REQUIRED"),"Only final deliverables need manual evidence confirmation");
+assert.match(simple.promptFlow[0].prompt,/qualityStatus/);
 assert.match(simple.promptFlow[1].prompt,/真实音频/);
 assert.equal(O.currentTask(simple).promptId,"PF-01");
 

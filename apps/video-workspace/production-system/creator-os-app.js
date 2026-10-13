@@ -329,13 +329,17 @@ async function createDraft(data){
     name:provisionalProjectName(data),
     productType:data.productType||"UNKNOWN"
   });
+  if(p.workflowMode==="six"){
+    O.buildWorkflow(p);O.compilePromptFlow(p);
+    p.status="FLOW_READY"; // A six-outcome project needs no separate planning/flow compilation step.
+  }
   store.projects.unshift(p);
   store.selectedProjectId=p.projectId;
   save();render();
-  const prompt=O.buildCreateProjectPrompt(p);
+  const prompt=p.workflowMode==="six"?O.currentTask(p).prompt:O.buildCreateProjectPrompt(p);
   $("currentPrompt").textContent=prompt;
   const copied=await copy(prompt);
-  notify(copied?"想法已保存，立项 Prompt 已复制；请交给 ChatGPT / Work 研究":"想法已保存；请点击“复制当前 Prompt”后交给 AI 研究");
+  notify(p.workflowMode==="six"?(copied?"六项成果路线已创建，已复制第一项「文案」Prompt":"六项成果路线已创建，请复制第一项文案 Prompt"):(copied?"想法已保存，立项 Prompt 已复制":"想法已保存；请复制立项 Prompt"));
 }
 function editFields(p){
   return {
@@ -750,7 +754,7 @@ $("createProjectForm").addEventListener("submit",async e=>{
   if(!idea){$("projectIdea").focus();return notify("请至少写一句视频想法");}
   const submit=$("saveDraftProject");submit.disabled=true;
   try{
-    await createDraft({idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),autonomyLevel:"L2"});
+    await createDraft({idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),workflowMode:fd.get("workflowMode")||"six",autonomyLevel:"L2"});
     $("createDialog").close();
   }catch(err){notify("保存失败："+(err.message||"请稍后重试"));}
   finally{submit.disabled=false;}

@@ -263,13 +263,14 @@
   function compileSixOutcomes(project){
     const tracks=Array.isArray(project.videos)&&project.videos.length>1?project.videos:[null];
     const capIds={script:"SCRIPT_DRAFT",subtitle:"PRECISE_SRT_ALIGNMENT",visual:"DYNAMIC_MECHANIC_VISUAL",sound:"BGM_SFX_ASSET_PRODUCTION",cover:"COVER_DESIGN",publish:"SIX_PLATFORM_PUBLISH_PACKAGE"};
+    const executors={script:"Work",subtitle:"Work",visual:"Codex",sound:"Codex",cover:"Work",publish:"Work"};
     const out=[];
     for(const track of tracks){
       const branch=track?String(track.videoId||track.branch||track.name||"VIDEO").replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,30):"SHARED";
       let previous=[];
       for(const item of Six.ITEMS){
         const id=track?"PF-"+branch+"-"+item.no:"PF-"+item.no;
-        const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],item.executor,previous,{
+        const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],previous,{
           branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
           qcLevel:item.id==="subtitle"?"Q2":"Q1",
           reviewMode:item.id==="script"?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
@@ -289,7 +290,7 @@
       route:project.productType,format:project.format,
       authorQuestion:project.authorQuestion,authorContribution:project.authorContribution,
       coreThesis:project.coreThesis,audienceQuestion:project.audienceQuestion,
-      notes:[project.idea,project.doNotUse?.length?"禁止/证据边界："+project.doNotUse.join("、"):""].filter(Boolean).join("\n")
+      notes:[project.idea,project.videos?.length>1?"本轮视频："+(project.videos.find(x=>String(x.videoId||"")===n.videoId)?.name||n.branch):"",project.doNotUse?.length?"禁止/证据边界："+project.doNotUse.join("、"):""].filter(Boolean).join("\n")
     };
     const current=Six.build(item.id,context);
     return current+"\n\n【GUCC 状态回执】完成时另给简短 GUCC_NODE_RESULT JSON："+

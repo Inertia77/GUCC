@@ -267,10 +267,11 @@
     const out=[];
     for(const track of tracks){
       const branch=track?String(track.videoId||track.branch||track.name||"VIDEO").replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,30):"SHARED";
-      let previous=[];
+      const stepIds={};
       for(const item of Six.ITEMS){
         const id=track?"PF-"+branch+"-"+item.no:"PF-"+item.no;
-        const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],previous,{
+        const requirements={script:[],subtitle:[stepIds.script],visual:[stepIds.script],sound:[stepIds.subtitle],cover:[stepIds.script],publish:[stepIds.script,stepIds.subtitle,stepIds.visual,stepIds.sound,stepIds.cover]};
+        const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],requirements[item.id],{
           branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
           qcLevel:item.id==="subtitle"?"Q2":"Q1",
           reviewMode:item.id!=="publish"?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
@@ -278,7 +279,7 @@
         });
         n.sixOutcomeId=item.id;
         n.videoId=track?String(track.videoId||""):"";
-        out.push(n);previous=[id];
+        out.push(n);stepIds[item.id]=id;
       }
     }
     return out;

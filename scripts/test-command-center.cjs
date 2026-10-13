@@ -64,7 +64,7 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.match(versionSource, /API\.searchVersions/);
 
   const indexSource = read("apps/command-center/index.html");
-  assert.match(indexSource, /src="src\/main\.js"/);
+  assert.match(indexSource, /src="src\/main\.js(?:\?v=\d+)?"/);
   assert.doesNotMatch(indexSource, /main-v\d/i);
   assert.doesNotMatch(indexSource, /styles\/[^"']+-v\d/i);
 

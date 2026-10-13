@@ -273,7 +273,7 @@
         const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],previous,{
           branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
           qcLevel:item.id==="subtitle"?"Q2":"Q1",
-          reviewMode:item.id==="script"?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
+          reviewMode:["script","subtitle"].includes(item.id)?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
           hardStop:item.id==="subtitle"?["必须有真实可访问的最终音频；不能根据文案虚构精确字幕时码"]:[]
         });
         n.sixOutcomeId=item.id;

@@ -266,10 +266,11 @@
 <dialog id="createDialog">
   <form id="createProjectForm" class="dialog-card">
     <div class="panel-head"><div><span class="micro">CREATE PROJECT</span><h2>建立项目草案</h2></div><button type="button" data-close-create class="icon-button" aria-label="关闭">×</button></div>
-    <p>随意写下视频构想即可。原始想法会完整保留，不会被当作项目标题。保存后复制立项 Prompt 交给 AI；正式名称和制作方向由 AI 研究后确定。</p>
+    <p>写一句视频想法即可。推荐「六项核心成果」，研究、审核与设计由 AI 在成果任务内部完成。原有详细编排仍可选择。</p>
     <label for="projectIdea">视频想法（必填，仅作为创作输入）<textarea id="projectIdea" name="idea" rows="6" required placeholder="比如：想做一期绝区零新角色的抽取决策，但不想做重复的常规攻略；希望找到玩家最关心的争议点……"></textarea></label>
     <div class="form-grid"><label>游戏（可选）<input name="game"></label><label>区服（可选）<input name="server"></label><label>版本（可选）<input name="version"></label><label>类型（可选）<select name="productType"><option value="" selected>交给 AI 判断</option><option value="preview">前瞻解析</option><option value="guide">正式攻略</option><option value="rerun">复刻重评</option><option value="mechanism">机制专题</option><option value="decision">抽卡/决策</option><option value="rotation">实战/排轴</option><option value="story">人物/剧情</option><option value="creative">创意内容</option></select></label></div>
-    <footer><button type="button" data-close-create class="button ghost">取消</button><button type="submit" id="saveDraftProject" class="button primary">保存想法并复制立项 Prompt</button></footer>
+    <label>制作路线 <select name="workflowMode"><option value="six" selected>六项核心成果（推荐）</option><option value="legacy">详细编排（旧版高级模式）</option></select></label>
+    <footer><button type="button" data-close-create class="button ghost">取消</button><button type="submit" id="saveDraftProject" class="button primary">创建项目并复制首项 Prompt</button></footer>
   </form>
 </dialog>
 
@@ -334,12 +335,13 @@
 <script src="./core-rules.js?v=2.2.0"></script>
 <script src="./failure-prevention.js?v=2.0.0"></script>
 <script src="./capability-library.js?v=2.2.0"></script>
-<script src="./orchestrator.js?v=2.2.0"></script>
+<script src="../creator-six-deliverables.js?v=1"></script>
+<script src="./orchestrator.js?v=2.3.0"></script>
 <script src="./creator-os-handoff.js?v=1"></script>
 <script src="./creator-os-storage.js?v=1"></script>
 <script src="./creator-os-validation.js?v=1"></script>
 <script src="./creator-os-step-history.js?v=2"></script>
-<script src="./creator-os-app.js?v=3.4.0"></script>
+<script src="./creator-os-app.js?v=3.5.0"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 </body>

@@ -326,16 +326,20 @@ async function createDraft(data){
   const p=O.createProject({
     ...data,
     projectId:newDraftId(),
-    name:provisionalProjectName(data),
+    name:data.workflowMode==="six"?[data.game,data.version,String(data.idea||"").replace(/\s+/g," ").trim().slice(0,32)].filter(Boolean).join(" · "):provisionalProjectName(data),
     productType:data.productType||"UNKNOWN"
   });
+  if(p.workflowMode==="six"){
+    O.buildWorkflow(p);O.compilePromptFlow(p);
+    p.status="FLOW_READY"; // A six-outcome project needs no separate planning/flow compilation step.
+  }
   store.projects.unshift(p);
   store.selectedProjectId=p.projectId;
   save();render();
-  const prompt=O.buildCreateProjectPrompt(p);
+  const prompt=p.workflowMode==="six"?O.currentTask(p).prompt:O.buildCreateProjectPrompt(p);
   $("currentPrompt").textContent=prompt;
   const copied=await copy(prompt);
-  notify(copied?"想法已保存，立项 Prompt 已复制；请交给 ChatGPT / Work 研究":"想法已保存；请点击“复制当前 Prompt”后交给 AI 研究");
+  notify(p.workflowMode==="six"?(copied?"六项成果路线已创建，已复制第一项「文案」Prompt":"六项成果路线已创建，请复制第一项文案 Prompt"):(copied?"想法已保存，立项 Prompt 已复制":"想法已保存；请复制立项 Prompt"));
 }
 function editFields(p){
   return {
@@ -405,11 +409,11 @@ function saveProjectEditor(e){
 function applyHumanGateSideEffects(p,t){
   // Browser-only approval record, scoped to the video branch. Never claim an upstream GUCC/cloud lock.
   if(!p||!t)return;
-  if(!["SCRIPT_LOCK_GATE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY","SIX_PLATFORM_PUBLISH_PACKAGE"].includes(t.capabilityUsed))return;
+  if(!["SCRIPT_LOCK_GATE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY","SIX_PLATFORM_PUBLISH_PACKAGE"].includes(t.capabilityUsed)&&!["script","subtitle"].includes(t.sixOutcomeId))return;
   const branch=t.branch||"SHARED";
   p.videoLocks ||= {};
   p.videoLocks[branch] ||= {};
-  const lockKey={SCRIPT_LOCK_GATE:"script",AUDIO_LOCK_GATE:"audio",FINAL_ASSEMBLY:"final",SIX_PLATFORM_PUBLISH_PACKAGE:"publish"}[t.capabilityUsed];
+  const lockKey=t.sixOutcomeId==="script"?"script":t.sixOutcomeId==="subtitle"?"timeline":{SCRIPT_LOCK_GATE:"script",AUDIO_LOCK_GATE:"audio",FINAL_ASSEMBLY:"final",SIX_PLATFORM_PUBLISH_PACKAGE:"publish"}[t.capabilityUsed];
   p.videoLocks[branch][lockKey]={approvedLocallyAt:new Date().toISOString(),nodeId:t.promptId};
 }
 function setNode(status){
@@ -593,6 +597,7 @@ function applyNodeResult(result){
 
   const status=reportedStatus;
   if(status==="NEED_INPUT"||status==="WAITING"){n.status="WAITING";n.notes="输入未满足或执行未完成；不能批准为完成";n.receiptEvidence.blocked=true;}
+  else if(n.sixOutcomeId&&result.qualityStatus!=="PASS"){n.status="WAITING";n.notes="六项成果须明确报告质量 PASS；缺少自检或失败不可标记完成";n.receiptEvidence.blocked=true;}
   else if(result.qualityStatus&&result.qualityStatus!=="PASS"){n.status="WAITING";n.notes="AI 回执报告质量检查未通过";n.receiptEvidence.blocked=true;}
   else if(result.requiresApproval===true||n.reviewMode==="APPROVAL_REQUIRED"){n.status="WAITING";n.notes="AI 回执已导入；文件与质量仍需实际核验，等待人工批准";}
   else n.status="DONE";
@@ -750,7 +755,7 @@ $("createProjectForm").addEventListener("submit",async e=>{
   if(!idea){$("projectIdea").focus();return notify("请至少写一句视频想法");}
   const submit=$("saveDraftProject");submit.disabled=true;
   try{
-    await createDraft({idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),autonomyLevel:"L2"});
+    await createDraft({idea,game:fd.get("game"),server:fd.get("server"),version:fd.get("version"),productType:fd.get("productType"),workflowMode:fd.get("workflowMode")||"six",autonomyLevel:"L2"});
     $("createDialog").close();
   }catch(err){notify("保存失败："+(err.message||"请稍后重试"));}
   finally{submit.disabled=false;}

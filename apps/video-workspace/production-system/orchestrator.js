@@ -2,11 +2,12 @@
   const api=factory(
     typeof module==="object"&&module.exports?require("./core-rules.js"):root.GuccCreatorCoreRules,
     typeof module==="object"&&module.exports?require("./capability-library.js"):root.GuccCreatorCapabilities,
-    typeof module==="object"&&module.exports?require("./failure-prevention.js"):root.GuccCreatorFailurePrevention
+    typeof module==="object"&&module.exports?require("./failure-prevention.js"):root.GuccCreatorFailurePrevention,
+    typeof module==="object"&&module.exports?require("../creator-six-deliverables.js"):root.GuccCreatorSix
   );
   if(typeof module==="object"&&module.exports) module.exports=api;
   root.GuccCreatorOrchestrator=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(Core,Caps,Failures){
+})(typeof globalThis!=="undefined"?globalThis:this,function(Core,Caps,Failures,Six){
   "use strict";
 
   const VERSION="2.0.0";
@@ -37,6 +38,7 @@
       dataCutoff:String(input.dataCutoff||""),
       productType:String(input.productType||"preview"),
       format:String(input.format||"UNKNOWN"),
+      workflowMode:input.workflowMode==="six"?"six":"legacy",
       contentLane:["ACQUISITION","CONVERSION","GOLDEN"].includes(input.contentLane)?input.contentLane:"UNCONFIRMED",
       authorQuestion:String(input.authorQuestion||""),
       authorContribution:String(input.authorContribution||""),
@@ -255,9 +257,50 @@
     return f;
   }
 
+
+  // One visible node per finished outcome. Research, QC, scene planning and
+  // technical preparation are internal to each task, not handoff obligations.
+  function compileSixOutcomes(project){
+    const tracks=Array.isArray(project.videos)&&project.videos.length>1?project.videos:[null];
+    const capIds={script:"SCRIPT_DRAFT",subtitle:"PRECISE_SRT_ALIGNMENT",visual:"DYNAMIC_MECHANIC_VISUAL",sound:"BGM_SFX_ASSET_PRODUCTION",cover:"COVER_DESIGN",publish:"SIX_PLATFORM_PUBLISH_PACKAGE"};
+    const executors={script:"Work",subtitle:"Work",visual:"Codex",sound:"Codex",cover:"Work",publish:"Work"};
+    const out=[];
+    for(const track of tracks){
+      const branch=track?String(track.videoId||track.branch||track.name||"VIDEO").replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,30):"SHARED";
+      let previous=[];
+      for(const item of Six.ITEMS){
+        const id=track?"PF-"+branch+"-"+item.no:"PF-"+item.no;
+        const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],previous,{
+          branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
+          qcLevel:item.id==="subtitle"?"Q2":"Q1",
+          reviewMode:item.id!=="publish"?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
+          hardStop:item.id==="subtitle"?["必须有真实可访问的最终音频；不能根据文案虚构精确字幕时码"]:[]
+        });
+        n.sixOutcomeId=item.id;
+        n.videoId=track?String(track.videoId||""):"";
+        out.push(n);previous=[id];
+      }
+    }
+    return out;
+  }
+
+  function sixOutcomePrompt(project,n){
+    const item=Six.get(n.sixOutcomeId),context={
+      title:project.name,game:project.game,server:project.server,version:project.version,
+      route:project.productType,format:project.format,
+      authorQuestion:project.authorQuestion,authorContribution:project.authorContribution,
+      coreThesis:project.coreThesis,audienceQuestion:project.audienceQuestion,
+      notes:[project.idea,project.videos?.length>1?"本轮视频："+(project.videos.find(x=>String(x.videoId||"")===n.videoId)?.name||n.branch):"",project.doNotUse?.length?"禁止/证据边界："+project.doNotUse.join("、"):""].filter(Boolean).join("\n")
+    };
+    const current=Six.build(item.id,context);
+    return current+"\n\n【GUCC 状态回执】完成时另给简短 GUCC_NODE_RESULT JSON："+
+      JSON.stringify({projectId:project.projectId,promptId:n.promptId,videoId:n.videoId||null,status:"DONE|WAITING|NEED_INPUT",qualityStatus:"PASS|ISSUES|UNVERIFIED",outputs:[],availableArtifacts:[],requiresApproval:n.reviewMode==="APPROVAL_REQUIRED"})+
+      "。仅记录本次真实成果；AI 回执 DONE 不等于真实文件经核验，也不代表用户已批准或作品已发布。";
+  }
+
   function buildWorkflow(project){
     const isTest=project.projectId==="ZZZ_3.3_FIONI_SEVERIAN_PREVIEW";
-    const flow=isTest?compilePreviewDualTest(project):compileGenericFlow(project);
+    const flow=isTest?compilePreviewDualTest(project):project.workflowMode==="six"?compileSixOutcomes(project):compileGenericFlow(project);
     project.workflow=flow.map(n=>({promptId:n.promptId,name:n.name,capabilityUsed:n.capabilityUsed,executor:n.executor,dependencies:n.dependencies,branch:n.branch,status:n.status,reviewMode:n.reviewMode,qcLevel:n.qcLevel}));
     project.promptFlow=flow;
     project.flowRevision=(project.flowRevision||0)+1;
@@ -345,7 +388,7 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
 
   function compilePromptFlow(project){
     if(!project.promptFlow?.length) buildWorkflow(project);
-    project.promptFlow=project.promptFlow.map(n=>({...n,prompt:n.isCompiledExternal&&typeof n.prompt==="string"&&n.prompt.trim()?n.prompt:capabilityPrompt(project,n)}));
+    project.promptFlow=project.promptFlow.map(n=>({...n,prompt:n.sixOutcomeId?sixOutcomePrompt(project,n):n.isCompiledExternal&&typeof n.prompt==="string"&&n.prompt.trim()?n.prompt:capabilityPrompt(project,n)}));
     return project.promptFlow;
   }
 
@@ -361,9 +404,9 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
     // external condition is waiting. A WAITING node never globally blocks
     // unrelated branches. Dependencies still remain strict.
     const runnable=nodes.find(n=>["PENDING","CONDITIONAL"].includes(n.status)&&depsDone(project,n));
-    if(runnable)return {...runnable,prompt:runnable.isCompiledExternal&&runnable.prompt?runnable.prompt:capabilityPrompt(project,runnable),reason:"所需前置任务已完成，可以执行当前节点。"};
+    if(runnable)return {...runnable,prompt:runnable.sixOutcomeId?sixOutcomePrompt(project,runnable):runnable.isCompiledExternal&&runnable.prompt?runnable.prompt:capabilityPrompt(project,runnable),reason:"所需前置任务已完成，可以执行当前节点。"};
     const waiting=nodes.find(n=>n.status==="WAITING"&&depsDone(project,n));
-    if(waiting)return {...waiting,prompt:waiting.isCompiledExternal&&waiting.prompt?waiting.prompt:capabilityPrompt(project,waiting),reason:"目前需要处理外部条件或人工批准；其他分支没有更早的可执行任务。"};
+    if(waiting)return {...waiting,prompt:waiting.sixOutcomeId?sixOutcomePrompt(project,waiting):waiting.isCompiledExternal&&waiting.prompt?waiting.prompt:capabilityPrompt(project,waiting),reason:"目前需要处理外部条件或人工批准；其他分支没有更早的可执行任务。"};
     const incomplete=nodes.some(n=>!["DONE","SKIPPED"].includes(n.status));
     if(incomplete)return {promptId:"BLOCKED_DEPENDENCY",name:"检查前置依赖",executor:"Chat",reason:"仍有未完成节点，但依赖尚未满足。请检查相关节点回执、Skip条件与LOCK，不要直接标记完成。",prompt:""};
     return {promptId:"COMPLETE",name:"Prompt Flow 已完成",executor:"Human",reason:"没有待执行节点。",prompt:""};

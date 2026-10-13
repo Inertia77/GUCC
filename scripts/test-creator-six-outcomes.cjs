@@ -38,6 +38,16 @@ assert(simple.promptFlow.slice(0,5).every(n=>n.reviewMode==="APPROVAL_REQUIRED")
 assert.match(simple.promptFlow[0].prompt,/qualityStatus/);
 assert.match(simple.promptFlow[1].prompt,/真实音频/);
 assert.equal(O.currentTask(simple).promptId,"PF-01");
+assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="visual").dependencies,["PF-01"]);
+assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="cover").dependencies,["PF-01"]);
+assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="sound").dependencies,["PF-02"]);
+assert.equal(simple.promptFlow.find(x=>x.sixOutcomeId==="publish").dependencies.length,5);
+O.markNode(simple,"PF-01","DONE");
+O.markNode(simple,"PF-02","WAITING");
+assert.equal(O.currentTask(simple).sixOutcomeId,"visual","Pending real audio must not block independent visual production");
+O.markNode(simple,"PF-03","DONE");
+assert.equal(O.currentTask(simple).sixOutcomeId,"cover","Cover can proceed without final recording");
+
 
 const double=O.createProject({name:"双视频",workflowMode:"six",videos:[
  {videoId:"A",name:"角色A"}, {videoId:"B",name:"角色B"}

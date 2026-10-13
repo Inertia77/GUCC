@@ -69,6 +69,7 @@ function applyViewMode(){
  if(!simple)$('modeTabs').parentElement.hidden=false;
 }
 function switchView(view){
+ if(view==='simple'&&P.tasks.some(t=>t.id===decodeURIComponent(location.hash.slice(1))))history.replaceState(null,'',location.pathname+location.search);
  state.viewMode=view;
  render();save();
 }

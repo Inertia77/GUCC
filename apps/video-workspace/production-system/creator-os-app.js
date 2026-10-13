@@ -326,7 +326,7 @@ async function createDraft(data){
   const p=O.createProject({
     ...data,
     projectId:newDraftId(),
-    name:provisionalProjectName(data),
+    name:data.workflowMode==="six"?[data.game,data.version,String(data.idea||"").replace(/\s+/g," ").trim().slice(0,32)].filter(Boolean).join(" · "):provisionalProjectName(data),
     productType:data.productType||"UNKNOWN"
   });
   if(p.workflowMode==="six"){

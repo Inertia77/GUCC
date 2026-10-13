@@ -409,11 +409,11 @@ function saveProjectEditor(e){
 function applyHumanGateSideEffects(p,t){
   // Browser-only approval record, scoped to the video branch. Never claim an upstream GUCC/cloud lock.
   if(!p||!t)return;
-  if(!["SCRIPT_LOCK_GATE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY","SIX_PLATFORM_PUBLISH_PACKAGE"].includes(t.capabilityUsed))return;
+  if(!["SCRIPT_LOCK_GATE","AUDIO_LOCK_GATE","FINAL_ASSEMBLY","SIX_PLATFORM_PUBLISH_PACKAGE"].includes(t.capabilityUsed)&&!["script","subtitle"].includes(t.sixOutcomeId))return;
   const branch=t.branch||"SHARED";
   p.videoLocks ||= {};
   p.videoLocks[branch] ||= {};
-  const lockKey={SCRIPT_LOCK_GATE:"script",AUDIO_LOCK_GATE:"audio",FINAL_ASSEMBLY:"final",SIX_PLATFORM_PUBLISH_PACKAGE:"publish"}[t.capabilityUsed];
+  const lockKey=t.sixOutcomeId==="script"?"script":t.sixOutcomeId==="subtitle"?"timeline":{SCRIPT_LOCK_GATE:"script",AUDIO_LOCK_GATE:"audio",FINAL_ASSEMBLY:"final",SIX_PLATFORM_PUBLISH_PACKAGE:"publish"}[t.capabilityUsed];
   p.videoLocks[branch][lockKey]={approvedLocallyAt:new Date().toISOString(),nodeId:t.promptId};
 }
 function setNode(status){

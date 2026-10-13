@@ -50,7 +50,17 @@
  </div>
  <footer class="creator-footer"><span>固定流程 Prompt Studio · v6.2.0</span><span>选题 · 证据 · 表达 · 制作 · 发布</span><input type="hidden" value="v6.2.0"></footer>
 </div>
-<dialog id="helpDialog" class="creator-dialog"><div class="dialog-heading"><h2>六项核心交付 · 使用说明</h2><button type="button" data-close>关闭</button></div><p>推荐默认使用「六项核心成果」，每次只选择文案、字幕、视觉、声音、封面或发布包。无需逐项执行旧的研究、策划、三轮审稿及剪辑蓝图；必要内部步骤由 AI 自行判断并完成。想查看原编号和高级技术任务，切换「完整任务库」，旧草稿和成熟 Prompt 仍在。</p><ol><li>选择本期视频类型和长／短形式。人物志会得到剧情与人物证据分支。</li><li>选择当前阶段和任务，再选执行环境。Work／Codex 版一次完成该任务内的合并工作。</li><li>额度不足时选 Chat，按备用步骤依次复制。每条都能独立使用，同一 Chat 会复用上轮结果。</li><li>同一 Chat 连续做下一步时直接复用已有上下文，不需要每次重复上传；只有换 Chat／Work／Codex 后无法实际读取的关键输入才补。</li><li>“Chat 分步”表示 Chat 本身就是主执行环境，但为了质量拆成连续子步骤；“Chat 备用”表示本任务首选 Work／Codex，额度不足时才用 Chat 分步替代。每个子步骤只显示自己的真实输入和产物。</li><li>朗读与录音准备支持“真人录音 / 剪映 AI 朗读”。AI 模式会生成每个 cue 不超过 500 字、尽量接近 500 字的 TTS 临时 SRT，并单独处理多音字、生僻字、专名和符号发音；最终时间线仍以生成后的真实音频为准。</li><li>把实际文件、原文或可读索引一起交给 AI。任务编号和浏览器草稿不代表 AI 已读取素材。</li><li>需要本地转码、动画、音频或渲染时，Chat 会给执行脚本；运行并回传结果以后才能确认完成。</li></ol><p>本工作台保存浏览器草稿，导出可跨设备继续；不自动运行任务、写入正式项目或上传制作素材。旧工作区与原有草稿仍可从“参考与旧项目”打开。</p><p>此模式沿用原有固定 7 阶段、视频类型分支和人工挑选任务的 Prompt 内容。与动态 Creator OS 的自动编排完全独立：不同草稿、不同保存位置，不自动共享云端项目进度。</p><p>两项默认执行输出是无音轨无字幕的画面与只含 BGM/SFX 的背景声，最后在剪映与最终旁白、SRT 同 00:00 合成。成片重分析 QC 为可选。</p></dialog>
+<dialog id="helpDialog" class="creator-dialog"><div class="dialog-heading"><h2>六项成果 · 简单使用</h2><button type="button" data-close>关闭</button></div>
+ <p>日常默认只需要六项：文案、真实录音 SRT、视觉素材包、BGM/SFX、封面和六平台发布文案。选中后复制完整 Prompt，交给具备相应工具的 AI；研究、设计、检查、必要修订都包含在当次任务中。</p>
+ <ol>
+ <li>先选视频类型和主题，已有游戏、版本或 Lock 的话从「项目输入」导入即可；未填写的普通字段不要求逐项补全。</li>
+ <li>点击六项成果中的一项。每项可以独立执行，按实际进度开始；字幕需要真实最终音频，其他任务可自主预制可验证的素材。</li>
+ <li>AI 可以自主选择创意、研究与技术实现。硬约束只保留事实真实性、已确认 Lock、精确时间线、文件真实性及明确的 AI 套话限制。</li>
+ <li>确认最终成果的真实文件与质量后继续下一项；未取得的文件不能因为 AI 生成了计划就算完成。网页选择任务不自动调用模型或写入云端。</li>
+ <li>确实需要精细研究、原编号、逐阶段制作或 Chat 分步备用时，切换「完整任务库」。原有七阶段与 22 个正式任务仍全部保留。</li>
+ </ol>
+ <p>工作台只保存当前浏览器的独立草稿。跨设备请导出后显式导入；与动态 Creator OS 不会偷偷覆盖彼此的项目状态。</p>
+ </dialog>
 <dialog id="mappingDialog" class="creator-dialog"><div class="dialog-heading"><h2>原编号与现在的任务</h2><button type="button" data-close>关闭</button></div><p>合并同一输入下可连续完成的工作；确认命题、录音、时间线、资产和剪辑蓝图之间保留交接。</p><div class="table-wrap"><table><thead><tr><th>原 Notion 编号</th><th>当前任务</th><th>Chat 备用</th></tr></thead><tbody id="mappingBody"></tbody></table></div><p>依据 2026-10-05 读取的 Notion 母库重构。页面只生成当前版本 Prompt；原版留作迁移核对。</p></dialog>
 <div id="toast" class="creator-toast" role="status" aria-live="polite" hidden></div>
 <script src="../../assets/pwa-install.js?v=2" data-root="../../"></script>

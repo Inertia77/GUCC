@@ -1,14 +1,14 @@
 import { API } from './api.js';
 import { isLoggedIn, signIn, signOut } from './auth.js';
 import { getConfigState } from './config-state.js';
-import { initCharacters, searchCharacters } from './features/characters.js';
+import { initCharacters, searchCharacters } from './features/characters.js?v=2';
 import { initParties, searchParties } from './features/parties.js';
 import { initMechanisms, searchMechanisms } from './features/mechanisms.js';
 import { initResources } from './features/resources.js';
 import { initVersions, searchVersions } from './features/versions.js';
 import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
 import { getSavedTab, saveTab } from './ux-state.js';
-import { hydrateFixedFieldFilters } from './fixed-field-options.js';
+import { hydrateFixedFieldFilters } from './fixed-field-options.js?v=2';
 
 const FINAL_STYLE_SHEETS = [
   ['gucc-search-ux-final', '../styles/game-os.css?v=3'],

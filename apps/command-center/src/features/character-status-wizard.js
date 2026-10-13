@@ -2,7 +2,7 @@
 // completed review and explicitly asks for a database update. No mutation RPC is called.
 import { API } from '../api.js';
 import { $, escapeHtml, closeDrawer, openDrawer, normalizeRows, showToast } from '../ui.js';
-import { isCanonicalCharacterStatus, displayCharacterStatus } from '../fixed-field-options.js';
+import { isCanonicalCharacterStatus, displayCharacterStatus } from '../fixed-field-options.js?v=2';
 
 const KEY = 'gucc-character-status-review-draft-v2';
 const OPTIONS = [

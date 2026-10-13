@@ -23,8 +23,8 @@ import {
   withBusy
 } from '../ui.js';
 import { bindPersistentFilters, persistFilters } from '../ux-state.js';
-import { renderFixedFieldOptions, displayCharacterStatus } from '../fixed-field-options.js';
-import { initCharacterStatusWizard } from './character-status-wizard.js';
+import { renderFixedFieldOptions, displayCharacterStatus } from '../fixed-field-options.js?v=2';
+import { initCharacterStatusWizard } from './character-status-wizard.js?v=2';
 import { assertNewCharacterUnique } from '../record-guards.mjs';
 import {
   bindClearFilters,

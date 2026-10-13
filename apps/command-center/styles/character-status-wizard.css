@@ -44,3 +44,21 @@
   .status-wizard-content { gap:13px; }
   .status-wizard-footer { display:flex; }
 }
+
+/* Local-only multi-game review and final handoff. */
+.status-wizard-summary { display:grid; gap:16px; }
+.status-wizard-no-write { margin:0; color:#9fdfc9; letter-spacing:.015em; font-size:.78rem; }
+.status-wizard-summary-numbers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.status-wizard-summary-numbers > div { display:grid; gap:5px; padding:16px; border:1px solid rgba(148,187,178,.22); border-radius:12px; }
+.status-wizard-summary-numbers small { font-size:.7rem; color:#aac1c1; }
+.status-wizard-summary-numbers strong { font-size:1.6rem; font-variant-numeric:tabular-nums; }
+.status-wizard-game-progress { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.status-wizard-game-row { display:flex; justify-content:space-between; align-items:center; min-width:0; gap:8px; border:1px solid rgba(148,187,178,.2); border-radius:10px; background:rgba(18,32,37,.6); text-align:left; padding:13px; }
+.status-wizard-game-row strong { white-space:nowrap; color:#b1e6db; font-variant-numeric:tabular-nums; }
+.status-wizard-export-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.status-wizard-export-actions button { flex:1; min-width:145px; }
+@media(max-width:620px) {
+  .status-wizard-game-progress { grid-template-columns:1fr; }
+  .status-wizard-summary-numbers strong { font-size:1.2rem; }
+  .status-wizard-summary-numbers > div { padding:10px; }
+}

@@ -64,8 +64,8 @@ function render() {
   ];
   if (!row) {
     top.push('<div class="status-wizard-finish"><span class="wizard-mark">✓</span>',
-      '<h3>' + (state.working ? '正在加载…' : '当前范围已全部处理') + '</h3>',
-      '<p>' + (state.error ? escapeHtml(state.error) : '可以切换游戏，或勾选「包含已校准角色」复查已有选择。') + '</p></div>');
+      '<h3>' + (state.working ? '正在加载…' : state.error ? '加载失败' : '本轮队列已浏览完') + '</h3>',
+      '<p>' + (state.error ? escapeHtml(state.error) : '跳过的角色仍为待核实。可以切换游戏、重新打开校准，或复查已有选择。') + '</p></div>');
   } else {
     const percent = count ? Math.floor((state.index / count) * 100) : 0;
     top.push(

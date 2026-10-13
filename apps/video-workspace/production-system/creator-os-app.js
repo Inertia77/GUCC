@@ -597,6 +597,7 @@ function applyNodeResult(result){
 
   const status=reportedStatus;
   if(status==="NEED_INPUT"||status==="WAITING"){n.status="WAITING";n.notes="输入未满足或执行未完成；不能批准为完成";n.receiptEvidence.blocked=true;}
+  else if(n.sixOutcomeId&&result.qualityStatus!=="PASS"){n.status="WAITING";n.notes="六项成果须明确报告质量 PASS；缺少自检或失败不可标记完成";n.receiptEvidence.blocked=true;}
   else if(result.qualityStatus&&result.qualityStatus!=="PASS"){n.status="WAITING";n.notes="AI 回执报告质量检查未通过";n.receiptEvidence.blocked=true;}
   else if(result.requiresApproval===true||n.reviewMode==="APPROVAL_REQUIRED"){n.status="WAITING";n.notes="AI 回执已导入；文件与质量仍需实际核验，等待人工批准";}
   else n.status="DONE";

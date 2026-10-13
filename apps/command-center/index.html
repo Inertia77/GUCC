@@ -92,7 +92,6 @@
               <button id="searchCharBtn" type="button">搜索角色</button>
               <button id="clearCharFilters" type="button" class="secondary filter-clear">清空筛选</button>
               <button id="newCharBtn" type="button" class="secondary">新增角色</button>
-              <button id="startCharacterStatusWizard" type="button" class="secondary status-wizard-start">全量状态校准（草稿）</button>
               <aside class="status-convention-note filter-guidance" aria-label="角色研究与养成状态记录规则">
                 <strong>状态记录规则</strong>
                 <span>研究与养成分别选择「◯ 完成 / △ 进行中 / ✕ 未开始 / 対象外」。旧记录显示「待核实」；校准选择仅存于浏览器，全部完成后导出给助手统一写入数据库。</span>
@@ -108,7 +107,6 @@
           </div>
           <div id="characterResults" class="list"></div>
           <div id="characterEditor" class="card editor hidden"></div>
-          <div id="characterStatusWizard" class="card editor status-wizard hidden" role="dialog" aria-modal="true" aria-labelledby="wizardTitle"></div>
         </section>
 
         <section id="parties" class="tab-panel" role="tabpanel" aria-labelledby="tab-parties">
@@ -195,6 +193,17 @@
           <div class="auxiliary-stack">
             <details class="auxiliary-card">
               <summary>
+                <span><strong>角色状态校准</strong><small>低频全量复查 · 本地草稿</small></span>
+                <span class="auxiliary-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div class="auxiliary-content">
+                <p class="hint">逐个复查角色的研究与养成状态。选择仅保存在当前浏览器；全部完成后导出 JSON，再统一更新数据库。</p>
+                <button id="startCharacterStatusWizard" type="button" class="secondary status-wizard-start">全量状态校准（草稿）</button>
+              </div>
+            </details>
+
+            <details class="auxiliary-card">
+              <summary>
                 <span><strong>资源链接</strong><small>搜索资料标题、URL 与备注</small></span>
                 <span class="auxiliary-chevron" aria-hidden="true">⌄</span>
               </summary>
@@ -245,6 +254,7 @@
             </details>
           </div>
         </section>
+        <div id="characterStatusWizard" class="card editor status-wizard hidden" role="dialog" aria-modal="true" aria-labelledby="wizardTitle"></div>
       </section>
     </main>
   </div>

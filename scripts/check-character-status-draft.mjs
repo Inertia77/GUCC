@@ -16,4 +16,18 @@ assert.match(wizard, /await Promise\.all\(GAMES\.map/);
 assert.doesNotMatch(wizard, /API\.updateCharacterStatus|API\.saveCharacter|fetch\s*\(/);
 assert.doesNotMatch(api,/updateCharacterStatus\s*[,(:]/);
 assert.match(markup, /全量状态校准（草稿）/);
+
+const charactersStart = markup.indexOf('<section id="characters"');
+const partiesStart = markup.indexOf('<section id="parties"');
+const moreStart = markup.indexOf('<section id="more"');
+const wizardButton = markup.indexOf('id="startCharacterStatusWizard"');
+const wizardDrawer = markup.indexOf('id="characterStatusWizard"');
+assert(charactersStart >= 0 && partiesStart > charactersStart && moreStart > partiesStart);
+assert.equal((markup.match(/id="startCharacterStatusWizard"/g) || []).length, 1);
+assert.equal((markup.match(/id="characterStatusWizard"/g) || []).length, 1);
+assert(wizardButton > moreStart, 'Status review entry must be under the More tab');
+assert(!markup.slice(charactersStart, partiesStart).includes('startCharacterStatusWizard'), 'Character toolbar must be free of review entry');
+assert(wizardDrawer > wizardButton, 'Wizard drawer must stay outside the hidden Characters panel');
+assert.match(markup.slice(moreStart), /角色状态校准/);
+
 console.log('Character status draft-only workflow invariants: passed');

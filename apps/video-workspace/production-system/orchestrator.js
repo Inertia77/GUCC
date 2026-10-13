@@ -273,7 +273,7 @@
         const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],previous,{
           branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
           qcLevel:item.id==="subtitle"?"Q2":"Q1",
-          reviewMode:["script","subtitle"].includes(item.id)?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
+          reviewMode:item.id!=="publish"?"APPROVAL_REQUIRED":"REVIEW_OPTIONAL",
           hardStop:item.id==="subtitle"?["必须有真实可访问的最终音频；不能根据文案虚构精确字幕时码"]:[]
         });
         n.sixOutcomeId=item.id;
@@ -294,7 +294,7 @@
     };
     const current=Six.build(item.id,context);
     return current+"\n\n【GUCC 状态回执】完成时另给简短 GUCC_NODE_RESULT JSON："+
-      JSON.stringify({projectId:project.projectId,promptId:n.promptId,videoId:n.videoId||null,status:"DONE|WAITING|NEED_INPUT",outputs:[],availableArtifacts:[],requiresApproval:n.reviewMode==="APPROVAL_REQUIRED"})+
+      JSON.stringify({projectId:project.projectId,promptId:n.promptId,videoId:n.videoId||null,status:"DONE|WAITING|NEED_INPUT",qualityStatus:"PASS|ISSUES|UNVERIFIED",outputs:[],availableArtifacts:[],requiresApproval:n.reviewMode==="APPROVAL_REQUIRED"})+
       "。仅记录本次真实成果；AI 回执 DONE 不等于真实文件经核验，也不代表用户已批准或作品已发布。";
   }
 

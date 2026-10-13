@@ -9,3 +9,31 @@
 @media(max-width:700px){.creator-shell{width:calc(100% - 28px);padding:17px 0 90px}.creator-top{margin-bottom:17px;gap:10px}.brand{font-size:17px;gap:8px}.brand-mark{width:35px;height:35px;font-size:22px}.brand small{font-size:10px;letter-spacing:1px}.top-actions{gap:10px;font-size:13px}.top-actions a:nth-child(2){display:none}.top-actions button{font-size:13px!important;padding:4px!important}.setup-panel{padding:12px 14px 0;margin-bottom:13px}.setup-heading{gap:8px;margin-bottom:6px}.creator-prompt-page h1{font-size:17px}.setup-heading>span{font-size:11px}.setup-heading>button{font-size:13px}.main-controls{grid-template-columns:minmax(0,1fr) 115px;gap:8px 12px}.title-field{grid-column:1/-1}.creator-prompt-page input:not([type=hidden]),.creator-prompt-page select,.creator-prompt-page textarea{font-size:16px}.route-summary{gap:8px;padding:10px 0;margin-top:10px}.route-summary p{font-size:12px}.edition{display:none}.workspace-grid{display:flex;flex-direction:column;gap:12px}.stage-panel,.task-panel,.prompt-panel{width:100%}#stageNav{margin:0 -2px}.creator-prompt-page .stage-button{font-size:13px;gap:6px;min-height:42px}.creator-prompt-page .tool-link{font-size:13px;margin:2px 7px 4px 0;min-height:38px;padding:5px 9px}.reference-links summary{font-size:12px;padding:4px}.task-panel{padding:12px}.task-list-head{margin-bottom:8px}.task-list-head h2{font-size:16px}.task-list-head .micro{display:none}.count{padding:3px 6px}.search-box{margin-bottom:8px}#taskList{display:flex;overflow-x:auto;gap:8px;scroll-snap-type:x proximity;padding-bottom:5px;max-width:100%;scrollbar-width:thin}.creator-prompt-page .task-card{flex:0 0 230px;max-width:calc(100vw - 82px);margin:0;padding:9px 12px;scroll-snap-align:start}.task-card strong{font-size:15px;margin:4px 0}.task-card .card-note{display:none}.task-card .card-meta{font-size:11px}.list-foot{display:none}.prompt-panel{padding:15px}.prompt-head{align-items:flex-start}.prompt-head h2{font-size:18px}.task-purpose{font-size:13px;margin:10px 0 13px}.mode-row{gap:12px;margin-bottom:10px}.mode-row>span{font-size:13px}.creator-prompt-page .segmented button{padding:5px 11px}.io-details{margin-bottom:12px}.io-grid{grid-template-columns:1fr;gap:0}.creator-prompt-page #promptText{height:310px;min-height:240px;padding:12px;font-size:15px;line-height:1.85}.prompt-actions{padding-top:12px;gap:8px}.creator-prompt-page .primary{padding:9px 14px;font-size:15px}.prompt-actions button:not(.primary){font-size:13px;padding:8px 10px}.prompt-editor-head label{font-size:12px}.context-grid{gap:9px}.file-actions span{display:block;width:100%;font-size:12px}.file-actions button{font-size:13px}.creator-footer{font-size:11px}.creator-footer span:last-child{display:none}.creator-dialog{padding:17px}.creator-dialog h2{font-size:18px}.creator-dialog ol{padding-left:21px}}
 @media(prefers-reduced-motion:reduce){.creator-prompt-page *{scroll-behavior:auto!important}}
 .prompt-top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.creator-prompt-page .copy-top{font-size:14px;color:var(--c-accent);padding:5px 10px;min-height:40px;background:#153635;border-color:#3c7770}
+
+
+/* Outcome-first Studio: six user-facing deliverables; classic catalog remains one click away. */
+.creator-mode-switch{display:flex;gap:10px;margin:4px 0 10px;flex-wrap:wrap}
+.creator-prompt-page .creator-mode-switch button{min-height:57px;text-align:left;flex:1 1 255px;background:#101f2c;border:1px solid #2a404d;padding:10px 17px;border-radius:8px;font-size:16px;font-weight:600;transition:background .16s,border-color .16s}
+.creator-mode-switch button span{display:block;color:var(--c-muted);font-size:12px;font-weight:400}
+.creator-prompt-page .creator-mode-switch button.active{background:linear-gradient(115deg,#173832,#122834);border-color:#6fcab7;color:#d3fff0}
+.creator-prompt-page .creator-mode-switch button.active span{color:#b4dcd0}
+.simple-intro{margin:5px 0 20px;font-size:14px;color:#b3c6d3;line-height:1.8}
+.workspace-grid.six-mode{grid-template-columns:minmax(230px,310px) minmax(0,1fr);gap:20px}
+.workspace-grid.six-mode .stage-panel,.workspace-grid.six-mode .task-panel{display:none!important}
+.workspace-grid:not(.six-mode) .six-nav{display:none!important}
+.six-nav{border:1px solid #254443;background:linear-gradient(162deg,#12262a,#0b1724);border-radius:10px;padding:18px 13px;min-width:0}
+.six-nav-label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#c1ece2;padding:5px 8px 15px;letter-spacing:.04em}
+.six-nav-label span{font:12px ui-monospace,monospace;color:#97b8b2}
+#sixNavList{display:grid;gap:8px}
+.creator-prompt-page .six-step{width:100%;display:flex;align-items:center;gap:13px;text-align:left;border-radius:8px;padding:13px 10px;min-height:71px;background:transparent;border:1px solid transparent}
+.creator-prompt-page .six-step:hover{background:#203b39}
+.creator-prompt-page .six-step.active{background:linear-gradient(100deg,#1b4540,#18313a);border-color:#5cafa3}
+.six-number{font:18px ui-monospace,monospace;color:#78b5ab;flex:0 0 27px}
+.six-step-copy{display:grid;gap:3px;min-width:0}.six-step-copy strong{font-size:16px;font-weight:550;color:#e9f5f6}
+.six-step-copy small{font-size:12px;color:#abc1c8}
+.six-nav-note{font-size:12px;line-height:1.7;color:#8da8b5;margin:17px 8px 0}
+.workspace-grid.six-mode .prompt-panel{padding:25px 27px}
+.workspace-grid.six-mode #promptText{height:480px}
+@media(max-width:1000px){.workspace-grid.six-mode{grid-template-columns:minmax(0,1fr)}.six-nav{padding:13px}#sixNavList{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.creator-prompt-page .six-step{min-height:76px}.workspace-grid.six-mode #promptText{height:400px}}
+@media(max-width:700px){#sixNavList{grid-template-columns:repeat(2,minmax(0,1fr))}.creator-prompt-page .six-step{gap:8px;padding:11px 8px}.six-number{font-size:15px;flex-basis:22px}.six-step-copy strong{font-size:14px}.six-step-copy small{font-size:11px}.workspace-grid.six-mode .prompt-panel{padding:17px}.workspace-grid.six-mode #promptText{height:360px}.creator-mode-switch{gap:7px}.creator-prompt-page .creator-mode-switch button{font-size:14px;min-height:53px;padding:8px 11px}}
+@media(prefers-reduced-motion:reduce){.creator-prompt-page .creator-mode-switch button{transition:none}}

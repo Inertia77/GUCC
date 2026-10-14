@@ -181,6 +181,23 @@ async function start(){
  window.addEventListener("gucc:creative:artifact-draft",event=>{if(event.detail?.key)void markStarted(event.detail.key);});
  window.addEventListener("gucc:creative:prompt-copied",()=>{if(tool==="studio")void markStarted(activeOutcome());});
  window.addEventListener("gucc-publish-draft-saved",()=>{if(tool==="publish")void markStarted("publish");});
+ window.addEventListener("gucc:creative:video-changed",async(event)=>{
+   if(tool!=="publish")return;
+   const id=String(event.detail?.projectId||""),vid=String(event.detail?.videoId||"");
+   if(!id||!vid){alertText("当前是旧版未关联发布单；请先明确正式项目和视频身份。",true);return;}
+   const target=projects.find(x=>x.project_id===id);
+   if(!target){alertText("当前发布单的正式项目不在可访问列表中；不会自动创建同名项目。",true);return;}
+   try{
+     const options=await listVideos(id),found=options.find(v=>v.video_id===vid);
+     if(!found){alertText("此发布单的视频身份尚未登记到统一项目，需人工核对后关联。",true);return;}
+     project=target;video=found;videos=options;projectSelect.value=id;
+     bindOption(videoSelect,options,"选择视频 · 无记录可新建",x=>x.video_id,x=>x.title);
+     videoSelect.value=vid;
+     const url=new URL(location.href);url.searchParams.set("project",id);url.searchParams.set("video",vid);history.replaceState(null,"",url.href);
+     await refreshRecords();alertText("已对齐发布单与统一项目视频身份。");
+   }catch(e){alertText("无法核对发布单身份："+e.message,true);}
+ });
+
  window.addEventListener("gucc:creative:project-changed",async(event)=>{
    const other=projects.find(x=>x.project_id===event.detail?.projectId);
    if(!other||other.project_id===project?.project_id)return;

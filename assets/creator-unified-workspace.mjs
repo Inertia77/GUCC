@@ -44,7 +44,8 @@ function emitSelected(){
  window.dispatchEvent(new CustomEvent("gucc:creative:selection",{detail:context}));
 }
 async function hydrateVideo(prefer="",skipRedirect=false){
- videos=project?await listVideos(project.project_id):[];
+ const remote=project?await listVideos(project.project_id):[];
+ videos=Array.isArray(remote)?remote.filter(v=>v&&v.project_id===project.project_id&&typeof v.video_id==='string'&&v.video_id.trim()):[]; // Reject malformed / legacy API responses: never redirect to a fictitious video ID.
  bindOption(videoSelect,videos,"选择视频 · 无记录可新建",x=>x.video_id,x=>x.title);
  let memory=remembered(),id=prefer||q.get("video")||(memory.projectId===project?.project_id?memory.videoId:"");
  video=videos.find(v=>v.video_id===id)||null;

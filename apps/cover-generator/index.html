@@ -2058,6 +2058,9 @@
 
 <script>
 (() => {
+  const coverQuery=new URLSearchParams(location.search);
+  const coverProject=coverQuery.get('project'),coverVideo=coverQuery.get('video');
+  const COVER_PROJECT_KEY=coverProject&&coverVideo?'gameCoverGeneratorProject:'+JSON.stringify([coverProject,coverVideo]):'gameCoverGeneratorProject';
   const ratios = {
     r16_9:  { label: '16:9',  name: '横屏标准', w: 1920, h: 1080 },
     r4_3:   { label: '4:3',   name: '横版信息流', w: 1600, h: 1200 },
@@ -3348,8 +3351,8 @@ ${textInstruction}
   }
   function saveBrowserProject(manual) {
     try {
-      localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState()));
-      if (manual) setStatus('项目已保存到本浏览器；图片文件需另行导出。');
+      localStorage.setItem(COVER_PROJECT_KEY, JSON.stringify(serializableState()));
+      if (manual) { setStatus('当前视频的画布草稿已保存在本浏览器；独立图片仍需实际导出。');window.dispatchEvent(new CustomEvent('gucc:creative:artifact-draft',{detail:{key:'cover'}})); }
       return true;
     } catch {
       setStatus('未保存：浏览器空间不足。当前画布仍在内存中，请导出项目 JSON 备份。');
@@ -3358,7 +3361,7 @@ ${textInstruction}
   }
   function manualSave() { clearTimeout(saveTimer); return saveBrowserProject(true); }
   async function loadProjectFromLocal() {
-    const raw = localStorage.getItem('gameCoverGeneratorProject');
+    const raw = localStorage.getItem(COVER_PROJECT_KEY);
     if (!raw) return alert('没有找到已保存的项目。');
     await hydrate(JSON.parse(raw));
     setStatus('项目已读取。');
@@ -3393,13 +3396,21 @@ ${textInstruction}
     bindEvents();
     bindAiPromptEvents();
     syncAiPromptForm();
-    const saved = localStorage.getItem('gameCoverGeneratorProject');
+    const saved = localStorage.getItem(COVER_PROJECT_KEY);
     if (saved) hydrate(JSON.parse(saved));
     else { bootstrapDemo(); renderAll(); }
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(renderAll).catch(() => {});
     }
   }
+  window.addEventListener('gucc:creative:selection',event=>{
+    const identity=event.detail||{};
+    if(!identity.projectId||!identity.videoId)return;
+    if(!state.aiPrompt.title||state.aiPrompt.title==='游戏解说 封面标题'){
+      state.aiPrompt.title=identity.videoTitle||identity.projectName||'';
+      syncAiPromptForm();
+    }
+  });
   init();
 })();
 </script>

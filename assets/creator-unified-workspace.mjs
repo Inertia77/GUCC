@@ -36,6 +36,9 @@ function bindOption(select,items,placeholder,getValue,getLabel){
  for(const item of items){const opt=node("option","",getLabel(item));opt.value=getValue(item);select.append(opt);}
 }
 function emitSelected(){
+ const center=[...rootBar.querySelectorAll(".gucc-unified-line a")].find(x=>x.textContent.includes("项目中心"));
+ if(center)center.href=queryTo("apps/video-workspace/production-system/");
+ for(const [i,a] of [...rootBar.querySelectorAll(".gucc-u-tools a")].entries())a.href=queryTo(links[i][1]);
  const context={...selected(),game:project?.game||"",topic:project?.topic||""};
  window.GuccUnifiedWorkspace={selection:()=>({...selected()}),refresh:refreshRecords,openRecord};
  window.dispatchEvent(new CustomEvent("gucc:creative:selection",{detail:context}));

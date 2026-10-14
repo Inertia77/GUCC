@@ -1,6 +1,8 @@
 /* Local prompt working surface. The selected task is never executed here. */
 (function(){'use strict';
-const P=window.CreatorPrompts,S=window.GuccCreatorSix,$=id=>document.getElementById(id),KEY='gucc_creator_prompt_v6';
+const P=window.CreatorPrompts,S=window.GuccCreatorSix,$=id=>document.getElementById(id);
+const identityQuery=new URLSearchParams(location.search),attachedProjectId=identityQuery.get('project')||'',attachedVideoId=identityQuery.get('video')||'';
+const KEY=attachedProjectId&&attachedVideoId?'gucc_creator_prompt_v6:'+JSON.stringify([attachedProjectId,attachedVideoId]):'gucc_creator_prompt_v6';
 const defaults={context:{route:'mechanism',format:'long',title:'',game:'',server:'',version:'',duration:'',notes:'',voiceMode:'human'},stage:'research',task:'brief',mode:'Chat',part:0,viewMode:'simple',simpleTask:'script'};
 let state=structuredClone(defaults),storageOK=true,importedSource=null,toastTimer;
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
@@ -41,6 +43,7 @@ function renderSixNav(){
 }
 function renderSixPrompt(){
  const item=S.get(state.simpleTask),ctx={...state.context};
+ if(attachedProjectId&&attachedVideoId)ctx.notes=[ctx.notes,'GUCC_PROJECT_ID: '+attachedProjectId,'GUCC_VIDEO_ID: '+attachedVideoId].filter(Boolean).join('\n');
  $('taskTitle').textContent=item.name;
  $('taskMeta').textContent='本期核心交付 · '+item.no+' / 06 · '+P.route(ctx.route).name;
  $('modeBadge').textContent='AI 自主执行';
@@ -77,7 +80,7 @@ function switchView(view){
 function render(){renderRoute();renderStages();renderTasks();renderSixNav();renderPrompt();applyViewMode();}
 function download(name,text){const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function safeName(name){return String(name||'创作工作台').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,90);}
-async function copy(){const text=$('promptText').value;try{await navigator.clipboard.writeText(text);toast('已复制当前完整 Prompt');}catch{$('promptText').focus();$('promptText').select();let ok=false;try{ok=document.execCommand('copy');}catch{}toast(ok?'已复制当前完整 Prompt':'已选中完整 Prompt，请手动复制');}}
+async function copy(){const text=$('promptText').value;try{await navigator.clipboard.writeText(text);toast('已复制当前完整 Prompt');window.dispatchEvent(new CustomEvent('gucc:creative:prompt-copied'));}catch{$('promptText').focus();$('promptText').select();let ok=false;try{ok=document.execCommand('copy');}catch{}toast(ok?'已复制当前完整 Prompt':'已选中完整 Prompt，请手动复制');if(ok)window.dispatchEvent(new CustomEvent('gucc:creative:prompt-copied'));}}
 function normalizeRoute(v){const str=String(v||'').toLowerCase();const matched=P.ROUTES.find(r=>str===r.id||str===r.name);if(matched)return matched.id;for(const [test,id]of [[/人物|剧情|story|lore/,'story'],[/创意|整活|creative/,'creative'],[/复刻|rerun/,'rerun'],[/前瞻|preview/,'preview'],[/抽卡|决策|decision/,'decision'],[/排轴|实战|rotation/,'rotation'],[/攻略|guide/,'guide'],[/机制|mechanism/,'mechanism']])if(test.test(str))return id;return state.context.route;}
 function mdValue(text,key){const m=text.match(new RegExp('(?:^|\\n)\\s*(?:[-*]\\s*)?(?:\\*\\*)?'+key+'(?:\\*\\*)?\\s*[:：=]\\s*([^\\n]+)','i'));return m?m[1].replace(/^`|`$/g,'').trim():'';}
 function importedContext(raw,text=''){if(text){return {title:mdValue(text,'PROJECT_NAME')||mdValue(text,'PROJECT_ID'),game:mdValue(text,'GAME'),server:mdValue(text,'SERVER'),version:[mdValue(text,'VERSION'),mdValue(text,'DATA_CUTOFF')].filter(Boolean).join(' / '),route:normalizeRoute(mdValue(text,'PRODUCT_TYPE')),format:/short|短/i.test(mdValue(text,'FORMAT')||mdValue(text,'TARGET_FORMAT'))?'short':'long',duration:mdValue(text,'DURATION'),notes:text,voiceMode:'human'};}
@@ -92,4 +95,11 @@ $('mappingButton').addEventListener('click',()=>{$('mappingBody').replaceChildre
 window.addEventListener('hashchange',()=>{const id=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(x=>x.id===id))choose(id);});
 window.addEventListener('resize',revealActive,{passive:true});
 window.CreatorStudio={getState:()=>structuredClone(state),importedContext,cleanContext,switchView};
+window.addEventListener('gucc:creative:selection',event=>{
+ const x=event.detail||{};if(!x.projectId||!x.videoId)return;
+ if(!state.context.title)state.context.title=x.videoTitle||x.projectName||'';
+ if(!state.context.game)state.context.game=x.game||'';
+ for(const [id,key] of [['titleInput','title'],['gameInput','game']])$(id).value=state.context[key];
+ render();save();
+});
 })();

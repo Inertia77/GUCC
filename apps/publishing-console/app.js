@@ -123,6 +123,22 @@
   // Cloud metadata has its own project + video identity and revision. It must
   // never call the compatibility release API or transfer browser File handles.
   window.GuccPublishDrafts = {
+    openIdentity(detail){
+      const id=String(detail?.projectId||""),vid=String(detail?.videoId||"");
+      if(!id||!vid)return false;
+      if(state.project.creatorProjectId===id&&state.project.videoId===vid)return true;
+      clearTimeout(saveTimer);
+      persistDraft(); // Save current video independently before changing identities.
+      const key=draftKey({creatorProjectId:id,videoId:vid});
+      const found=drafts()[key];
+      state=mergeState(found||defaultState());
+      state.project.creatorProjectId=id;state.project.videoId=vid;
+      if(!found){state.project.title=detail.videoTitle||detail.projectName||"";state.project.game=detail.game||"";}
+      runtimeAssets.video=null;runtimeAssets.cover=null;
+      state.preflight={checkedAt:"",errors:0,warnings:0};
+      hydrateAll();saveState("已关联当前视频的独立发布单");
+      return true;
+    },
     current:()=>JSON.parse(JSON.stringify(state)),
     read:key=>draftKey(state.project)===key?JSON.parse(JSON.stringify(state)):drafts()[key]||null,
     receive(key,next,expected){
@@ -152,8 +168,10 @@
     state.preflight.checkedAt="";renderAssetMeta();saveState("本机素材登记已更新");return true;
   };
   $("#publishDraftSelect")?.addEventListener("change",event=>{
-    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;const restoring=event.target.value.startsWith('backup:');if(restoring)archiveBeforeImport(draftKey(next.project));state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState(restoring?"备份已恢复，原草稿另存备份":"发布单已切换");}catch{toast("切换失败，请先导出当前草稿备份");}
+    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;const restoring=event.target.value.startsWith('backup:');if(restoring)archiveBeforeImport(draftKey(next.project));state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState(restoring?"备份已恢复，原草稿另存备份":"发布单已切换");window.dispatchEvent(new CustomEvent("gucc:creative:video-changed",{detail:{projectId:state.project.creatorProjectId,videoId:state.project.videoId}}));}catch{toast("切换失败，请先导出当前草稿备份");}
   });
+
+  window.addEventListener('gucc:creative:selection',event=>{try{window.GuccPublishDrafts.openIdentity(event.detail);}catch(e){console.warn('统一项目关联失败',e);}});
 
   function toast(message) {
     const box = $("#toast");

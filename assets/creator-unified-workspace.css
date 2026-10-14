@@ -1,0 +1,29 @@
+/* Shared project/video identity header, consistent across six creation tools. */
+.gucc-unified-bar{box-sizing:border-box;position:relative;z-index:70;margin:0 auto 14px;max-width:1460px;padding:12px 16px 13px;background:linear-gradient(120deg,#11242b,#0b1924 70%);border:1px solid #2d4d51;border-top:2px solid #88dcca;border-radius:0 0 13px 13px;color:#e8f7f6;box-shadow:0 9px 25px #0003;font:13px/1.5 system-ui,sans-serif}
+.gucc-unified-bar *{box-sizing:border-box}
+.gucc-unified-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gucc-unified-brand{font-size:11px;letter-spacing:.14em;color:#98d9cf;font-weight:750;white-space:nowrap}
+.gucc-unified-bar label{display:flex;align-items:center;gap:6px;font-weight:500;color:#b7cbc9}
+.gucc-unified-bar select{max-width:min(39vw,350px);min-width:140px;min-height:39px;padding:8px;color:#eafdf8;border:1px solid #41615f;background:#102b34;border-radius:7px}
+.gucc-unified-bar button,.gucc-unified-bar a{font:inherit;cursor:pointer;border-radius:7px;padding:8px 10px;min-height:38px;color:#c9f2e8;background:transparent;border:1px solid #3a6660;text-decoration:none}
+.gucc-unified-bar button:hover,.gucc-unified-bar a:hover{background:#204940}
+.gucc-unified-bar button:disabled{opacity:.55;cursor:default}
+.gucc-unified-bar .gucc-u-current{font-size:12px;color:#b8cfcf;margin-left:auto}
+.gucc-u-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.gucc-u-tools a{padding:5px 9px;min-height:30px;font-size:12px}
+.gucc-u-tools .is-active{border-color:#91dcc7;background:#20483e}
+.gucc-u-deliverables{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.gucc-u-deliverables button{font-size:12px;min-height:32px;padding:5px 9px;border-color:#355057;color:#a9bfc2}
+.gucc-u-deliverables button[data-state="confirmed"]{color:#a9f3cd;border-color:#4e9984}
+.gucc-u-deliverables button[data-state="review"]{color:#f6d191;border-color:#987951}
+.gucc-u-deliverables button[data-state="in_progress"]{color:#a8d5ff;border-color:#4a7699}
+.gucc-u-message{font-size:12px;color:#97bdbd;margin-top:8px;min-height:16px}
+.gucc-u-message[data-alert="true"]{color:#ffd397}
+.gucc-u-dialog{border:1px solid #47756a;border-radius:14px;background:#101d29;color:#ebf4f4;max-width:min(94vw,480px);padding:22px;box-shadow:0 30px 70px #000a}
+.gucc-u-dialog::backdrop{background:#020911b8}
+.gucc-u-dialog label{display:grid;gap:5px;margin:12px 0;font-size:13px}
+.gucc-u-dialog input,.gucc-u-dialog textarea,.gucc-u-dialog select{width:100%;background:#091724;color:#e6f1f2;border:1px solid #3f5961;border-radius:7px;padding:9px}
+.gucc-u-dialog .actions{display:flex;gap:9px;justify-content:flex-end;margin-top:15px}
+.gucc-u-dialog button{background:#173840;border:1px solid #4c8575;color:#e6faf3;padding:9px 13px;border-radius:7px;cursor:pointer}
+.gucc-u-dialog button[type=submit]{background:#91d7c2;color:#10252a}
+@media(max-width:700px){.gucc-unified-bar{padding:12px 10px;margin:0 5px 10px;border-radius:0 0 9px 9px}.gucc-unified-line{gap:7px}.gucc-unified-bar label{flex:1 1 135px}.gucc-unified-bar select{max-width:100%;min-width:0;width:100%}.gucc-unified-bar .gucc-u-current{flex-basis:100%;margin-left:0}.gucc-u-tools{overflow-x:auto;flex-wrap:nowrap}.gucc-u-tools a{flex-shrink:0}}

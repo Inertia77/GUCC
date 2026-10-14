@@ -46,6 +46,9 @@ jobs:
       - name: Run isolated Creator browser regression
         run: node scripts/test-creator-global-browser.cjs
 
+      - name: Run unified project browser regression
+        run: node scripts/test-creator-unified-browser.cjs
+
       - name: Run premium workspace regression
         run: node scripts/test-gucc-premium-browser.cjs
 

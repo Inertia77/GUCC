@@ -180,7 +180,7 @@ async function start(){
  }catch(e){alertText("项目云端不可用："+e.message+"。本页面原有草稿未修改。",true);}
  window.addEventListener("gucc:creative:artifact-draft",event=>{if(event.detail?.key)void markStarted(event.detail.key);});
  window.addEventListener("gucc:creative:prompt-copied",()=>{if(tool==="studio")void markStarted(activeOutcome());});
- window.addEventListener("gucc-publish-draft-saved",()=>{if(tool==="publish")void markStarted("publish");});
+ window.addEventListener("gucc-publish-draft-saved",()=>{if(tool!=="publish")return;const draft=window.GuccPublishDrafts?.current?.();const hasWork=Boolean(draft?.source?.publishPackage||draft?.common?.video?.name||Object.values(draft?.platforms||{}).some(p=>p?.title||p?.description||p?.caption));if(hasWork)void markStarted("publish");});
  window.addEventListener("gucc:creative:video-changed",async(event)=>{
    if(tool!=="publish")return;
    const id=String(event.detail?.projectId||""),vid=String(event.detail?.videoId||"");

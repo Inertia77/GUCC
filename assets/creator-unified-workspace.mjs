@@ -142,6 +142,7 @@ function assembleBar(){
  function field(title){const label=node("label","");label.append(node("span","",title));const select=node("select");label.append(select);line.append(label);return select;}
  projectSelect=field("项目");videoSelect=field("视频");
  const add=node("button","","＋ 新视频");add.type="button";add.addEventListener("click",()=>void createVideo());line.append(add);
+ const refresh=node("button","","↻ 刷新");refresh.type="button";refresh.title="新建项目已同步云端后，刷新正式项目列表";refresh.addEventListener("click",()=>{const nativeId=window.GuccCreatorOS?.selectedId?.()||"";const u=new URL(location.href);if(nativeId&&nativeId!==project?.project_id){u.searchParams.set("project",nativeId);u.searchParams.delete("video");}location.href=u.href;});line.append(refresh);
  const center=node("a","","项目中心 ↗");center.href=queryTo("apps/video-workspace/production-system/");line.append(center);
  const current=node("span","gucc-u-current","同一项目 · 六项成果");line.append(current);
  rootBar.append(line);

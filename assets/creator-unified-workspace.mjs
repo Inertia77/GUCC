@@ -40,14 +40,14 @@ function emitSelected(){
  window.GuccUnifiedWorkspace={selection:()=>({...selected()}),refresh:refreshRecords,openRecord};
  window.dispatchEvent(new CustomEvent("gucc:creative:selection",{detail:context}));
 }
-async function hydrateVideo(prefer=""){
+async function hydrateVideo(prefer="",skipRedirect=false){
  videos=project?await listVideos(project.project_id):[];
  bindOption(videoSelect,videos,"选择视频 · 无记录可新建",x=>x.video_id,x=>x.title);
  let memory=remembered(),id=prefer||q.get("video")||(memory.projectId===project?.project_id?memory.videoId:"");
  video=videos.find(v=>v.video_id===id)||null;
  if(!video&&videos.length===1)video=videos[0]; // Single explicit video identity, no destructive inference.
  videoSelect.value=video?.video_id||"";
- if(video&&(!q.get("project")||!q.get("video"))){go(project.project_id,video.video_id);return;}
+ if(!skipRedirect&&video&&(!q.get("project")||!q.get("video"))){go(project.project_id,video.video_id);return;}
  await refreshRecords();
 }
 async function refreshRecords(){
@@ -177,5 +177,14 @@ async function start(){
  window.addEventListener("gucc:creative:artifact-draft",event=>{if(event.detail?.key)void markStarted(event.detail.key);});
  window.addEventListener("gucc:creative:prompt-copied",()=>{if(tool==="studio")void markStarted(activeOutcome());});
  window.addEventListener("gucc-publish-draft-saved",()=>{if(tool==="publish")void markStarted("publish");});
+ window.addEventListener("gucc:creative:project-changed",async(event)=>{
+   const other=projects.find(x=>x.project_id===event.detail?.projectId);
+   if(!other||other.project_id===project?.project_id)return;
+   project=other;projectSelect.value=other.project_id;video=null;
+   const url=new URL(location.href);url.searchParams.set("project",other.project_id);url.searchParams.delete("video");history.replaceState(null,"",url.href);
+   try{await hydrateVideo("",true);if(video){url.searchParams.set("video",video.video_id);history.replaceState(null,"",url.href);}alertText("已切换为同一项目的统一身份。");}
+   catch(e){alertText("视频身份暂不可用："+e.message,true);}
+ });
+ 
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{void start();},{once:true});else void start();

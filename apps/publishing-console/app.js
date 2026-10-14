@@ -168,7 +168,7 @@
     state.preflight.checkedAt="";renderAssetMeta();saveState("本机素材登记已更新");return true;
   };
   $("#publishDraftSelect")?.addEventListener("change",event=>{
-    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;const restoring=event.target.value.startsWith('backup:');if(restoring)archiveBeforeImport(draftKey(next.project));state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState(restoring?"备份已恢复，原草稿另存备份":"发布单已切换");}catch{toast("切换失败，请先导出当前草稿备份");}
+    try{clearTimeout(saveTimer);persistDraft();const next=drafts()[event.target.value];if(!next)return;const restoring=event.target.value.startsWith('backup:');if(restoring)archiveBeforeImport(draftKey(next.project));state=mergeState(next);runtimeAssets.video=null;runtimeAssets.cover=null;hydrateAll();saveState(restoring?"备份已恢复，原草稿另存备份":"发布单已切换");window.dispatchEvent(new CustomEvent("gucc:creative:video-changed",{detail:{projectId:state.project.creatorProjectId,videoId:state.project.videoId}}));}catch{toast("切换失败，请先导出当前草稿备份");}
   });
 
   window.addEventListener('gucc:creative:selection',event=>{try{window.GuccPublishDrafts.openIdentity(event.detail);}catch(e){console.warn('统一项目关联失败',e);}});

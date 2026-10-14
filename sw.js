@@ -1,4 +1,4 @@
-const STATIC_CACHE = "gucc-static-v42";
+const STATIC_CACHE = "gucc-static-v43";
 const RUNTIME_CACHE = "gucc-runtime-v40";
 
 const APP_SHELL = [
@@ -7,6 +7,8 @@ const APP_SHELL = [
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/creator-six-deliverables.js?v=1",
+  "./assets/creator-unified-workspace.css?v=1",
+  "./assets/creator-unified-workspace.mjs?v=1",
   "./apps/video-workspace/production-system/creator-os-storage.js?v=1",
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
@@ -105,7 +107,7 @@ const APP_SHELL = [
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/legacy-prompt-studio-v6.html",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
-  "./apps/video-workspace/studio.js?v=6.3.0",
+  "./apps/video-workspace/studio.js?v=6.4.0",
   "./apps/video-workspace/studio.css?v=6.3.0",
   "./apps/video-workspace/production-system/",
   "./docs/ai-video-production/CREATOR_CONSTITUTION.md",

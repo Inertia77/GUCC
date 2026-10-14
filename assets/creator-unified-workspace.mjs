@@ -47,6 +47,7 @@ async function hydrateVideo(prefer=""){
  video=videos.find(v=>v.video_id===id)||null;
  if(!video&&videos.length===1)video=videos[0]; // Single explicit video identity, no destructive inference.
  videoSelect.value=video?.video_id||"";
+ if(video&&(!q.get("project")||!q.get("video"))){go(project.project_id,video.video_id);return;}
  await refreshRecords();
 }
 async function refreshRecords(){
@@ -175,5 +176,6 @@ async function start(){
  }catch(e){alertText("项目云端不可用："+e.message+"。本页面原有草稿未修改。",true);}
  window.addEventListener("gucc:creative:artifact-draft",event=>{if(event.detail?.key)void markStarted(event.detail.key);});
  window.addEventListener("gucc:creative:prompt-copied",()=>{if(tool==="studio")void markStarted(activeOutcome());});
+ window.addEventListener("gucc-publish-draft-saved",()=>{if(tool==="publish")void markStarted("publish");});
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{void start();},{once:true});else void start();

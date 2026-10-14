@@ -653,7 +653,7 @@ $("deleteCurrentProject").addEventListener("click",()=>{
   selectActiveAfterMove(p.projectId);
   save();render();notify("已移入回收站；可恢复");
 });
-$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
+$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();window.dispatchEvent(new CustomEvent("gucc:creative:project-changed",{detail:{projectId:e.target.value}}));});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});
 $("toggleFlowBtn").addEventListener("click",()=>{flowExpanded=!flowExpanded;renderFlow(current());});

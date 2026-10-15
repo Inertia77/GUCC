@@ -45,7 +45,7 @@ for(const [url,adapter] of [
  ["apps/cover-generator/index.html",null],
  ["apps/publishing-console/index.html","app.js"]]){
  assert.match(source(url),/creator-shared-context\.js\?v=2/);
- assert.match(source(url),/creator-shared-context-ui\.mjs\?v=1/);
+ assert.match(source(url),/creator-shared-context-ui\.mjs\?v=2/);
  if(adapter)assert.match(source("apps/"+(url.includes("video-workspace")?"video-workspace/":"publishing-console/")+adapter),/GuccCreatorWorkspaceAdapter/);
 }
 const studio=source("apps/video-workspace/studio.js");

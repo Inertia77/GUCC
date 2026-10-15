@@ -7,18 +7,19 @@
 <script src="../../assets/access-guard.js?v=14" data-root="../../" data-guard="true" data-creator-prompts="true"></script>
 <script src="../../assets/creator-shared-context.js?v=2"></script>
 <link rel="stylesheet" href="./studio.css?v=6.3.0">
-<script>const TEMPLATE_VERSION = "6.2.0";</script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const settings=document.querySelector('.studio-settings');const small=matchMedia('(max-width:700px)');const fit=()=>{settings.open=!small.matches};fit();small.addEventListener('change',fit)});const TEMPLATE_VERSION = "6.2.0";</script>
 <script src="./ai-prompts.js?v=6.2.0" defer></script><script src="./creator-six-deliverables.js?v=1" defer></script><script src="./studio.js?v=6.4.0" defer></script>
 <link rel="stylesheet" href="../../assets/gucc-premium.css?v=2" data-gucc-premium>
 </head>
 <body class="creator-prompt-page">
 <div class="creator-shell">
  <header class="creator-top">
-  <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">G</span><span>GUCC <b>STUDIO</b><small>FIXED WORKFLOW / PROMPT STUDIO · V6.2.0</small></span></a>
+  <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">G</span><span>GUCC <b>STUDIO</b><small>PROMPT STUDIO</small></span></a>
   <div class="top-actions"><a href="./">两种模式 ↗</a><a href="./production-system/">切换动态 Creator OS ↗</a><a href="../publishing-console/">投稿</a><button id="helpButton" class="quiet" type="button">使用说明</button></div>
  </header>
- <section class="setup-panel" aria-label="本期视频设置">
-  <div class="setup-heading"><h1>创作工作台 · 本期视频</h1><span id="saveStatus" role="status">独立浏览器草稿 · 不与动态版互相覆盖</span><button id="contextToggle" type="button" class="quiet" aria-expanded="false" aria-controls="contextFields">项目输入</button></div>
+ <div class="studio-context-row"><div data-creator-context></div><span>选择成果，复制完整 Prompt。</span></div>
+ <details class="studio-settings" open><summary>制作设置 <span>类型、主题与补充资料</span></summary><section class="setup-panel" aria-label="本期视频设置">
+  <div class="setup-heading"><h1>本期制作</h1><span id="saveStatus" role="status">独立浏览器草稿 · 不与动态版互相覆盖</span><button id="contextToggle" type="button" class="quiet" aria-expanded="false" aria-controls="contextFields">项目输入</button></div>
   <div class="main-controls">
    <label>视频类型<select id="routeSelect"></select></label>
    <label>内容形式<select id="formatSelect"><option value="long">长视频</option><option value="short">短内容</option></select></label>
@@ -29,10 +30,10 @@
    <label class="notes-label">本轮补充（可选）<textarea id="notesInput" rows="3" placeholder="通常可以留空：同一 Chat 会直接沿用已有上下文。只有本轮需要覆盖文件名、结论、保留段落或特殊限制时再填写。"></textarea></label>
    <div class="file-actions"><button id="importButton" type="button">导入项目约定／草稿</button><button id="exportButton" type="button">导出工作台草稿</button><span>支持 VIDEO_CONTRACT.md、新版草稿和旧版 JSON</span><input id="importFile" type="file" accept=".json,.md,.txt" hidden></div>
   </div>
-  <div class="route-summary"><span class="route-chip" id="routeChip"></span><p id="routeHint"></p><span class="edition">六项成果 2026.10.13</span></div>
- </section>
+  <details class="route-summary"><summary>本期制作说明</summary><span class="route-chip" id="routeChip"></span><p id="routeHint"></p><span class="edition">六项成果</span></details>
+ </section></details>
  <div class="creator-mode-switch" role="group" aria-label="创作工作方式"><button id="simpleModeButton" type="button" aria-pressed="true">六项核心成果 <span>推荐 · 少步骤 · 高自主权</span></button><button id="advancedModeButton" type="button" aria-pressed="false">完整任务库 <span>保留原有 22 项任务</span></button></div>
- <p id="simpleIntro" class="simple-intro">只选择你现在要交付的成果。研究、设计、必要审核和修订由 AI 自主完成；真实录音、正式 Lock 与文件真实性继续严格核对。</p>
+ <p id="simpleIntro" class="simple-intro" hidden>只选择你现在要交付的成果。研究、设计、必要审核和修订由 AI 自主完成；真实录音、正式 Lock 与文件真实性继续严格核对。</p>
  <div class="workspace-grid six-mode" id="creatorWorkspace">
   <aside id="simpleNav" class="six-nav" aria-label="六项创作成果"><div class="six-nav-label">本期正式交付 <span>01 — 06</span></div><nav id="sixNavList" aria-label="选择交付成果"></nav><p class="six-nav-note">六项均可单独执行，选择不代表已生成文件或已完成审核。</p></aside>
   <aside class="stage-panel" aria-label="创作阶段"><div class="panel-label">制作阶段 <span>按需选择</span></div><nav id="stageNav"></nav><button id="compilerButton" class="tool-link" type="button"><span aria-hidden="true">＋</span> 自定义需求转 Prompt</button><details class="reference-links"><summary>参考与旧项目</summary><a href="https://app.notion.com/p/prompt-3ea5adb3775e80a08beee9be5824dbc0" target="_blank" rel="noopener">Notion 规则参考</a><a href="./legacy/studio-v5.html">旧工作区与历史草稿</a><button id="mappingButton" type="button">原编号对照／合并依据</button></details></aside>
@@ -65,5 +66,5 @@
 <dialog id="mappingDialog" class="creator-dialog"><div class="dialog-heading"><h2>原编号与现在的任务</h2><button type="button" data-close>关闭</button></div><p>合并同一输入下可连续完成的工作；确认命题、录音、时间线、资产和剪辑蓝图之间保留交接。</p><div class="table-wrap"><table><thead><tr><th>原 Notion 编号</th><th>当前任务</th><th>Chat 备用</th></tr></thead><tbody id="mappingBody"></tbody></table></div><p>依据 2026-10-05 读取的 Notion 母库重构。页面只生成当前版本 Prompt；原版留作迁移核对。</p></dialog>
 <div id="toast" class="creator-toast" role="status" aria-live="polite" hidden></div>
 <script src="../../assets/pwa-install.js?v=2" data-root="../../"></script>
-<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=1"></script>
+<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=2"></script>
 </body></html>

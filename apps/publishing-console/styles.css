@@ -113,16 +113,15 @@ button, a, label.asset-drop { -webkit-tap-highlight-color: transparent; }
 .flow-nav {
   position: sticky;
   z-index: 15;
-  top: 86px;
+  top: 0;
   padding: 8px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   border: 1px solid var(--line);
-  border-radius: 22px;
-  background: rgba(8, 14, 23, .88);
-  box-shadow: 0 14px 40px rgba(0,0,0,.18);
-  backdrop-filter: blur(18px);
+  border-radius: var(--g-radius);
+  background: var(--g-ink);
+  box-shadow: none;
 }
 .flow-step {
   min-width: 0;
@@ -144,7 +143,7 @@ button, a, label.asset-drop { -webkit-tap-highlight-color: transparent; }
 .flow-step span { font-weight: 850; }
 .flow-step small { margin-top: 3px; overflow: hidden; color: var(--dim); font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 
-.view { display: none; padding-top: 44px; }
+.view { display: none; padding-top: 8px; }
 .view.active { display: block; animation: reveal .22s ease-out; }
 @keyframes reveal { from { opacity: 0; transform: translateY(7px); } }
 

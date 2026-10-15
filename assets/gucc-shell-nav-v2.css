@@ -1,5 +1,6 @@
 /* GUCC global navigation v2: five stable destinations, grouped popover menus. */
-.gucc-shell-dock[hidden],
+body.gucc-enhanced .gucc-shell-dock[hidden],
+body:has(dialog[open]) .gucc-shell-dock,
 .gucc-shell-menu[hidden],
 .gucc-enhanced.editor-open .gucc-shell-dock,
 .gucc-enhanced.editor-open .gucc-shell-menu,

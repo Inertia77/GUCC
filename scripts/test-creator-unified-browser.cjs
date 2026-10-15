@@ -78,6 +78,7 @@ async function main(){
   assert.equal(deliverables.get(key("A","FIONI","script")).status,"confirmed");
   assert.equal(deliverables.get(key("A","FIONI","script")).verification.humanApproved,true);
   await page.goto(origin+"/apps/cover-generator/");
+  await page.locator("#aiPromptLab summary").click();
   const p2=page.locator('#guccCreatorContextBar select[aria-label="选择 GUCC 项目"]'),v2=page.locator('#guccCreatorContextBar select[aria-label="选择项目中的视频"]');
   await p2.selectOption("A");await v2.selectOption("FIONI");await apply.click();
   assert.equal(await page.inputValue("#aiPromptTitle"),"菲欧妮解析");

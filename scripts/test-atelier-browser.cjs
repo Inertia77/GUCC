@@ -119,6 +119,25 @@ const sizes = [
           });
           await p.keyboard.press("Escape");
         }
+        if (name === "publish" && w === 390) {
+          await p.locator(".publish-utilities > summary").click();
+          await p.screenshot({
+            animations: "disabled",
+            path: path.join(out, "publish-utilities-390.png"),
+          });
+          const bridge = p.locator("#guccCreatorBridge");
+          if (await bridge.count())
+            assert(
+              await bridge.evaluate(
+                (e) => e.closest(".publish-utilities") !== null,
+              ),
+              "Compatibility controls stay inside utilities",
+            );
+          await p.keyboard.press("Escape");
+          assert(
+            !(await p.locator(".publish-utilities").evaluate((d) => d.open)),
+          );
+        }
         if (name === "cover" && w === 390) {
           await p.locator("[data-cover-view=materials]").click();
           assert(await p.locator(".materials-panel").isVisible());
@@ -236,6 +255,34 @@ const sizes = [
     f.writes.length,
     0,
     "Visual review does not mutate formal outcomes",
+  );
+  // Explicitly reopening uses the locked formal revision even if an older local draft exists.
+  await p.locator(".gcc-outcome-trigger").click();
+  assert.equal(
+    await p.getByLabel("成果内容", { exact: true }).inputValue(),
+    record.evidence.content,
+  );
+  await p
+    .getByRole("button", { name: "重新打开已锁定成果", exact: true })
+    .click();
+  await p.locator(".gcc-confirm input").fill("隔离测试：修订开场");
+  await p.locator(".gcc-confirm button[type=submit]").click();
+  await p.waitForFunction(() =>
+    window.GuccCreatorWorkspace.records().some(
+      (r) => r.deliverable_key === "script" && r.status === "review",
+    ),
+  );
+  assert.equal(f.writes.length, 1);
+  assert.equal(f.deliverables.get(id).evidence.locked, false);
+  assert.equal(f.deliverables.get(id).revision, 3);
+  assert.deepEqual(
+    f.deliverables.get(id).evidence.artifacts,
+    record.evidence.artifacts,
+  );
+  assert(
+    f.versions
+      .get(id)
+      .some((v) => v.revision === 2 && v.record.evidence.locked),
   );
   await fs.writeFile(
     path.join(out, "result.json"),

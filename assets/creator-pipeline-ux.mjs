@@ -214,7 +214,7 @@ function integratePanel() {
   if (isProduction) host = ensureHost(document.querySelector('.topbar'), 'gcb-production-host');
   if (isPublish) {
     const utilities=document.querySelector('.publish-utilities > .top-actions');
-    if(utilities){utilities.append(panel);panel.classList.add('gcb-inline');return true;}
+    if(utilities){utilities.classList.add('gcb-integrated-host');utilities.append(panel);panel.classList.add('gcb-inline');return true;}
     host = ensureHost(document.querySelector('.flow-nav'), 'gcb-publish-host');
   }
   if (!host) return false;

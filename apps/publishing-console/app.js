@@ -956,6 +956,10 @@
     if(state.assistantJobId&&assistantOnline)pollAutomationJob(state.assistantJobId);
   }
 
+  const utilitiesMenu=document.querySelector('.publish-utilities');
+  document.addEventListener('pointerdown',event=>{if(utilitiesMenu?.open&&!utilitiesMenu.contains(event.target))utilitiesMenu.open=false;});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&utilitiesMenu?.open){utilitiesMenu.open=false;utilitiesMenu.querySelector('summary')?.focus();}});
+
   function applyCreatorContext({ctx,project,video,automatic=false}){
     const targetKey=draftKey({creatorProjectId:ctx.projectId,videoId:ctx.videoId});
     if(ctx.projectId&&!ctx.videoId)throw Error("请选择当前项目下的具体视频，发布单按视频独立管理");

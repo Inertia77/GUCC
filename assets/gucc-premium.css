@@ -2157,6 +2157,8 @@ body.publishing-console-page .topbar > [data-creator-context] {
   top: 52px;
   z-index: 40;
   width: min(340px, calc(100vw - 40px));
+  max-height: calc(100dvh - 120px);
+  overflow: auto;
   display: grid;
   padding: 20px;
   gap: 12px;
@@ -2708,4 +2710,20 @@ body.publishing-console-page .form-grid {
   .publishing-console-page .local-paths[open] {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+body.publishing-console-page .publish-utilities .gucc-creator-bridge {
+  font-family: var(--g-font);
+  background: var(--g-field);
+  border-color: var(--g-line);
+  backdrop-filter: none;
+}
+body.publishing-console-page
+  .publish-utilities
+  .gucc-creator-bridge
+  :is(button, a) {
+  background: var(--g-raised);
+  border-color: var(--g-line);
+  border-radius: var(--g-radius);
+  color: var(--g-text);
 }

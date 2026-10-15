@@ -520,8 +520,10 @@ function showEditor() {
     artifacts: e.artifacts || [],
     recording: e.recording || null,
   };
-  editorBase = draft?.baseRevision ?? row?.revision ?? 0;
-  resolveDraft.hidden = !draft || editorBase === (row?.revision || 0);
+  editorBase =
+    (!e.locked && draft ? draft.baseRevision : undefined) ?? row?.revision ?? 0;
+  resolveDraft.hidden =
+    e.locked || !draft || editorBase === (row?.revision || 0);
   discardDraft.hidden = !draft;
   state.value = d.status;
   content.value = d.content;

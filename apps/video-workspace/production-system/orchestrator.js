@@ -261,7 +261,7 @@
   // One visible node per finished outcome. Research, QC, scene planning and
   // technical preparation are internal to each task, not handoff obligations.
   function compileSixOutcomes(project){
-    const tracks=Array.isArray(project.videos)&&project.videos.length>1?project.videos:[null];
+    const tracks=Array.isArray(project.videos)&&project.videos.length?project.videos:[null];
     const capIds={script:"SCRIPT_DRAFT",subtitle:"PRECISE_SRT_ALIGNMENT",visual:"DYNAMIC_MECHANIC_VISUAL",sound:"BGM_SFX_ASSET_PRODUCTION",cover:"COVER_DESIGN",publish:"SIX_PLATFORM_PUBLISH_PACKAGE"};
     const executors={script:"Work",subtitle:"Work",visual:"Codex",sound:"Codex",cover:"Work",publish:"Work"};
     const out=[];

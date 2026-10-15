@@ -9,9 +9,9 @@ const pages={
  publish:new URL("../apps/publishing-console/",import.meta.url).href
 };
 function href(kind,ctx){return C.url(pages[kind],ctx);}
-async function request(path,{method="GET",body}={}){
+async function request(path,{method="GET",body,headers={}}={}){
  const token=await getAccessToken();
- const res=await fetch(API+path,{method,headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+token, ...(body?{"Content-Type":"application/json"}:{})},body:body?JSON.stringify(body):undefined,cache:"no-store"});
+ const res=await fetch(API+path,{method,headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:"Bearer "+token, ...(body?{"Content-Type":"application/json"}:{}),...headers},body:body?JSON.stringify(body):undefined,cache:"no-store"});
  const data=await res.json().catch(()=>null);
  if(!res.ok)throw Error(data?.message||data?.error||"GUCC 云端访问失败："+res.status);
  return data;
@@ -32,6 +32,27 @@ const apply=document.createElement("button");apply.type="button";apply.textConte
 const links=document.createElement("div");links.className="gcc-links";
 for(const [name,label] of Object.entries({studio:"文案 / 字幕",creator:"项目档案",cover:"封面设计",publish:"发布包"})){const a=document.createElement("a");a.dataset.kind=name;a.textContent=label;a.href=href(name,C.read());links.append(a);}
 nav.append(heading,projectLabel,videoLabel,apply,links);
+const outcomeNames=[["script","文案"],["subtitle","字幕"],["visual","视觉素材"],["sound","音效/BGM"],["cover","封面"],["publish","发布包"]];
+const outcomePanel=document.createElement("details");outcomePanel.className="gcc-outcomes";
+const outcomeSummary=document.createElement("summary");outcomeSummary.textContent="六项成果 · 选择视频后查看云端进度";
+const outcomeChips=document.createElement("div");outcomeChips.className="gcc-outcome-chips";
+const outcomeEditor=document.createElement("div");outcomeEditor.className="gcc-outcome-editor";
+const kindLabel=document.createElement("label");kindLabel.textContent="成果";
+const kindSelect=document.createElement("select");for(const [id,name] of outcomeNames)kindSelect.append(optionFor(id,name));kindLabel.append(kindSelect);
+const statusLabel=document.createElement("label");statusLabel.textContent="状态";
+const statusSelect=document.createElement("select");
+for(const [id,name] of [["not_started","未开始"],["working","制作中"],["review","待审核"],["confirmed","人工已确认"],["issue","需处理"]])statusSelect.append(optionFor(id,name));
+statusLabel.append(statusSelect);
+const artifactInput=document.createElement("input");artifactInput.placeholder="已生成的文件名/相对路径（确认完成时必填）";artifactInput.setAttribute("aria-label","实际产物文件名或相对路径");
+const evidenceLabel=document.createElement("label");evidenceLabel.className="gcc-evidence";
+const evidenceCheck=document.createElement("input");evidenceCheck.type="checkbox";
+const evidenceText=document.createElement("span");evidenceText.textContent="我已实际检查文件存在、内容质量，并批准此成果";
+evidenceLabel.append(evidenceCheck,evidenceText);
+const outcomeSave=document.createElement("button");outcomeSave.type="button";outcomeSave.textContent="保存成果状态";
+const outcomeMessage=document.createElement("small");outcomeMessage.setAttribute("role","status");
+outcomeEditor.append(kindLabel,statusLabel,artifactInput,evidenceLabel,outcomeSave,outcomeMessage);
+outcomePanel.append(outcomeSummary,outcomeChips,outcomeEditor);nav.append(outcomePanel);
+function optionFor(id,name){const x=document.createElement("option");x.value=id;x.textContent=name;return x;}
 document.body.insertBefore(nav,document.body.firstChild);
 const sheet=document.createElement("style");sheet.textContent=`
 .gucc-creator-context{position:relative;z-index:12;display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:#101c24;border:1px solid #35534e;border-left:3px solid #9edfc9;color:#e7f8f3;border-radius:8px;padding:10px 14px;margin:10px auto 14px;max-width:min(96%,1680px);font:13px/1.5 system-ui,"Noto Sans SC",sans-serif;box-shadow:0 5px 22px #0002}
@@ -41,6 +62,11 @@ const sheet=document.createElement("style");sheet.textContent=`
 .gucc-creator-context button{min-height:39px;border:1px solid #7bbbaa;background:#234c43;color:#e5fff8;border-radius:6px;padding:6px 11px;cursor:pointer;font:inherit}
 .gucc-creator-context button:disabled{opacity:.55;cursor:default}
 .gcc-links{display:flex;gap:10px;flex-wrap:wrap}.gcc-links a{color:#b5dcd6;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+.gcc-outcomes{flex-basis:100%;border-top:1px solid #39554f;padding-top:7px}.gcc-outcomes summary{cursor:pointer;color:#bce9dc}
+.gcc-outcome-chips{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.gcc-outcome-chips span{font-size:12px;border:1px solid #35534e;border-radius:5px;padding:4px 8px;color:#cfebe4}
+.gcc-outcome-editor{display:flex;align-items:center;flex-wrap:wrap;gap:9px}.gcc-outcome-editor>input{min-height:39px;max-width:360px;flex:1 1 180px;background:#0b1b21;border:1px solid #42635f;color:white;border-radius:5px;padding:6px 10px}
+.gucc-creator-context .gcc-outcome-editor>label{flex:0 1 195px}.gucc-creator-context .gcc-outcome-editor .gcc-evidence{flex:1 1 280px;display:flex;align-items:center;gap:7px}
+.gcc-evidence input{width:18px;height:18px;flex-shrink:0}.gcc-outcome-editor>small{flex-basis:100%;color:#b4cfca}
 @media(max-width:700px){.gucc-creator-context{margin:8px 10px;gap:8px}.gcc-head{flex-basis:100%}.gucc-creator-context label{flex:1 1 130px}.gcc-links{flex-basis:100%}}
 `;document.head.append(sheet);
 let projects=[],selectedSnapshot=null,busy=false;
@@ -67,6 +93,75 @@ async function selectProject(id,requested=""){
   apply.disabled=false;
  }catch(error){if(project.value!==id)return;setVideoOptions(null,"");showStatus("视频信息暂不可读取："+error.message);apply.disabled=false;}
 }
+
+const statusLabels={not_started:"未开始",working:"制作中",review:"待审核",confirmed:"已确认",issue:"需处理"};
+let outcomeRows=new Map(),outcomeBoundKey="",outcomeLoading=false;
+function outcomeNotice(msg){outcomeMessage.textContent=msg;}
+function renderOutcomes(ctx){
+ const enabled=Boolean(ctx.projectId&&ctx.videoId);
+ outcomePanel.hidden=!enabled;outcomeChips.replaceChildren();
+ if(!enabled){outcomeSummary.textContent="六项成果 · 请先选择具体视频";return;}
+ const done=[...outcomeRows.values()].filter(r=>r.status==="confirmed").length;
+ outcomeSummary.textContent="六项成果 · "+done+"/6 项已人工确认";
+ for(const [id,name] of outcomeNames){
+  const row=outcomeRows.get(id),v=document.createElement("span");
+  v.textContent=name+" · "+(statusLabels[row?.status]||"未开始");
+  v.dataset.status=row?.status||"not_started";outcomeChips.append(v);
+ }
+ const active=outcomeRows.get(kindSelect.value);
+ statusSelect.value=active?.status||"not_started";
+ artifactInput.value=active?.artifact_manifest?.[0]?.path||"";
+ evidenceCheck.checked=false;
+ outcomeSave.disabled=false;
+}
+async function registerVideo(ctx,row,videoInfo){
+ if(!ctx.projectId||!ctx.videoId)return;
+ const name=String(videoInfo?.name||videoInfo?.title||ctx.videoId).slice(0,300);
+ // This is only called after the user explicitly presses "在此工具使用".
+ await request("creator_videos?on_conflict=project_id,video_id",{method:"POST",
+  headers:{Prefer:"resolution=ignore-duplicates,return=representation"},
+  body:{project_id:ctx.projectId,video_id:ctx.videoId,name,source:videoInfo?"workspace":"confirmed_legacy_branch"}});
+}
+async function loadOutcomes(ctx){
+ outcomeRows=new Map();outcomeBoundKey=C.key(ctx);renderOutcomes(ctx);
+ if(!ctx.projectId||!ctx.videoId)return;
+ outcomeLoading=true;outcomeSave.disabled=true;outcomeNotice("正在读取云端成果…");
+ try{
+  const path="creator_video_deliverables?select=deliverable_key,status,artifact_manifest,verification,revision,updated_at&project_id=eq."+
+   encodeURIComponent(ctx.projectId)+"&video_id=eq."+encodeURIComponent(ctx.videoId);
+  const rows=await request(path);
+  if(C.key(C.read())!==outcomeBoundKey)return;
+  outcomeRows=new Map((Array.isArray(rows)?rows:[]).map(row=>[row.deliverable_key,row]));
+  renderOutcomes(ctx);outcomeNotice("云端状态已读取。只有人工核验后才可设为“已确认”。");
+ }catch(e){outcomeNotice("云端成果暂不可用："+e.message);}
+ finally{outcomeLoading=false;outcomeSave.disabled=false;}
+}
+kindSelect.addEventListener("change",()=>renderOutcomes(C.read()));
+outcomeSave.addEventListener("click",async()=>{
+ const ctx=C.read(),kind=kindSelect.value,newStatus=statusSelect.value,old=outcomeRows.get(kind);
+ if(outcomeLoading||!ctx.projectId||!ctx.videoId)return;
+ const path=artifactInput.value.trim();
+ if(newStatus==="confirmed"&&(!evidenceCheck.checked||!path)){outcomeNotice("请先填真实产物文件名/路径，并确认已核查文件、质量与批准");return;}
+ const verification=newStatus==="confirmed"?{fileVerified:true,qualityVerified:true,humanApproved:true,confirmedBy:"USER_ATTESTED",confirmedAt:new Date().toISOString()}:{};
+ const manifest=path?[{path,kind,observation:"user_provided_reference"}]:(old?.artifact_manifest||[]);
+ const payload={project_id:ctx.projectId,video_id:ctx.videoId,deliverable_key:kind,status:newStatus,artifact_manifest:manifest,verification};
+ outcomeLoading=true;outcomeSave.disabled=true;
+ try{
+  let updated;
+  if(!old){updated=await request("creator_video_deliverables",{method:"POST",headers:{Prefer:"return=representation"},body:payload});}
+  else{
+   const url="creator_video_deliverables?project_id=eq."+encodeURIComponent(ctx.projectId)+
+   "&video_id=eq."+encodeURIComponent(ctx.videoId)+"&deliverable_key=eq."+encodeURIComponent(kind)+"&revision=eq."+old.revision;
+   updated=await request(url,{method:"PATCH",headers:{Prefer:"return=representation"},body:{status:newStatus,artifact_manifest:manifest,verification,revision:old.revision+1,updated_at:new Date().toISOString()}});
+  }
+  if(!Array.isArray(updated)||updated.length!==1)throw Error("版本已变化，请刷新后重试，未覆盖其他设备内容");
+  outcomeRows.set(kind,updated[0]);renderOutcomes(ctx);
+  outcomeNotice("已保存到 Supabase · "+(statusLabels[newStatus]||newStatus)+" · Revision "+updated[0].revision);
+  window.dispatchEvent(new CustomEvent("gucc:creator-outcome-saved",{detail:{...ctx,kind,status:newStatus}}));
+ }catch(e){outcomeNotice("保存未完成："+e.message);await loadOutcomes(ctx);}
+ finally{outcomeLoading=false;outcomeSave.disabled=false;}
+});
+
 project.addEventListener("change",()=>{void selectProject(project.value);});
 video.addEventListener("change",()=>{apply.disabled=false;});
 apply.addEventListener("click",async()=>{
@@ -81,7 +176,13 @@ apply.addEventListener("click",async()=>{
    const ok=await adapter.applyContext({ctx,project:row||null,video:selectedSnapshot?.videos?.find(v=>v.videoId===ctx.videoId)||null,inferred});
    if(ok===false){showStatus("工具拒绝了切换；原草稿未被覆盖");return;}
   }
-  C.set(ctx);refreshLinks(ctx);showStatus(ctx.projectId?"已关联 "+row.name+(ctx.videoId?" · "+ctx.videoId:"")+" · 成果仍需独立核验":"已恢复本浏览器独立草稿");
+  C.set(ctx);refreshLinks(ctx);
+  if(ctx.videoId){
+   try{await registerVideo(ctx,row,selectedSnapshot?.videos?.find(v=>v.videoId===ctx.videoId)||null);}
+   catch(e){outcomeNotice("视频关联已保存在本浏览器；云端视频登记未完成："+e.message);}
+  }
+  await loadOutcomes(ctx);
+  showStatus(ctx.projectId?"已关联 "+row.name+(ctx.videoId?" · "+ctx.videoId:"")+" · 成果仍需独立核验":"已恢复本浏览器独立草稿");
  }catch(err){showStatus("切换未完成："+err.message);}
  finally{busy=false;apply.disabled=false;}
 });
@@ -99,7 +200,7 @@ async function load(){
   project.value=value;
   if(value)await selectProject(value,desired.projectId===value?desired.videoId:saved.videoId);
   else{setVideoOptions(null,"");apply.disabled=false;showStatus(projects.length+" 个云端项目 · 可选择关联或继续使用本机草稿");}
-  refreshLinks(C.read());
+  refreshLinks(C.read());await loadOutcomes(C.read());
  }catch(error){showStatus("暂不能读取云端项目："+error.message);project.replaceChildren(option("","云端暂不可用"));}
 }
 window.GuccCreatorContextUI={reload:load,selected:()=>({projectId:project.value,videoId:video.value})};

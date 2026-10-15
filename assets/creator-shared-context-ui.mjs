@@ -3,10 +3,10 @@ import {getAccessToken,getSession} from "../apps/command-center/src/auth.js";
 const C=window.GuccCreatorContext;
 const API=CONFIG.SUPABASE_URL.replace(/\/+$/,"")+"/rest/v1/";
 const pages={
- studio:"/GUCC/apps/video-workspace/legacy-prompt-studio-v6.html",
- creator:"/GUCC/apps/video-workspace/production-system/",
- cover:"/GUCC/apps/cover-generator/",
- publish:"/GUCC/apps/publishing-console/"
+ studio:new URL("../apps/video-workspace/legacy-prompt-studio-v6.html",import.meta.url).href,
+ creator:new URL("../apps/video-workspace/production-system/",import.meta.url).href,
+ cover:new URL("../apps/cover-generator/",import.meta.url).href,
+ publish:new URL("../apps/publishing-console/",import.meta.url).href
 };
 function href(kind,ctx){return C.url(pages[kind],ctx);}
 async function request(path,{method="GET",body}={}){
@@ -58,7 +58,7 @@ function setVideoOptions(snapshot,requested){
 }
 async function selectProject(id,requested=""){
  selectedSnapshot=null;video.replaceChildren(option("","正在读取视频…"));apply.disabled=true;
- if(!id){setVideoOptions(null,"");return;}
+ if(!id){setVideoOptions(null,"");apply.disabled=false;showStatus("未关联项目 · 草稿只保存在本浏览器");return;}
  try{
   const rows=await request("creator_os_workspace_snapshots?select=project_id,project_data&project_id=eq."+encodeURIComponent(id)+"&limit=1");
   if(project.value!==id)return;selectedSnapshot=Array.isArray(rows)?rows[0]?.project_data:null;
@@ -68,20 +68,20 @@ async function selectProject(id,requested=""){
  }catch(error){if(project.value!==id)return;setVideoOptions(null,"");showStatus("视频信息暂不可读取："+error.message);apply.disabled=false;}
 }
 project.addEventListener("change",()=>{void selectProject(project.value);});
-video.addEventListener("change",()=>refreshLinks({projectId:project.value,videoId:video.value}));
+video.addEventListener("change",()=>{apply.disabled=false;});
 apply.addEventListener("click",async()=>{
- if(busy)return;const row=projectRow();if(!row){showStatus("请先选择云端项目");return;}
- const ctx=C.clean({projectId:row.projectId,videoId:video.value});
+ if(busy)return;const row=projectRow();if(!row&&project.value){showStatus("请先选择有效的云端项目");return;}
+ const ctx=C.clean({projectId:row?.projectId||"",videoId:video.value});
  const inferred=JSON.parse(video.dataset.inferred||"[]").includes(ctx.videoId);
  if(inferred&&!confirm("此视频仅从旧工作节点的分支名称识别，正式视频身份仍待核对。确定只将它用于本浏览器的创作关联吗？"))return;
  busy=true;apply.disabled=true;
  try{
   const adapter=window.GuccCreatorWorkspaceAdapter;
   if(adapter&&typeof adapter.applyContext==="function"){
-   const ok=await adapter.applyContext({ctx,project:row,video:selectedSnapshot?.videos?.find(v=>v.videoId===ctx.videoId)||null,inferred});
+   const ok=await adapter.applyContext({ctx,project:row||null,video:selectedSnapshot?.videos?.find(v=>v.videoId===ctx.videoId)||null,inferred});
    if(ok===false){showStatus("工具拒绝了切换；原草稿未被覆盖");return;}
   }
-  C.set(ctx);refreshLinks(ctx);showStatus("已关联 "+row.name+(ctx.videoId?" · "+ctx.videoId:"")+" · 成果仍需独立核验");
+  C.set(ctx);refreshLinks(ctx);showStatus(ctx.projectId?"已关联 "+row.name+(ctx.videoId?" · "+ctx.videoId:"")+" · 成果仍需独立核验":"已恢复本浏览器独立草稿");
  }catch(err){showStatus("切换未完成："+err.message);}
  finally{busy=false;apply.disabled=false;}
 });
@@ -92,16 +92,16 @@ async function load(){
   const rows=await request("rpc/creator_os_portal_dashboard",{method:"POST",body:{}});
   if(!Array.isArray(rows))throw Error("项目列表格式不正确");
   projects=rows.filter(r=>r&&typeof r.projectId==="string"&&r.lifecycle!=="trash");
-  project.replaceChildren(option("","请选择项目"));
+  project.replaceChildren(option("","本浏览器独立草稿 · 不关联项目"));
   for(const r of projects)project.append(option(r.projectId,(r.lifecycle==="completed"?"[已完成] ":r.lifecycle==="archived"?"[归档] ":"")+r.name));
   const desired=C.candidate(location.search),saved=C.read();
   const value=(desired.projectId&&projects.some(p=>p.projectId===desired.projectId)?desired.projectId:projects.some(p=>p.projectId===saved.projectId)?saved.projectId:"");
   project.value=value;
   if(value)await selectProject(value,desired.projectId===value?desired.videoId:saved.videoId);
-  else{setVideoOptions(null,"");showStatus(projects.length+" 个云端项目 · 请选择");}
+  else{setVideoOptions(null,"");apply.disabled=false;showStatus(projects.length+" 个云端项目 · 可选择关联或继续使用本机草稿");}
   refreshLinks(C.read());
  }catch(error){showStatus("暂不能读取云端项目："+error.message);project.replaceChildren(option("","云端暂不可用"));}
 }
 window.GuccCreatorContextUI={reload:load,selected:()=>({projectId:project.value,videoId:video.value})};
-window.addEventListener("gucc:creator-os:saved",()=>{if(document.visibilityState==="visible")void load();});
+let refreshTimer=0;window.addEventListener("gucc:creator-os:saved",()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>{if(document.visibilityState==="visible")void load();},1800);});
 void load();

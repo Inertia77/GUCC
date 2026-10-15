@@ -219,7 +219,7 @@ async function refresh(){
     if(!conflict)await cleanRenames();
   }catch(err){status("云端不可用 · 本地可继续："+(err.message||"连接失败"),"error");ready=false;}
   finally{busy=false;}
-  if(ready&&!conflict)schedule();
+  if(ready&&!conflict){schedule();window.dispatchEvent(new CustomEvent("gucc:creator-cloud-ready"));}
 }
 async function resolve(choice){
   const c=conflict,dlg=$("cloudConflictDialog");
@@ -265,3 +265,6 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)void refre
 void refresh();
 
 window.addEventListener("offline",()=>status("网络已断开 · 最新修改待同步","error"));
+
+window.GuccCreatorCloud={refresh,flush};
+window.addEventListener("gucc:workspace-project-created",()=>void refresh());

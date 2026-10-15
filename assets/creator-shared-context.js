@@ -1,17 +1,23 @@
-/* GUCC shared project/video context. Stores navigation preference only; never edits a project. */
-(function(){
-  "use strict";
-  const KEY="gucc_creator_active_context_v1";
-  const allowed=/^(?:[A-Za-z0-9][A-Za-z0-9._:-]{0,199})$/;
-  const params=new URLSearchParams(location.search);
-  function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||"{}");return {projectId:allowed.test(x.projectId||"")?x.projectId:"",videoId:allowed.test(x.videoId||"")?x.videoId:""};}catch{return {projectId:"",videoId:""};}}
-  const prior=read();
-  const projectId=allowed.test(params.get("project")||"")?params.get("project"):prior.projectId;
-  const videoId=allowed.test(params.get("video")||"")?params.get("video"):((params.has("project")&&projectId!==prior.projectId)?"":prior.videoId);
-  const current={projectId,videoId};
-  function set(next){const value={projectId:allowed.test(next?.projectId||"")?next.projectId:"",videoId:allowed.test(next?.videoId||"")?next.videoId:""};if(!value.projectId)value.videoId="";localStorage.setItem(KEY,JSON.stringify(value));window.dispatchEvent(new CustomEvent("gucc:creator-context-changed",{detail:value}));return value;}
-  function url(path,override){const ctx=override||read();const u=new URL(path,location.href);if(ctx.projectId)u.searchParams.set("project",ctx.projectId);if(ctx.videoId)u.searchParams.set("video",ctx.videoId);return u.href;}
-  window.GuccCreatorContext={read,set,url};
-  if(projectId)set(current);
-  document.addEventListener("click",function(e){const a=e.target.closest?.("a[href]");if(!a||a.origin!==location.origin)return;const dest=new URL(a.href);if(!/\\/(?:video-workspace|cover-generator|publishing-console)\\//.test(dest.pathname))return;const ctx=read();if(ctx.projectId&&!dest.searchParams.has("project"))dest.searchParams.set("project",ctx.projectId);if(ctx.videoId&&!dest.searchParams.has("video"))dest.searchParams.set("video",ctx.videoId);a.href=dest.href;},true);
-})();
+/* Shared navigation preference only. Identity comes from authenticated GUCC project listing. */
+(function(root,factory){const api=factory();if(typeof module==="object"&&module.exports)module.exports=api;root.GuccCreatorContext=api;})(typeof globalThis!=="undefined"?globalThis:this,function(){
+ "use strict";
+ const KEY="gucc_creator_active_context_v1";
+ function valid(v){return typeof v==="string"&&v.length>0&&v.length<=240&&!/[\u0000-\u001f\u007f/?#&<>]/.test(v);}
+ function clean(value){return {projectId:valid(value?.projectId)?value.projectId:"",videoId:valid(value?.videoId)?value.videoId:""};}
+ function read(){try{return clean(JSON.parse(localStorage.getItem(KEY)||"{}"));}catch{return clean({});}}
+ function set(next){const ctx=clean(next);if(!ctx.projectId)ctx.videoId="";localStorage.setItem(KEY,JSON.stringify(ctx));if(typeof window!=="undefined")window.dispatchEvent(new CustomEvent("gucc:creator-context-changed",{detail:ctx}));return ctx;}
+ function candidate(search){const p=new URLSearchParams(search||"");return clean({projectId:p.get("project"),videoId:p.get("video")});}
+ function key(ctx){return JSON.stringify([ctx?.projectId||"",ctx?.videoId||""]);}
+ function url(path,ctx){const base=typeof location==="undefined"?"https://gucc.invalid/":location.href;const u=new URL(path,base),v=clean(ctx||read());if(v.projectId)u.searchParams.set("project",v.projectId);else u.searchParams.delete("project");if(v.projectId&&v.videoId)u.searchParams.set("video",v.videoId);else u.searchParams.delete("video");return u.href;}
+ function videosFor(snapshot){
+  const videos=Array.isArray(snapshot?.videos)?snapshot.videos:[];
+  const seen=new Set();return videos.map(v=>({videoId:String(v?.videoId||""),name:String(v?.name||v?.title||v?.videoId||"")}))
+   .filter(v=>valid(v.videoId)&&!seen.has(v.videoId)&&seen.add(v.videoId));
+ }
+ // Legacy branch identifiers are suggestions; never silently persist them as confirmed videos.
+ function legacyBranches(snapshot){
+  const seen=new Set();return (Array.isArray(snapshot?.promptFlow)?snapshot.promptFlow:[])
+   .map(n=>String(n?.branch||"")).filter(b=>valid(b)&&b!=="SHARED"&&!seen.has(b)&&seen.add(b));
+ }
+ return {KEY,valid,clean,read,set,candidate,key,url,videosFor,legacyBranches};
+});

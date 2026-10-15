@@ -50,7 +50,7 @@ function showStatus(message){status.textContent=message;status.title=message;}
 function projectRow(){return projects.find(p=>p.projectId===project.value);}
 function setVideoOptions(snapshot,requested){
  video.replaceChildren(option("","项目级（未选择视频）"));
- const official=C.videosFor(snapshot),legacy=official.length?[]:C.legacyBranches(snapshot);
+ const official=C.videosFor(snapshot),known=new Set(official.map(v=>v.videoId)),legacy=C.legacyBranches(snapshot).filter(v=>!known.has(v));
  for(const v of official)video.append(option(v.videoId,v.name));
  for(const b of legacy)video.append(option(b,b+" · 旧任务分支（待确认）"));
  video.value=Array.from(video.options).some(o=>o.value===requested)?requested:"";

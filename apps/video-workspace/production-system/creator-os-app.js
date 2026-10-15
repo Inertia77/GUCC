@@ -36,7 +36,7 @@ function load(){
       const projects=raw.projects.filter(p=>p&&p.status!=="TEST_FIXTURE").map(p=>Storage?Storage.unpackProject(p):p).map(p=>
         p.status==="DRAFT"&&p.idea&&p.name===p.idea
           ? {...p,name:provisionalProjectName(p)} : p);
-      const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)==="active");
+      const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)!=="trash");
       return {projects,selectedProjectId:selected?.projectId||projects.find(p=>projectLife(p)==="active")?.projectId||""};
     }
   }catch(e){storageCorrupt=true;console.warn("Creator OS store requires recovery",e);}
@@ -156,6 +156,7 @@ function renderSystem(){
     ["项目编号",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["游戏",p.game||"未设置"],["版本",p.version||"未设置"],
     ["区服",p.server||"未设置"],["AI 自主级别",p.autonomyLevel||"L2"],["路线版本",`R${p.flowRevision||0}`],["项目状态",lifeName(p)]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join(""):"<p class='subtitle'>当前没有进行中项目。请打开「项目档案」恢复已有项目，或新建项目。</p>";
+  $("addVideoBtn").disabled=!p||Boolean(p.deletedAt||p.archivedAt);
   const videos=p&&Validation?Validation.tracks(p):(Array.isArray(p?.videos)?p.videos:[]);
   if(selectedBranch&&!videos.some(v=>v.branch===selectedBranch))selectedBranch="";
   $("clearBranchFilter").hidden=!selectedBranch;
@@ -165,7 +166,7 @@ function renderSystem(){
     const locks=Object.entries(p.videoLocks?.[v.branch]||{}).filter(([,value])=>value?.approvedLocallyAt).map(([key])=>({script:"文案",audio:"音频",final:"成片",publish:"发布包"})[key]||key);
     return `<div class="branch-row"><div><strong>${esc(v.name||v.videoId)}</strong><small>${esc(v.videoId)}</small><span>${done} / ${nodes.length} 个任务已回执${locks.length?" · 本地批准："+esc(locks.join("、")):" · 尚无本地批准"}</span></div><progress value="${done}" max="${nodes.length||1}" aria-label="${esc(v.name)}任务进度"></progress><button class="text-action" type="button" data-branch="${esc(v.branch)}">查看分支 ↗</button><button type="button" class="text-action" data-handoff="${esc(v.videoId)}">导出资料交接包 ↗</button></div>`;
   }).join(""):"";
-  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;$("clearBranchFilter").hidden=false;flowExpanded=true;renderFlow(p);$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
+  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;window.GuccCreatorContext?.set({projectId:p.projectId,videoId:videos.find(v=>v.branch===selectedBranch)?.videoId||""});$("clearBranchFilter").hidden=false;flowExpanded=true;renderFlow(p);$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
   $("videoBranches").querySelectorAll("[data-handoff]").forEach(button=>button.addEventListener("click",()=>{
     const video=videos.find(v=>v.videoId===button.dataset.handoff);
     download(slugFile(video.videoId)+".handoff.json",JSON.stringify(window.GuccCreatorHandoff.build(p,video),null,2));
@@ -330,6 +331,7 @@ async function createDraft(data){
     productType:data.productType||"UNKNOWN"
   });
   if(p.workflowMode==="six"){
+    p.videos=[{videoId:"MAIN",branch:"MAIN",name:p.name}];
     O.buildWorkflow(p);O.compilePromptFlow(p);
     p.status="FLOW_READY"; // A six-outcome project needs no separate planning/flow compilation step.
   }
@@ -657,6 +659,39 @@ $("projectSelect").addEventListener("change",e=>{
  store.selectedProjectId=e.target.value;flowExpanded=false;save();
  if(window.GuccCreatorContext&&store.selectedProjectId)window.GuccCreatorContext.set({projectId:store.selectedProjectId,videoId:""});
  $("artifactPreview").textContent="";render();
+});
+$("addVideoBtn").addEventListener("click",()=>{
+ const p=current();if(!p||p.deletedAt||p.archivedAt)return notify("请选择可编辑的正式项目");
+ $("addVideoDialog").showModal();
+});
+$("addVideoDialog").querySelectorAll("[data-close-video]").forEach(b=>b.addEventListener("click",()=>$("addVideoDialog").close()));
+$("addVideoForm").addEventListener("submit",event=>{
+ event.preventDefault();const p=current();if(!p||p.deletedAt||p.archivedAt)return;
+ const fd=new FormData(event.currentTarget),name=String(fd.get("videoName")||"").trim();
+ const videoId=String(fd.get("videoId")||"").trim()||"VID-"+crypto.randomUUID().slice(0,8).toUpperCase();
+ if(!name||!/^[A-Za-z][A-Za-z0-9_-]{0,30}$/.test(videoId))return notify("请输入有效的视频名称与标识");
+ const existing=Validation.tracks(p);
+ if(existing.some(v=>v.videoId===videoId)&&Array.isArray(p.videos)&&p.videos.some(v=>v.videoId===videoId))return notify("这个正式视频已存在");
+ const branchMatches=(p.promptFlow||[]).some(n=>n.branch===videoId);
+ const candidate=JSON.parse(JSON.stringify(p));
+ candidate.videos=Array.isArray(candidate.videos)?candidate.videos:[];
+ candidate.videos.push({videoId,branch:videoId,name});
+ if(candidate.workflowMode==="six"&&!branchMatches){
+   const compiled=JSON.parse(JSON.stringify(candidate));
+   O.buildWorkflow(compiled);O.compilePromptFlow(compiled);
+   const additions=compiled.promptFlow.filter(n=>n.videoId===videoId);
+   const existingIds=new Set((candidate.promptFlow||[]).map(n=>n.promptId));
+   if(!additions.length||additions.some(n=>existingIds.has(n.promptId)))return notify("无法安全新增视频任务，未修改原项目");
+   candidate.promptFlow=[...(candidate.promptFlow||[]),...additions];
+   candidate.flowRevision=(candidate.flowRevision||0)+1;
+ }
+ Validation.flow(candidate.promptFlow||[]);
+ p.videos=candidate.videos;p.promptFlow=candidate.promptFlow;p.flowRevision=candidate.flowRevision;
+ p.history||=[];p.history.push({at:new Date().toISOString(),action:"VIDEO_REGISTERED",videoId});
+ selectedBranch=videoId;save();render();
+ window.GuccCreatorContext?.set({projectId:p.projectId,videoId});
+ event.currentTarget.reset();$("addVideoDialog").close();
+ notify(branchMatches?"旧制作分支已登记为正式视频；旧进度保持不变":"已登记新视频；原有任务与锁定记录不变");
 });
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});

@@ -1,12 +1,24 @@
 /* Local prompt working surface. The selected task is never executed here. */
 (function(){'use strict';
 const P=window.CreatorPrompts,S=window.GuccCreatorSix,$=id=>document.getElementById(id),KEY='gucc_creator_prompt_v6';
-const defaults={context:{route:'mechanism',format:'long',title:'',game:'',server:'',version:'',duration:'',notes:'',voiceMode:'human'},stage:'research',task:'brief',mode:'Chat',part:0,viewMode:'simple',simpleTask:'script'};
+const SCOPED_KEY='gucc_creator_studio_scoped_drafts_v1';
+const drafts=()=>{try{return JSON.parse(localStorage.getItem(SCOPED_KEY)||'{}');}catch{return {};}};
+const draftKey=(p,v)=>JSON.stringify([p||'',v||'']);
+const defaults={projectId:'',videoId:'',context:{route:'mechanism',format:'long',title:'',game:'',server:'',version:'',duration:'',notes:'',voiceMode:'human'},stage:'research',task:'brief',mode:'Chat',part:0,viewMode:'simple',simpleTask:'script'};
 let state=structuredClone(defaults),storageOK=true,importedSource=null,toastTimer;
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({...state,version:P.VERSION,importedSource}));$('saveStatus').textContent='已存本浏览器草稿';storageOK=true;}catch{storageOK=false;$('saveStatus').textContent='无法保存 · 请导出草稿';}}
+function save(){
+ try{
+  const record={...state,version:P.VERSION,importedSource},next=drafts();
+  next[draftKey(state.projectId,state.videoId)]=record;
+  // Both independent and linked drafts survive switching; no cloud write here.
+  localStorage.setItem(SCOPED_KEY,JSON.stringify(next));
+  localStorage.setItem(KEY,JSON.stringify(record));
+  $('saveStatus').textContent=state.projectId?'本项目草稿已保存在此浏览器':'已存本浏览器独立草稿';storageOK=true;return true;
+ }catch{storageOK=false;$('saveStatus').textContent='保存失败 · 切换前请导出备份';return false;}
+}
 function cleanContext(input){const c={...defaults.context};for(const k of Object.keys(c))if(typeof input?.[k]==='string')c[k]=input[k].slice(0,k==='notes'?60000:1000);if(!P.ROUTES.some(r=>r.id===c.route))c.route='mechanism';if(!['long','short'].includes(c.format))c.format='long';if(!['human','ai'].includes(c.voiceMode))c.voiceMode='human';return c;}
-function restore(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){state.context=cleanContext(s.context);state.stage=P.STAGES.some(x=>x.id===s.stage)?s.stage:s.stage==='utility'?'utility':'research';state.task=P.tasks.some(x=>x.id===s.task)?s.task:'brief';state.mode=typeof s.mode==='string'?s.mode:'Chat';state.part=Number.isInteger(s.part)?s.part:0;state.viewMode=s.viewMode==='advanced'?'advanced':'simple';state.simpleTask=S.ITEMS.some(x=>x.id===s.simpleTask)?s.simpleTask:'script';importedSource=s.importedSource||null;}}catch{storageOK=false;}
+function restore(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){state.projectId=typeof s.projectId==='string'?s.projectId:'';state.videoId=typeof s.videoId==='string'?s.videoId:'';state.context=cleanContext(s.context);state.stage=P.STAGES.some(x=>x.id===s.stage)?s.stage:s.stage==='utility'?'utility':'research';state.task=P.tasks.some(x=>x.id===s.task)?s.task:'brief';state.mode=typeof s.mode==='string'?s.mode:'Chat';state.part=Number.isInteger(s.part)?s.part:0;state.viewMode=s.viewMode==='advanced'?'advanced':'simple';state.simpleTask=S.ITEMS.some(x=>x.id===s.simpleTask)?s.simpleTask:'script';importedSource=s.importedSource||null;}}catch{storageOK=false;}
  const hash=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(t=>t.id===hash)){state.viewMode='advanced';if(state.task!==hash){state.task=hash;state.mode=P.task(hash).modes[0];state.part=0;}state.stage=P.task(hash).stage;}
  const q=new URLSearchParams(location.search);if(P.ROUTES.some(x=>x.id===q.get('type')))state.context.route=q.get('type');
  const t=P.task(state.task);if(!t.modes.includes(state.mode))state.mode=t.modes[0];state.stage=t.stage;state.part=Math.max(0,Math.min(state.part,P.parts(t.id,state.mode).length-1));}
@@ -91,5 +103,23 @@ $('downloadButton').addEventListener('click',()=>download(`${safeName(state.cont
 $('mappingButton').addEventListener('click',()=>{$('mappingBody').replaceChildren();for(const t of P.tasks){const tr=document.createElement('tr');for(const text of [t.old.join(' + '),t.name,t.fallback&&t.fallback.length>1?`${t.fallback.length} 条独立 Prompt`:'一条完成']){const td=document.createElement('td');td.textContent=text;tr.append(td);}$('mappingBody').append(tr);}openDialog('mappingDialog');});
 window.addEventListener('hashchange',()=>{const id=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(x=>x.id===id))choose(id);});
 window.addEventListener('resize',revealActive,{passive:true});
+function applyCreatorContext({ctx,project,video}){
+ if(!save())return false;
+ const existing=drafts()[draftKey(ctx.projectId,ctx.videoId)];
+ if(existing&&typeof existing==='object'&&existing.context){
+  state={...structuredClone(defaults),...existing,projectId:ctx.projectId,videoId:ctx.videoId,context:cleanContext(existing.context)};
+ }else{
+  state={...structuredClone(defaults),projectId:ctx.projectId,videoId:ctx.videoId,viewMode:'simple',
+   context:cleanContext({game:project?.game||'',version:project?.version||'',title:video?.name||project?.name||'',server:'',route:state.context.route,format:state.context.format})};
+  importedSource=null;
+ }
+ if(existing?.importedSource)importedSource=existing.importedSource;
+ for(const [id,k] of Object.entries({routeSelect:'route',formatSelect:'format',titleInput:'title',gameInput:'game',serverInput:'server',versionInput:'version',durationInput:'duration',notesInput:'notes'}))$(id).value=state.context[k];
+ render();
+ if(!save())return false;
+ toast(ctx.projectId?'已关联项目；在本浏览器独立保存这条视频的 Studio 草稿':'已切换到未关联的本机草稿');
+ return true;
+}
+window.GuccCreatorWorkspaceAdapter={applyContext:applyCreatorContext};
 window.CreatorStudio={getState:()=>structuredClone(state),importedContext,cleanContext,switchView};
 })();

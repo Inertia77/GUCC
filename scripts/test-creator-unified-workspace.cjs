@@ -7,7 +7,9 @@ global.localStorage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)
 const C=require("../assets/creator-shared-context.js");
 assert.equal(C.valid("DRAFT-1791527976562"),true);
 assert.equal(C.valid("GAME-CURRENT-一次性同时做绝区零3.3版本的菲欧妮"),true);
+assert.equal(C.valid("ZZZ-3.3-PHOENIX-PREVIEW"),true);
 assert.equal(C.valid("a?bad"),false);
+assert.equal(C.videosFor({videos:[{videoId:"ZZZ-3.3-PHOENIX-PREVIEW",branch:"FIONI",name:"菲欧妮"}]})[0].branch,"FIONI");
 assert.equal(C.valid("<script>"),false);
 assert.equal(C.valid(""),false);
 assert.deepEqual(C.candidate("?project=%E7%BB%9D%E5%8C%BA%E9%9B%B6&video=FIONI"),{projectId:"绝区零",videoId:"FIONI"});

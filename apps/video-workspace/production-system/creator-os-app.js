@@ -674,7 +674,7 @@ $("addVideoForm").addEventListener("submit",event=>{
  event.preventDefault();const p=current();if(!p||p.deletedAt||p.archivedAt)return;
  const fd=new FormData(event.currentTarget),name=String(fd.get("videoName")||"").trim();
  const videoId=String(fd.get("videoId")||"").trim()||"VID-"+crypto.randomUUID().slice(0,8).toUpperCase();
- if(!name||!/^[A-Za-z][A-Za-z0-9_-]{0,30}$/.test(videoId))return notify("请输入有效的视频名称与标识");
+ if(!name||!/^[A-Za-z][A-Za-z0-9_.-]{0,119}$/.test(videoId))return notify("请输入有效的视频名称与标识");
  const existing=Validation.tracks(p);
  if(existing.some(v=>v.videoId===videoId)&&Array.isArray(p.videos)&&p.videos.some(v=>v.videoId===videoId))return notify("这个正式视频已存在");
  const branchMatches=(p.promptFlow||[]).some(n=>n.branch===videoId);

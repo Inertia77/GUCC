@@ -201,7 +201,7 @@ function updateCopy() {
       if (importButton.title !== desiredTitle) importButton.title = desiredTitle;
     }
     const heroText = document.querySelector('.hero > div > p:last-child');
-    setTextIfChanged(heroText, '优先接收 Production 的正式发布交接，自动拆分六平台字段、预检、执行与记录；旧 WorkSpace JSON 仅作为兼容入口。');
+    if(!document.querySelector('[data-creator-context]')) setTextIfChanged(heroText, '接收发布包，检查六平台内容，再确认投稿。');
   }
 }
 
@@ -212,7 +212,11 @@ function integratePanel() {
   let host = null;
   if (isStudio) host = ensureHost(document.querySelector('.studio-header'), 'gcb-studio-host');
   if (isProduction) host = ensureHost(document.querySelector('.topbar'), 'gcb-production-host');
-  if (isPublish) host = ensureHost(document.querySelector('.flow-nav'), 'gcb-publish-host');
+  if (isPublish) {
+    const utilities=document.querySelector('.publish-utilities > .top-actions');
+    if(utilities){utilities.classList.add('gcb-integrated-host');utilities.append(panel);panel.classList.add('gcb-inline');return true;}
+    host = ensureHost(document.querySelector('.flow-nav'), 'gcb-publish-host');
+  }
   if (!host) return false;
 
   panel.classList.add('gcb-inline');

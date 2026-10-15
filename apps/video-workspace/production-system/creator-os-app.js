@@ -69,7 +69,7 @@ function currentTaskFor(p){
   const life=projectLife(p);
   if(life!=="active"){
     const labels={completed:"项目已完成",archived:"项目已归档",trash:"项目位于回收站"};
-    return {promptId:"—",name:labels[life],executor:"—",reason:"此项目当前不在制作队列中。请前往「项目档案」恢复为进行中，再继续制作。",requiredInput:[],expectedOutput:[],qcLevel:"—",reviewMode:"REVIEW_OPTIONAL",prompt:"",status:"INACTIVE"};
+    return {promptId:"—",name:labels[life],executor:"—",reason:"正式成果与历史仍可查看，也可以在其他工具中继续使用。需要恢复制作队列时，在「项目档案」调整状态。",requiredInput:[],expectedOutput:[],qcLevel:"—",reviewMode:"REVIEW_OPTIONAL",prompt:"",status:"INACTIVE"};
   }
   // Project definition must always precede workflow execution, even if an earlier UI action generated a generic template.
   if(p.status==="DRAFT"||p.status==="IMPORTED_LEGACY"){
@@ -170,7 +170,7 @@ function renderSystem(){
     const locks=Object.entries(p.videoLocks?.[v.branch]||{}).filter(([,value])=>value?.approvedLocallyAt).map(([key])=>({script:"文案",audio:"音频",final:"成片",publish:"发布包"})[key]||key);
     return `<div class="branch-row"><div><strong>${esc(v.name||v.videoId)}</strong><small>${esc(v.videoId)}</small><span>${done} / ${nodes.length} 个任务已回执${esc(outputLabel)}${locks.length?" · 本地批准："+esc(locks.join("、")):" · 尚无本地批准"}</span></div><progress value="${done}" max="${nodes.length||1}" aria-label="${esc(v.name)}任务进度"></progress><button class="text-action" type="button" data-branch="${esc(v.branch)}">查看分支 ↗</button><button type="button" class="text-action" data-handoff="${esc(v.videoId)}">导出资料交接包 ↗</button></div>`;
   }).join(""):"";
-  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;window.GuccCreatorContext?.set({projectId:p.projectId,videoId:videos.find(v=>v.branch===selectedBranch)?.videoId||""});$("clearBranchFilter").hidden=false;flowExpanded=true;render();$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
+  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;window.GuccCreatorContext?.set({projectId:p.projectId,videoId:videos.find(v=>v.branch===selectedBranch)?.videoId||""});$("clearBranchFilter").hidden=false;flowExpanded=true;render();document.querySelector("[data-creator-outcomes]")?.scrollIntoView({block:"nearest",behavior:"smooth"});}));
   $("videoBranches").querySelectorAll("[data-handoff]").forEach(button=>button.addEventListener("click",()=>{
     const video=videos.find(v=>v.videoId===button.dataset.handoff);
     download(slugFile(video.videoId)+".handoff.json",JSON.stringify(window.GuccCreatorHandoff.build(p,video),null,2));
@@ -207,7 +207,9 @@ function renderSystem(){
   $("rewindTaskBtn").disabled=!rewind.allowed;
   $("rewindTaskBtn").title=rewind.allowed?rewind.label:rewind.reason;
   $("flowRevision").textContent=`REV ${p?.flowRevision||0}`;
-  $("currentTaskName").closest(".current-task-panel")?.classList.toggle("is-empty",t.status==="INACTIVE");
+  const taskPanel=$("currentTaskName").closest(".current-task-panel"),inactive=t.status==="INACTIVE";
+  taskPanel?.classList.toggle("is-empty",inactive);
+  for(const e of taskPanel?.querySelectorAll?.('.task-runtime,.evidence-line,.prompt-actions,.task-details,.task-advanced,.mission-line,.task-eyebrow')||[])e.hidden=inactive;
   renderFlow(p);
   $("productionMap").innerHTML=Core.HUMAN_PRODUCTION_MAP.map(s=>`<div class="map-step"><b>${s.id}</b><strong>${esc(s.name)}</strong><small>${esc(s.meaning)}</small></div>`).join("");
 }
@@ -811,7 +813,7 @@ function slugFile(v){return String(v||"project").replace(/[^\w\u4e00-\u9fff.-]+/
 // Public, minimal integration for the two optional workspace modules.
 window.GuccCreatorWorkspaceAdapter={
  currentPrompt:()=>$("currentPrompt").textContent,
- applyContext({ctx,snapshot,video}){
+ applyContext({ctx,snapshot,video,automatic=false}){
   if(!ctx.projectId)return false;
   let found=store.projects.find(p=>p.projectId===ctx.projectId&&!p.deletedAt);
   if(!found&&snapshot){window.GuccCreatorOS?.putProject(snapshot,{fromCloud:true});found=store.projects.find(p=>p.projectId===ctx.projectId);}
@@ -820,7 +822,7 @@ window.GuccCreatorWorkspaceAdapter={
   selectedBranch=video?.branch||ctx.videoId||"";
   flowExpanded=false;
   save(false);render();
-  notify("已打开共享项目："+found.name+(ctx.videoId?" · 视频 "+ctx.videoId:""));
+  if(!automatic)notify("已打开共享项目："+found.name+(ctx.videoId?" · 视频 "+ctx.videoId:""));
   return true;
  }
 };

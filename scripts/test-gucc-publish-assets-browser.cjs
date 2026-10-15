@@ -18,7 +18,7 @@ const file={name:'handoff.json',mimeType:'application/json',buffer:Buffer.from(J
  await context.addInitScript(seed=>localStorage.setItem('gucc_publish_console_v1',JSON.stringify(seed)),seed);
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/publishing-console/');
  await page.click('#goPreflightButton');assert.match(await page.textContent('#checkResults'),/核验实际文件/);assert.deepEqual(errors,[]);
- await page.click('[data-view="prepare"]');await page.click('#discoverProjectAssetsButton');await page.waitForTimeout(100);
+ await page.click('[data-view="prepare"]');await page.locator('.assistant-setup > summary').click();await page.click('#discoverProjectAssetsButton');await page.waitForTimeout(100);
  await page.locator('#workspaceFile').setInputFiles(file);resolveFirst();await page.waitForTimeout(250);
  assert.equal(await page.inputValue('#localVideoPath'),'','late result from ONE cannot change TWO');assert.deepEqual(requests[0],{projectId:'QA-BROWSER',videoId:'ONE'});
  await page.click('#discoverProjectAssetsButton');await page.waitForTimeout(250);

@@ -74,7 +74,7 @@ function renderSixPrompt(){
 function applyViewMode(){
  const simple=state.viewMode==='simple';
  $('creatorWorkspace').classList.toggle('six-mode',simple);
- $('simpleIntro').hidden=!simple;
+ $('simpleIntro').hidden=true;
  $('simpleModeButton').classList.toggle('active',simple);
  $('advancedModeButton').classList.toggle('active',!simple);
  $('simpleModeButton').setAttribute('aria-pressed',String(simple));
@@ -104,7 +104,7 @@ $('downloadButton').addEventListener('click',()=>download(`${safeName(state.cont
 $('mappingButton').addEventListener('click',()=>{$('mappingBody').replaceChildren();for(const t of P.tasks){const tr=document.createElement('tr');for(const text of [t.old.join(' + '),t.name,t.fallback&&t.fallback.length>1?`${t.fallback.length} 条独立 Prompt`:'一条完成']){const td=document.createElement('td');td.textContent=text;tr.append(td);}$('mappingBody').append(tr);}openDialog('mappingDialog');});
 window.addEventListener('hashchange',()=>{const id=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(x=>x.id===id))choose(id);});
 window.addEventListener('resize',revealActive,{passive:true});
-function applyCreatorContext({ctx,project,video}){
+function applyCreatorContext({ctx,project,video,automatic=false}){
  if(!save())return false;
  const existing=drafts()[draftKey(ctx.projectId,ctx.videoId)];
  if(existing&&typeof existing==='object'&&existing.context){
@@ -122,7 +122,7 @@ function applyCreatorContext({ctx,project,video}){
  for(const [id,k] of Object.entries({routeSelect:'route',formatSelect:'format',titleInput:'title',gameInput:'game',serverInput:'server',versionInput:'version',durationInput:'duration',notesInput:'notes'}))$(id).value=state.context[k];
  render();
  if(!save())return false;
- toast(ctx.projectId?'已关联项目；在本浏览器独立保存这条视频的 Studio 草稿':'已切换到未关联的本机草稿');
+ if(!automatic)toast(ctx.projectId?'已关联项目；在本浏览器独立保存这条视频的 Studio 草稿':'已切换到未关联的本机草稿');
  return true;
 }
 window.GuccCreatorWorkspaceAdapter={applyContext:applyCreatorContext,currentPrompt:()=>$('promptText').value};

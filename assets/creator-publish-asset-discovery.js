@@ -188,7 +188,7 @@
     wrap.style.gap = "6px";
     wrap.style.marginTop = "8px";
     wrap.innerHTML = `<button id="discoverProjectAssetsButton" class="button subtle" type="button">查找此视频的成片 / 封面</button><small id="assetDiscoveryHint" style="color:var(--muted,#8e9aab)">使用项目与视频身份查找；多个候选需手动选择。</small>`;
-    setup.after(wrap);
+    setup.append(wrap);
     wrap.querySelector("button").addEventListener("click", () => discover(false));
   }
 

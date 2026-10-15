@@ -50,8 +50,9 @@
       <div>
         <p class="eyebrow"><span class="eyebrow-glyph">◉</span> GAMEUP <span class="slash">/</span> STUDIO</p>
         <h1>创作<span>中枢</span><span class="heading-period">.</span></h1>
-        <p class="workspace-deck">一条可执行的当前任务。完整的创作流程，交给系统编排。</p>
+        <p class="workspace-deck">六项成果，一条清楚的制作路线。</p>
       </div>
+      <div data-creator-context></div>
       <div class="heading-status">
         <span class="status-line">保存状态</span>
         <strong id="workspaceCloudLabel">本浏览器草稿</strong>
@@ -59,26 +60,9 @@
       </div>
     </div>
 
-    <section class="project-bar">
-      <div class="project-switcher">
-        <span class="micro">当前项目</span>
-        <select id="projectSelect" aria-label="当前项目"></select>
-      </div>
-      <div class="project-actions">
-        <div class="cloud-actions"><span id="cloudSyncStatus" data-state="idle">检查云端连接…</span><button class="button ghost" id="cloudSyncNow" type="button" title="用 Supabase 登录状态检查项目云同步">↻ 云端同步</button><a class="cloud-login" href="../../command-center/" title="在 GUCC 中登录 Supabase 账户">账户 ↗</a></div>
-        <button type="button" class="button ghost edit-project-top" id="editProjectTopBtn">✎ 编辑项目</button>
-        <button class="button primary" id="newProjectBtn"><span aria-hidden="true">＋</span> 新建项目</button>
-        <div class="project-file-actions">
-          
-          <button class="button ghost" id="importBtn">导入</button>
-          <button class="button ghost" id="exportBtn">备份</button>
-        </div>
-        <input id="importFile" type="file" accept=".json,application/json" hidden>
-      </div>
-    </section>
-
     <p id="localSaveNotice" class="save-error" role="alert" hidden></p>
     <section id="view-system" class="view active">
+      <div data-creator-outcomes></div>
       <div class="hero-grid">
         <article class="panel current-task-panel">
           <div class="mission-line"><span class="live-indicator"></span><span>当前制作任务</span><span class="mission-line-right" id="currentTaskId">—</span></div>
@@ -133,6 +117,25 @@
       </div>
 
       <section class="video-workbench" aria-label="视频分支"><div class="branch-title"><strong>本项目视频</strong><button type="button" id="addVideoBtn" class="text-action">＋ 登记视频</button></div><div id="videoBranches" class="branch-list"></div><button class="text-action" id="clearBranchFilter" type="button" hidden>查看全部视频与共享任务</button></section>
+      <details class="atelier-project-tools"><summary>项目设置与备份</summary>    <section class="project-bar">
+      <div class="project-switcher">
+        <span class="micro">当前项目</span>
+        <select id="projectSelect" aria-label="当前项目"></select>
+      </div>
+      <div class="project-actions">
+        <div class="cloud-actions"><span id="cloudSyncStatus" data-state="idle">检查云端连接…</span><button class="button ghost" id="cloudSyncNow" type="button" title="用 Supabase 登录状态检查项目云同步">↻ 云端同步</button><a class="cloud-login" href="../../command-center/" title="在 GUCC 中登录 Supabase 账户">账户 ↗</a></div>
+        <button type="button" class="button ghost edit-project-top" id="editProjectTopBtn">✎ 编辑项目</button>
+        <button class="button primary" id="newProjectBtn"><span aria-hidden="true">＋</span> 新建项目</button>
+        <div class="project-file-actions">
+
+          <button class="button ghost" id="importBtn">导入</button>
+          <button class="button ghost" id="exportBtn">备份</button>
+        </div>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+</details>
       <details class="support-workbench"><summary>项目编排与辅助工具 <small>修改路线 · 本地素材 · 封面与发布</small></summary>
       <section class="launch-dock">
         <div class="dock-heading"><span class="micro">QUICK 工作区</span><h2>从想法到执行</h2></div>
@@ -346,6 +349,6 @@
 <script src="./creator-os-app.js?v=3.6.0"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
-<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=1"></script>
+<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=2"></script>
 </body>
 </html>

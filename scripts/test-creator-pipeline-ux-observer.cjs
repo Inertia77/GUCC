@@ -204,7 +204,7 @@ async function testPublishObserverDoesNotSelfTrigger() {
   const cleanup = await importUx("publish-observer", env);
   try {
     assert.equal(importButton.textContent, "兼容导入旧 JSON", "Publish copy must still be updated before observer startup");
-    assert.equal(heroText.textContent, "优先接收 Production 的正式发布交接，自动拆分六平台字段、预检、执行与记录；旧 WorkSpace JSON 仅作为兼容入口。", "Publish hero copy must remain correct");
+    assert.equal(heroText.textContent, "接收发布包，检查六平台内容，再确认投稿。", "Publish hero copy must remain correct");
     assert.equal(env.state.observers.length, 1, "Publish without bridge must start one bounded observer");
     const observer = env.state.observers[0];
     assert.equal(observer.active, true, "Observer must wait for a late creator bridge");

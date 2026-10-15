@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#071019" />
   <title>GUCC Publish Console</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/icons/gucc-icon.svg" />
@@ -21,7 +21,8 @@
       <span class="brand-mark">GU</span>
       <span><strong>Publish Console</strong><small>发布与复盘控制台</small></span>
     </a>
-    <div class="top-actions">
+    <div data-creator-context></div>
+    <details class="publish-utilities"><summary>草稿与工具</summary><div class="top-actions">        <details class="publish-local-drafts"><summary>本机旧发布单</summary><label class="field"><span>本浏览器的独立视频发布单</span><select id="publishDraftSelect" aria-label="切换视频发布单"></select></label></details><p id="creatorIdentity" class="hint" hidden></p>
       <span id="assistantState" class="assistant-state offline"><i></i>本机助手未连接</span>
       <span id="saveState" class="save-state">本浏览器草稿 · 尚未修改</span>
       <span id="publishCloudState" class="save-state" role="status" aria-live="polite">云端 · 尚未检查</span>
@@ -29,15 +30,15 @@
       <button id="importWorkspaceButton" class="button subtle" type="button">导入 WorkSpace JSON</button>
       <input id="workspaceFile" type="file" accept=".json,application/json" hidden />
       <button id="exportProjectButton" class="button subtle" type="button">导出控制台 JSON</button>
-    </div>
+    </div></details>
   </header>
 
   <main class="shell">
     <section class="hero">
       <div>
         <p class="eyebrow">发布工作台 / 按平台确认</p>
-        <h1>一次准备，逐个平台准确落地。</h1>
-        <p>接收 GUCC WorkSpace 发布包，拆分字段、预检、复制执行、记录链接，再把各阶段数据整理成可直接交给 AI 的复盘包。</p>
+        <h1>让作品，准确抵达。</h1>
+        <p>准备六平台内容，检查素材与预览，最后由你确认投稿。</p>
       </div>
       <div class="hero-status">
         <div><span>启用平台</span><strong id="heroPlatformCount">6</strong></div>
@@ -60,17 +61,7 @@
       </div>
 
       <div class="panel project-panel">
-        <label class="field"><span>本浏览器的独立视频发布单</span><select id="publishDraftSelect" aria-label="切换视频发布单"></select></label><p id="creatorIdentity" class="hint" hidden></p><div class="panel-title"><h3>项目与母版素材</h3><span class="pill">本地保存</span></div>
-        <div class="assistant-setup">
-          <div>
-            <strong>本机发布助手</strong>
-            <span>负责真正打开已登录平台、上传视频/封面并填表；最终发布仍由你确认。</span>
-          </div>
-          <div>
-            <button id="checkAssistantButton" class="button subtle" type="button">检查连接</button>
-            <button id="openLoginButton" class="button subtle" type="button">首次登录 / 检查账号</button>
-          </div>
-        </div>
+<div class="panel-title"><h3>发布资料与素材</h3><span class="pill">本地保存</span></div>
         <div class="form-grid columns-3">
           <label class="field span-2"><span>项目标题 <b>*</b></span><input id="projectTitle" data-state="project.title" placeholder="这期视频在项目里的完整名称" /></label>
           <label class="field"><span>项目简称</span><input id="projectShortName" data-state="project.shortName" placeholder="例：WW资源压力" /></label>
@@ -87,14 +78,25 @@
             <span class="asset-icon cover">IMG</span>
             <span><strong>选择母版封面</strong><small id="coverMeta">可选；各平台封面仍在发布页确认裁切</small></span>
           </label>
-          <div class="local-paths span-3">
+          <details class="local-paths span-3"><summary>本机助手文件位置</summary>
             <label class="field"><span>助手上传使用的本机路径（可选）</span><input id="localVideoPath" data-state="common.videoPath" placeholder="由本机助手选择，供自动上传使用" /></label>
             <button id="pickVideoPathButton" class="button subtle" type="button">选择成片</button>
             <label class="field"><span>封面本地路径</span><input id="localCoverPath" data-state="common.coverPath" placeholder="由本机助手选择，供自动上传使用" /></label>
             <button id="pickCoverPathButton" class="button subtle" type="button">选择封面</button>
-          </div>
+          </details>
           <label class="field span-3"><span>公共备注</span><textarea id="projectNote" data-state="project.note" placeholder="版权、素材署名、AI 披露、发布日期限制等只写在这里，不会自动塞进简介。"></textarea></label>
         </div>
+        <details class="assistant-setup"><summary>本机发布助手 · 可选</summary>
+          <div>
+            <strong>本机发布助手</strong>
+            <span>负责真正打开已登录平台、上传视频/封面并填表；最终发布仍由你确认。</span>
+          </div>
+          <div>
+            <button id="checkAssistantButton" class="button subtle" type="button">检查连接</button>
+            <button id="openLoginButton" class="button subtle" type="button">首次登录 / 检查账号</button>
+          </div>
+        </details>
+
       </div>
 
       <div class="panel">
@@ -224,6 +226,6 @@
   <script src="./app.js?v=4"></script>
   <script type="module" src="./publish-cloud.mjs?v=2"></script>
   <script src="../../assets/creator-publish-asset-discovery.js?v=2"></script>
-<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=1"></script>
+<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=2"></script>
 </body>
 </html>

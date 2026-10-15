@@ -61,6 +61,9 @@ jobs:
       - name: Run publish asset identity regression
         run: node scripts/test-gucc-publish-assets-browser.cjs
 
+      - name: Run Atelier visual and interaction acceptance
+        run: node scripts/test-atelier-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
@@ -71,5 +74,6 @@ jobs:
             tmp/creator-ux-browser/
             tmp/gucc-premium-browser/
             tmp/unified-workspace-browser/
+            tmp/atelier-after/
           if-no-files-found: ignore
           retention-days: 7

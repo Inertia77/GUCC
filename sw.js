@@ -1,4 +1,4 @@
-const STATIC_CACHE = "gucc-static-v42";
+const STATIC_CACHE = "gucc-static-v43";
 const RUNTIME_CACHE = "gucc-runtime-v40";
 
 const APP_SHELL = [
@@ -11,7 +11,7 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
-  "./apps/video-workspace/production-system/creator-os-app.js?v=3.5.0",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=3.6.0",
   "./apps/video-workspace/production-system/orchestrator.js?v=2.3.0",
   "./apps/video-workspace/production-system/creator-os-cloud.mjs?v=4",
   "./",
@@ -105,7 +105,9 @@ const APP_SHELL = [
   "./apps/video-workspace/index.html",
   "./apps/video-workspace/legacy-prompt-studio-v6.html",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
-  "./apps/video-workspace/studio.js?v=6.3.0",
+  "./apps/video-workspace/studio.js?v=6.4.0",
+  "./assets/creator-shared-context.js?v=2",
+  "./assets/creator-shared-context-ui.mjs?v=1",
   "./apps/video-workspace/studio.css?v=6.3.0",
   "./apps/video-workspace/production-system/",
   "./docs/ai-video-production/CREATOR_CONSTITUTION.md",
@@ -140,7 +142,7 @@ const APP_SHELL = [
   "./apps/publishing-console/app.js",
   "./apps/publishing-console/app.js?v=2",
   "./apps/publishing-console/publish-cloud.mjs?v=1",
-  "./apps/publishing-console/app.js?v=3",
+  "./apps/publishing-console/app.js?v=4",
   "./apps/publishing-console/publish-cloud.mjs?v=2",
   "./assets/creator-publish-asset-discovery.js?v=2",
   "./reference/resource-library.html",

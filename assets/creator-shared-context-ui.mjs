@@ -41,16 +41,17 @@ const kindLabel=document.createElement("label");kindLabel.textContent="成果";
 const kindSelect=document.createElement("select");for(const [id,name] of outcomeNames)kindSelect.append(optionFor(id,name));kindLabel.append(kindSelect);
 const statusLabel=document.createElement("label");statusLabel.textContent="状态";
 const statusSelect=document.createElement("select");
-for(const [id,name] of [["not_started","未开始"],["working","制作中"],["review","待审核"],["confirmed","人工已确认"],["issue","需处理"]])statusSelect.append(optionFor(id,name));
+for(const [id,name] of [["not_started","未开始"],["in_progress","制作中"],["review","待审核"],["confirmed","人工已确认"],["blocked","需处理"]])statusSelect.append(optionFor(id,name));
 statusLabel.append(statusSelect);
 const artifactInput=document.createElement("input");artifactInput.placeholder="已生成的文件名/相对路径（确认完成时必填）";artifactInput.setAttribute("aria-label","实际产物文件名或相对路径");
+const sizeInput=document.createElement("input");sizeInput.type="number";sizeInput.min="1";sizeInput.step="1";sizeInput.placeholder="真实文件大小（字节）";sizeInput.setAttribute("aria-label","已核验文件大小（字节）");
 const evidenceLabel=document.createElement("label");evidenceLabel.className="gcc-evidence";
 const evidenceCheck=document.createElement("input");evidenceCheck.type="checkbox";
 const evidenceText=document.createElement("span");evidenceText.textContent="我已实际检查文件存在、内容质量，并批准此成果";
 evidenceLabel.append(evidenceCheck,evidenceText);
 const outcomeSave=document.createElement("button");outcomeSave.type="button";outcomeSave.textContent="保存成果状态";
 const outcomeMessage=document.createElement("small");outcomeMessage.setAttribute("role","status");
-outcomeEditor.append(kindLabel,statusLabel,artifactInput,evidenceLabel,outcomeSave,outcomeMessage);
+outcomeEditor.append(kindLabel,statusLabel,artifactInput,sizeInput,evidenceLabel,outcomeSave,outcomeMessage);
 outcomePanel.append(outcomeSummary,outcomeChips,outcomeEditor);nav.append(outcomePanel);
 function optionFor(id,name){const x=document.createElement("option");x.value=id;x.textContent=name;return x;}
 document.body.insertBefore(nav,document.body.firstChild);
@@ -94,7 +95,7 @@ async function selectProject(id,requested=""){
  }catch(error){if(project.value!==id)return;setVideoOptions(null,"");showStatus("视频信息暂不可读取："+error.message);apply.disabled=false;}
 }
 
-const statusLabels={not_started:"未开始",working:"制作中",review:"待审核",confirmed:"已确认",issue:"需处理"};
+const statusLabels={not_started:"未开始",in_progress:"制作中",review:"待审核",confirmed:"已确认",blocked:"需处理"};
 let outcomeRows=new Map(),outcomeBoundKey="",outcomeLoading=false;
 function outcomeNotice(msg){outcomeMessage.textContent=msg;}
 function renderOutcomes(ctx){
@@ -110,24 +111,25 @@ function renderOutcomes(ctx){
  }
  const active=outcomeRows.get(kindSelect.value);
  statusSelect.value=active?.status||"not_started";
- artifactInput.value=active?.artifact_manifest?.[0]?.path||"";
+ artifactInput.value=active?.evidence?.fileName||"";
+ sizeInput.value=active?.evidence?.sizeBytes||"";
  evidenceCheck.checked=false;
  outcomeSave.disabled=false;
 }
 async function registerVideo(ctx,row,videoInfo){
  if(!ctx.projectId||!ctx.videoId)return;
- const name=String(videoInfo?.name||videoInfo?.title||ctx.videoId).slice(0,300);
+ const name=String(videoInfo?.name||videoInfo?.title||ctx.videoId).slice(0,240);
  // This is only called after the user explicitly presses "在此工具使用".
- await request("creator_videos?on_conflict=project_id,video_id",{method:"POST",
+ await request("creator_video_workspaces?on_conflict=project_id,video_id",{method:"POST",
   headers:{Prefer:"resolution=ignore-duplicates,return=representation"},
-  body:{project_id:ctx.projectId,video_id:ctx.videoId,name,source:videoInfo?"workspace":"confirmed_legacy_branch"}});
+  body:{project_id:ctx.projectId,video_id:ctx.videoId,title:name,kind:"video"}});
 }
 async function loadOutcomes(ctx){
  outcomeRows=new Map();outcomeBoundKey=C.key(ctx);renderOutcomes(ctx);
  if(!ctx.projectId||!ctx.videoId)return;
  outcomeLoading=true;outcomeSave.disabled=true;outcomeNotice("正在读取云端成果…");
  try{
-  const path="creator_video_deliverables?select=deliverable_key,status,artifact_manifest,verification,revision,updated_at&project_id=eq."+
+  const path="creator_deliverable_records?select=deliverable_key,status,evidence,revision,updated_at&project_id=eq."+
    encodeURIComponent(ctx.projectId)+"&video_id=eq."+encodeURIComponent(ctx.videoId);
   const rows=await request(path);
   if(C.key(C.read())!==outcomeBoundKey)return;
@@ -140,23 +142,20 @@ kindSelect.addEventListener("change",()=>renderOutcomes(C.read()));
 outcomeSave.addEventListener("click",async()=>{
  const ctx=C.read(),kind=kindSelect.value,newStatus=statusSelect.value,old=outcomeRows.get(kind);
  if(outcomeLoading||!ctx.projectId||!ctx.videoId)return;
- const path=artifactInput.value.trim();
- if(newStatus==="confirmed"&&(!evidenceCheck.checked||!path)){outcomeNotice("请先填真实产物文件名/路径，并确认已核查文件、质量与批准");return;}
- const verification=newStatus==="confirmed"?{fileVerified:true,qualityVerified:true,humanApproved:true,confirmedBy:"USER_ATTESTED",confirmedAt:new Date().toISOString()}:{};
- const manifest=path?[{path,kind,observation:"user_provided_reference"}]:(old?.artifact_manifest||[]);
- const payload={project_id:ctx.projectId,video_id:ctx.videoId,deliverable_key:kind,status:newStatus,artifact_manifest:manifest,verification};
+ const path=artifactInput.value.trim(),bytes=Number(sizeInput.value);
+ if(newStatus==="confirmed"&&(!evidenceCheck.checked||!path||!Number.isSafeInteger(bytes)||bytes<=0)){
+  outcomeNotice("必须核实真实文件名称与大小（字节），勾选人工质量批准，才能确认完成");return;
+ }
+ const evidence=newStatus==="confirmed"?{fileName:path,sizeBytes:bytes,humanConfirmed:true,fileVerified:true,qualityVerified:true,attestedAt:new Date().toISOString()}:
+   {...(old?.evidence||{}),...(path?{fileName:path}:{}),...(Number.isSafeInteger(bytes)&&bytes>0?{sizeBytes:bytes}:{})};
+ if(newStatus!=="confirmed"){delete evidence.humanConfirmed;delete evidence.fileVerified;delete evidence.qualityVerified;}
+ const payload={p_project_id:ctx.projectId,p_video_id:ctx.videoId,p_key:kind,p_status:newStatus,p_evidence:evidence,p_note:"",p_expected_revision:old?.revision||0};
  outcomeLoading=true;outcomeSave.disabled=true;
  try{
-  let updated;
-  if(!old){updated=await request("creator_video_deliverables",{method:"POST",headers:{Prefer:"return=representation"},body:payload});}
-  else{
-   const url="creator_video_deliverables?project_id=eq."+encodeURIComponent(ctx.projectId)+
-   "&video_id=eq."+encodeURIComponent(ctx.videoId)+"&deliverable_key=eq."+encodeURIComponent(kind)+"&revision=eq."+old.revision;
-   updated=await request(url,{method:"PATCH",headers:{Prefer:"return=representation"},body:{status:newStatus,artifact_manifest:manifest,verification,revision:old.revision+1,updated_at:new Date().toISOString()}});
-  }
-  if(!Array.isArray(updated)||updated.length!==1)throw Error("版本已变化，请刷新后重试，未覆盖其他设备内容");
-  outcomeRows.set(kind,updated[0]);renderOutcomes(ctx);
-  outcomeNotice("已保存到 Supabase · "+(statusLabels[newStatus]||newStatus)+" · Revision "+updated[0].revision);
+  const updated=await request("rpc/creator_workspace_save_deliverable",{method:"POST",body:payload});
+  if(!updated||updated.project_id!==ctx.projectId||updated.video_id!==ctx.videoId||updated.deliverable_key!==kind)throw Error("回读身份不匹配；未确认保存结果");
+  outcomeRows.set(kind,updated);renderOutcomes(ctx);
+  outcomeNotice("已保存到 Supabase · "+(statusLabels[newStatus]||newStatus)+" · Revision "+updated.revision);
   window.dispatchEvent(new CustomEvent("gucc:creator-outcome-saved",{detail:{...ctx,kind,status:newStatus}}));
  }catch(e){outcomeNotice("保存未完成："+e.message);await loadOutcomes(ctx);}
  finally{outcomeLoading=false;outcomeSave.disabled=false;}

@@ -964,7 +964,9 @@
     const next=existing?mergeState(existing):defaultState();
     if(ctx.projectId){
       next.project={...next.project,creatorProjectId:ctx.projectId,videoId:ctx.videoId,
-        title:video?.name||project?.name||"",game:project?.game||next.project.game,
+        // Reusing a draft must never revert a creator-edited publishing title.
+        title:next.project.title||video?.name||project?.name||"",
+        game:next.project.game||project?.game||"",
         shortName:next.project.shortName||ctx.videoId};
       next.source={...next.source,workspaceVersion:"creator-os-v3"};
     }

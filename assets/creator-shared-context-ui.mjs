@@ -578,7 +578,12 @@ function showEditor() {
   showArtifacts();
   historyBody.replaceChildren();
   suppress = false;
-  if (draft && draft.baseRevision !== (row?.revision || 0))
+  if (
+    !loadFailed &&
+    !loading &&
+    draft &&
+    draft.baseRevision !== (row?.revision || 0)
+  )
     notice(
       "本浏览器有另一版本的未提交草稿。已保留内容；保存前请核对云端历史。",
     );
@@ -589,7 +594,11 @@ function render() {
     n = [...rows.values()].filter((r) => r.status === "confirmed").length;
   overview.hidden = !hasVideo;
   outcomeButton.disabled = !hasVideo;
-  outcomeButton.textContent = `成果 ${n}/6`;
+  outcomeButton.textContent = loadFailed
+    ? "成果 · 连接异常"
+    : loading
+      ? "成果 · 读取中"
+      : `成果 ${n}/6`;
   const p = projects.find((p) => p.projectId === active.projectId),
     v = official.find((v) => v.videoId === active.videoId);
   contextProject.textContent = p?.name || "选择项目";
@@ -601,10 +610,13 @@ function render() {
     "切换项目与视频：" + (contextTrigger.title || "本浏览器草稿"),
   );
   summary.textContent = v?.name || "当前视频";
-  overviewTitle.textContent =
-    n === 6
-      ? "六项成果均已确认"
-      : `${n} / 6 已确认 · 下一步，${names.find(([k]) => rows.get(k)?.status !== "confirmed")?.[1] || "核验"}`;
+  overviewTitle.textContent = loadFailed
+    ? "暂不能读取成果，请打开档案重试"
+    : loading
+      ? "正在核对本视频成果…"
+      : n === 6
+        ? "六项成果均已确认"
+        : `${n} / 6 已确认 · 下一步，${names.find(([k]) => rows.get(k)?.status !== "confirmed")?.[1] || "核验"}`;
   chips.replaceChildren();
   overviewList.replaceChildren();
   for (const [i, [k, name]] of names.entries()) {
@@ -631,7 +643,11 @@ function render() {
         element("strong", { textContent: name }),
         element("span", {
           className: "gcc-state",
-          textContent: labels[status],
+          textContent: loadFailed
+            ? "暂未读取"
+            : loading
+              ? "读取中"
+              : labels[status],
         }),
       );
       target.append(b);
@@ -640,9 +656,11 @@ function render() {
   showEditor();
   const row = rows.get(kind.value);
   outcomeTitle.textContent = names.find(([k]) => k === kind.value)?.[1];
-  outcomeMeta.textContent = row
-    ? `版本 ${row.revision} · ${row.updated_at ? new Date(row.updated_at).toLocaleDateString("zh-CN") : "已同步"}`
-    : "尚无正式记录 · 草稿仅保留在本浏览器";
+  outcomeMeta.textContent = loadFailed
+    ? "连接暂不可用，已暂停写入。请重新读取云端。"
+    : row
+      ? `版本 ${row.revision} · ${row.updated_at ? new Date(row.updated_at).toLocaleDateString("zh-CN") : "已同步"}`
+      : "尚无正式记录 · 草稿仅保留在本浏览器";
   lockBadge.textContent = row?.evidence?.locked ? "已确认 · 已锁定" : "";
   lockBadge.hidden = !row?.evidence?.locked;
   const tool = {

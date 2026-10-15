@@ -44,6 +44,12 @@ const sizes = [
       await p.waitForFunction(
         () => window.GuccCreatorWorkspace?.context()?.videoId === "FIONI",
       );
+      await p.waitForFunction(
+        () =>
+          !document
+            .querySelector(".gcc-outcome-trigger")
+            .textContent.includes("读取中"),
+      );
       await p.evaluate(() => document.fonts.ready);
       await p.screenshot({
         animations: "disabled",
@@ -283,6 +289,40 @@ const sizes = [
     f.versions
       .get(id)
       .some((v) => v.revision === 2 && v.record.evidence.locked),
+  );
+  // An outage must not be presented as six unstarted outcomes or permit writing.
+  const outage = "**/rest/v1/creator_deliverable_records?**";
+  await p.route(outage, (route) =>
+    route.fulfill({
+      status: 503,
+      json: { message: "连接暂不可用，请稍后重试" },
+    }),
+  );
+  await p
+    .getByRole("button", { name: "读取云端最新版本", exact: true })
+    .click();
+  await p.waitForFunction(() =>
+    document
+      .querySelector(".gcc-outcome-trigger")
+      .textContent.includes("连接异常"),
+  );
+  assert(
+    await p
+      .getByRole("button", { name: "保存成果状态", exact: true })
+      .isDisabled(),
+  );
+  await p.locator(".gcc-feedback").scrollIntoViewIfNeeded();
+  await p.screenshot({
+    animations: "disabled",
+    path: path.join(out, "outcome-offline-390.png"),
+  });
+  assert.equal(f.writes.length, 1);
+  await p.unroute(outage);
+  await p
+    .getByRole("button", { name: "读取云端最新版本", exact: true })
+    .click();
+  await p.waitForFunction(() =>
+    window.GuccCreatorWorkspace.records().some((r) => r.revision === 3),
   );
   await fs.writeFile(
     path.join(out, "result.json"),

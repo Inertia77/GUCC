@@ -132,7 +132,7 @@
         </aside>
       </div>
 
-      <section class="video-workbench" aria-label="视频分支"><div id="videoBranches" class="branch-list"></div><button class="text-action" id="clearBranchFilter" type="button" hidden>查看全部视频与共享任务</button></section>
+      <section class="video-workbench" aria-label="视频分支"><div class="branch-title"><strong>本项目视频</strong><button type="button" id="addVideoBtn" class="text-action">＋ 登记视频</button></div><div id="videoBranches" class="branch-list"></div><button class="text-action" id="clearBranchFilter" type="button" hidden>查看全部视频与共享任务</button></section>
       <details class="support-workbench"><summary>项目编排与辅助工具 <small>修改路线 · 本地素材 · 封面与发布</small></summary>
       <section class="launch-dock">
         <div class="dock-heading"><span class="micro">QUICK 工作区</span><h2>从想法到执行</h2></div>
@@ -246,6 +246,7 @@
   </main>
 </div>
 
+<dialog id="addVideoDialog" aria-label="登记正式视频身份"><form id="addVideoForm" class="dialog-card"><div class="panel-head"><h2>登记本项目的视频</h2><button type="button" data-close-video class="icon-button">×</button></div><p>只有在本项目确实需要一条独立视频时才登记。旧项目可使用现有任务分支 ID；已完成的任务、脚本与 Lock 不会被重置。</p><label>视频名称<input name="videoName" required maxlength="100" placeholder="例：菲欧妮机制解析"></label><label>视频标识（选填）<input name="videoId" pattern="[A-Za-z][A-Za-z0-9_-]{0,30}" maxlength="31" placeholder="例：FIONI；留空自动生成"></label><footer><button type="button" data-close-video class="button ghost">取消</button><button type="submit" class="button primary">登记并保留原进度</button></footer></form></dialog>
 <dialog id="nodeDialog">
   <div class="dialog-card">
     <div class="panel-head"><div><span class="micro">PROMPT FLOW / NODE P审核方式</span><h2 id="nodePreviewTitle">节点详情</h2></div><button type="button" id="closeNodeDialog" class="icon-button" aria-label="关闭">×</button></div>

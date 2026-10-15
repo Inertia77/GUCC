@@ -10,6 +10,7 @@ const Validation=window.GuccCreatorValidation;
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
+let officialProjectRecords=new Map();
 let storageCorrupt=false;
 let store=load();
 const linkedProjectId=new URLSearchParams(window.location.search).get("project")||"";
@@ -36,7 +37,7 @@ function load(){
       const projects=raw.projects.filter(p=>p&&p.status!=="TEST_FIXTURE").map(p=>Storage?Storage.unpackProject(p):p).map(p=>
         p.status==="DRAFT"&&p.idea&&p.name===p.idea
           ? {...p,name:provisionalProjectName(p)} : p);
-      const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)==="active");
+      const selected=projects.find(p=>p.projectId===raw.selectedProjectId&&projectLife(p)!=="trash");
       return {projects,selectedProjectId:selected?.projectId||projects.find(p=>projectLife(p)==="active")?.projectId||""};
     }
   }catch(e){storageCorrupt=true;console.warn("Creator OS store requires recovery",e);}
@@ -88,7 +89,7 @@ function currentTaskFor(p){
     }
     return {promptId:"PROJECT_BUILDER",name:"建立项目事实与制作方向",executor:"Work / Chat",reason:"输入自然语言想法，让 AI 研究需求、定义项目并返回 VIDEO_CONTRACT。",requiredInput:[p.idea||p.name],expectedOutput:["PROJECT_BRIEF.md","VIDEO_CONTRACT.md"],qualityGate:["Q2：立项与事实边界"],reviewMode:"APPROVAL_REQUIRED",prompt:O.buildCreateProjectPrompt(p),status:"PENDING"};
   }
-  const task=O.currentTask(p);
+  const task=O.currentTask(p,{branch:selectedBranch});
   if(task.promptId!=="COMPLETE"&&task.prompt){
     const video=Validation?.tracks(p).find(v=>v.branch===task.branch);
     task.prompt+="\n\n【GUCC 结果交接校验】\n保持上述完整任务方法。回执必须包含 projectId: "+p.projectId+"、promptId: "+task.promptId+(video?"、videoId: "+video.videoId:"")+"。status 必须明确选 DONE、WAITING 或 NEED_INPUT。DONE 只表示 AI 执行回执，不表示文件已经核验或人工已批准。路线变化另交 GUCC_FLOW_DIFF，不能夹带在节点回执中。";
@@ -156,16 +157,20 @@ function renderSystem(){
     ["项目编号",p.projectCode||(p.status==="DRAFT"?"草稿 · 等待 AI 定名":p.projectId)],["游戏",p.game||"未设置"],["版本",p.version||"未设置"],
     ["区服",p.server||"未设置"],["AI 自主级别",p.autonomyLevel||"L2"],["路线版本",`R${p.flowRevision||0}`],["项目状态",lifeName(p)]
   ].map(([k,v])=>`<div><b>${esc(k)}</b>${esc(v)}</div>`).join(""):"<p class='subtitle'>当前没有进行中项目。请打开「项目档案」恢复已有项目，或新建项目。</p>";
+  $("addVideoBtn").disabled=!p||Boolean(p.deletedAt||p.archivedAt);
   const videos=p&&Validation?Validation.tracks(p):(Array.isArray(p?.videos)?p.videos:[]);
   if(selectedBranch&&!videos.some(v=>v.branch===selectedBranch))selectedBranch="";
   $("clearBranchFilter").hidden=!selectedBranch;
   $("videoBranches").innerHTML=videos.length?videos.map(v=>{
     const nodes=(p.promptFlow||[]).filter(n=>n.branch===v.branch);
     const done=nodes.filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
+    const outputs=officialProjectRecords.get(p.projectId);
+    const confirmed=outputs?.filter(r=>r.video_id===v.videoId&&r.status==="confirmed").length;
+    const outputLabel=outputs?" · 六项成果 "+confirmed+"/6 已确认":" · 六项成果待核对云端";
     const locks=Object.entries(p.videoLocks?.[v.branch]||{}).filter(([,value])=>value?.approvedLocallyAt).map(([key])=>({script:"文案",audio:"音频",final:"成片",publish:"发布包"})[key]||key);
-    return `<div class="branch-row"><div><strong>${esc(v.name||v.videoId)}</strong><small>${esc(v.videoId)}</small><span>${done} / ${nodes.length} 个任务已回执${locks.length?" · 本地批准："+esc(locks.join("、")):" · 尚无本地批准"}</span></div><progress value="${done}" max="${nodes.length||1}" aria-label="${esc(v.name)}任务进度"></progress><button class="text-action" type="button" data-branch="${esc(v.branch)}">查看分支 ↗</button><button type="button" class="text-action" data-handoff="${esc(v.videoId)}">导出资料交接包 ↗</button></div>`;
+    return `<div class="branch-row"><div><strong>${esc(v.name||v.videoId)}</strong><small>${esc(v.videoId)}</small><span>${done} / ${nodes.length} 个任务已回执${esc(outputLabel)}${locks.length?" · 本地批准："+esc(locks.join("、")):" · 尚无本地批准"}</span></div><progress value="${done}" max="${nodes.length||1}" aria-label="${esc(v.name)}任务进度"></progress><button class="text-action" type="button" data-branch="${esc(v.branch)}">查看分支 ↗</button><button type="button" class="text-action" data-handoff="${esc(v.videoId)}">导出资料交接包 ↗</button></div>`;
   }).join(""):"";
-  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;$("clearBranchFilter").hidden=false;flowExpanded=true;renderFlow(p);$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
+  $("videoBranches").querySelectorAll("[data-branch]").forEach(button=>button.addEventListener("click",()=>{selectedBranch=button.dataset.branch;window.GuccCreatorContext?.set({projectId:p.projectId,videoId:videos.find(v=>v.branch===selectedBranch)?.videoId||""});$("clearBranchFilter").hidden=false;flowExpanded=true;render();$("flowList").scrollIntoView({block:"nearest",behavior:"smooth"});}));
   $("videoBranches").querySelectorAll("[data-handoff]").forEach(button=>button.addEventListener("click",()=>{
     const video=videos.find(v=>v.videoId===button.dataset.handoff);
     download(slugFile(video.videoId)+".handoff.json",JSON.stringify(window.GuccCreatorHandoff.build(p,video),null,2));
@@ -330,12 +335,14 @@ async function createDraft(data){
     productType:data.productType||"UNKNOWN"
   });
   if(p.workflowMode==="six"){
+    p.videos=[{videoId:"MAIN",branch:"MAIN",name:p.name}];
     O.buildWorkflow(p);O.compilePromptFlow(p);
     p.status="FLOW_READY"; // A six-outcome project needs no separate planning/flow compilation step.
   }
   store.projects.unshift(p);
   store.selectedProjectId=p.projectId;
   save();render();
+  window.GuccCreatorContext?.set({projectId:p.projectId,videoId:p.videos?.[0]?.videoId||""});
   const prompt=p.workflowMode==="six"?O.currentTask(p).prompt:O.buildCreateProjectPrompt(p);
   $("currentPrompt").textContent=prompt;
   const copied=await copy(prompt);
@@ -653,7 +660,44 @@ $("deleteCurrentProject").addEventListener("click",()=>{
   selectActiveAfterMove(p.projectId);
   save();render();notify("已移入回收站；可恢复");
 });
-$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
+$("projectSelect").addEventListener("change",e=>{
+ store.selectedProjectId=e.target.value;flowExpanded=false;save();
+ if(window.GuccCreatorContext&&store.selectedProjectId)window.GuccCreatorContext.set({projectId:store.selectedProjectId,videoId:""});
+ $("artifactPreview").textContent="";render();
+});
+$("addVideoBtn").addEventListener("click",()=>{
+ const p=current();if(!p||p.deletedAt||p.archivedAt)return notify("请选择可编辑的正式项目");
+ $("addVideoDialog").showModal();
+});
+$("addVideoDialog").querySelectorAll("[data-close-video]").forEach(b=>b.addEventListener("click",()=>$("addVideoDialog").close()));
+$("addVideoForm").addEventListener("submit",event=>{
+ event.preventDefault();const p=current();if(!p||p.deletedAt||p.archivedAt)return;
+ const fd=new FormData(event.currentTarget),name=String(fd.get("videoName")||"").trim();
+ const videoId=String(fd.get("videoId")||"").trim()||"VID-"+crypto.randomUUID().slice(0,8).toUpperCase();
+ if(!name||!/^[A-Za-z][A-Za-z0-9_-]{0,30}$/.test(videoId))return notify("请输入有效的视频名称与标识");
+ const existing=Validation.tracks(p);
+ if(existing.some(v=>v.videoId===videoId)&&Array.isArray(p.videos)&&p.videos.some(v=>v.videoId===videoId))return notify("这个正式视频已存在");
+ const branchMatches=(p.promptFlow||[]).some(n=>n.branch===videoId);
+ const candidate=JSON.parse(JSON.stringify(p));
+ candidate.videos=Array.isArray(candidate.videos)?candidate.videos:[];
+ candidate.videos.push({videoId,branch:videoId,name});
+ if(candidate.workflowMode==="six"&&!branchMatches){
+   const compiled=JSON.parse(JSON.stringify(candidate));
+   O.buildWorkflow(compiled);O.compilePromptFlow(compiled);
+   const additions=compiled.promptFlow.filter(n=>n.videoId===videoId);
+   const existingIds=new Set((candidate.promptFlow||[]).map(n=>n.promptId));
+   if(!additions.length||additions.some(n=>existingIds.has(n.promptId)))return notify("无法安全新增视频任务，未修改原项目");
+   candidate.promptFlow=[...(candidate.promptFlow||[]),...additions];
+   candidate.flowRevision=(candidate.flowRevision||0)+1;
+ }
+ Validation.flow(candidate.promptFlow||[]);
+ p.videos=candidate.videos;p.promptFlow=candidate.promptFlow;p.flowRevision=candidate.flowRevision;
+ p.history||=[];p.history.push({at:new Date().toISOString(),action:"VIDEO_REGISTERED",videoId});
+ selectedBranch=videoId;save();render();
+ window.GuccCreatorContext?.set({projectId:p.projectId,videoId});
+ event.currentTarget.reset();$("addVideoDialog").close();
+ notify(branchMatches?"旧制作分支已登记为正式视频；旧进度保持不变":"已登记新视频；原有任务与锁定记录不变");
+});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});
 $("toggleFlowBtn").addEventListener("click",()=>{flowExpanded=!flowExpanded;renderFlow(current());});
@@ -765,6 +809,21 @@ $("createDialog").addEventListener("close",()=>{$("createDialog").querySelector(
 
 function slugFile(v){return String(v||"project").replace(/[^\w\u4e00-\u9fff.-]+/g,"_").slice(0,90);}
 // Public, minimal integration for the two optional workspace modules.
+window.GuccCreatorWorkspaceAdapter={
+ currentPrompt:()=>$("currentPrompt").textContent,
+ applyContext({ctx,snapshot,video}){
+  if(!ctx.projectId)return false;
+  let found=store.projects.find(p=>p.projectId===ctx.projectId&&!p.deletedAt);
+  if(!found&&snapshot){window.GuccCreatorOS?.putProject(snapshot,{fromCloud:true});found=store.projects.find(p=>p.projectId===ctx.projectId);}
+  if(!found)return false; // Never create a phantom project from a URL or selector.
+  store.selectedProjectId=ctx.projectId;
+  selectedBranch=video?.branch||ctx.videoId||"";
+  flowExpanded=false;
+  save(false);render();
+  notify("已打开共享项目："+found.name+(ctx.videoId?" · 视频 "+ctx.videoId:""));
+  return true;
+ }
+};
 window.GuccCreatorOS={
   projects:()=>JSON.parse(JSON.stringify(store.projects)),
   selectedId:()=>store.selectedProjectId,
@@ -788,5 +847,7 @@ window.GuccCreatorOS={
     save(!fromCloud);render();
   }
 };
+if(new URLSearchParams(window.location.search).get("newProject")==="1")$("createDialog").showModal();
+window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);if(current()?.projectId===e.detail.projectId)render();});
 render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

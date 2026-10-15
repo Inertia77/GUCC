@@ -1,12 +1,24 @@
 /* Local prompt working surface. The selected task is never executed here. */
 (function(){'use strict';
 const P=window.CreatorPrompts,S=window.GuccCreatorSix,$=id=>document.getElementById(id),KEY='gucc_creator_prompt_v6';
-const defaults={context:{route:'mechanism',format:'long',title:'',game:'',server:'',version:'',duration:'',notes:'',voiceMode:'human'},stage:'research',task:'brief',mode:'Chat',part:0,viewMode:'simple',simpleTask:'script'};
+const SCOPED_KEY='gucc_creator_studio_scoped_drafts_v1';
+const drafts=()=>{try{return JSON.parse(localStorage.getItem(SCOPED_KEY)||'{}');}catch{return {};}};
+const draftKey=(p,v)=>JSON.stringify([p||'',v||'']);
+const defaults={projectId:'',videoId:'',context:{route:'mechanism',format:'long',title:'',game:'',server:'',version:'',duration:'',notes:'',voiceMode:'human',authorQuestion:'',authorContribution:'',audienceQuestion:'',coreThesis:''},stage:'research',task:'brief',mode:'Chat',part:0,viewMode:'simple',simpleTask:'script'};
 let state=structuredClone(defaults),storageOK=true,importedSource=null,toastTimer;
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4000);}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({...state,version:P.VERSION,importedSource}));$('saveStatus').textContent='已存本浏览器草稿';storageOK=true;}catch{storageOK=false;$('saveStatus').textContent='无法保存 · 请导出草稿';}}
+function save(){
+ try{
+  const record={...state,version:P.VERSION,importedSource},next=drafts();
+  next[draftKey(state.projectId,state.videoId)]=record;
+  // Both independent and linked drafts survive switching; no cloud write here.
+  localStorage.setItem(SCOPED_KEY,JSON.stringify(next));
+  localStorage.setItem(KEY,JSON.stringify(record));
+  $('saveStatus').textContent=state.projectId?'本项目草稿已保存在此浏览器':'已存本浏览器独立草稿';storageOK=true;return true;
+ }catch{storageOK=false;$('saveStatus').textContent='保存失败 · 切换前请导出备份';return false;}
+}
 function cleanContext(input){const c={...defaults.context};for(const k of Object.keys(c))if(typeof input?.[k]==='string')c[k]=input[k].slice(0,k==='notes'?60000:1000);if(!P.ROUTES.some(r=>r.id===c.route))c.route='mechanism';if(!['long','short'].includes(c.format))c.format='long';if(!['human','ai'].includes(c.voiceMode))c.voiceMode='human';return c;}
-function restore(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){state.context=cleanContext(s.context);state.stage=P.STAGES.some(x=>x.id===s.stage)?s.stage:s.stage==='utility'?'utility':'research';state.task=P.tasks.some(x=>x.id===s.task)?s.task:'brief';state.mode=typeof s.mode==='string'?s.mode:'Chat';state.part=Number.isInteger(s.part)?s.part:0;state.viewMode=s.viewMode==='advanced'?'advanced':'simple';state.simpleTask=S.ITEMS.some(x=>x.id===s.simpleTask)?s.simpleTask:'script';importedSource=s.importedSource||null;}}catch{storageOK=false;}
+function restore(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){state.projectId=typeof s.projectId==='string'?s.projectId:'';state.videoId=typeof s.videoId==='string'?s.videoId:'';state.context=cleanContext(s.context);state.stage=P.STAGES.some(x=>x.id===s.stage)?s.stage:s.stage==='utility'?'utility':'research';state.task=P.tasks.some(x=>x.id===s.task)?s.task:'brief';state.mode=typeof s.mode==='string'?s.mode:'Chat';state.part=Number.isInteger(s.part)?s.part:0;state.viewMode=s.viewMode==='advanced'?'advanced':'simple';state.simpleTask=S.ITEMS.some(x=>x.id===s.simpleTask)?s.simpleTask:'script';importedSource=s.importedSource||null;}}catch{storageOK=false;}
  const hash=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(t=>t.id===hash)){state.viewMode='advanced';if(state.task!==hash){state.task=hash;state.mode=P.task(hash).modes[0];state.part=0;}state.stage=P.task(hash).stage;}
  const q=new URLSearchParams(location.search);if(P.ROUTES.some(x=>x.id===q.get('type')))state.context.route=q.get('type');
  const t=P.task(state.task);if(!t.modes.includes(state.mode))state.mode=t.modes[0];state.stage=t.stage;state.part=Math.max(0,Math.min(state.part,P.parts(t.id,state.mode).length-1));}
@@ -22,12 +34,13 @@ function choose(id){state.task=id;state.stage=P.task(id).stage;state.part=0;stat
 function renderTasks(){const list=filtered(),s=P.STAGES.find(x=>x.id===state.stage);$('stageNo').textContent=$('searchInput').value.trim()?'SEARCH':s?`STAGE ${s.no}`:'UTILITY';$('stageTitle').textContent=$('searchInput').value.trim()?'搜索结果':s?.name||'自定义任务';$('taskCount').textContent=list.length;$('taskList').replaceChildren();
  for(const t of list){const b=button('',()=>choose(t.id),'task-card'+(t.id===state.task?' active':''));b.setAttribute('aria-pressed',String(t.id===state.task));const meta=document.createElement('span');meta.className='card-meta';const no=document.createElement('span');no.textContent=t.optional?'可选 · '+t.old.join(' + '):t.old.join(' + ');const env=document.createElement('span');env.textContent=t.modes[0];meta.append(no,env);const name=document.createElement('strong');name.textContent=t.name;const note=document.createElement('span');note.className='card-note';note.textContent=blurbs[t.id];b.append(meta,name,note);$('taskList').append(b);}
  if(!list.length){const p=document.createElement('p');p.className='empty-results';p.textContent='没有匹配任务。试试原编号或“字幕”“人物”等关键词。';$('taskList').append(p);}requestAnimationFrame(revealActive);}
+function promptIdentity(text){return state.projectId?`【GUCC 统一创作身份】\nPROJECT_ID: ${state.projectId}\nVIDEO_ID: ${state.videoId||'项目资料'}\n\n${text}`:text;}
 function renderPrompt(){if(state.viewMode==='simple'){renderSixPrompt();return;}const t=P.task(state.task),ps=P.parts(t.id,state.mode);state.part=Math.min(Math.max(0,state.part),ps.length-1);const p=ps[state.part]||ps[0];$('taskTitle').textContent=t.name;$('taskMeta').textContent=`${t.optional?'OPTIONAL · ':''}原 ${t.old.join(' + ')} · ${P.route(state.context.route).name}`;$('modeBadge').textContent=state.mode;$('taskPurpose').textContent=blurbs[t.id];$('modeTabs').replaceChildren();
  for(const m of t.modes){const hasChatParts=Boolean(t.fallback&&t.fallback.length>1);const chatLabel=m==='Chat'&&hasChatParts?(t.modes[0]==='Chat'?'Chat 分步':'Chat 备用'):m;const b=button(chatLabel,()=>{state.mode=m;state.part=0;renderPrompt();save();},state.mode===m?'active':'');b.setAttribute('aria-pressed',String(state.mode===m));$('modeTabs').append(b);}
  const voiceRow=$('voiceModeRow'),voiceTabs=$('voiceModeTabs');voiceRow.hidden=t.id!=='read';voiceTabs.replaceChildren();if(t.id==='read'){for(const [value,label] of [['human','真人录音'],['ai','剪映 AI 朗读']]){const b=button(label,()=>{state.context.voiceMode=value;renderPrompt();save();},state.context.voiceMode===value?'active':'');b.setAttribute('aria-pressed',String(state.context.voiceMode===value));voiceTabs.append(b);}}
  const fallback=state.mode==='Chat'&&Boolean(t.fallback&&t.fallback.length>1);const fallbackLabel=t.modes[0]==='Chat'?'Chat 分步':'Chat 备用';$('fallbackNotice').hidden=!fallback;$('fallbackNotice').textContent=`${fallbackLabel}共 ${ps.length} 步。每次只复制当前一条，同一 Chat 直接沿用上一子步骤产物；只有真实需要本地执行时才运行脚本并把结果接回当前 Chat。`;$('partTabs').hidden=!fallback;$('partTabs').replaceChildren();
  if(fallback)for(const p of ps){const b=button(`${p.index+1}. ${p.name}`,()=>{state.part=p.index;renderPrompt();save();},state.part===p.index?'active':'');b.setAttribute('aria-pressed',String(state.part===p.index));$('partTabs').append(b);}
- $('taskInputs').textContent=p.inputs||t.inputs;$('taskOutputs').textContent=p.outputs||t.outputs;$('ioHint').textContent=fallback?`当前 ${p.index+1}/${ps.length}：只需本子步骤输入`:'同一 Chat 已有内容直接沿用；仅关键缺项补充';$('promptText').value=P.build(t.id,state.context,state.mode,state.part);$('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';$('nextPartButton').hidden=!(fallback&&state.part<ps.length-1);$('handoffNote').textContent=fallback?`当前 ${state.part+1}/${ps.length}：${ps[state.part].name}。切换步骤只切换 Prompt，不会执行任务。`:'本条可独立复制。Work／Codex 的合并工作只限这项任务，不会自动越过下一个确认或交接点。';}
+ $('taskInputs').textContent=p.inputs||t.inputs;$('taskOutputs').textContent=p.outputs||t.outputs;$('ioHint').textContent=fallback?`当前 ${p.index+1}/${ps.length}：只需本子步骤输入`:'同一 Chat 已有内容直接沿用；仅关键缺项补充';$('promptText').value=promptIdentity(P.build(t.id,state.context,state.mode,state.part));$('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';$('nextPartButton').hidden=!(fallback&&state.part<ps.length-1);$('handoffNote').textContent=fallback?`当前 ${state.part+1}/${ps.length}：${ps[state.part].name}。切换步骤只切换 Prompt，不会执行任务。`:'本条可独立复制。Work／Codex 的合并工作只限这项任务，不会自动越过下一个确认或交接点。';}
 
 function renderSixNav(){
  const nav=$('sixNavList');nav.replaceChildren();
@@ -53,7 +66,7 @@ function renderSixPrompt(){
  $('taskInputs').textContent=item.needs;
  $('taskOutputs').textContent=item.output;
  $('ioHint').textContent='同一 Chat 复用已有信息；缺关键文件时才补';
- $('promptText').value=S.build(item.id,ctx);
+ $('promptText').value=promptIdentity(S.build(item.id,ctx));
  $('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';
  $('nextPartButton').hidden=true;
  $('handoffNote').textContent='只交这一项正式成果。AI 可自主研究、实施、检查与修订；缺少必要真实素材时如实说明。';
@@ -91,5 +104,27 @@ $('downloadButton').addEventListener('click',()=>download(`${safeName(state.cont
 $('mappingButton').addEventListener('click',()=>{$('mappingBody').replaceChildren();for(const t of P.tasks){const tr=document.createElement('tr');for(const text of [t.old.join(' + '),t.name,t.fallback&&t.fallback.length>1?`${t.fallback.length} 条独立 Prompt`:'一条完成']){const td=document.createElement('td');td.textContent=text;tr.append(td);}$('mappingBody').append(tr);}openDialog('mappingDialog');});
 window.addEventListener('hashchange',()=>{const id=decodeURIComponent(location.hash.slice(1));if(P.tasks.some(x=>x.id===id))choose(id);});
 window.addEventListener('resize',revealActive,{passive:true});
+function applyCreatorContext({ctx,project,video}){
+ if(!save())return false;
+ const existing=drafts()[draftKey(ctx.projectId,ctx.videoId)];
+ if(existing&&typeof existing==='object'&&existing.context){
+  state={...structuredClone(defaults),...existing,projectId:ctx.projectId,videoId:ctx.videoId,context:cleanContext(existing.context)};
+ }else{
+  state={...structuredClone(defaults),projectId:ctx.projectId,videoId:ctx.videoId,viewMode:'simple',
+   context:cleanContext({game:project?.game||'',version:project?.version||'',title:video?.name||project?.name||'',server:'',route:state.context.route,format:state.context.format})};
+  importedSource=null;
+ }
+ if(project?.confirmedContext){
+  for(const k of ['authorQuestion','authorContribution','audienceQuestion','coreThesis'])if(!state.context[k])state.context[k]=project.confirmedContext[k]||'';
+  if(!state.context.notes)state.context.notes=JSON.stringify(project.confirmedContext,null,2);
+ }
+ if(existing?.importedSource)importedSource=existing.importedSource;
+ for(const [id,k] of Object.entries({routeSelect:'route',formatSelect:'format',titleInput:'title',gameInput:'game',serverInput:'server',versionInput:'version',durationInput:'duration',notesInput:'notes'}))$(id).value=state.context[k];
+ render();
+ if(!save())return false;
+ toast(ctx.projectId?'已关联项目；在本浏览器独立保存这条视频的 Studio 草稿':'已切换到未关联的本机草稿');
+ return true;
+}
+window.GuccCreatorWorkspaceAdapter={applyContext:applyCreatorContext,currentPrompt:()=>$('promptText').value};
 window.CreatorStudio={getState:()=>structuredClone(state),importedContext,cleanContext,switchView};
 })();

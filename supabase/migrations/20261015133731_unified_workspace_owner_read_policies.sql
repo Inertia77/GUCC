@@ -1,0 +1,13 @@
+drop policy creator_video_workspaces_owner_select on public.creator_video_workspaces;
+create policy creator_video_workspaces_owner_select on public.creator_video_workspaces for select to authenticated
+ using(gucc_private.creator_workspace_owns_project(project_id,owner_user_id));
+drop policy creator_os_snapshot_read_owner on public.creator_os_workspace_snapshots;
+create policy creator_os_snapshot_read_owner on public.creator_os_workspace_snapshots for select to authenticated
+ using(gucc_private.creator_workspace_owns_project(project_id,owner_user_id));
+drop policy creator_deliverable_versions_read on public.creator_deliverable_versions;
+create policy creator_deliverable_versions_read on public.creator_deliverable_versions for select to authenticated
+ using(gucc_private.creator_workspace_owns_project(project_id,owner_user_id));
+drop policy creator_os_publish_drafts_owner on public.creator_os_publish_drafts;
+create policy creator_os_publish_drafts_owner on public.creator_os_publish_drafts for all to authenticated
+ using(gucc_private.creator_workspace_owns_project(project_id,owner_user_id))
+ with check(gucc_private.creator_workspace_owns_project(project_id,owner_user_id));

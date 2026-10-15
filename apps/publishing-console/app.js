@@ -26,7 +26,7 @@
     platforms.douyin.disclosure = "无特殊披露";
     platforms.youtube.visibility = "私享";
     platforms.youtube.madeForKids = "否，不是面向儿童的内容";
-    platforms.youtube.language = "简体中文";
+    platforms.youtube.language = "繁體中文";
     platforms.tiktok.visibility = "Only you / 仅自己";
     platforms.tiktok.interaction = "允许评论、Duet、Stitch";
     platforms.tiktok.disclosure = "无特殊披露";
@@ -899,6 +899,10 @@
     link.href = url;
     link.download = filename;
     link.click();
+    if(filename.endsWith('.publish.md')&&state.project.creatorProjectId&&state.project.videoId&&window.GuccCreatorWorkspace){
+      const identity={projectId:state.project.creatorProjectId,videoId:state.project.videoId};
+      void window.GuccCreatorWorkspace.registerGenerated(identity,'publish',[{file:new File([text],filename,{type})}],{content:text}).catch(e=>toast('发布包已导出，关联待处理：'+e.message));
+    }
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
@@ -951,6 +955,39 @@
     updateHero();
     if(state.assistantJobId&&assistantOnline)pollAutomationJob(state.assistantJobId);
   }
+
+  function applyCreatorContext({ctx,project,video}){
+    const targetKey=draftKey({creatorProjectId:ctx.projectId,videoId:ctx.videoId});
+    if(ctx.projectId&&!ctx.videoId)throw Error("请选择当前项目下的具体视频，发布单按视频独立管理");
+    if(targetKey===draftKey(state.project))return true;
+    clearTimeout(saveTimer);
+    // Preserve the current draft and its file metadata before selecting another video.
+    persistDraft();
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    const existing=drafts()[targetKey];
+    const next=existing?mergeState(existing):defaultState();
+    if(ctx.projectId){
+      next.project={...next.project,creatorProjectId:ctx.projectId,videoId:ctx.videoId,
+        // Reusing a draft must never revert a creator-edited publishing title.
+        title:next.project.title||video?.name||project?.name||"",
+        game:next.project.game||project?.game||"",
+        shortName:next.project.shortName||ctx.videoId};
+      next.source={...next.source,workspaceVersion:"creator-os-v3"};
+    }
+    next.preflight={checkedAt:"",errors:0,warnings:0};
+    state=next;runtimeAssets.video=null;runtimeAssets.cover=null;
+    hydrateAll();
+    saveState("已切换当前视频的独立发布单 · 文件需重新核验");
+    toast(ctx.projectId?"已关联当前视频；未实际选择的素材仍是待核验状态":"已切换至本浏览器独立发布单");
+    return true;
+  }
+  window.GuccCreatorWorkspaceAdapter={applyContext:applyCreatorContext,currentPrompt:()=>fullPackageMarkdown()};
+  window.addEventListener('gucc:workspace-ready',event=>{
+    if(draftKey(state.project)!==draftKey({creatorProjectId:event.detail.projectId,videoId:event.detail.videoId}))return;
+    const row=event.detail.rows?.find(r=>r.deliverable_key==='publish'&&r.status==='confirmed');
+    // Preserve independently authored platform fields. Confirmed package text is reusable source material.
+    if(row?.evidence?.content&&!state.source.publishPackage){state.source.publishPackage=row.evidence.content;const parsed=Rules.parseWorkspacePackage(row.evidence.content);for(const [platform,values] of Object.entries(parsed))for(const [field,value] of Object.entries(values))if(value&&!state.platforms[platform]?.[field])state.platforms[platform][field]=value;hydrateAll();saveState('已继承确认的六平台发布包');}
+  });
 
   bindStaticFields();
   bindAssetInputs();

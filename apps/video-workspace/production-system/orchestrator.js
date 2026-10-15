@@ -261,7 +261,7 @@
   // One visible node per finished outcome. Research, QC, scene planning and
   // technical preparation are internal to each task, not handoff obligations.
   function compileSixOutcomes(project){
-    const tracks=Array.isArray(project.videos)&&project.videos.length>1?project.videos:[null];
+    const tracks=Array.isArray(project.videos)&&project.videos.length?project.videos:[null];
     const capIds={script:"SCRIPT_DRAFT",subtitle:"PRECISE_SRT_ALIGNMENT",visual:"DYNAMIC_MECHANIC_VISUAL",sound:"BGM_SFX_ASSET_PRODUCTION",cover:"COVER_DESIGN",publish:"SIX_PLATFORM_PUBLISH_PACKAGE"};
     const executors={script:"Work",subtitle:"Work",visual:"Codex",sound:"Codex",cover:"Work",publish:"Work"};
     const out=[];
@@ -398,9 +398,9 @@ ${n.chatFallback?`\n【CHAT_FALLBACK】\n${n.chatFallback}`:""}`;
     return (n.dependencies||[]).every(id=>["DONE","SKIPPED"].includes(map[id]?.status));
   }
 
-  function currentTask(project){
+  function currentTask(project,{branch=""}={}){
     if(!project.promptFlow?.length) buildWorkflow(project);
-    const nodes=project.promptFlow;
+    const nodes=branch?project.promptFlow.filter(n=>n.branch===branch||n.branch==="SHARED"):project.promptFlow;
     // Prefer actionable work on the other video branch while a Q3 approval or
     // external condition is waiting. A WAITING node never globally blocks
     // unrelated branches. Dependencies still remain strict.

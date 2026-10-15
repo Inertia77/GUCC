@@ -27,17 +27,23 @@ async function main(){
     const id=u.searchParams.get("project_id")?.replace(/^eq\./,"");
     return route.fulfill({json:id&&snapshots[id]?[{project_id:id,project_data:snapshots[id]}]:[]});
    }
-   if(name==="creator_videos"){
+   if(name==="creator_video_workspaces"){
     if(method==="POST"){writes.push({kind:"video",data});const id=key(data.project_id,data.video_id);if(!videos.has(id))videos.set(id,data);return route.fulfill({json:[videos.get(id)]});}
     return route.fulfill({json:[...videos.values()]});
    }
-   if(name==="creator_video_deliverables"){
-    const p=u.searchParams.get("project_id")?.replace(/^eq\./,""),v=u.searchParams.get("video_id")?.replace(/^eq\./,"");
+   if(name==="creator_deliverable_records"){
+    const p=u.searchParams.get("project_id")?.replace(/^eq\\./,""),v=u.searchParams.get("video_id")?.replace(/^eq\\./,"");
     if(method==="GET")return route.fulfill({json:[...deliverables.values()].filter(r=>r.project_id===p&&r.video_id===v)});
-    if(method==="POST"){writes.push({kind:"deliverable",data});const id=key(data.project_id,data.video_id,data.deliverable_key);if(deliverables.has(id))return route.fulfill({status:409,json:{message:"duplicate"}});
-      const row={...data,revision:1};deliverables.set(id,row);return route.fulfill({json:[row]});}
-    if(method==="PATCH"){writes.push({kind:"deliverable",data});const k=u.searchParams.get("deliverable_key")?.replace(/^eq\./,""),id=key(p,v,k),cur=deliverables.get(id),rev=Number(u.searchParams.get("revision")?.replace(/^eq\./,""));if(!cur||cur.revision!==rev)return route.fulfill({json:[]});
-      const row={...cur,...data};deliverables.set(id,row);return route.fulfill({json:[row]});}
+   }
+   if(name==="rpc/creator_workspace_save_deliverable"){
+    writes.push({kind:"deliverable",data});
+    const id=key(data.p_project_id,data.p_video_id,data.p_key),cur=deliverables.get(id);
+    if((cur?.revision||0)!==data.p_expected_revision)return route.fulfill({status:400,json:{message:"Revision conflict"}});
+    if(data.p_status==="confirmed"&&(!data.p_evidence?.humanConfirmed||!data.p_evidence?.fileName||!(data.p_evidence?.sizeBytes>0)))
+      return route.fulfill({status:400,json:{message:"Confirmed requires observed file and human QC"}});
+    const row={project_id:data.p_project_id,video_id:data.p_video_id,deliverable_key:data.p_key,
+       status:data.p_status,evidence:data.p_evidence,revision:(cur?.revision||0)+1};
+    deliverables.set(id,row);return route.fulfill({json:row});
    }
    return route.fulfill({status:404,json:{message:"unmocked API "+u.pathname}});
   }
@@ -63,20 +69,21 @@ async function main(){
   assert.equal(await page.inputValue("#notesInput"),"菲欧妮独立的锁稿约定");
   await page.locator(".gcc-outcomes summary").click();
   await page.locator(".gcc-outcome-editor select").nth(0).selectOption("script");
-  await page.locator(".gcc-outcome-editor select").nth(1).selectOption("working");
+  await page.locator(".gcc-outcome-editor select").nth(1).selectOption("in_progress");
   await page.locator(".gcc-outcome-editor button").click();
   await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor small")?.textContent.includes("已保存到 Supabase"));
-  assert.equal(deliverables.get(key("A","FIONI","script")).status,"working");
+  assert.equal(deliverables.get(key("A","FIONI","script")).status,"in_progress");
   await page.locator(".gcc-outcome-editor select").nth(1).selectOption("confirmed");
   await page.locator(".gcc-outcome-editor button").click();
-  assert.match(await page.locator(".gcc-outcome-editor small").textContent(),/请先填真实产物/);
+  assert.match(await page.locator(".gcc-outcome-editor small").textContent(),/必须核实真实文件/);
   assert.equal(deliverables.get(key("A","FIONI","script")).revision,1);
-  await page.locator(".gcc-outcome-editor>input").fill("SCRIPT_FINAL.md");
+  await page.locator('[aria-label="实际产物文件名或相对路径"]').fill("SCRIPT_FINAL.md");
+  await page.locator('[aria-label="已核验文件大小（字节）"]').fill("4096");
   await page.locator(".gcc-evidence input").check();
   await page.locator(".gcc-outcome-editor button").click();
   await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor small")?.textContent.includes("Revision 2"));
   assert.equal(deliverables.get(key("A","FIONI","script")).status,"confirmed");
-  assert.equal(deliverables.get(key("A","FIONI","script")).verification.humanApproved,true);
+  assert.equal(deliverables.get(key("A","FIONI","script")).evidence.humanConfirmed,true);
   await page.goto(origin+"/apps/cover-generator/");
   await page.locator("#aiPromptLab summary").click();
   const p2=page.locator('#guccCreatorContextBar select[aria-label="选择 GUCC 项目"]'),v2=page.locator('#guccCreatorContextBar select[aria-label="选择项目中的视频"]');

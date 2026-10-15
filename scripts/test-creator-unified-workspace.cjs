@@ -29,11 +29,14 @@ const legacy={videos:[{videoId:"FIONI",name:"菲欧妮"}],promptFlow:[{branch:"F
 const tracks=V.tracks(legacy);
 assert.deepEqual(tracks.map(x=>x.videoId),["FIONI","SEVERIAN"]);
 assert.equal(tracks[1].inferred,true);
-const migration=source("supabase/migrations/20261015100000_creator_video_six_deliverables.sql");
-assert.match(migration,/CREATE TABLE IF NOT EXISTS public.creator_videos/);
-assert.match(migration,/creator_video_deliverable_confirmed_evidence/);
-assert.match(migration,/ENABLE ROW LEVEL SECURITY/g);
-assert.doesNotMatch(migration,/GRANT DELETE/i);
+const migration=source("supabase/migrations/20261014100315_unified_creative_workspace_video_outcomes_20261014.sql");
+assert.match(migration,/create table if not exists public.creator_video_workspaces/i);
+assert.match(migration,/create table if not exists public.creator_deliverable_records/i);
+assert.match(migration,/creator_workspace_save_deliverable/);
+assert.match(migration,/enable row level security/gi);
+assert.match(migration,/Confirmed requires an observed file and human QC/);
+assert.doesNotMatch(migration,/grant delete/i);
+assert(!fs.existsSync(path.join(root,"supabase/migrations/20261015100000_creator_video_six_deliverables.sql")),"Do not introduce a duplicate production schema");
 for(const [url,adapter] of [
  ["apps/video-workspace/legacy-prompt-studio-v6.html","studio.js"],
  ["apps/video-workspace/production-system/index.html","production-system/creator-os-app.js"],

@@ -2,7 +2,12 @@
  'use strict';
  function tracks(project){
   const raw=project.videos?.length?project.videos:project.rawVideoContract?.VIDEO_TRACKS||project.rawVideoContract?.VIDEOS||[];
-  return raw.map(v=>({ ...v,videoId:v.videoId||v.VIDEO_ID,branch:v.branch||v.FOLDER||v.videoId||v.VIDEO_ID,name:v.name||v.CHARACTER||v.VIDEO_NAME||v.videoId||v.VIDEO_ID }));
+  const official=raw.map(v=>({...v,videoId:v.videoId||v.VIDEO_ID,branch:v.branch||v.FOLDER||v.videoId||v.VIDEO_ID,name:v.name||v.CHARACTER||v.VIDEO_NAME||v.videoId||v.VIDEO_ID,inferred:false}));
+  const seen=new Set(official.map(v=>v.branch));
+  const legacy=(Array.isArray(project.promptFlow)?project.promptFlow:[])
+   .map(n=>String(n.branch||"")).filter(b=>b&&b!=="SHARED"&&!seen.has(b)&&seen.add(b))
+   .map(branch=>({videoId:branch,branch,name:branch+"（旧节点分支 · 待登记）",inferred:true}));
+  return [...official,...legacy];
  }
  function identity(project,result){
   const id=result.projectId||result.WORKSPACE_PROJECT_ID;

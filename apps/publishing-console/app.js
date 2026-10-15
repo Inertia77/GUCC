@@ -952,6 +952,31 @@
     if(state.assistantJobId&&assistantOnline)pollAutomationJob(state.assistantJobId);
   }
 
+  function applyCreatorContext({ctx,project,video}){
+    const targetKey=draftKey({creatorProjectId:ctx.projectId,videoId:ctx.videoId});
+    if(ctx.projectId&&!ctx.videoId)throw Error("请选择当前项目下的具体视频，发布单按视频独立管理");
+    if(targetKey===draftKey(state.project))return true;
+    clearTimeout(saveTimer);
+    // Preserve the current draft and its file metadata before selecting another video.
+    persistDraft();
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    const existing=drafts()[targetKey];
+    const next=existing?mergeState(existing):defaultState();
+    if(ctx.projectId){
+      next.project={...next.project,creatorProjectId:ctx.projectId,videoId:ctx.videoId,
+        title:video?.name||project?.name||"",game:project?.game||next.project.game,
+        shortName:next.project.shortName||ctx.videoId};
+      next.source={...next.source,workspaceVersion:"creator-os-v3"};
+    }
+    next.preflight={checkedAt:"",errors:0,warnings:0};
+    state=next;runtimeAssets.video=null;runtimeAssets.cover=null;
+    hydrateAll();
+    saveState("已切换当前视频的独立发布单 · 文件需重新核验");
+    toast(ctx.projectId?"已关联当前视频；未实际选择的素材仍是待核验状态":"已切换至本浏览器独立发布单");
+    return true;
+  }
+  window.GuccCreatorWorkspaceAdapter={applyContext:applyCreatorContext};
+
   bindStaticFields();
   bindAssetInputs();
   bindImportExport();

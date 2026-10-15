@@ -3339,6 +3339,11 @@ ${textInstruction}
     syncAiPromptForm();
   }
 
+  const COVER_DRAFTS_KEY='gucc_cover_project_video_drafts_v1';
+  const COVER_BINDING_KEY='gucc_cover_active_binding_v1';
+  const coverDraftKey=ctx=>JSON.stringify([ctx?.projectId||'',ctx?.videoId||'']);
+  const coverDrafts=()=>{try{return JSON.parse(localStorage.getItem(COVER_DRAFTS_KEY)||'{}');}catch{return {};}};
+  let coverBinding=(()=>{try{return JSON.parse(localStorage.getItem(COVER_BINDING_KEY)||'{}');}catch{return {};}})();
   let saveTimer = null;
   function autosave() {
     clearTimeout(saveTimer);
@@ -3346,8 +3351,12 @@ ${textInstruction}
   }
   function saveBrowserProject(manual) {
     try {
-      localStorage.setItem('gameCoverGeneratorProject', JSON.stringify(serializableState()));
-      if (manual) setStatus('项目已保存到本浏览器；图片文件需另行导出。');
+      const payload=JSON.stringify(serializableState());
+      // Every project/video has an independent local design; preserve unlinked legacy canvas.
+      const map=coverDrafts();map[coverDraftKey(coverBinding)]=JSON.parse(payload);
+      localStorage.setItem(COVER_DRAFTS_KEY,JSON.stringify(map));
+      localStorage.setItem('gameCoverGeneratorProject',payload);
+      if (manual) setStatus('画布已保存到本浏览器的对应项目；正式图片仍需导出。');
       return true;
     } catch {
       setStatus('未保存：浏览器空间不足。当前画布仍在内存中，请导出项目 JSON 备份。');
@@ -3383,6 +3392,37 @@ ${textInstruction}
     state.aiPrompt.subtitle = 'EP.01 / 高能名场面';
   }
 
+  async function useCreatorContext({ctx,project,video}){
+    clearTimeout(saveTimer);
+    const previous=JSON.parse(JSON.stringify(serializableState()));
+    const previousBinding={...coverBinding};
+    if(!saveBrowserProject(false))return false;
+    const key=coverDraftKey(ctx),saved=coverDrafts()[key];
+    try{
+      if(saved){await hydrate(saved);}
+      else {
+        state.currentRatio='r16_9';state.designPreset='none';state.nextId=1;state.selectedId=null;
+        state.bg={src:'',image:null,name:''};state.elements=[];state.aiPrompt=defaultAiPromptState();
+        initTemplates();bootstrapDemo();
+        const name=video?.name||project?.name||'游戏封面';
+        state.aiPrompt.title=name;
+        const firstTitle=state.elements.find(e=>e.type==='text');
+        if(firstTitle)firstTitle.text=name;
+        renderAll();syncAiPromptForm();
+      }
+      coverBinding={projectId:ctx.projectId,videoId:ctx.videoId};
+      if(!saveBrowserProject(false))throw Error('浏览器空间不足，无法建立独立封面草稿');
+      localStorage.setItem(COVER_BINDING_KEY,JSON.stringify(coverBinding));
+      setStatus(ctx.projectId?'已载入此项目/视频的独立封面草稿；未导出的图片不等于正式文件':'已恢复独立本机封面草稿');
+      return true;
+    }catch(e){
+      coverBinding=previousBinding;
+      await hydrate(previous);
+      setStatus('切换失败，原画布已恢复：'+e.message);
+      return false;
+    }
+  }
+  window.GuccCreatorWorkspaceAdapter={applyContext:useCreatorContext};
   function init() {
     initTemplates();
     createRatioTabs();

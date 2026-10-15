@@ -93,6 +93,8 @@ async function main(){
   assert.equal(await page.inputValue("#projectTitle"),"菲欧妮解析");
   await page.fill("#projectTitle","菲欧妮正式发布单");
   await p3.selectOption("B");await v3.selectOption("MAIN");await apply.click();
+  const savedA=await page.evaluate(()=>{const all=JSON.parse(localStorage.getItem("gucc_publish_video_drafts_v1")||"{}");return {keys:Object.keys(all),a:all[JSON.stringify(["A","FIONI"])]?.project?.title,active:JSON.parse(localStorage.getItem("gucc_publish_console_v1")||"{}")?.project?.title};});
+  assert.equal(savedA.a,"菲欧妮正式发布单","A publish draft must be persisted before switching to B: "+JSON.stringify(savedA));
   assert.equal(await page.inputValue("#projectTitle"),"鸣潮角色解析");
   await p3.selectOption("A");await v3.selectOption("FIONI");await apply.click();
   assert.equal(await page.inputValue("#projectTitle"),"菲欧妮正式发布单");

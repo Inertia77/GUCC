@@ -43,6 +43,9 @@ jobs:
       - name: Run Creator prompt workspace browser regression
         run: node scripts/test-creator-prompt-browser.cjs
 
+      - name: Run unified Creator project/video integration regression
+        run: node scripts/test-creator-unified-browser.cjs
+
       - name: Run isolated Creator browser regression
         run: node scripts/test-creator-global-browser.cjs
 

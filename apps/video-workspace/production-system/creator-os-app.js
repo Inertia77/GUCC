@@ -653,7 +653,11 @@ $("deleteCurrentProject").addEventListener("click",()=>{
   selectActiveAfterMove(p.projectId);
   save();render();notify("已移入回收站；可恢复");
 });
-$("projectSelect").addEventListener("change",e=>{store.selectedProjectId=e.target.value;flowExpanded=false;save();$("artifactPreview").textContent="";render();});
+$("projectSelect").addEventListener("change",e=>{
+ store.selectedProjectId=e.target.value;flowExpanded=false;save();
+ if(window.GuccCreatorContext&&store.selectedProjectId)window.GuccCreatorContext.set({projectId:store.selectedProjectId,videoId:""});
+ $("artifactPreview").textContent="";render();
+});
 $("newProjectBtn").addEventListener("click",()=>{$("createDialog").showModal();});
 $("newProjectShortcut").addEventListener("click",()=>{$("createDialog").showModal();});
 $("toggleFlowBtn").addEventListener("click",()=>{flowExpanded=!flowExpanded;renderFlow(current());});
@@ -765,6 +769,19 @@ $("createDialog").addEventListener("close",()=>{$("createDialog").querySelector(
 
 function slugFile(v){return String(v||"project").replace(/[^\w\u4e00-\u9fff.-]+/g,"_").slice(0,90);}
 // Public, minimal integration for the two optional workspace modules.
+window.GuccCreatorWorkspaceAdapter={
+ applyContext({ctx}){
+  if(!ctx.projectId)return false;
+  const found=store.projects.find(p=>p.projectId===ctx.projectId&&!p.deletedAt);
+  if(!found)return false; // Never create a phantom project from a URL or selector.
+  store.selectedProjectId=ctx.projectId;
+  selectedBranch=ctx.videoId||"";
+  flowExpanded=false;
+  save(false);render();
+  notify("已打开共享项目："+found.name+(ctx.videoId?" · 视频 "+ctx.videoId:""));
+  return true;
+ }
+};
 window.GuccCreatorOS={
   projects:()=>JSON.parse(JSON.stringify(store.projects)),
   selectedId:()=>store.selectedProjectId,

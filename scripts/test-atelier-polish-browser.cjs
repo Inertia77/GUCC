@@ -109,7 +109,9 @@ let browser;
   const label=entry.locator(':scope > span');
   if(await label.count()){
    const bb=await label.boundingBox();
-   assert(bb.width>=24&&bb.height<28,'Desktop Dock label must stay horizontal');
+   const style=await label.evaluate(e=>({whiteSpace:getComputedStyle(e).whiteSpace,writingMode:getComputedStyle(e).writingMode}));
+   assert(style.whiteSpace==='nowrap'&&style.writingMode==='horizontal-tb','Desktop Dock labels must have horizontal no-wrap styles');
+   assert(bb.width>=20&&bb.height<=36,'Desktop Dock labels must remain single-line readable');
   }
  }
  await shot('creator-desktop-dock-1440');

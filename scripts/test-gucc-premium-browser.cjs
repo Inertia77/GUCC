@@ -11,7 +11,26 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   for(const [name,url] of Object.entries({portal:'/',studio:'/apps/video-workspace/legacy-prompt-studio-v6.html',creator:'/apps/video-workspace/production-system/',command:'/apps/command-center/',cover:'/apps/cover-generator/',publish:'/apps/publishing-console/',library:'/reference/resource-library.html'})){
    await page.goto('https://gucc.test'+url);await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(250);
-   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${name} ${width} horizontal overflow`);await page.screenshot({path:path.join(out,`${name}-${width}.png`),fullPage:true});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${name} ${width} horizontal overflow`);
+   if(name==='command'){
+    const metrics=await page.evaluate(()=>{
+      const rail=document.querySelector('.gucc-shell-dock'),box=rail.getBoundingClientRect(),links=[...rail.querySelectorAll(':scope > a')];
+      return {railWidth:box.width,railRight:box.right,appLeft:document.querySelector('#app').getBoundingClientRect().left,
+        appWidth:document.querySelector('#app').getBoundingClientRect().width,viewport:innerWidth,
+        labels:links.map(a=>{const t=a.querySelector('span'),r=t.getBoundingClientRect(),st=getComputedStyle(t);return {text:t.textContent,whiteSpace:st.whiteSpace,height:r.height,scrollWidth:t.scrollWidth,clientWidth:t.clientWidth};})};
+    });
+    assert.equal(metrics.labels.length,5,'Global Dock keeps five destinations');
+    assert(metrics.labels.every(x=>x.whiteSpace==='nowrap'&&x.height<=22&&x.scrollWidth<=x.clientWidth+2),
+      `No navigation label may stack vertically: ${JSON.stringify(metrics)}`);
+    if(width>=1024){
+      assert(metrics.railWidth>=78,`Desktop rail must be readable, got ${metrics.railWidth}`);
+      assert(metrics.appLeft>=0&&metrics.appWidth>width*.67,'DB content should use available desktop width');
+      assert(metrics.railRight<=width+1,'Rail stays inside desktop viewport');
+    }else{
+      assert(metrics.railWidth>=Math.min(width-24,350),'Mobile Dock should remain a full-width navigation bar');
+    }
+   }
+   await page.screenshot({path:path.join(out,`${name}-${width}.png`),fullPage:true});
   }
   if(width===1280){
     await page.goto('https://gucc.test/apps/cover-generator/');await page.evaluate(()=>document.fonts.ready);
@@ -45,6 +64,19 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
    await F.routes(context,{auth:true,cloud:{route:async route=>{const body=route.request().postDataJSON();requests.push(body);return route.fulfill({json:{ok:true,data:[]}});}}});
    const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/command-center/');await page.waitForSelector('#charGame');
    for(const game of ['崩','绝','鸣','终','异','阴']){await page.selectOption('#charGame',game);await page.waitForTimeout(80);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+   // Real DOM/layout regression: previous CSS leaked narrow, stacked actions into DB cards.
+   await page.evaluate(()=>{
+     const card=document.createElement('article');card.className='item';card.id='gucc-layout-sentinel';
+     card.innerHTML='<div class="item-head"><div class="item-summary"><div class="item-title">排版检查角色</div></div><div class="actions"><button type="button">收起</button><button type="button">详情/编辑</button><button type="button">删除</button></div></div>';
+     document.querySelector('#characterResults').appendChild(card);
+   });
+   const card=await page.locator('#gucc-layout-sentinel .actions').evaluate(el=>{
+      const b=[...el.querySelectorAll('button')].map(x=>x.getBoundingClientRect());
+      return {rect:el.getBoundingClientRect().toJSON(),buttons:b.map(x=>x.toJSON())};
+   });
+   assert(card.buttons.every(x=>x.width>=60&&x.height>=35),'DB action buttons must remain readable and touchable');
+   if(width>=1024)assert(Math.max(...card.buttons.map(x=>x.y))-Math.min(...card.buttons.map(x=>x.y))<4,'DB desktop actions must not stack in a column');
+   await page.locator('#gucc-layout-sentinel').remove();
    await page.screenshot({path:path.join(out,`command-workspace-${width}.png`),fullPage:true});assert(await page.locator('.gucc-shell-dock').isVisible());await page.click('#newCharBtn');await page.waitForSelector('#characterEditor[aria-modal="true"]');assert.equal(await page.locator('.gucc-shell-dock').isVisible(),false);await page.screenshot({path:path.join(out,`command-drawer-${width}.png`),fullPage:true});await page.keyboard.press('Escape');assert.equal(await page.locator('#characterEditor').isVisible(),false);assert(await page.locator('.gucc-shell-dock').isVisible());assert(!requests.some(r=>r?.action?.startsWith('save')));await context.close();
  }
  assert.deepEqual(errors,[]);await browser.close();console.log('Premium browser regression passed: 7 pages × 3 widths; branch filters, strict receipts, rollback, DIFF, per-video handoff/drafts, quota failures, independent cover layouts and actual PNG dimensions, reduced motion. Production network is blocked.');

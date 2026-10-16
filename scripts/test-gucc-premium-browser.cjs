@@ -76,7 +76,7 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
    });
    assert(card.buttons.every(x=>x.width>=60&&x.height>=35),'DB action buttons must remain readable and touchable');
    if(width>=1024)assert(Math.max(...card.buttons.map(x=>x.y))-Math.min(...card.buttons.map(x=>x.y))<4,'DB desktop actions must not stack in a column');
-   await page.locator('#gucc-layout-sentinel').remove();
+   await page.locator('#gucc-layout-sentinel').evaluate(el=>el.remove());
    await page.screenshot({path:path.join(out,`command-workspace-${width}.png`),fullPage:true});assert(await page.locator('.gucc-shell-dock').isVisible());await page.click('#newCharBtn');await page.waitForSelector('#characterEditor[aria-modal="true"]');assert.equal(await page.locator('.gucc-shell-dock').isVisible(),false);await page.screenshot({path:path.join(out,`command-drawer-${width}.png`),fullPage:true});await page.keyboard.press('Escape');assert.equal(await page.locator('#characterEditor').isVisible(),false);assert(await page.locator('.gucc-shell-dock').isVisible());assert(!requests.some(r=>r?.action?.startsWith('save')));await context.close();
  }
  assert.deepEqual(errors,[]);await browser.close();console.log('Premium browser regression passed: 7 pages × 3 widths; branch filters, strict receipts, rollback, DIFF, per-video handoff/drafts, quota failures, independent cover layouts and actual PNG dimensions, reduced motion. Production network is blocked.');

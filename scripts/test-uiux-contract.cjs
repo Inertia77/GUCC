@@ -99,3 +99,8 @@ assert.match(serviceWorker, /creator-ai-task-ui\.mjs\?v=1/, 'Creator AI Task UI 
 assert.match(serviceWorker, /CREATOR_CONSTITUTION\.md/, 'Canonical Creator Constitution must be available to the AI Task prompt builder offline.');
 assert.match(serviceWorker, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Creator UX closeout refinements must remain available in the offline app shell.');
 console.log('UIUX contract checks passed.');
+// The guard bootstraps the shell before deferred page scripts; its cache key must advance with this release.
+for (const file of ["index.html", "apps/command-center/index.html", "reference/story-library.html", "reference/ai-prompts.html", "reference/resource-library.html", "apps/cover-generator/index.html", "apps/publishing-console/index.html", "apps/video-workspace/index.html", "apps/video-workspace/production-system/index.html", "apps/video-workspace/legacy-prompt-studio-v6.html"]) {
+  assert.match(read(file), /access-guard\.js\?v=15/, `${file} must bypass a cached pre-repair shell bootstrap`);
+}
+assert.match(read("sw.js"), /assets\/access-guard\.js\?v=15/);

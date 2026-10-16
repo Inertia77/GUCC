@@ -100,6 +100,22 @@ let browser;
  const ec=await browser.newContext({serviceWorkers:'block',viewport:{width:390,height:844}});await empty.install(ec);const ep=await ec.newPage();
  await ep.goto(empty.origin+'/');await ep.waitForFunction(()=>document.querySelector('.gcc-context-trigger'));
  await ep.evaluate(()=>document.fonts.ready);await ep.screenshot({path:path.join(out,'portal-empty-390.png'),animations:'disabled'});assert.equal(empty.writes.length,0);await ec.close();
+ // Desktop regression: full Chinese labels must never collapse into vertical glyphs.
+ await p.setViewportSize({width:1440,height:900});await go('creator');
+ const desktopDock=p.locator('.gucc-shell-dock');
+ const desktopBounds=await desktopDock.boundingBox();
+ assert(desktopBounds.width>=90&&desktopBounds.width<=110,'Desktop Dock has a legible dedicated rail');
+ for(const entry of await desktopDock.locator(':scope > :is(a,button)').all()){
+  const label=entry.locator(':scope > span');
+  if(await label.count()){
+   const bb=await label.boundingBox();
+   const style=await label.evaluate(e=>({whiteSpace:getComputedStyle(e).whiteSpace,writingMode:getComputedStyle(e).writingMode}));
+   assert(style.whiteSpace==='nowrap'&&style.writingMode==='horizontal-tb','Desktop Dock labels must have horizontal no-wrap styles');
+   assert(bb.width>=10,'Desktop Dock label must have usable horizontal width (short labels such as DB are allowed)');
+  }
+ }
+ await shot('creator-desktop-dock-1440');
+ assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Desktop Dock must not cause horizontal overflow');
  assert.deepEqual(errors,[]);
  await fs.writeFile(path.join(out,'result.json'),JSON.stringify({source:'isolated actual Chromium; synthetic records; viewport reduction models keyboard layout, not an Android OS keyboard',metrics,errors,formalWrites:f.writes.length},null,2));
  await browser.close();console.log('Atelier polish interactions passed: all workspace/outcome/platform choices, Dock, keyboard layout, copy, panels, completed/long identity and no formal writes.');

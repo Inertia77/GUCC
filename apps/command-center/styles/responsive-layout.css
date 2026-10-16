@@ -8,7 +8,7 @@ html {
 
 body.command-center-page.gucc-enhanced main,
 body.command-center-page.gucc-enhanced .topbar {
-  width: min(1260px, calc(100vw - 32px)) !important;
+  width: min(1260px, calc(100% - 32px)) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -42,6 +42,7 @@ body.command-center-page.gucc-enhanced .tabs .tab-more {
   min-height: 46px !important;
   justify-self: stretch !important;
   display: inline-flex !important;
+  white-space: nowrap;
   align-items: center !important;
   justify-content: center !important;
 }
@@ -115,6 +116,10 @@ body.command-center-page.gucc-enhanced #tab-versions::before { content: "04" !im
 @media (min-width: 901px) and (max-width: 1100px) {
   body.command-center-page.gucc-enhanced .tabs {
     grid-template-columns: repeat(4, minmax(0, 1fr)) 82px !important;
+  }
+  body.command-center-page.gucc-enhanced .tabs .tab-more {
+    padding-inline: 6px !important;
+    gap: 6px;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid {
@@ -336,6 +341,11 @@ body.command-center-page.gucc-enhanced .item .actions {
    a half row by itself because it precedes the full-width search button in DOM
    order. Give primary/secondary actions an explicit visual order instead. */
 @media (max-width: 760px) {
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready:not(.filters-expanded) > :is(.game-filter, .filter-select, .filter-clear, .filter-guidance),
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready:not(.filters-expanded) > :is(.game-filter, .filter-select, .filter-clear, .filter-guidance) {
+    display: none !important;
+  }
+  body.command-center-page.gucc-enhanced .filter-mobile-toggle { display: inline-flex; align-items: center; justify-content: center; }
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

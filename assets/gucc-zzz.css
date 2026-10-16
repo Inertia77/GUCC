@@ -224,44 +224,6 @@ body.gucc-enhanced :where(*::-webkit-scrollbar-thumb) {
   box-shadow: none !important;
 }
 
-body.gucc-enhanced .gucc-shell-dock {
-  right: 8px !important;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
-  gap: 2px !important;
-  padding: 4px !important;
-  border: 1px solid var(--zzz-line) !important;
-  border-radius: 4px !important;
-  background: #0d0f13 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-body.gucc-enhanced .gucc-shell-link {
-  min-height: 45px !important;
-  padding: 4px 2px !important;
-  border-radius: 2px !important;
-  color: var(--zzz-dim) !important;
-  font-size: 8px !important;
-  transform: none !important;
-}
-
-body.gucc-enhanced .gucc-shell-link b {
-  font-size: 12px !important;
-}
-
-body.gucc-enhanced .gucc-shell-link:hover {
-  color: var(--zzz-text) !important;
-  background: var(--zzz-surface-2) !important;
-}
-
-body.gucc-enhanced .gucc-shell-link.is-active {
-  color: var(--zzz-accent-ink) !important;
-  background: var(--zzz-accent) !important;
-  box-shadow: none !important;
-}
-
 /* Portal */
 body.portal-page {
   padding-right: 0;
@@ -894,18 +856,6 @@ body.reminder-page h1 {
   body.gucc-enhanced {
     padding-right: 0 !important;
     padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
-  }
-
-  body.gucc-enhanced .gucc-shell-dock {
-    left: 50% !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: calc(6px + env(safe-area-inset-bottom)) !important;
-    transform: translateX(-50%) !important;
-    width: min(560px, calc(100vw - 12px)) !important;
-    max-width: calc(100vw - 12px) !important;
-    display: grid !important;
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
   }
 
   body.workspace-page {

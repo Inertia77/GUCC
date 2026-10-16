@@ -2,8 +2,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path');
 const {chromium}=require('playwright-core'),F=require('./gucc-browser-fixture.cjs');
 const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
+let browser;
 (async()=>{
- const browser=await chromium.launch({executablePath:process.env.GUCC_TEST_BROWSER_PATH,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});await fs.mkdir(out,{recursive:true});
+ browser=await chromium.launch({executablePath:process.env.GUCC_TEST_BROWSER_PATH,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});await fs.mkdir(out,{recursive:true});
  const errors=[];
  for(const width of [1600,1280,390]){
   const context=await browser.newContext({viewport:{width,height:width===390?844:1000},serviceWorkers:'block',reducedMotion:'reduce'});const p=F.project();await F.routes(context,{project:p});
@@ -43,9 +44,9 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
  for(const width of [1280,390]){
    const context=await browser.newContext({viewport:{width,height:width===390?844:1000},serviceWorkers:'block'}),requests=[];
    await F.routes(context,{auth:true,cloud:{route:async route=>{const body=route.request().postDataJSON();requests.push(body);return route.fulfill({json:{ok:true,data:[]}});}}});
-   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/command-center/');await page.waitForSelector('#charGame');
-   for(const game of ['崩','绝','鸣','终','异','阴']){await page.selectOption('#charGame',game);await page.waitForTimeout(80);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
-   await page.screenshot({path:path.join(out,`command-workspace-${width}.png`),fullPage:true});assert(await page.locator('.gucc-shell-dock').isVisible());await page.click('#newCharBtn');await page.waitForSelector('#characterEditor[aria-modal="true"]');assert.equal(await page.locator('.gucc-shell-dock').isVisible(),false);await page.screenshot({path:path.join(out,`command-drawer-${width}.png`),fullPage:true});await page.keyboard.press('Escape');assert.equal(await page.locator('#characterEditor').isVisible(),false);assert(await page.locator('.gucc-shell-dock').isVisible());assert(!requests.some(r=>r?.action?.startsWith('save')));await context.close();
+   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/command-center/');await page.waitForSelector('#charGame',{state:'attached'});
+   for(const game of ['崩','绝','鸣','终','异','阴']){if(!await page.locator('#charGame').isVisible())await page.locator('.filter-mobile-toggle').first().click();await page.selectOption('#charGame',game);await page.waitForTimeout(80);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+   await page.screenshot({path:path.join(out,`command-workspace-${width}.png`),fullPage:true});assert(await page.locator('.gucc-shell-dock').isVisible());await page.click('#newCharBtn');await page.waitForSelector('#characterEditor[aria-modal="true"]');assert.equal(await page.locator('.gucc-shell-dock').isVisible(),false);await page.screenshot({path:path.join(out,`command-drawer-${width}.png`),fullPage:true});await page.keyboard.press('Escape');assert.equal(await page.locator('#characterEditor').isVisible(),false);await page.locator('.gucc-shell-dock').waitFor({state:'visible'});assert(await page.locator('.gucc-shell-dock').isVisible());assert(!requests.some(r=>r?.action?.startsWith('save')));await context.close();
  }
  assert.deepEqual(errors,[]);await browser.close();console.log('Premium browser regression passed: 7 pages × 3 widths; branch filters, strict receipts, rollback, DIFF, per-video handoff/drafts, quota failures, independent cover layouts and actual PNG dimensions, reduced motion. Production network is blocked.');
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(async e=>{console.error(e);await browser?.close();process.exitCode=1});

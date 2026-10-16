@@ -1,6 +1,8 @@
 /* Reference surfaces v4: reading-first hierarchy and responsive navigation. */
 body.gucc-reference {
   --reference-width: 1280px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body.gucc-reference.prompt-page {
@@ -8,18 +10,19 @@ body.gucc-reference.prompt-page {
 }
 
 body.gucc-reference .wrap {
-  width: min(var(--reference-width), calc(100% - 40px)) !important;
+  width: min(var(--reference-width), calc(100% - 40px));
   padding-top: 20px;
 }
 
 body.gucc-reference .topline {
   min-height: 48px;
-  margin-top: 0 !important;
+  margin-top: 0;
   margin-bottom: 18px;
 }
 
 body.gucc-reference .brand {
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 body.gucc-reference .brand img {
@@ -29,22 +32,30 @@ body.gucc-reference .brand img {
 }
 
 body.gucc-reference .back {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
   min-height: 44px;
-  border-radius: 999px !important;
+  border-radius: var(--g-radius);
 }
 
 body.gucc-reference .hero {
   align-items: center;
   gap: 24px;
-  margin-top: 0 !important;
+  margin-top: 0;
   margin-bottom: 16px;
-  padding: 24px !important;
-  border-radius: 24px !important;
+  padding: 28px 0;
+  border: 0;
+  border-bottom: 1px solid var(--g-line);
+  background: transparent;
+  border-radius: 0;
 }
 
 body.gucc-reference .hero h1 {
-  font-size: clamp(42px, 5vw, 64px) !important;
-  line-height: .98 !important;
+  font-size: clamp(32px, 4.5vw, 54px);
+  line-height: .98;
   letter-spacing: -.045em;
 }
 
@@ -56,15 +67,15 @@ body.gucc-reference .hero .subtitle {
 }
 
 body.gucc-reference .hero :where(.panel, .signal) {
-  padding: 14px !important;
-  border-radius: 20px !important;
-  box-shadow: none !important;
+  padding: 14px;
+  border-radius: var(--g-radius);
+  box-shadow: none;
 }
 
 body.gucc-reference :where(.panel-row, .signal-row) {
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 body.gucc-reference :where(.panel-row, .signal-row):first-child {
@@ -87,8 +98,8 @@ body.gucc-reference .content {
 body.gucc-reference .toc {
   gap: 4px;
   padding: 8px;
-  border-radius: 18px !important;
-  box-shadow: none !important;
+  border-radius: var(--g-radius);
+  box-shadow: none;
 }
 
 body.gucc-reference .toc a {
@@ -96,20 +107,20 @@ body.gucc-reference .toc a {
   display: flex;
   align-items: center;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: var(--g-radius);
 }
 
 body.gucc-reference .toc a:hover,
 body.gucc-reference .toc a:focus-visible {
-  color: var(--gucc-text);
+  color: var(--g-text);
   background: rgba(116, 243, 255, .08);
 }
 
 body.gucc-reference section.prompt-section {
   padding: 20px;
   border-left-width: 1px;
-  border-radius: 20px !important;
-  box-shadow: none !important;
+  border-radius: var(--g-radius);
+  box-shadow: none;
 }
 
 body.gucc-reference section.prompt-section h2 {
@@ -119,10 +130,10 @@ body.gucc-reference section.prompt-section h2 {
 body.gucc-reference.prompt-page .doc > blockquote {
   margin: 0;
   padding: 12px 16px;
-  border-left: 3px solid var(--gucc-cyan);
+  border-left: 3px solid var(--g-mint);
   border-radius: 0 14px 14px 0;
   background: rgba(116, 243, 255, .07);
-  color: var(--gucc-muted);
+  color: var(--g-muted);
   line-height: 1.65;
 }
 
@@ -134,8 +145,8 @@ body.gucc-reference .layout {
 body.gucc-reference .sidebar {
   scrollbar-width: thin;
   scrollbar-color: rgba(116, 243, 255, .35) transparent;
-  border-radius: 20px !important;
-  box-shadow: none !important;
+  border-radius: var(--g-radius);
+  box-shadow: none;
 }
 
 body.gucc-reference .sidebar::-webkit-scrollbar {
@@ -144,57 +155,57 @@ body.gucc-reference .sidebar::-webkit-scrollbar {
 
 body.gucc-reference .sidebar::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--g-radius);
   background: rgba(116, 243, 255, .32);
   background-clip: padding-box;
 }
 
 body.gucc-reference .doc-link {
-  min-height: 42px !important;
-  border: 1px solid transparent !important;
-  border-radius: 12px !important;
-  background: transparent !important;
-  color: var(--gucc-muted) !important;
-  box-shadow: none !important;
-  font-weight: 700 !important;
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: var(--g-radius);
+  background: transparent;
+  color: var(--g-muted);
+  box-shadow: none;
+  font-weight: 700;
 }
 
 body.gucc-reference .doc-link:hover {
-  border-color: rgba(116, 243, 255, .16) !important;
-  background: rgba(116, 243, 255, .055) !important;
-  color: var(--gucc-text) !important;
+  border-color: rgba(116, 243, 255, .16);
+  background: rgba(116, 243, 255, .055);
+  color: var(--g-text);
   transform: none;
 }
 
 body.gucc-reference .doc-link.active {
-  border-color: rgba(116, 243, 255, .36) !important;
-  background: rgba(116, 243, 255, .12) !important;
-  color: var(--gucc-text) !important;
-  box-shadow: inset 3px 0 0 var(--gucc-cyan) !important;
+  border-color: rgba(116, 243, 255, .36);
+  background: rgba(116, 243, 255, .12);
+  color: var(--g-text);
+  box-shadow: inset 3px 0 0 var(--g-mint);
 }
 
 body.gucc-reference .doc-link .doc-code {
-  color: var(--gucc-dim) !important;
+  color: var(--g-muted);
 }
 
 body.gucc-reference .doc-link.active .doc-code {
-  color: var(--gucc-cyan) !important;
+  color: var(--g-mint);
 }
 
 body.gucc-reference .reader {
-  border-radius: 20px !important;
+  border-radius: var(--g-radius);
 }
 
 body.gucc-reference .reader-actions a,
 body.gucc-reference .reader-actions button {
   min-height: 42px;
-  border-radius: 12px !important;
+  border-radius: var(--g-radius);
 }
 
 body.gucc-reference #copyPath {
-  border-color: transparent !important;
-  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
-  color: #06110f !important;
+  border-color: transparent;
+  background: var(--g-mint);
+  color: #06110f;
 }
 
 body.gucc-reference.resource-page .filters {
@@ -202,28 +213,28 @@ body.gucc-reference.resource-page .filters {
 }
 
 body.gucc-reference.resource-page .filter-btn {
-  min-height: 42px !important;
-  border: 1px solid var(--gucc-line) !important;
-  border-radius: 999px !important;
-  background: rgba(255, 255, 255, .045) !important;
-  color: var(--gucc-muted) !important;
-  box-shadow: none !important;
+  min-height: 42px;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-radius);
+  background: rgba(255, 255, 255, .045);
+  color: var(--g-muted);
+  box-shadow: none;
 }
 
 body.gucc-reference.resource-page .filter-btn:hover {
-  border-color: rgba(116, 243, 255, .32) !important;
-  color: var(--gucc-text) !important;
+  border-color: rgba(116, 243, 255, .32);
+  color: var(--g-text);
   transform: none;
 }
 
 body.gucc-reference.resource-page .filter-btn.active {
-  border-color: transparent !important;
-  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan)) !important;
-  color: #06110f !important;
+  border-color: transparent;
+  background: var(--g-mint);
+  color: #06110f;
 }
 
 body.gucc-reference.resource-page .game-card {
-  border-radius: 20px;
+  border-radius: var(--g-radius);
   box-shadow: 0 12px 36px rgba(0, 0, 0, .2);
 }
 
@@ -232,6 +243,9 @@ body.gucc-reference.resource-page .game-card {
 }
 
 @media (max-width: 980px) {
+  body.gucc-reference :is(.hero, .content) {
+    grid-template-columns: minmax(0, 1fr);
+  }
   body.gucc-reference .topline > a:first-child {
     display: flex;
     align-items: center;
@@ -239,7 +253,7 @@ body.gucc-reference.resource-page .game-card {
   }
 
   body.gucc-reference .wrap {
-    width: min(100% - 20px, var(--reference-width)) !important;
+    width: min(calc(100% - 32px), var(--reference-width));
     padding-top: 10px;
   }
 
@@ -250,11 +264,12 @@ body.gucc-reference.resource-page .game-card {
 
   body.gucc-reference .brand {
     gap: 9px;
+    flex: 1 1 0;
   }
 
   body.gucc-reference .brand img {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 
   body.gucc-reference .brand span span {
@@ -262,21 +277,26 @@ body.gucc-reference.resource-page .game-card {
   }
 
   body.gucc-reference .back {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
     flex: 0 0 auto;
-    min-height: 42px;
-    padding-inline: 12px;
+    min-height: 44px;
+    padding-inline: 10px;
     font-size: 13px;
   }
 
   body.gucc-reference .hero {
-    gap: 12px !important;
+    gap: 12px;
     margin-bottom: 12px;
-    padding: 18px 16px !important;
+    padding: 22px 0;
   }
 
   body.gucc-reference .hero h1 {
-    font-size: clamp(32px, 10vw, 42px) !important;
-    line-height: 1.02 !important;
+    font-size: clamp(28px, 8vw, 36px);
+    line-height: 1.02;
   }
 
   body.gucc-reference .hero .eyebrow {
@@ -326,7 +346,7 @@ body.gucc-reference.resource-page .game-card {
   }
 
   body.gucc-reference.story-page .layout {
-    display: block !important;
+    display: block;
     gap: 10px;
   }
 
@@ -349,15 +369,15 @@ body.gucc-reference.resource-page .game-card {
 
   .library-nav-toggle {
     width: 100%;
-    min-height: 46px !important;
+    min-height: 46px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid rgba(116, 243, 255, .22) !important;
-    border-radius: 14px !important;
-    background: rgba(116, 243, 255, .08) !important;
-    color: var(--gucc-text) !important;
-    box-shadow: none !important;
+    border: 1px solid rgba(116, 243, 255, .22);
+    border-radius: var(--g-radius);
+    background: rgba(116, 243, 255, .08);
+    color: var(--g-text);
+    box-shadow: none;
   }
 
   body.gucc-reference.story-page .search {
@@ -406,7 +426,7 @@ body.gucc-reference.resource-page .game-card {
 
 @media (max-width: 560px) {
   body.gucc-reference .wrap {
-    width: min(100% - 16px, var(--reference-width)) !important;
+    width: min(100% - 16px, var(--reference-width));
   }
 
   body.gucc-reference .brand strong {
@@ -434,4 +454,26 @@ body.gucc-reference.resource-page .game-card {
   body.gucc-reference.resource-page .game-head {
     flex-direction: row;
   }
+}
+
+body.gucc-reference .brand > span { min-width: 0; }
+body.gucc-reference .brand strong { font-size: 16px; line-height: 1.45; font-weight: 500; overflow-wrap: anywhere; }
+body.gucc-reference :is(.hero, .layout, .content, .reader, .sidebar) { min-width: 0; }
+body.gucc-reference :is(.reader, section.prompt-section) { background: var(--g-surface); border-color: var(--g-line); }
+body.gucc-reference :is(.search, .doc pre) { background: var(--g-field); }
+body.gucc-reference .doc { font-size: 15px; line-height: 1.85; overflow-wrap: anywhere; }
+body.gucc-reference :is(pre, code) { font-family: var(--g-mono); }
+body.gucc-reference .doc table { display: block; overflow-x: auto; }
+body.gucc-reference .reader-actions :is(a, button) { min-height: 44px; font-size: 13px; font-weight: 500; }
+body.gucc-reference .library-nav-toggle { font-weight: 500; font-size: 14px; }
+body.gucc-reference .library-nav-toggle span { min-width: 0; }
+@media (max-width: 620px) {
+  body.gucc-reference .brand span span { display: none; }
+  body.gucc-reference .brand strong { font-size: 14px; }
+  body.gucc-reference .back { font-size: 12px; padding-inline: 8px; }
+  body.gucc-reference .reader-head { flex-direction: column; gap: 12px; }
+  body.gucc-reference .reader-actions { width: 100%; }
+  body.gucc-reference .reader-actions > * { flex: 1; text-align: center; }
+  body.gucc-reference .library-nav-toggle { gap: 12px; }
+  body.gucc-reference .library-nav-toggle span:last-child { text-align: right; font-size: 12px; }
 }

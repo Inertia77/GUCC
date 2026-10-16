@@ -23,11 +23,11 @@ for (const forbidden of ["TODAY", "Next Action", "game-overview", "game-hub", "s
 
 // Dynamic feature CSS may load during initialization. Neutral search UX must be
 // followed by geometry, material finish, shared chrome, then the responsive contract.
-const searchUxIndex = mainSource.indexOf("game-os.css?v=3");
+const searchUxIndex = mainSource.indexOf("game-os.css?v=4");
 const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
-const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=2");
+const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=3");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
 assert(gamePremiumIndex >= 0, "Missing premium game material stylesheet");
@@ -137,7 +137,7 @@ assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\)[\s\S]*?height:\s*
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form[\s\S]*?grid-template-rows:\s*minmax\(0, 1fr\) auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form > \.editor-body[\s\S]*?overflow-y:\s*auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) \.editor-footer[\s\S]*?min-height:\s*68px\s*!important/);
-assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=2/);
+assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=3/);
 
 // Readability / search density / touch targets stay explicit.
 assert.match(gameThemeStyles, /character-title-localized[\s\S]*?font-size:\s*13px/);

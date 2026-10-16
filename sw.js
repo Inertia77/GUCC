@@ -1,10 +1,10 @@
-const STATIC_CACHE = "gucc-static-v47";
-const RUNTIME_CACHE = "gucc-runtime-v44";
+const STATIC_CACHE = "gucc-static-v48";
+const RUNTIME_CACHE = "gucc-runtime-v45";
 
 const APP_SHELL = [
-  "./assets/gucc-premium.css?v=3",
-  "./assets/gucc-shell-nav-v2.css?v=5",
-  "./assets/gucc-shell.js?v=15",
+  "./assets/gucc-premium.css?v=4",
+  "./assets/gucc-shell-nav-v2.css?v=6",
+  "./assets/gucc-shell.js?v=16",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/creator-six-deliverables.js?v=1",
@@ -55,9 +55,9 @@ const APP_SHELL = [
   "./assets/gucc-floating-docks-v1.css",
   "./assets/gucc-workspace-right-dock-v6.css",
   "./assets/gucc-workspace-field-heights-v1.css",
-  "./assets/gucc-reference-v4.css",
+  "./assets/gucc-reference-v4.css?v=2",
   "./assets/resource-library-v5.css?v=3",
-  "./assets/resource-library-compact-v1.css?v=3",
+  "./assets/resource-library-compact-v1.css?v=4",
   "./assets/gucc-shell.js",
   "./assets/gucc-shell.js?v=11",
   "./assets/access-guard.js?v=11",

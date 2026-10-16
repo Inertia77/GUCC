@@ -112,11 +112,19 @@ body.command-center-page .item-content .note-block > * {
   body.command-center-page.gucc-enhanced {
     padding-right: 106px !important;
   }
-  /* Reserve an actual viewport gutter for the fixed 80px rail, independent
-     of legacy body-width declarations on specialized game themes. */
-  body.command-center-page #app {
-    width: min(1540px, calc(100vw - 150px));
-    margin-inline: auto;
+  /* Authenticated Command Center can inject additional legacy layout CSS.
+     Fix the real content boxes, not just the unauthenticated shell. */
+  body.command-center-page.gucc-enhanced #app {
+    box-sizing: border-box;
+    width: min(1540px, calc(100vw - 150px)) !important;
+    max-width: calc(100vw - 150px) !important;
+    margin-inline: auto !important;
+  }
+  body.command-center-page.gucc-enhanced #app > :is(.topbar, main) {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-inline: 0 !important;
   }
   body.command-center-page .topbar {
     padding: 18px 24px !important;

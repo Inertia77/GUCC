@@ -7,6 +7,12 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 const shell = read('assets/gucc-shell.js');
 const shellCss = read('assets/gucc-shell-nav-v2.css');
+const legacyZzz = read('assets/gucc-zzz.css');
+const dbLayout = read('apps/command-center/styles/layout-refinement.css');
+assert(!legacyZzz.includes('body.gucc-enhanced .gucc-shell-dock {'), 'Legacy theme must not override the Atelier Dock geometry');
+assert(!legacyZzz.includes('grid-template-columns: repeat(6,'), 'Legacy six-slot nav must not return');
+assert(shellCss.includes('white-space: nowrap;'), 'Global Dock labels stay on one line');
+assert(dbLayout.includes('.item-head > .actions'), 'DB actions use a dedicated responsive layout');
 const workspaceFixes = read('assets/gucc-workspace-fixes-v1.css');
 const floatingDocks = read('assets/gucc-floating-docks-v1.css');
 const coverFixes = read('assets/gucc-cover-workspace-fixes-v1.css');

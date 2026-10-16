@@ -58,7 +58,7 @@ body.workspace-page .page > .compact-dock .btns {
 
 @media (min-width: 1024px) {
   body.cover-generator-page {
-    padding-right: 82px !important;
+    padding-right: 106px !important;
     padding-bottom: 32px !important;
   }
 
@@ -68,8 +68,8 @@ body.workspace-page .page > .compact-dock .btns {
     top: 50% !important;
     bottom: auto !important;
     transform: translateY(-50%) !important;
-    width: 64px !important;
-    max-width: 64px !important;
+    width: 80px !important;
+    max-width: 80px !important;
     display: flex !important;
     flex-direction: column !important;
     grid-template-columns: none !important;

@@ -15,8 +15,9 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
    if(name==='command'){
     const metrics=await page.evaluate(()=>{
       const rail=document.querySelector('.gucc-shell-dock'),box=rail.getBoundingClientRect(),links=[...rail.querySelectorAll(':scope > a')];
-      return {railWidth:box.width,railRight:box.right,appLeft:document.querySelector('#app').getBoundingClientRect().left,
-        appWidth:document.querySelector('#app').getBoundingClientRect().width,viewport:innerWidth,
+      const appRect=document.querySelector('#app').getBoundingClientRect(),titleRect=document.querySelector('.topbar h1').getBoundingClientRect();
+      return {railWidth:box.width,railRight:box.right,railLeft:box.left,appLeft:appRect.left,appRight:appRect.right,
+        appWidth:appRect.width,titleHeight:titleRect.height,titleWidth:titleRect.width,viewport:innerWidth,
         labels:links.map(a=>{const t=a.querySelector('span'),r=t.getBoundingClientRect(),st=getComputedStyle(t);return {text:t.textContent,whiteSpace:st.whiteSpace,height:r.height,scrollWidth:t.scrollWidth,clientWidth:t.clientWidth};})};
     });
     assert.equal(metrics.labels.length,5,'Global Dock keeps five destinations');
@@ -26,8 +27,10 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
       assert(metrics.railWidth>=78,`Desktop rail must be readable, got ${metrics.railWidth}`);
       assert(metrics.appLeft>=0&&metrics.appWidth>width*.67,'DB content should use available desktop width');
       assert(metrics.railRight<=width+1,'Rail stays inside desktop viewport');
+      assert(metrics.appRight<=metrics.railLeft-8,`DB desktop content must not overlap the Dock: ${JSON.stringify(metrics)}`);
     }else{
       assert(metrics.railWidth>=Math.min(width-24,350),'Mobile Dock should remain a full-width navigation bar');
+      assert(metrics.titleHeight<=45&&metrics.titleWidth>110,`DB mobile title must not wrap vertically: ${JSON.stringify(metrics)}`);
     }
    }
    await page.screenshot({path:path.join(out,`${name}-${width}.png`),fullPage:true});

@@ -109,6 +109,9 @@ body.command-center-page .item-content .note-block > * {
   overflow-wrap: anywhere;
 }
 @media (min-width: 1024px) {
+  body.command-center-page.gucc-enhanced {
+    padding-right: 106px !important;
+  }
   /* Reserve an actual viewport gutter for the fixed 80px rail, independent
      of legacy body-width declarations on specialized game themes. */
   body.command-center-page #app {

@@ -67,6 +67,7 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
    await F.routes(context,{auth:true,cloud:{route:async route=>{const body=route.request().postDataJSON();requests.push(body);return route.fulfill({json:{ok:true,data:[]}});}}});
    const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/command-center/');await page.waitForSelector('#charGame');
    for(const game of ['崩','绝','鸣','终','异','阴']){await page.selectOption('#charGame',game);await page.waitForTimeout(80);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+   if(width>=1024){const button=await page.locator('#newCharBtn').boundingBox();assert(button.width<=165,'DB Add Character button must not fill an entire desktop filter row');}
    // Real DOM/layout regression: previous CSS leaked narrow, stacked actions into DB cards.
    await page.evaluate(()=>{
      const card=document.createElement('article');card.className='item';card.id='gucc-layout-sentinel';

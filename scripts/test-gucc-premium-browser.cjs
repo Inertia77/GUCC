@@ -68,6 +68,16 @@ const out=path.resolve(__dirname,'../tmp/gucc-premium-browser');
    const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('https://gucc.test/apps/command-center/');await page.waitForSelector('#charGame');
    for(const game of ['崩','绝','鸣','终','异','阴']){await page.selectOption('#charGame',game);await page.waitForTimeout(80);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
    if(width>=1024){const button=await page.locator('#newCharBtn').boundingBox();assert(button.width<=165,'DB Add Character button must not fill an entire desktop filter row');}
+   if(width>=1024){
+     const layout=await page.evaluate(()=>{
+       const dock=document.querySelector('.gucc-shell-dock').getBoundingClientRect();
+       const selectors=['#app','#app > .topbar','#app > main','#characters .filter-toolbar'];
+       return {railLeft:dock.left,boxes:selectors.map(selector=>{const element=document.querySelector(selector),r=element?.getBoundingClientRect();return {selector,left:r?.left,right:r?.right,width:r?.width};})};
+     });
+     assert(layout.boxes.every(x=>Number.isFinite(x.right)&&x.right<=layout.railLeft-8),
+       `Authenticated DB content overlaps desktop Dock: ${JSON.stringify(layout)}`);
+   }
+
    // Real DOM/layout regression: previous CSS leaked narrow, stacked actions into DB cards.
    await page.evaluate(()=>{
      const card=document.createElement('article');card.className='item';card.id='gucc-layout-sentinel';

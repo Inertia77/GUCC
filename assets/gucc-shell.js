@@ -30,7 +30,7 @@
   const ensureStyles = () => {
     ensureStylesheet(
       'link[data-gucc-shell-nav-v2]',
-      'assets/gucc-shell-nav-v2.css?v=5',
+      'assets/gucc-shell-nav-v2.css?v=6',
       'guccShellNavV2'
     );
     if (!document.querySelector('link[data-gucc-premium]')) ensureStylesheet(
@@ -41,7 +41,7 @@
     if (document.querySelector('link[data-gucc-premium]')) ensurePremium();
   };
 
-  const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=3', 'guccPremium');
+  const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=4', 'guccPremium');
 
   const ensureViewportFit = () => {
     let meta = document.querySelector('meta[name="viewport"]');
@@ -248,6 +248,8 @@
       sync();
     });
   };
+  // DB inserts the mechanism workspace after its module initializes.
+  document.addEventListener('gucc:db-ready', enhanceCommandCenterFilters);
 
   const isTextEntry = (target) => {
     if (!(target instanceof Element)) return false;

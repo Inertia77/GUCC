@@ -1,3 +1,5 @@
+.filter-mobile-toggle { display: none; }
+
 .toolbar.filter-toolbar {
   display: block;
 }

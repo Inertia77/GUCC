@@ -67,6 +67,9 @@ jobs:
       - name: Run Atelier mobile navigation and polish acceptance
         run: node scripts/test-atelier-polish-browser.cjs
 
+      - name: Run phone database and reference layout regression
+        run: node scripts/test-mobile-reference-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
@@ -79,5 +82,6 @@ jobs:
             tmp/unified-workspace-browser/
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
+            tmp/mobile-reference-after/
           if-no-files-found: ignore
           retention-days: 7

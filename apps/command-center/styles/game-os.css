@@ -11,7 +11,7 @@
 }
 
 body.command-center-page.gucc-enhanced {
-  font-family: "Noto Sans SC", "Noto Sans CJK SC", "Noto Sans JP", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family: var(--g-font, system-ui) !important;
   color: var(--search-text-primary) !important;
 }
 

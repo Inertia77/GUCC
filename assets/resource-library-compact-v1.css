@@ -50,6 +50,8 @@ body.resource-page .hero-actions {
 
 body.resource-page .view-switch {
   gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
   min-height: 36px;
   padding: 0 10px 0 12px;
   border-radius: 2px !important;
@@ -429,4 +431,10 @@ body.resource-page .ai-project-open:focus-visible {
   body.resource-page .ai-project-open {
     transition: none;
   }
+}
+
+body.resource-page .view-switch > span { flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 620px) {
+  body.resource-page .hero-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  body.resource-page .view-switch { min-height: 52px; padding: 8px 4px; flex-direction: column; gap: 6px; }
 }

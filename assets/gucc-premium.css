@@ -27,6 +27,25 @@
   --g-mono: ui-monospace, "GUCC Sans", monospace;
   color-scheme: dark;
 }
+/* Compatibility names stay scoped to Atelier hosts, never a competing color theme. */
+body.command-center-page,
+body.gucc-reference {
+  --gucc-text: var(--g-text);
+  --gucc-muted: var(--g-muted);
+  --gucc-dim: var(--g-muted);
+  --gucc-cyan: var(--g-cyan);
+  --gucc-mint: var(--g-mint);
+  --gucc-line: var(--g-line);
+  --bg: var(--g-ink);
+  --panel: var(--g-surface);
+  --line: var(--g-line);
+  --text: var(--g-text);
+  --muted: var(--g-muted);
+  --dim: var(--g-muted);
+  --mint: var(--g-mint);
+  --cyan: var(--g-cyan);
+  --accent: var(--g-mint);
+}
 body.portal-page,
 body.creator-os-page,
 body.creator-prompt-page,

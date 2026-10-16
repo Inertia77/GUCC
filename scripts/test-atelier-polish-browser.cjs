@@ -106,7 +106,7 @@ let browser;
  const desktopBounds=await desktopDock.boundingBox();
  assert(desktopBounds.width>=90&&desktopBounds.width<=110,'Desktop Dock has a legible dedicated rail');
  for(const entry of await desktopDock.locator(':scope > :is(a,button)').all()){
-  const label=entry.locator('.gucc-shell-label');
+  const label=entry.locator(':scope > span');
   if(await label.count()){
    const bb=await label.boundingBox();
    assert(bb.width>=24&&bb.height<28,'Desktop Dock label must stay horizontal');

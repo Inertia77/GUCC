@@ -470,7 +470,7 @@
   background: linear-gradient(90deg, #00eaff 0 48%, #ff31b5 48%);
   box-shadow: 0 0 14px rgba(0, 234, 255, 0.28);
 }
-:root {
+body.cover-generator-page {
   --bg: var(--g-ink);
   --panel: var(--g-surface);
   --line: var(--g-line);
@@ -550,10 +550,10 @@ body.cover-generator-page {
 }
 .cover-generator-page label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
   color: var(--g-muted);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 .cover-generator-page .app {
   width: 100%;
@@ -868,7 +868,8 @@ body.cover-generator-page {
 }
 .element-item button {
   font-size: 12px;
-  min-height: 32px;
+  min-height: 44px;
+  min-width: 44px;
 }
 .design-preset-grid,
 .style-grid,

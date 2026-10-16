@@ -122,9 +122,6 @@ body.gucc-enhanced .dock,
 body.gucc-enhanced .item,
 body.gucc-enhanced .tabs button,
 body.gucc-enhanced .toc a,
-body.gucc-enhanced .gucc-shell-link {
-  -webkit-tap-highlight-color: transparent;
-}
 
 body.gucc-enhanced .app,
 body.gucc-enhanced .page,
@@ -406,61 +403,6 @@ body.gucc-enhanced .stage {
   box-shadow: 0 34px 100px rgba(0, 0, 0, .56), 0 0 0 1px rgba(116, 243, 255, .16) !important;
 }
 
-body.gucc-enhanced .gucc-shell-dock {
-  position: fixed;
-  left: 50%;
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  width: min(760px, calc(100vw - 24px));
-  z-index: 90;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 7px;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, .13);
-  border-radius: 24px;
-  background: rgba(8, 12, 20, .78);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
-  backdrop-filter: blur(18px);
-}
-
-body.gucc-enhanced .gucc-shell-link {
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  border-radius: 18px;
-  color: var(--gucc-muted);
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1.1;
-  transition: transform .15s ease, background .15s ease, color .15s ease;
-}
-
-body.gucc-enhanced .gucc-shell-link b {
-  font-size: 16px;
-  line-height: 1;
-}
-
-body.gucc-enhanced .gucc-shell-link:hover,
-body.gucc-enhanced .gucc-shell-link.is-active {
-  color: #06110f;
-  background: linear-gradient(135deg, var(--gucc-mint), var(--gucc-cyan));
-  transform: translateY(-1px);
-}
-
-body.gucc-enhanced .gucc-shell-link.is-active {
-  box-shadow: 0 8px 24px rgba(116, 243, 255, .18);
-}
-
-body.gucc-enhanced .gucc-shell-link:hover b,
-body.gucc-enhanced .gucc-shell-link.is-active b {
-  filter: drop-shadow(0 1px 0 rgba(255,255,255,.22));
-}
-
 body.gucc-enhanced .gucc-back-home {
   display: inline-flex;
   align-items: center;
@@ -481,33 +423,6 @@ body.gucc-enhanced .gucc-back-home {
     padding-bottom: 32px;
   }
 
-  body.gucc-enhanced .gucc-shell-dock {
-    left: auto;
-    right: 10px;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    width: 64px;
-    min-width: 0;
-    max-width: 64px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 7px;
-    border-radius: 18px;
-  }
-
-  body.gucc-enhanced .gucc-shell-link {
-    min-height: 48px;
-    padding: 4px 2px;
-    border-radius: 13px;
-    font-size: 9px;
-    gap: 3px;
-  }
-
-  body.gucc-enhanced .gucc-shell-link b {
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 900px) {
@@ -608,17 +523,6 @@ body.gucc-enhanced .gucc-back-home {
     -webkit-overflow-scrolling: touch;
   }
 
-  body.gucc-enhanced .gucc-shell-dock {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    width: min(100vw - 18px, 760px);
-    padding: 7px;
-    border-radius: 22px;
-  }
-
-  body.gucc-enhanced .gucc-shell-link {
-    min-height: 50px;
-    font-size: 10px;
-  }
 }
 
 @media (max-width: 640px) {
@@ -693,56 +597,6 @@ body.gucc-enhanced .gucc-back-home {
     min-height: 44px;
   }
 
-  body.gucc-enhanced .gucc-shell-dock {
-    left: 50% !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: calc(6px + env(safe-area-inset-bottom)) !important;
-    transform: translateX(-50%) !important;
-    width: min(520px, calc(100vw - 12px)) !important;
-    min-width: 0 !important;
-    max-width: calc(100vw - 18px) !important;
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-    gap: 4px !important;
-    padding: 5px !important;
-    border-radius: 18px !important;
-  }
-
-  body.gucc-enhanced .gucc-shell-link {
-    position: relative !important;
-    min-height: 54px !important;
-    flex-direction: column !important;
-    gap: 3px !important;
-    padding: 5px 2px !important;
-    border-radius: 13px !important;
-    font-size: 9px !important;
-    line-height: 1 !important;
-  }
-
-  body.gucc-enhanced .gucc-shell-link b {
-    font-size: 16px !important;
-  }
-
-  body.gucc-enhanced .gucc-shell-link span {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    overflow: visible !important;
-    clip: auto !important;
-    white-space: nowrap !important;
-  }
-}
-
-@media (max-width: 380px) {
-  body.gucc-enhanced .gucc-shell-dock {
-    gap: 2px !important;
-    padding-inline: 3px !important;
-  }
-
-  body.gucc-enhanced .gucc-shell-link {
-    min-height: 52px !important;
-    font-size: 8px !important;
-  }
 }
 
 @media (pointer: coarse) {

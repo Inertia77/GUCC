@@ -77,7 +77,7 @@ assert.equal(scanCopyRisk('这是全网第一，转发抽奖').length, 2, '应�
 const html = readFileSync(resolve(__dirname, '../apps/publishing-console/index.html'), 'utf8');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
 assert.equal(new Set(ids).size, ids.length, '发布控制台不应包含重复 HTML id');
-for (const requiredAsset of ['./styles.css?v=1', './platform-rules.js?v=1', './app.js?v=4', './publish-cloud.mjs?v=2']) {
+for (const requiredAsset of ['./styles.css?v=2', './platform-rules.js?v=1', './app.js?v=4', './publish-cloud.mjs?v=2']) {
   assert.equal(html.includes(requiredAsset), true, `发布控制台应加载 ${requiredAsset}`);
 }
 for (const requiredId of ['assistantState', 'pickVideoPathButton', 'openLoginButton', 'oneClickPrepareButton', 'automationJob']) {

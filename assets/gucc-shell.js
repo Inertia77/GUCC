@@ -30,7 +30,7 @@
   const ensureStyles = () => {
     ensureStylesheet(
       'link[data-gucc-shell-nav-v2]',
-      'assets/gucc-shell-nav-v2.css?v=3',
+      'assets/gucc-shell-nav-v2.css?v=4',
       'guccShellNavV2'
     );
     if (!document.querySelector('link[data-gucc-premium]')) ensureStylesheet(
@@ -41,7 +41,7 @@
     if (document.querySelector('link[data-gucc-premium]')) ensurePremium();
   };
 
-  const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=2', 'guccPremium');
+  const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=3', 'guccPremium');
 
   const ensureViewportFit = () => {
     let meta = document.querySelector('meta[name="viewport"]');
@@ -262,12 +262,12 @@
     document.documentElement.dataset.guccShellKeyboardBound = 'true';
 
     const sync = () => {
-      const mobile = window.matchMedia('(max-width: 900px)').matches;
+      const mobile = window.matchMedia('(max-width: 1023px)').matches;
       document.body?.classList.toggle('gucc-shell-keyboard', mobile && isTextEntry(document.activeElement));
     };
 
     document.addEventListener('focusin', (event) => {
-      if (window.matchMedia('(max-width: 900px)').matches && isTextEntry(event.target)) {
+      if (window.matchMedia('(max-width: 1023px)').matches && isTextEntry(event.target)) {
         document.body?.classList.add('gucc-shell-keyboard');
         closeMenu();
       }
@@ -275,6 +275,124 @@
     document.addEventListener('focusout', () => window.setTimeout(sync, 0));
     window.addEventListener('resize', sync, { passive: true });
     window.visualViewport?.addEventListener('resize', sync, { passive: true });
+    sync();
+  };
+
+  // Adapt existing navigation controls; their click handlers remain the only router.
+  // A phone sheet keeps every label whole; desktop keeps its professional navigation.
+  const enhanceWorkspaceNavigation = () => {
+    const routes = [
+      ['.os-nav', ':scope > button[data-view]', '工作区', 'span', 1000],
+      ['#sixNavList', '.six-step', '成果', 'strong', 700],
+      ['.flow-nav', '.flow-step', '流程', 'span', 700],
+      ['#platformEditorNav', 'button', '平台', null, 700]
+    ];
+    routes.forEach(([selector, children, title, copySelector, breakpoint]) => {
+      const source = document.querySelector(selector);
+      if (!source || source.dataset.guccPicker) return;
+      source.dataset.guccPicker = 'true';
+      source.classList.add('gucc-picker-source');
+      const label = document.createElement('div');
+      label.className = `gucc-mobile-picker gucc-mobile-picker-${breakpoint}`;
+      const caption = document.createElement('span');
+      caption.textContent = title;
+      const select = document.createElement('button');
+      select.type = 'button';
+      select.setAttribute('aria-label', `选择${title}`);
+      select.setAttribute('aria-haspopup', 'dialog');
+      const dialog = document.createElement('dialog');
+      dialog.className = 'gucc-nav-dialog';
+      dialog.id = `guccNav-${selector.replace(/[^a-zA-Z]/g, '')}`;
+      dialog.setAttribute('aria-label', `选择${title}`);
+      select.setAttribute('aria-controls', dialog.id);
+      select.setAttribute('aria-expanded', 'false');
+      const heading = document.createElement('header');
+      const headingText = document.createElement('h2');
+      headingText.textContent = `选择${title}`;
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.textContent = '关闭';
+      close.setAttribute('aria-label', `关闭${title}选择`);
+      const choices = document.createElement('nav');
+      choices.setAttribute('aria-label', title);
+      heading.append(headingText, close);
+      dialog.append(heading, choices);
+      document.body.append(dialog);
+      const count = document.createElement('span');
+      count.className = 'gucc-picker-count';
+      count.setAttribute('aria-hidden', 'true');
+      label.append(caption, select, count);
+      source.before(label);
+      let buttons = [], names = [];
+      const sync = () => {
+        buttons = [...source.querySelectorAll(children)];
+        names = buttons.map(button => {
+          const copy = (copySelector && button.querySelector(copySelector) || button).cloneNode(true);
+          copy.querySelectorAll('small, i, b').forEach(node => node.remove());
+          return copy.textContent.trim();
+        });
+        const active = Math.max(0, buttons.findIndex(button => button.matches('.active, [aria-pressed="true"], [aria-selected="true"]')));
+        select.textContent = names[active] || '选择';
+        count.textContent = `${String(active + 1).padStart(2, '0')} / ${String(buttons.length).padStart(2, '0')}`;
+        buttons.forEach((button, index) => {
+          if (index === active) button.setAttribute('aria-current', 'true');
+          else button.removeAttribute('aria-current');
+        });
+        label.hidden = !buttons.length;
+      };
+      const dismiss = () => dialog.close();
+      close.addEventListener('click', dismiss);
+      dialog.addEventListener('click', event => {
+        if (event.target !== dialog) return;
+        const rect = dialog.getBoundingClientRect();
+        if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dismiss();
+      });
+      dialog.addEventListener('close', () => {
+        select.setAttribute('aria-expanded', 'false');
+        const target = select.getClientRects().length ? select : buttons.find(button => button.hasAttribute('aria-current'));
+        target?.focus({ preventScroll: true });
+      });
+      select.addEventListener('click', () => {
+        choices.replaceChildren(...names.map((name, index) => {
+          const choice = document.createElement('button');
+          choice.type = 'button';
+          const number = document.createElement('span');
+          number.textContent = String(index + 1).padStart(2, '0');
+          const text = document.createElement('span');
+          text.textContent = name;
+          choice.append(number, text);
+          if (buttons[index].hasAttribute('aria-current')) choice.setAttribute('aria-current', 'true');
+          choice.addEventListener('click', () => {
+            dialog.close();
+            buttons[index]?.click();
+            sync();
+          });
+          return choice;
+        }));
+        dialog.showModal();
+        select.setAttribute('aria-expanded', 'true');
+        choices.querySelector('[aria-current]')?.focus({ preventScroll: true });
+      });
+      new MutationObserver(sync).observe(source, {
+        subtree: true, childList: true, attributes: true,
+        attributeFilter: ['class', 'aria-pressed', 'aria-selected']
+      });
+      matchMedia(`(max-width: ${breakpoint}px)`).addEventListener('change', event => {
+        if (!event.matches && dialog.open) dismiss();
+      });
+      sync();
+    });
+  };
+
+  const navIcon = (key) => {
+    const paths = {
+      home: '<path d="m3 10 9-7 9 7v10H4V10m5 10v-7h6v7"/>',
+      db: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/>',
+      create: '<path d="M3 7V3h4m10 0h4v4M3 17v4h4m10 0h4v-4M9 7l8 5-8 5Z"/>',
+      library: '<path d="M4 4h6v16H4Zm10 0h6v16h-6ZM7 8v3m10-3v3"/>',
+      more: '<circle cx="4" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="20" cy="12" r="1"/>'
+    };
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[key]}</svg>`;
   };
 
   const enhance = () => {
@@ -286,26 +404,27 @@
     normalizeDbPresentation();
     enhancePortalLaunch();
     enhanceCommandCenterFilters();
+    enhanceWorkspaceNavigation();
 
     const existingDock = document.querySelector('.gucc-shell-dock');
-    if (existingDock?.dataset.shellVersion === '4') return;
+    if (existingDock?.dataset.shellVersion === '5') return;
     if (existingDock) existingDock.remove();
 
     const dock = document.createElement('nav');
     dock.className = 'gucc-shell-dock';
-    dock.dataset.shellVersion = '4';
+    dock.dataset.shellVersion = '5';
     dock.setAttribute('aria-label', 'GUCC 全局导航');
 
     dock.innerHTML = navItems.map((item) => {
       if (item.type === 'link') {
         return `
           <a class="gucc-shell-link${item.active ? ' is-active' : ''}" href="${item.href}" title="${escapeHtml(item.label)}"${item.active ? ' aria-current="page"' : ''}>
-            <b aria-hidden="true">${escapeHtml(item.icon)}</b><span>${escapeHtml(item.label)}</span>
+            ${navIcon(item.key)}<span>${escapeHtml(item.label)}</span>
           </a>`;
       }
       return `
         <a class="gucc-shell-trigger${item.active ? ' is-active' : ''}" href="#guccShellMenu" role="button" data-shell-menu="${item.key}" aria-haspopup="true" aria-expanded="false" aria-controls="guccShellMenu">
-          <b aria-hidden="true">${escapeHtml(item.icon)}</b><span>${escapeHtml(item.label)}</span>
+          ${navIcon(item.key)}<span>${escapeHtml(item.label)}</span>
         </a>`;
     }).join('');
 
@@ -362,7 +481,18 @@
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeMenu();
+      if (event.key === 'Escape' && openKey) {
+        const trigger = dock.querySelector(`[data-shell-menu="${openKey}"]`);
+        closeMenu();
+        trigger?.focus();
+      }
+    });
+
+    dock.addEventListener('keydown', (event) => {
+      if (event.key === ' ' && event.target.matches('.gucc-shell-trigger')) {
+        event.preventDefault();
+        event.target.click();
+      }
     });
 
     window.addEventListener('resize', closeMenu, { passive: true });

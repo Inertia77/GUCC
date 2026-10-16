@@ -180,6 +180,7 @@ button, a, label.asset-drop { -webkit-tap-highlight-color: transparent; }
 .field b { color: var(--pink); }
 .field input, .field textarea, .field select, .execution-meta input, .execution-meta select {
   width: 100%;
+  min-width: 0;
   min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 11px;

@@ -30,7 +30,7 @@
   const ensureStyles = () => {
     ensureStylesheet(
       'link[data-gucc-shell-nav-v2]',
-      'assets/gucc-shell-nav-v2.css?v=4',
+      'assets/gucc-shell-nav-v2.css?v=5',
       'guccShellNavV2'
     );
     if (!document.querySelector('link[data-gucc-premium]')) ensureStylesheet(

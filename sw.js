@@ -1,9 +1,9 @@
-const STATIC_CACHE = "gucc-static-v46";
-const RUNTIME_CACHE = "gucc-runtime-v43";
+const STATIC_CACHE = "gucc-static-v47";
+const RUNTIME_CACHE = "gucc-runtime-v44";
 
 const APP_SHELL = [
   "./assets/gucc-premium.css?v=3",
-  "./assets/gucc-shell-nav-v2.css?v=4",
+  "./assets/gucc-shell-nav-v2.css?v=5",
   "./assets/gucc-shell.js?v=15",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",

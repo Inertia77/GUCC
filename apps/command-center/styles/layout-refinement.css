@@ -124,9 +124,10 @@ body.command-center-page .item-content .note-block > * {
 }
 @media (min-width: 901px) {
   body.command-center-page #newCharBtn {
-    flex: 0 0 auto !important;
-    width: auto !important;
+    flex: 0 0 140px !important;
+    width: 140px !important;
     min-width: 130px;
+    max-width: 160px !important;
     margin-left: auto;
   }
 }

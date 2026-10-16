@@ -76,7 +76,7 @@ async function request(path, { method = "GET", body, headers = {} } = {}) {
 }
 const css = element("link", {
   rel: "stylesheet",
-  href: new URL("./creator-shared-context.css?v=2", import.meta.url).href,
+  href: new URL("./creator-shared-context.css?v=3", import.meta.url).href,
 });
 document.head.append(css);
 // Each workspace owns the placement of its context. Never insert a second workbench.
@@ -616,7 +616,9 @@ function render() {
       ? "正在核对本视频成果…"
       : n === 6
         ? "六项成果均已确认"
-        : `${n} / 6 已确认 · 下一步，${names.find(([k]) => rows.get(k)?.status !== "confirmed")?.[1] || "核验"}`;
+        : snapshot?.completedAt
+          ? `${n} / 6 已确认 · 成果与历史`
+          : `${n} / 6 已确认 · 下一步，${names.find(([k]) => rows.get(k)?.status !== "confirmed")?.[1] || "核验"}`;
   chips.replaceChildren();
   overviewList.replaceChildren();
   for (const [i, [k, name]] of names.entries()) {
@@ -634,13 +636,16 @@ function render() {
       });
       b.dataset.status = status;
       b.dataset.gccOutcome = k;
+      b.title = name;
       b.setAttribute("aria-pressed", String(kind.value === k));
       b.append(
         element("span", {
           className: "gcc-outcome-number",
           textContent: String(i + 1).padStart(2, "0"),
         }),
-        element("strong", { textContent: name }),
+        element("strong", {
+          textContent: !compact && k === "publish" ? "发布包" : name,
+        }),
         element("span", {
           className: "gcc-state",
           textContent: loadFailed
@@ -672,6 +677,11 @@ function render() {
     publish: "publish",
   }[kind.value];
   destination.href = C.url(new URL(pages[tool], base).href, active);
+  requestAnimationFrame(() => {
+    if (!panel.open || !matchMedia("(max-width: 700px)").matches) return;
+    const selected = chips.querySelector('[aria-pressed="true"]');
+    if (selected) chips.scrollLeft = selected.offsetLeft - chips.offsetLeft - 12;
+  });
 }
 async function loadHistory() {
   const id = editorId,

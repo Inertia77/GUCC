@@ -64,6 +64,9 @@ jobs:
       - name: Run Atelier visual and interaction acceptance
         run: node scripts/test-atelier-browser.cjs
 
+      - name: Run Atelier mobile navigation and polish acceptance
+        run: node scripts/test-atelier-polish-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
@@ -75,5 +78,6 @@ jobs:
             tmp/gucc-premium-browser/
             tmp/unified-workspace-browser/
             tmp/atelier-after/
+            tmp/atelier-polish-interactions/
           if-no-files-found: ignore
           retention-days: 7

@@ -25,7 +25,7 @@ const uxBrowser = read('scripts/test-creator-ux-browser.cjs');
 assert.match(shell, /fixed:\s*\{/m, 'Global shell must expose Production as a creator destination.');
 assert.match(shell, /items:\s*\[childRoutes\.fixed, childRoutes\.workspace, childRoutes\.cover, childRoutes\.publish\]/, 'Creator menu must follow Studio → Production → Cover → Publish.');
 assert.match(portal, /固定 Prompt Studio/, 'Portal enhancer must promote Production into the core launcher.');
-assert.match(shell, /dataset\.shellVersion = '4'/, 'Shell version must invalidate stale navigation DOM.');
+assert.match(shell, /dataset\.shellVersion = '5'/, 'Shell version must invalidate stale navigation DOM.');
 assert.match(shellCss, /grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/, 'Mobile global shell must keep exactly five primary slots.');
 assert.match(shellCss, /data-group="create"[\s\S]*repeat\(2, minmax\(0, 1fr\)\)/, 'Four creator destinations should render as a 2×2 menu.');
 for (const [name, css] of [['workspace fixes', workspaceFixes], ['floating docks', floatingDocks], ['cover fixes', coverFixes]]) assert.doesNotMatch(css, /grid-template-columns:\s*repeat\(6,/, `${name} must not resurrect the obsolete six-slot global dock.`);

@@ -1,11 +1,4 @@
 /* Atelier context: quiet identity in the workspace, management on demand. */
-:root {
-  --g-field: #10161b;
-  --g-border-soft: #253038;
-  --g-space: 8px;
-  --g-radius-dialog: 8px;
-  --g-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
 [data-creator-context] {
   min-width: 0;
 }
@@ -320,11 +313,29 @@ body .gcc-outcome-chips [aria-pressed="true"] {
 [data-status="confirmed"] .gcc-state {
   color: var(--g-mint);
 }
+[data-status="confirmed"] .gcc-state::before {
+  content: "✓";
+  width: 12px;
+  height: auto;
+  background: none;
+  font-size: 12px;
+}
 [data-status="review"] .gcc-state {
   color: var(--g-warn);
 }
+[data-status="review"] .gcc-state::before {
+  border-radius: 0;
+  transform: rotate(45deg);
+}
 [data-status="blocked"] .gcc-state {
   color: var(--g-error);
+}
+[data-status="blocked"] .gcc-state::before {
+  content: "!";
+  width: 12px;
+  height: auto;
+  background: none;
+  font-weight: 600;
 }
 [data-status="in_progress"] .gcc-state {
   color: var(--g-cyan);
@@ -707,8 +718,16 @@ body .gcc-sheet .gcc-evidence {
     border-bottom: 1px solid var(--g-line);
     padding: 8px 12px;
     scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 12px;
+  }
+  .gcc-outcome-dialog .gcc-outcome-summary::after {
+    content: " · 滑动切换成果";
+    font-size: 12px;
+    color: var(--g-muted);
   }
   body .gcc-outcome-chips button {
+    scroll-snap-align: start;
     flex: 0 0 125px;
     min-height: 66px;
     padding: 9px 10px;

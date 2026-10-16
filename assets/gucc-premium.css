@@ -18,6 +18,10 @@
   --g-violet: #b2aad6;
   --g-warn: #e6bd81;
   --g-error: #f0a5a5;
+  --g-field: #10161b;
+  --g-border-soft: #253038;
+  --g-radius-dialog: 8px;
+  --g-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --g-radius: 3px;
   --g-font: "GUCC Sans", "Segoe UI", system-ui, sans-serif;
   --g-mono: ui-monospace, "GUCC Sans", monospace;
@@ -97,17 +101,6 @@ body dialog footer {
   background: #291d20;
   font-size: 14px;
   line-height: 1.7;
-}
-/* The shared route control is a compact rail; the canvas and content keep priority. */
-body .gucc-shell-dock {
-  background: #11171c;
-  border-color: var(--g-line);
-  box-shadow: none;
-  backdrop-filter: none;
-  border-radius: 5px;
-}
-body .gucc-shell-dock :is(a, button) {
-  font-family: var(--g-font);
 }
 /* Portal: a brand opening followed by a working index, not eight identical tiles. */
 body.portal-page::before {
@@ -216,14 +209,14 @@ body.portal-page .cp-counters {
   border-top: 1px solid var(--g-line);
   border-bottom: 1px solid var(--g-line);
 }
-body.portal-page .cp-counter {
+body.portal-page .cp-root .cp-counter {
   border: 0;
   border-right: 1px solid var(--g-line);
   border-radius: 0;
   background: none;
   padding: 18px 20px;
 }
-body.portal-page .cp-counter:last-child {
+body.portal-page .cp-root .cp-counter:last-child {
   border-right: 0;
 }
 body.portal-page .cp-counter strong {
@@ -1201,7 +1194,7 @@ body :is(.markdown-body, .story-content) {
     flex-direction: column;
     gap: 16px;
   }
-  body.portal-page .cp-counter {
+  body.portal-page .cp-root .cp-counter {
     padding: 14px 8px;
     flex-direction: column;
     gap: 8px;
@@ -1508,19 +1501,6 @@ body.resource-page .library-topbar {
   background: none;
   border-bottom: 1px solid var(--g-line);
 }
-body.gucc-enhanced .gucc-shell-dock {
-  background: #141b20 !important;
-  border: 1px solid #3b474e !important;
-  border-radius: 4px !important;
-  box-shadow: 0 8px 24px #0004 !important;
-  backdrop-filter: none !important;
-}
-body.gucc-enhanced .gucc-shell-link.is-active {
-  background: #2a4237 !important;
-  color: #b7ecd2 !important;
-  box-shadow: none !important;
-  border-radius: 2px !important;
-}
 @media (max-width: 700px) {
   body.creator-os-page .video-workbench .branch-list {
     grid-template-columns: 1fr;
@@ -1591,16 +1571,6 @@ body.creator-os-page .evidence-line {
 }
 
 @media (max-width: 700px) {
-  body.gucc-enhanced .gucc-shell-dock {
-    top: auto !important;
-    bottom: calc(8px + env(safe-area-inset-bottom)) !important;
-    left: 12px !important;
-    right: 12px !important;
-    transform: none !important;
-    width: auto !important;
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  }
   body.creator-os-page .workspace-heading .heading-status {
     display: none;
   }
@@ -1803,12 +1773,6 @@ body.creator-prompt-page #promptLength {
 }
 
 /* Atelier working hierarchy: identity belongs to its host, secondary systems disclose on demand. */
-:root {
-  --g-field: #10161b;
-  --g-border-soft: #253038;
-  --g-radius-dialog: 8px;
-  --g-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
 .portal-continue {
   display: flex;
   align-items: center;
@@ -2049,6 +2013,9 @@ body.creator-prompt-page .six-nav {
   padding: 0 20px 0 0;
   border-radius: 0;
 }
+body.creator-prompt-page #sixNavList {
+  grid-template-columns: minmax(0, 1fr);
+}
 .six-nav-label {
   font-size: 12px;
   padding: 8px 8px 14px;
@@ -2215,6 +2182,9 @@ body.publishing-console-page .hero {
 }
 body.publishing-console-page .flow-nav {
   margin: 24px 0;
+  padding: 0;
+  border-inline: 0;
+  border-radius: 0;
 }
 .publishing-console-page .flow-step {
   padding: 16px 20px;
@@ -2387,7 +2357,7 @@ body.publishing-console-page .form-grid {
     max-width: calc(100vw - 150px);
   }
   body.portal-page .intro {
-    padding: 36px 0 28px;
+    padding: 28px 0 24px;
   }
   body.portal-page .intro h1 {
     font-size: 35px;
@@ -2440,7 +2410,7 @@ body.publishing-console-page .form-grid {
     margin-top: 24px;
   }
   body.creator-os-page .current-task-panel {
-    padding: 22px 20px;
+    padding: 20px 18px;
   }
   body.creator-os-page .current-task-panel h2 {
     font-size: 22px;
@@ -2453,8 +2423,9 @@ body.publishing-console-page .form-grid {
     padding: 20px 0;
   }
   .gcc-overview header button {
-    max-width: 85px;
-    white-space: normal;
+    max-width: none;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   body.creator-prompt-page .creator-shell {
     padding-top: 18px;
@@ -2518,7 +2489,7 @@ body.publishing-console-page .form-grid {
   }
   body.creator-prompt-page .workspace-grid.six-mode {
     display: flex;
-    gap: 16px;
+    gap: 12px;
   }
   body.creator-prompt-page .six-nav {
     border: 0;
@@ -2560,7 +2531,7 @@ body.publishing-console-page .form-grid {
     flex-basis: auto;
   }
   body.creator-prompt-page .workspace-grid.six-mode .prompt-panel {
-    padding: 20px 16px;
+    padding: 18px 16px;
   }
   body.creator-prompt-page .prompt-head h2 {
     font-size: 21px;
@@ -2613,14 +2584,14 @@ body.publishing-console-page .form-grid {
     font-size: 12px;
   }
   body.publishing-console-page .shell {
-    padding-top: 24px;
+    padding-top: 20px;
   }
   body.publishing-console-page .hero {
     display: block;
     padding-bottom: 20px;
   }
   body.publishing-console-page .hero h1 {
-    font-size: 27px;
+    font-size: 25px;
   }
   body.publishing-console-page .hero p {
     font-size: 13px;
@@ -2628,7 +2599,7 @@ body.publishing-console-page .form-grid {
   .publishing-console-page .hero-status {
     display: flex;
     border: 0;
-    padding: 20px 0 0;
+    padding: 16px 0 0;
     justify-content: space-between;
   }
   .publishing-console-page .hero-status > div {

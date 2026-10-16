@@ -8,11 +8,6 @@ body.gucc-enhanced :where([id]) {
 
 /* Text entry on phones should not compete with fixed navigation or workspace overlays. */
 @media (max-width: 900px) {
-  body.gucc-shell-keyboard .gucc-shell-dock {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translate(-50%, calc(100% + 28px)) !important;
-  }
 
   body.gucc-shell-keyboard.workspace-page :where(.mobile-float, .mobile-export-sheet, #structureFloatingNav) {
     opacity: 0 !important;

@@ -533,7 +533,7 @@
       purpose:"在Codex执行前完成导演判断，让每个Shot/音频Cue可直接执行。",
       whenToUse:["Timeline与素材索引基本就绪"],
       requiredInput:["FINAL.srt","TIMELINE_MASTER","ASSET_INDEX","视觉/声音设计"],
-      coreMethod:["核心机制镜头精确到真实时码，普通氛围镜头可使用轻量可执行描述；不为形式完整把低价值镜头逐帧规格化。","逐Shot写时间、旁白语义、素材ASSET_ID/真实路径、Source In/Out、构图、转场、动效、字幕/视觉锚点。","声音写BGM/SFX/Cue/Gain/Fade/Ducking。","素材不存在写MISSING，不把寻找/导演留给Codex。"],
+      coreMethod:["核心机制镜头精确到真实时码，普通氛围镜头可使用轻量可执行描述；不为形式完整把低价值镜头逐帧规格化。","逐Shot写时间、旁白语义、素材ASSET_ID/真实路径、Source In/Out、构图、转场、动效、字幕/视觉锚点。","按真实 SRT 的每句语义锚点安排独立 Shot，使用最终 WAV 的真实总时长；当用户只给 FINAL.srt 和 WAV 时可在当前任务生成轻量 Shot Map，不因缺独立 Timeline MD 强制中断。","当用户指定单画面轨时，让官方视频和 Pixel 各占互斥镜头，不做叠加/画中画/重叠转场；指定必用的 Pixel 全部实质展示，官方片段依据真实 Source In/Out 非重叠选取，优先错落交替。","声音写BGM/SFX/Cue/Gain/Fade/Ducking（仅声音制作属于本轮时）；已有声音且只需画面时不重做音频。","素材不存在写MISSING，不把寻找/导演留给Codex。"],
       failureRefs:["TW_CODEX_EXECUTOR","VS_NO_FAKE_GAMEPLAY","TL_ZERO_ORIGIN"],
       qualityGate:["制作预算匹配内容等级，必要的音画锚点不丢。","Codex无需重新导演","所有引用路径/权限/时间真实可执行"],
       outputSchema:["CODEX_EDIT_BLUEPRINT.md"],
@@ -542,12 +542,12 @@
     }),
 
     cap("CODEX_BUILD","Edit","Codex Build",{
-      purpose:"严格按蓝图执行本地视频与背景声构建。",
-      whenToUse:["CODEX_EDIT_BLUEPRINT通过预检"],
-      requiredInput:["CODEX_EDIT_BLUEPRINT","实际本地素材"],
-      coreMethod:["先预检路径/时长/权限/缺失，再执行。","画面输出FINAL_VIDEO_SILENT.mp4；背景声输出FINAL_BGM_SFX.wav。","不临场换素材/改脚本/重新导演。"],
-      failureRefs:["TW_CODEX_EXECUTOR","TW_NO_FAKE_RENDER","TW_LOCAL_NOT_GIT"],
-      qualityGate:["ffprobe/音频探测通过","同00:00","无口播/字幕混入对应输出"],
+      purpose:"按既有蓝图执行，或在用户明确授权时以锁定音频、SRT、真实素材直接生成 Shot Map 并完成本地无声视频剪辑。",
+      whenToUse:["CODEX_EDIT_BLUEPRINT通过预检","用户明确提供已锁真实音频/SRT和本地视觉素材并授权直接剪辑"],
+      requiredInput:["CODEX_EDIT_BLUEPRINT，或可读取的最终录音+FINAL.srt+本地视频素材"],
+      coreMethod:["先预检路径、锁定音频时长、SRT、视频内容和使用权限；无现成蓝图但用户授权直接剪辑时，自动生成包含 Source In/Out 的 Shot Map，完成后再渲染。","用户要求指定素材全用、官方片源尽量多用、同一片段不重复、两类素材互斥并交替时，分别作覆盖与区间检查；仅在语义或气质契合时选官方源，不能只凭帧索引猜画面。","纯画面任务只输出 FINAL_VIDEO_SILENT.mp4，不重新生成已有背景音；有声音制作要求时才输出 FINAL_BGM_SFX.wav。","遵守导出参数 1920x1080 / CFR 30 / H.264 / yuv420p / Rec.709 SDR；无声视频剔除音频/字幕/数据流，实际时长与最终 WAV 对齐，不加入静态封面或字幕。","每支视频检查全片 Shot 无重叠、无空档、无重复 Source 区间；逐项验收必用资产、无黑帧并用 ffprobe/解码确认渲染成功。","不覆盖原文件、不上传本地素材到 Git；先报告具体缺项，不临场篡改 LOCK 文案。"],
+      failureRefs:["TW_CODEX_EXECUTOR","TW_NO_FAKE_RENDER","TW_LOCAL_NOT_GIT","TW_NO_OVERWRITE_MASTER"],
+      qualityGate:["ffprobe 证明视频尺寸/编码/CFR/SDR/无音轨无字幕","音频与 SRT 共用 00:00 且成片与最终 WAV 时长匹配","必用素材已全部实质展示","相同官方 Source 时间区间不得重复","没有空白/重叠 Shot"],
       outputSchema:["FINAL_VIDEO_SILENT.mp4","FINAL_BGM_SFX.wav","BUILD_REPORT.md"],
       defaultExecutor:"Codex",alternativeExecutor:["Chat"],
       chatFallback:"Chat生成可执行构建脚本；用户/本地执行器运行并回传验证。",
@@ -628,5 +628,5 @@
     return {id:c.id,name:c.name,domain:c.domain,defaultExecutor:c.defaultExecutor,qcLevel:c.qcLevel,reviewMode:c.reviewMode,outputs:c.outputSchema};
   }
 
-  return {VERSION:"2.0.0",CAPABILITIES:Object.freeze(C),BY_ID,DOMAINS,get,list,compact};
+  return {VERSION:"2.0.1",CAPABILITIES:Object.freeze(C),BY_ID,DOMAINS,get,list,compact};
 });

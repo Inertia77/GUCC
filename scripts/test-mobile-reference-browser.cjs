@@ -56,6 +56,74 @@ let browser;
   await go('resource');for(const name of ['official','intel','projects']){await p.locator(`.view-switch[data-view="${name}"]`).click();assert.equal(await p.locator(`.view-switch[data-view="${name}"]`).getAttribute('aria-pressed'),'true');await shot('resource-'+name+'-390');}
   await go('db');for(const code of ['崩','绝','鸣','终','异','阴']){await p.locator('.filter-mobile-toggle').first().click();await p.selectOption('#charGame',code);await p.locator('#searchCharBtn').click();await p.waitForFunction(code=>document.querySelector('#characterResults .item')?.dataset.gameCode===code,code);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
   for(const tab of ['parties','mechanisms','versions']){await p.locator(`[data-tab="${tab}"]`).click();const panel=p.locator('#'+tab);assert.equal(await panel.locator('.filter-mobile-toggle').count(),1,`${tab}: mobile filter control missing`);assert(!(await panel.locator('[data-game-filter], #mechanismGame').isVisible()),`${tab}: filters must start collapsed`);await panel.locator('.filter-mobile-toggle').click();assert(await panel.locator('[data-game-filter], #mechanismGame').isVisible(),`${tab}: expanded filters remain hidden`);}
+  // Real Chromium contract: every non-character card collapses to a single
+  // horizontal scan row without exposing destructive actions.
+  const compactPanels = [
+   {tab:'parties',id:'partyResults',title:'队伍速切'},
+   {tab:'mechanisms',id:'mechanismResults',title:'异常积蓄'},
+   {tab:'versions',id:'versionResults',title:'版本代号'}
+  ];
+  for(const width of [320,360,390,430]){
+   await p.setViewportSize({width,height:844});
+   for(const fixture of compactPanels){
+    await p.locator(`[data-tab="${fixture.tab}"]`).click();
+    await p.waitForTimeout(80);
+    await p.evaluate(({id,tab,title})=>{
+     const el=document.getElementById(id);
+     if(!el)throw new Error(`Missing ${id}`);
+     const titleMarkup=tab==='versions'
+      ? `<div class="item-title version-title"><span class="version-no">3.2</span><span>${title}</span></div>`
+      : `<div class="item-title">${title}</div>`;
+     el.innerHTML=`<article class="item" data-game-code="鸣" data-item-id="isolated-compact-row">
+      <div class="item-head">
+       <div class="item-summary">${titleMarkup}
+        <div class="meta"><span class="badge">数据标签</span></div>
+       </div>
+       <div class="actions collapsible-actions">
+        <button type="button" class="secondary collapse-toggle" data-card-toggle aria-expanded="true">收起</button>
+        <button type="button" class="secondary">编辑</button>
+        <button type="button" class="danger">删除</button>
+       </div>
+      </div>
+      <div class="item-content" data-card-content>可展开的完整详情</div>
+     </article>`;
+    },fixture);
+    const card=p.locator(`#${fixture.id} .item`).first();
+    const toggle=card.locator('[data-card-toggle]');
+    await toggle.click();
+    assert(await card.evaluate(e=>e.classList.contains('is-collapsed')), `${fixture.tab}: collapse click did not work`);
+    const state=await card.evaluate(e=>{
+     const rect=o=>o.getBoundingClientRect();
+     const title=e.querySelector('.item-title'),button=e.querySelector('.collapse-toggle');
+     const actions=e.querySelector('.collapsible-actions'),head=e.querySelector('.item-head');
+     return {
+      height:rect(e).height,
+      titleRight:rect(title).right,
+      buttonLeft:rect(button).left,
+      buttonHeight:rect(button).height,
+      gridColumns:getComputedStyle(head).gridTemplateColumns.split(' ').length,
+      metaDisplay:getComputedStyle(e.querySelector('.meta')).display,
+      editDisplay:getComputedStyle(actions.querySelector('button.secondary:not(.collapse-toggle)')).display,
+      deleteDisplay:getComputedStyle(actions.querySelector('.danger')).display,
+      viewportOverflow:document.documentElement.scrollWidth>innerWidth+1
+     };
+    });
+    assert.equal(state.gridColumns,2,`${fixture.tab} ${width}: collapsed card needs two columns`);
+    assert.equal(state.metaDisplay,'none',`${fixture.tab} ${width}: meta remains visible`);
+    assert.equal(state.editDisplay,'none',`${fixture.tab} ${width}: edit remains visible`);
+    assert.equal(state.deleteDisplay,'none',`${fixture.tab} ${width}: delete remains visible`);
+    assert(state.buttonHeight>=44,`${fixture.tab} ${width}: expand target is too small`);
+    assert(state.titleRight<=state.buttonLeft+1,`${fixture.tab} ${width}: title overlaps expand`);
+    assert(state.height<=76,`${fixture.tab} ${width}: collapsed row is still too tall (${state.height})`);
+    assert(!state.viewportOverflow,`${fixture.tab} ${width}: horizontal overflow`);
+    if(width===390)await shot(`db-${fixture.tab}-compact-390`);
+    await toggle.click();
+    assert(!(await card.evaluate(e=>e.classList.contains('is-collapsed'))), `${fixture.tab}: expand click did not work`);
+    assert(await card.locator('.danger').isVisible(),`${fixture.tab}: expanded card lost delete action`);
+    assert(await card.locator('.meta').isVisible(),`${fixture.tab}: expanded card lost metadata`);
+   }
+  }
+  await p.setViewportSize({width:390,height:844});
   await p.locator('[data-tab="more"]').click();await shot('db-more-390');
   await p.setViewportSize({width:390,height:500});await p.getByRole('button',{name:'资料',exact:true}).click();await shot('short-screen-menu-390');await p.keyboard.press('Escape');
   await p.emulateMedia({reducedMotion:'reduce'});await p.keyboard.press('Tab');

@@ -37,3 +37,8 @@
 @media(max-width:1000px){.workspace-grid.six-mode{grid-template-columns:minmax(0,1fr)}.six-nav{padding:13px}#sixNavList{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.creator-prompt-page .six-step{min-height:76px}.workspace-grid.six-mode #promptText{height:400px}}
 @media(max-width:700px){#sixNavList{grid-template-columns:repeat(2,minmax(0,1fr))}.creator-prompt-page .six-step{gap:8px;padding:11px 8px}.six-number{font-size:15px;flex-basis:22px}.six-step-copy strong{font-size:14px}.six-step-copy small{font-size:11px}.workspace-grid.six-mode .prompt-panel{padding:17px}.workspace-grid.six-mode #promptText{height:360px}.creator-mode-switch{gap:7px}.creator-prompt-page .creator-mode-switch button{font-size:14px;min-height:53px;padding:8px 11px}}
 @media(prefers-reduced-motion:reduce){.creator-prompt-page .creator-mode-switch button{transition:none}}
+
+/* Contextual advanced cover helper (only beside cover Prompt). */
+.cover-assist{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 15px;margin:13px 0;background:rgba(32,61,68,.56);border:1px solid rgba(112,207,196,.36);border-radius:9px}
+.cover-assist[hidden]{display:none!important}.cover-assist strong{font-size:13px;color:#d0faf0}.cover-assist p{font-size:12px;line-height:1.7;color:#9ebac5;margin:3px 0 0}.cover-assist a{display:inline-flex;align-items:center;flex:0 0 auto;padding:8px 11px;border:1px solid rgba(118,204,187,.43);border-radius:7px;text-decoration:none;color:#9ef9e0;font-size:12px;white-space:nowrap}
+@media(max-width:700px){.cover-assist{align-items:flex-start;flex-direction:column;gap:8px}}

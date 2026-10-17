@@ -80,3 +80,4 @@ body.creator-embedded-modal .gucc-shell-dock{display:none!important}
 .gucc-embed[hidden],.creator-folder-command[hidden]{display:none!important}
 html:has(body.creator-os-page){scroll-padding-block:96px 110px}
 .creator-os-page :is(button,input,select,textarea,summary,a){scroll-margin-block:96px 110px}
+.portfolio-progress,.portfolio-code{font-family:var(--g-font,sans-serif);font-variant-numeric:tabular-nums}

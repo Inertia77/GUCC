@@ -72,6 +72,7 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
     await publish.getByRole("dialog",{name:"选择流程"}).locator("nav button").nth(3).click();
    }else await publish.locator('.flow-nav [data-view="review"]').click();
    assert(await publish.locator("#view-review").isVisible());
+   if(width<=700)assert(await publish.locator(".hero-status strong").evaluateAll(els=>els.every(el=>el.getBoundingClientRect().height<36&&el.scrollWidth<=el.clientWidth+1)),"Mobile publishing status values stay on a readable line");
    assert(await publish.locator("body").evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Embedded publishing form fits viewport");
    await page.screenshot({path:path.join(out,"release-"+width+".png"),fullPage:true,animations:"disabled"});
    await navigate("knowledge",3);

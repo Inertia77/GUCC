@@ -34,3 +34,8 @@ html.gucc-embedded-tool{scroll-behavior:auto!important;scroll-padding-block:96px
 .gucc-embedded-tool body.publishing-console-page .hero{display:block!important;min-height:0!important;padding:12px 0!important;margin:0 0 14px!important}
 .gucc-embedded-tool body.publishing-console-page .hero-status{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gucc-embedded-tool body.publishing-console-page .topbar{min-height:44px!important;justify-content:flex-end!important;padding:6px 14px!important}
+@media(max-width:700px){
+ .gucc-embedded-tool body.publishing-console-page .hero-status>div{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:6px!important;min-width:0}
+ .gucc-embedded-tool body.publishing-console-page .hero-status>div>span{font-size:11px!important;white-space:nowrap!important}
+ .gucc-embedded-tool body.publishing-console-page .hero-status>div>strong{font-size:18px!important;line-height:1.3!important;white-space:nowrap!important}
+}

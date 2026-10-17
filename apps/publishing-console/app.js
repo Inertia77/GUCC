@@ -585,6 +585,12 @@
 
   function importPublishMarkdown(markdown) {
     const result = PublishMd.parse(markdown);
+    if (result.identity?.projectId && state.project.creatorProjectId && result.identity.projectId !== state.project.creatorProjectId) {
+      throw Error("MD 所属项目与当前发布单不符；请切换到正确项目");
+    }
+    if (result.identity?.videoId && state.project.videoId && result.identity.videoId !== state.project.videoId) {
+      throw Error("MD 所属视频与当前发布单不符；请切换到正确视频");
+    }
     const changes = [];
     const warnings = [...result.warnings];
     for (const [key, fields] of Object.entries(result.platforms)) {

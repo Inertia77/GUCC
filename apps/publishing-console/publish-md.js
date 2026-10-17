@@ -93,10 +93,16 @@
     flush();
     const count = Object.values(platforms).reduce((n, fields) => n + Object.keys(fields).length, 0);
     if (!sections.size || !count) throw Error("未识别有效平台字段。请保留 ## B站 / ## YouTube 和 ### 标题等三级标题");
-    return { platforms, count, sections: [...sections], warnings };
+    const identity = {
+      projectId: (/^<!-- gucc-project-id: (.*?) -->$/m.exec(source) || [])[1] || "",
+      videoId: (/^<!-- gucc-video-id: (.*?) -->$/m.exec(source) || [])[1] || ""
+    };
+    return { platforms, count, sections: [...sections], warnings, identity };
   }
   function makeTemplate(state) {
     const lines = ["<!-- GUCC-PUBLISH-MD v1: 保留 ## 平台 / ### 字段标题；空字段不会覆盖原稿 -->",
+      ...(state?.project?.creatorProjectId ? ["<!-- gucc-project-id: " + tidy(state.project.creatorProjectId) + " -->"] : []),
+      ...(state?.project?.videoId ? ["<!-- gucc-video-id: " + tidy(state.project.videoId) + " -->"] : []),
       "# " + tidy(state?.project?.title || "未命名视频") + "｜待审核发布单", "",
       "章节时间须来自真实成片或 SRT；合规和账号选项须在官方发布页核对。", ""];
     for (const [key, spec] of Object.entries(SPEC)) {

@@ -52,6 +52,10 @@
     toolWrite:Object.freeze([
       {id:"TW_LOCAL_NOT_GIT",level:"HARD_CONSTRAINT",rule:"不得擅自把本地制作素材、大视频、音频或项目工作目录推到 Git。"},
       {id:"TW_CODEX_EXECUTOR",level:"BEST_PRACTICE",rule:"Codex 适合本地文件、FFmpeg、批处理、动画、音频和蓝图执行；导演判断前移。"},
+      {id:"TW_MEDIA_EXCLUSIVE_TIMELINE",level:"HARD_CONSTRAINT",rule:"用户明确要求 Pixel 与官方素材各自独占时间线时，不得叠加、画中画或交叉溶解；每个 Shot 必须有唯一素材和连续不重叠的成片区间。"},
+      {id:"TW_REQUIRED_PIXEL_COVERAGE",level:"HARD_CONSTRAINT",rule:"用户明确要求全部生成动画必须入片时，要逐项核对 ASSET_ID、真实展示时长和片中镜头；闪现一帧不算使用。"},
+      {id:"TW_NO_REUSED_SOURCE_INTERVAL",level:"FAILURE_WARNING",rule:"官方视频可取同源的不同段落，但不得重复利用相同 Source In/Out 或用镜像、裁切、变速伪装重复镜头；只能在真实语义或气质匹配时选用。"},
+      {id:"TW_SILENT_ONLY_NO_AUDIO",level:"HARD_CONSTRAINT",rule:"用户已完成 BGM/SFX 且仅要纯画面时，最终 MP4 不能含任何音轨或字幕流，也不得擅自重制已完成的声音。"},
       {id:"TW_NO_FAKE_RENDER",level:"HARD_CONSTRAINT",rule:"没有真实渲染结果和探测验证，不能声称 FINAL_VIDEO_SILENT / FINAL_BGM_SFX 已完成。"},
       {id:"TW_NO_OVERWRITE_MASTER",level:"HARD_CONSTRAINT",rule:"批处理默认不覆盖 Master / 原始素材；移动前 Dry Run，冲突时停止。"},
       {id:"TW_WORK_NOT_LOCAL_FS",level:"FAILURE_WARNING",rule:"Work 擅长浏览器和多资料研究，不假设它自动拥有 Windows 本地路径访问权。"}
@@ -86,7 +90,7 @@
   }
 
   return {
-    VERSION:"2.0.0",
+    VERSION:"2.0.1",
     LIBRARY,
     OPTIONAL_ENHANCEMENTS,
     all,

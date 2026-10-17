@@ -191,16 +191,20 @@ checkInlineScripts(resolve(root, 'reference', 'ai-prompts.html'));
 checkInlineScripts(resolve(root, 'reference', 'story-library.html'));
 
 const portalSource = readFileSync(portalHtml, 'utf8');
-if (!portalSource.includes('href="./apps/video-workspace/"') && !(portalSource.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"') && portalSource.includes('href="./apps/video-workspace/production-system/"'))) {
+const creatorSurface = readFileSync(productionSystemHtml, 'utf8');
+const fixedSurface = readFileSync(legacyPromptStudioHtml, 'utf8');
+const unifiedEntries = ['outcomes','creation','release','knowledge']
+  .every(view => portalSource.includes('href="./apps/video-workspace/production-system/?view='+view+'"'));
+if (!unifiedEntries && !portalSource.includes('href="./apps/video-workspace/"') && !(portalSource.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"') && portalSource.includes('href="./apps/video-workspace/production-system/"'))) {
   errors.push('GUCC Portal 没有指向稳定的视频工作台入口');
 }
 if (!portalSource.includes('href="./apps/command-center/"')) {
   errors.push('GUCC Portal 没有指向 Command Center');
 }
-if (!portalSource.includes('href="./apps/cover-generator/"')) {
-  errors.push('GUCC Portal 没有指向封面生成器');
+if (!portalSource.includes('href="./apps/cover-generator/"') && !(fixedSurface.includes('href="../cover-generator/"') && creatorSurface.includes('href="../../cover-generator/"'))) {
+  errors.push('GUCC 封面 Prompt 缺少精细封面工具的入口');
 }
-if (!portalSource.includes('href="./apps/publishing-console/"')) {
+if (!portalSource.includes('href="./apps/publishing-console/"') && !(unifiedEntries && creatorSurface.includes('id="publishConsoleFrame"'))) {
   errors.push('GUCC Portal 没有指向发布与复盘控制台');
 }
 

@@ -197,7 +197,7 @@
     if (!grid) return;
     const primary=[...grid.querySelectorAll('a.launch-card')].find(card=>
       (card.getAttribute('href')||'').includes('apps/video-workspace/production-system/'));
-    if(primary){
+    if(primary && /动态 Creator OS/.test(primary.querySelector("strong")?.textContent||"")){
       primary.href=`${normalizedRoot}apps/video-workspace/production-system/`;
       primary.querySelector('.launch-code')?.replaceChildren(document.createTextNode('OS'));
       const title=primary.querySelector('strong'),note=primary.querySelector('small');

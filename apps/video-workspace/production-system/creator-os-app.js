@@ -824,6 +824,17 @@ document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventList
 document.querySelectorAll("[data-creation-mode]").forEach(b=>b.addEventListener("click",()=>{
   navigateTo("creation",b.dataset.creationMode);
 }));
+// Same-origin optional tool frames communicate presentation height only; no data is copied.
+window.addEventListener("message",event=>{
+  if(event.origin!==window.location.origin||event.data?.type!=="gucc:embedded-tool-height")return;
+  const frames=[$("fixedStudioFrame"),$("publishConsoleFrame")];
+  const frame=frames.find(f=>f?.contentWindow===event.source);
+  if(!frame)return;
+  const value=Number(event.data.height);
+  if(!Number.isFinite(value)||value<200)return;
+  const height=Math.max(700,Math.min(3600,Math.ceil(value)));
+  if(Math.abs(parseFloat(frame.style.height||"0")-height)>12)frame.style.height=height+"px";
+});
 document.querySelectorAll("[data-reference]").forEach(b=>b.addEventListener("click",()=>{
   referenceTab=b.dataset.reference;
   const url=new URL(window.location.href);url.searchParams.set("ref",referenceTab);

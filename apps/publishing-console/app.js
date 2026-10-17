@@ -608,7 +608,7 @@
     for (const x of changes) state.platforms[x.key][x.field] = x.value;
     state.source = { ...state.source, publishMarkdownImportedAt: new Date().toISOString() };
     state.preflight = { checkedAt: "", errors: 0, warnings: 0 };
-    hydrateAll();
+    renderPlatformForms(); renderPreviews(); renderExecution(); updateHero();
     saveState("人工审核 Markdown 字段已导入");
     const message = "已导入 " + changes.length + " 项字段（" + result.sections.map((k) => Rules.PLATFORMS[k].label).join("、") + "），其他内容保留。";
     $("#publishMdImportState").textContent = message + (warnings.length ? " 注意：" + warnings.slice(0, 4).join("；") : "");

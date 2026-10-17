@@ -26,6 +26,7 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
    assert(await page.locator('[data-creation-pane="fixed"]').isVisible());
    const studio=page.frameLocator("#fixedStudioFrame");
    await studio.locator("#sixNavList .six-step").first().waitFor({state:"attached"});
+   await studio.locator("#sixNavList .six-step").first().evaluate(el=>el.click());
    assert(await studio.locator("#coverAssistant").isHidden());
    if(width<=700){
     await studio.getByRole("button",{name:"选择成果",exact:true}).click();

@@ -149,6 +149,21 @@
     }
     return { description: [existing, check.text].filter(Boolean).join("\n\n"), warnings: [] };
   }
+  function buildYouTubeReleaseDescription(description, chapters, hashtags) {
+    const chapterResult = buildYouTubeDescription(description, chapters);
+    const warnings = [...chapterResult.warnings];
+    let output = chapterResult.description;
+    const raw = tidy(hashtags);
+    if (raw) {
+      const items = raw.split(/[\s,，、]+/).map((x) => x.trim()).filter(Boolean);
+      const valid = [...new Set(items.filter((x) => /^#[\p{L}\p{N}_]+$/u.test(x)))];
+      if (items.length !== valid.length) warnings.push("YouTube Hashtags 包含无效或重复项，已忽略；请最终核对");
+      const existing = new Set((output.match(/#[^\s,，、]+/g) || []).map((x) => x.trim()));
+      const missing = valid.filter((tag) => !existing.has(tag));
+      if (missing.length) output = [output, missing.join(" ")].filter(Boolean).join("\n\n");
+    }
+    return { description: output, warnings };
+  }
   function makeAiPrompt(state, uploadUrls) {
     const chosen = Object.entries(SPEC).filter(([key]) => state?.enabled?.[key] !== false);
     const refs = chosen.map(([key, p]) => "- " + p.name + "：" + (uploadUrls?.[key] || "请核实官方投稿入口")).join("\n");
@@ -166,5 +181,5 @@
       "以下是待加工的 Markdown：\n\n" + makeTemplate(state)
     ].join("\n\n");
   }
-  return { SPEC, parse, makeTemplate, makeAiPrompt, checkYouTubeChapters, buildYouTubeDescription };
+  return { SPEC, parse, makeTemplate, makeAiPrompt, checkYouTubeChapters, buildYouTubeDescription, buildYouTubeReleaseDescription };
 });

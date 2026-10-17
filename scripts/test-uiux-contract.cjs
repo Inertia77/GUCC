@@ -23,7 +23,7 @@ const serviceWorker = read('sw.js');
 const uxBrowser = read('scripts/test-creator-ux-browser.cjs');
 
 assert.match(shell, /fixed:\s*\{/m, 'Global shell must expose Production as a creator destination.');
-assert.match(shell, /items:\s*\[childRoutes\.fixed, childRoutes\.workspace, childRoutes\.cover, childRoutes\.publish\]/, 'Creator menu must follow Studio → Production → Cover → Publish.');
+assert.match(shell, /items:\s*\[childRoutes\.dashboard, childRoutes\.workbench, childRoutes\.distribution, childRoutes\.governance\]/, 'Creator menu must expose four distinct workspaces without promoting the optional cover tool.');
 assert.match(portal, /固定 Prompt Studio/, 'Portal enhancer must promote Production into the core launcher.');
 assert.match(shell, /dataset\.shellVersion = '5'/, 'Shell version must invalidate stale navigation DOM.');
 assert.match(shellCss, /grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/, 'Mobile global shell must keep exactly five primary slots.');
@@ -34,7 +34,7 @@ assert.match(workspaceFixes, /:has\(#structureFloatingNav\.show\)/, 'Workspace m
 assert.match(coverFixes, /"workspace"\s*\n\s*"inspector"\s*\n\s*"materials"/, 'Cover mobile flow must put the inspector immediately after the canvas.');
 assert.match(coverFixes, /font-size:\s*16px !important/, 'Cover phone editors must avoid iOS focus zoom.');
 assert.match(floatingDocks, /@media \(min-width: 1024px\)[\s\S]*body\.cover-generator-page \.gucc-shell-dock[\s\S]*right: 10px !important;[\s\S]*top: 50% !important;/, 'Cover desktop must use the same right-side global navigation rail as other desktop work surfaces.');
-assert.match(creatorOsHtml, /GameUp Creator OS/, 'Canonical Production must identify Creator OS v2.');
+assert.match(creatorOsHtml, /GUCC Creator · 四大创作工作区/, 'Canonical Creator must identify four workspace mode.');
 for (const marker of [
   'id="currentTaskName"', 'id="projectSelect"', 'id="newProjectBtn"',
   'id="buildFlowBtn"', 'id="copyBuildFlowPrompt"', 'id="copyUpdateFlowPrompt"',

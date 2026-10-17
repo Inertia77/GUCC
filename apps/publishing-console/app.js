@@ -2,6 +2,7 @@
   "use strict";
 
   const Rules = window.GuccPublishingRules;
+  const PublishMd = window.GuccPublishMarkdown;
   const STORAGE_KEY = "gucc_publish_console_v1";
   const SCHEMA_VERSION = "gucc-publish-console-1";
   const ASSISTANT_URL = "http://127.0.0.1:17877";
@@ -254,7 +255,7 @@
     box.className = "automation-job active";
     const platforms = Object.entries(job.platforms || {}).map(([key, item]) => {
       const platform = Rules.PLATFORMS[key];
-      const filled = item.filled?.length ? `已处理：${item.filled.join("、")}` : "尚未填写字段";
+      const filled = item.filled?.length ? `已尝试处理：${item.filled.join("、")}` : "尚未填写字段";
       const warnings = item.warnings?.length ? `<span class="job-warning">${escapeHtml(item.warnings.join("；"))}</span>` : "";
       return `<div class="job-platform" style="--platform-accent:${platform?.accent || "var(--cyan)"}">
         <strong>${escapeHtml(platform?.label || key)} · ${escapeHtml(JOB_STATUS_LABELS[item.status] || item.status)}</strong>
@@ -308,6 +309,11 @@
     const checks = runPreflight();
     if (checks.errors) { showView("preflight"); toast(`还有 ${checks.errors} 个硬错误，请先修复`); return; }
     if (!Rules.normalizeText(state.common.videoPath)) { showView("prepare"); toast("请先通过本机助手选择成片"); return; }
+    const publishFields = JSON.parse(JSON.stringify(state.platforms));
+    if (enabledKeys().includes("youtube")) {
+      const merged = PublishMd.buildYouTubeDescription(publishFields.youtube.description, publishFields.youtube.chapters);
+      publishFields.youtube.description = merged.description;
+    }
     const button = $("#oneClickPrepareButton");
     button.disabled = true;
     button.textContent = "正在启动…";
@@ -321,7 +327,7 @@
           videoPath: state.common.videoPath,
           coverPath: state.common.coverPath || "",
           enabled: enabledKeys(),
-          platforms: state.platforms
+          platforms: publishFields
         }
       });
       if(!result.job?.id)throw Error("自动准备没有返回可追溯任务编号");
@@ -577,6 +583,68 @@
     });
   }
 
+  function importPublishMarkdown(markdown) {
+    const result = PublishMd.parse(markdown);
+    const changes = [];
+    const warnings = [...result.warnings];
+    for (const [key, fields] of Object.entries(result.platforms)) {
+      for (const [field, value] of Object.entries(fields)) {
+        const rule = Rules.PLATFORMS[key]?.fields.find((r) => r.key === field);
+        if (!rule) { warnings.push(key + " 未支持字段：" + field); continue; }
+        if (rule.type === "select" && !rule.options?.includes(value)) {
+          warnings.push(Rules.PLATFORMS[key].label + " · " + rule.label + " 选项未精确匹配，未替换");
+          continue;
+        }
+        if (state.platforms[key][field] !== value) changes.push({ key, field, value });
+      }
+    }
+    if (!changes.length) {
+      $("#publishMdImportState").textContent = "MD 已解析，但没有需要更新的字段。" + (warnings.length ? " 提醒：" + warnings.slice(0, 3).join("；") : "");
+      toast("发布 MD 没有更改现有内容");
+      return;
+    }
+    const published = [...new Set(changes.filter((x) => state.execution[x.key]?.status === "已发布").map((x) => Rules.PLATFORMS[x.key].label))];
+    if (published.length && !window.confirm("以下平台已登记为已发布：" + published.join("、") + "。仅修改 GUCC 草稿，不会修改已发布作品。仍导入吗？")) return;
+    for (const x of changes) state.platforms[x.key][x.field] = x.value;
+    state.source = { ...state.source, publishMarkdownImportedAt: new Date().toISOString() };
+    state.preflight = { checkedAt: "", errors: 0, warnings: 0 };
+    hydrateAll();
+    saveState("人工审核 Markdown 字段已导入");
+    const message = "已导入 " + changes.length + " 项字段（" + result.sections.map((k) => Rules.PLATFORMS[k].label).join("、") + "），其他内容保留。";
+    $("#publishMdImportState").textContent = message + (warnings.length ? " 注意：" + warnings.slice(0, 4).join("；") : "");
+    toast(message);
+  }
+
+  function bindPublishMarkdown() {
+    $("#copyPublishAiPromptButton").addEventListener("click", () => {
+      const urls = Object.fromEntries(Object.entries(Rules.PLATFORMS).map(([key, platform]) => [key, platform.uploadUrl]));
+      copyText(PublishMd.makeAiPrompt(state, urls), "已复制 AI 发布 MD 生成指令");
+    });
+    $("#downloadEditablePublishMdButton").addEventListener("click", () =>
+      download(safeName(state.project.shortName || state.project.title || "video") + ".publish.editable.md", PublishMd.makeTemplate(state), "text/markdown;charset=utf-8"));
+    $("#importPublishMdButton").addEventListener("click", () => $("#publishMdFile").click());
+    $("#publishMdFile").addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        if (!/\.(md|markdown)$/i.test(file.name)) throw Error("请选择 .md 或 .markdown 文件");
+        if (file.size > 350000) throw Error("发布 MD 超过 350KB");
+        importPublishMarkdown(await file.text());
+      } catch (error) { $("#publishMdImportState").textContent = "导入失败：" + error.message; toast("MD 导入失败：" + error.message); }
+      finally { event.target.value = ""; }
+    });
+  }
+
+  async function openAllPlatformPages() {
+    if (!assistantOnline && !await checkAssistant()) { toast("请先启动本机发布助手，再批量打开专用登录浏览器"); return; }
+    const platforms = enabledKeys();
+    if (!platforms.length) { toast("请先启用至少一个平台"); return; }
+    try {
+      await assistantRequest("/api/open-login", { method: "POST", body: { platforms } });
+      toast("已在专用浏览器打开 " + platforms.length + " 个官方投稿页面；这一步不会上传或发布");
+    } catch (error) { toast("批量打开失败：" + error.message); }
+  }
+
   function runPreflight() {
     const groups = [];
     const commonErrors = [];
@@ -605,6 +673,15 @@
       });
       const copyTextValue = platform.fields.map((rule) => state.platforms[key]?.[rule.key] || "").join("\n");
       warnings.push(...Rules.scanCopyRisk(copyTextValue));
+      if (key === "youtube" && state.platforms.youtube.chapters) {
+        const assembled = PublishMd.buildYouTubeDescription(state.platforms.youtube.description, state.platforms.youtube.chapters);
+        warnings.push(...assembled.warnings);
+        if ([...assembled.description].length > 5000) errors.push("视频章节合并后简介超过 YouTube 5000 字符限制");
+      }
+      if (key === "bilibili" && (state.platforms.bilibili.chapters || state.platforms.bilibili.danmakuPolls)) {
+        warnings.push("B站原生分段章节及弹幕投票须在实际可用的发布后配置入口人工检查；当前本机助手不会填写");
+      }
+      if (state.platforms[key]?.pinnedComment) warnings.push("置顶评论通常须发布后配置；本机助手不会自动提交");
       groups.push({ key, label: platform.label, errors, warnings });
     });
 
@@ -708,7 +785,7 @@
       return `<article class="execution-card" style="--platform-accent:${platform.accent}">
         <div class="execution-main">
           <h3>${platform.label}</h3>
-          <p>建议顺序：复制整包 → 打开官方页 → 上传视频/封面 → 核对字段 → 先存草稿或私密。</p>
+          <p>可用本机助手一键打开/预填，也可复制字段手动处理。核对视频处理、章节、标签和封面后再由你发布。</p>
           <div class="execution-buttons">
             <button class="button primary" type="button" data-exec-copy="${key}">复制整包</button>
             <button class="button subtle" type="button" data-exec-open="${key}">打开发布页 ↗</button>
@@ -925,7 +1002,7 @@
       if (result.errors) { toast(`还有 ${result.errors} 个硬错误，请先修复`); return; }
       showView("execute");
     });
-    $("#downloadPackageButton").addEventListener("click", () => download(`${safeName(state.project.shortName || state.project.title || "video")}.publish.md`, fullPackageMarkdown(), "text/markdown;charset=utf-8"));
+    $("#downloadPackageButton").addEventListener("click", () => download(`${safeName(state.project.shortName || state.project.title || "video")}.publish.editable.md`, PublishMd.makeTemplate(state), "text/markdown;charset=utf-8"));
     $("#openPublishingBatchHelp").addEventListener("click", () => {
       window.alert("Windows 下可在仓库中运行 automation\\创作中心\\01-publishing.bat，一次打开六个平台发布页。\n\n控制台也提供每个平台的独立打开按钮；浏览器可能拦截一次打开多个标签页，因此没有在网页里强行批量弹窗。");
     });
@@ -936,6 +1013,7 @@
     $("#pickVideoPathButton").addEventListener("click", () => pickAssistantFile("video"));
     $("#pickCoverPathButton").addEventListener("click", () => pickAssistantFile("image"));
     $("#openLoginButton").addEventListener("click", openLoginSetup);
+    $("#openAllPlatformsButton").addEventListener("click", openAllPlatformPages);
     $("#oneClickPrepareButton").addEventListener("click", startOneClickPrepare);
     renderAssistantState(false);
     checkAssistant(true);
@@ -996,6 +1074,7 @@
   bindStaticFields();
   bindAssetInputs();
   bindImportExport();
+  bindPublishMarkdown();
   bindReview();
   bindNavigation();
   bindAssistant();

@@ -110,7 +110,19 @@
       </details>
     </section>
 
-    <section id="view-system" class="view">
+    <section id="view-creation" class="view" aria-label="创作工作台">
+      <div class="section-head creator-unified-head"><span class="micro">PRODUCTION WORKBENCH</span><h2>创作工作台</h2><p>两种执行方式，同一项目身份；单项成果可直接制作，复杂项目可以自由编排。</p></div>
+      <div class="creation-switch" role="group" aria-label="选择创作方式">
+        <button type="button" data-creation-mode="fixed" class="active" aria-pressed="true"><span>FX / SIX DELIVERABLES</span><strong>固定成果 Prompt</strong><small>推荐 · 单项交付 · 高自主权</small></button>
+        <button type="button" data-creation-mode="dynamic" aria-pressed="false"><span>OS / FLEXIBLE FLOW</span><strong>灵活编排</strong><small>任务依赖、执行回执、修订与回退</small></button>
+      </div>
+      <div class="creation-pane active" data-creation-pane="fixed">
+        <div class="frame-heading"><p>选择六项成果并复制 Prompt。实际成果完成后回到项目中枢验收。</p><a href="../legacy-prompt-studio-v6.html" target="_blank" rel="noopener">全屏打开 ↗</a></div>
+        <iframe id="fixedStudioFrame" class="gucc-embed" title="固定成果 Prompt Studio" src="../legacy-prompt-studio-v6.html?embedded=1" loading="lazy"></iframe>
+      </div>
+      <div class="creation-pane" data-creation-pane="dynamic">
+        <div class="frame-heading"><p>保留原动态 Prompt 的完整执行和回退逻辑。状态与文件验收由项目中枢独立管理。</p></div>
+        <div id="view-system" class="creation-internal">
       <div data-creator-outcomes></div>
       <div class="hero-grid">
         <article class="panel current-task-panel">
@@ -247,9 +259,24 @@
         <summary><span><span class="micro">PRODUCTION MAP</span><strong>01～07 制作生命周期</strong></span><span class="lifecycle-hint">查看宏观流程 · 不决定 Prompt 执行顺序 <span aria-hidden="true">⌄</span></span></summary>
         <div id="productionMap" class="production-map"></div>
       </details>
+        </div>
+      </div>
     </section>
 
-    <section id="view-core" class="view">
+    <section id="view-release" class="view" aria-label="发布与复盘">
+      <div class="section-head"><span class="micro">DISTRIBUTION / ANALYTICS</span><h2>发布与复盘</h2><p>六平台发布单、发布前检查、逐平台执行与数据复盘。原发布控制台的数据和历史全部保留。</p></div>
+      <div class="frame-heading"><p>直接在这里准备与复盘；需要更大空间时可以全屏打开，编辑数据保持一致。</p><a href="../../publishing-console/" target="_blank" rel="noopener">全屏打开 ↗</a></div>
+      <iframe id="publishConsoleFrame" class="gucc-embed" title="GUCC 发布与复盘控制台" src="../../publishing-console/?embedded=1" loading="lazy"></iframe>
+    </section>
+
+    <section id="view-knowledge" class="view" aria-label="规则与资料">
+      <div class="section-head"><span class="micro">REFERENCE / GOVERNANCE</span><h2>规则与资料</h2><p>创作规则、方法库与公共资料统一归档，按照需要切换查看，便于后续维护。</p></div>
+      <div class="reference-switch" role="group" aria-label="规则与资料分类">
+        <button type="button" data-reference="core" class="active" aria-pressed="true">创作规则与防错</button>
+        <button type="button" data-reference="capabilities" aria-pressed="false">能力方法库</button>
+        <button type="button" data-reference="libraries" aria-pressed="false">共享资料与数据</button>
+      </div>
+    <section id="view-core" class="reference-pane active">
       <div class="section-head"><span class="micro">00</span><h2>Core Rules & Failure Prevention</h2><p>长期规则稳定，Workflow 动态。只有真正会制造虚假产物的缺失才 HARD STOP。</p></div>
       <div id="autonomyGrid" class="card-grid"></div>
       <div id="coreRuleGrid" class="rule-grid"></div>
@@ -257,13 +284,13 @@
       <section class="panel"><div class="panel-head"><h3>Failure Prevention Library</h3><span class="pill">从旧 Prompt 踩坑迁移</span></div><div id="failureList" class="failure-list"></div></section>
     </section>
 
-    <section id="view-capabilities" class="view">
+    <section id="view-capabilities" class="reference-pane">
       <div class="section-head"><span class="micro">02</span><h2>Capability Library</h2><p>能力没有固定顺序。每个模块保留成熟 Prompt DNA、Guardrail、Quality Gate、Executor 与 Chat Fallback。</p></div>
       <div class="filters"><input id="capSearch" type="search" placeholder="搜索 Capability / 旧 Prompt 编号…"><select id="capDomain"></select></div>
       <div id="capabilityGrid" class="capability-grid"></div>
     </section>
 
-    <section id="view-libraries" class="view">
+    <section id="view-libraries" class="reference-pane">
       <div class="section-head"><span class="micro">03</span><h2>Global Libraries</h2><p>复用现有 Creator 数据层，不新建重复数据库。</p></div>
       <div class="library-grid">
         <article class="panel"><h3>Research Source Library</h3><p>复用 <code>creator_research_sources</code>：官方来源、版本语境、检查时间与事实快照。</p></article>
@@ -273,6 +300,7 @@
         <article class="panel"><h3>Analytics / Learning</h3><p>复用 publication / metric snapshot / performance report / learning proposal 结构。</p></article>
         <article class="panel"><h3>云端项目身份</h3><p>Creator Project 以 <code>creator_projects</code> 作为正式身份；详细制作中枢状态使用关联的 Creator OS 快照表。素材本体保存在本地。</p></article>
       </div>
+    </section>
     </section>
 
 
@@ -378,7 +406,7 @@
 <script src="./creator-os-validation.js?v=1"></script>
 <script src="./creator-os-step-history.js?v=2"></script>
 <script src="./creator-os-outcomes.js?v=1"></script>
-<script src="./creator-os-app.js?v=3.7.0"></script>
+<script src="./creator-os-app.js?v=4.0.0"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
 <script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=3"></script>

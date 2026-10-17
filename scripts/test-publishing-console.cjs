@@ -100,22 +100,22 @@ const editable = PublishMd.makeTemplate({
   project: { title: '测试视频' },
   enabled: { bilibili: true, douyin: false, xiaohongshu: false, wechat: false, youtube: true, tiktok: false },
   platforms: {
-    bilibili: { title: 'B站测试标题', tags: '绝区零，复刻攻略', danmakuPolls: '06:45 你会抽吗？\\n会 / 观望 / 跳过' },
+    bilibili: { title: 'B站测试标题', tags: '绝区零，复刻攻略', danmakuPolls: '06:45 你会抽吗？\n会 / 观望 / 跳过' },
     youtube: { title: 'YT測試標題', description: '繁體中文影片介紹',
-      chapters: '00:00 開場\\n00:35 角色解析\\n02:10 配裝' }
+      chapters: '00:00 開場\n00:35 角色解析\n02:10 配裝' }
   }
 });
 const parsedMd = PublishMd.parse(editable);
 assert.deepEqual(parsedMd.sections, ['bilibili', 'youtube'], '编辑 MD 只包含启用的平台');
 assert.equal(parsedMd.platforms.bilibili.title, 'B站测试标题');
 assert.match(parsedMd.platforms.bilibili.danmakuPolls, /观望/, '弹幕投票作为人工待办保留');
-assert.equal(parsedMd.platforms.youtube.chapters.split('\\n').length, 3);
+assert.equal(parsedMd.platforms.youtube.chapters.split('\n').length, 3);
 assert.equal(PublishMd.buildYouTubeDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters).description.includes('02:10 配裝'), true);
-assert.equal(PublishMd.buildYouTubeDescription('00:00 已有章節\\n00:30 下一章\\n01:00 結尾', parsedMd.platforms.youtube.chapters).warnings.length, 1, '已有简介章节不能重复注入');
-assert.equal(PublishMd.checkYouTubeChapters('00:00 開場\\n00:05 解析\\n00:30 結尾').valid, false, '时间重叠必须阻断自动合并');
-assert.equal(PublishMd.checkYouTubeChapters('00:05 開場\\n00:30 解析\\n01:00 結尾').valid, false, '首章必须从零开始');
-assert.equal(PublishMd.parse('## YouTube 繁體中文\\n### 最終標題\\n（待填写）\\n### 标题\\n标题测试').platforms.youtube.title, '标题测试', '繁中标题兼容');
-assert.throws(() => PublishMd.parse('## 无关平台\\n### 标题\\n不应污染草稿'), /未识别有效平台/);
+assert.equal(PublishMd.buildYouTubeDescription('00:00 已有章節\n00:30 下一章\n01:00 結尾', parsedMd.platforms.youtube.chapters).warnings.length, 1, '已有简介章节不能重复注入');
+assert.equal(PublishMd.checkYouTubeChapters('00:00 開場\n00:05 解析\n00:30 結尾').valid, false, '时间重叠必须阻断自动合并');
+assert.equal(PublishMd.checkYouTubeChapters('00:05 開場\n00:30 解析\n01:00 結尾').valid, false, '首章必须从零开始');
+assert.equal(PublishMd.parse('## YouTube 繁體中文\n### 最終標題\n（待填写）\n### 标题\n标题测试').platforms.youtube.title, '标题测试', '繁中标题兼容');
+assert.throws(() => PublishMd.parse('## 无关平台\n### 标题\n不应污染草稿'), /未识别有效平台/);
 const prompt = PublishMd.makeAiPrompt({ enabled: { bilibili: true, youtube: true } }, { youtube: 'https://studio.youtube.com/' });
 assert.match(prompt, /真实 SRT/);
 assert.match(prompt, /https:\/\/studio.youtube.com\//);

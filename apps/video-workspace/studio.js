@@ -87,7 +87,11 @@ function switchView(view){
  render();save();
 }
 
-function render(){renderRoute();renderStages();renderTasks();renderSixNav();renderPrompt();applyViewMode();}
+function render(){renderRoute();renderStages();renderTasks();renderSixNav();renderPrompt();applyViewMode();
+ const item=state.viewMode==="simple"?S.get(state.simpleTask):P.task(state.task);
+ const aboutCover=state.viewMode==="simple"?state.simpleTask==="cover":/COVER_DESIGN|cover|封面/i.test([item?.id,item?.name,item?.output].join(" "));
+ $('coverAssistant').hidden=!aboutCover;
+}
 function download(name,text){const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function safeName(name){return String(name||'创作工作台').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,90);}
 async function copy(){const text=$('promptText').value;try{await navigator.clipboard.writeText(text);toast('已复制当前完整 Prompt');}catch{$('promptText').focus();$('promptText').select();let ok=false;try{ok=document.execCommand('copy');}catch{}toast(ok?'已复制当前完整 Prompt':'已选中完整 Prompt，请手动复制');}}

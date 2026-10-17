@@ -311,7 +311,7 @@
     if (!Rules.normalizeText(state.common.videoPath)) { showView("prepare"); toast("请先通过本机助手选择成片"); return; }
     const publishFields = JSON.parse(JSON.stringify(state.platforms));
     if (enabledKeys().includes("youtube")) {
-      const merged = PublishMd.buildYouTubeDescription(publishFields.youtube.description, publishFields.youtube.chapters);
+      const merged = PublishMd.buildYouTubeReleaseDescription(publishFields.youtube.description, publishFields.youtube.chapters, publishFields.youtube.hashtags);
       publishFields.youtube.description = merged.description;
     }
     const button = $("#oneClickPrepareButton");
@@ -679,8 +679,8 @@
       });
       const copyTextValue = platform.fields.map((rule) => state.platforms[key]?.[rule.key] || "").join("\n");
       warnings.push(...Rules.scanCopyRisk(copyTextValue));
-      if (key === "youtube" && state.platforms.youtube.chapters) {
-        const assembled = PublishMd.buildYouTubeDescription(state.platforms.youtube.description, state.platforms.youtube.chapters);
+      if (key === "youtube" && (state.platforms.youtube.chapters || state.platforms.youtube.hashtags)) {
+        const assembled = PublishMd.buildYouTubeReleaseDescription(state.platforms.youtube.description, state.platforms.youtube.chapters, state.platforms.youtube.hashtags);
         warnings.push(...assembled.warnings);
         if ([...assembled.description].length > 5000) errors.push("视频章节合并后简介超过 YouTube 5000 字符限制");
       }

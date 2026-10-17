@@ -70,6 +70,7 @@ function renderSixPrompt(){
  $('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';
  $('nextPartButton').hidden=true;
  $('handoffNote').textContent='只交这一项正式成果。AI 可自主研究、实施、检查与修订；缺少必要真实素材时如实说明。';
+ $('coverAssistant').hidden=item.id!=='cover';
 }
 function applyViewMode(){
  const simple=state.viewMode==='simple';

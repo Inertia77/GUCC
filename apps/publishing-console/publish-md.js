@@ -26,14 +26,14 @@
       description: ["完整描述", "最终完整描述", "描述"],
       topics: ["话题"], collection: ["合集"], pinnedComment: ["置顶评论"]
     }},
-    youtube: { name: "YouTube", aliases: ["youtube", "youtube繁體中文", "youtube简体中文"], fields: {
+    youtube: { name: "YouTube", aliases: ["youtube", "youtube繁體中文", "youtube繁体中文", "youtube简体中文", "youtube繁中", "youtube简中"], fields: {
       title: ["标题", "最终标题"], description: ["简介", "最终简介", "说明"],
       hashtags: ["hashtags", "话题标签"], backendTags: ["后台tags", "后台标签", "标签", "tags"],
       chapters: ["视频章节", "章节", "chapters"],
       playlist: ["播放列表"], visibility: ["可见性"], madeForKids: ["儿童内容设置"],
       language: ["视频语言"]
     }},
-    tiktok: { name: "TikTok", aliases: ["tiktok", "tiktok繁體中文", "tiktok简体中文"], fields: {
+    tiktok: { name: "TikTok", aliases: ["tiktok", "tiktok繁體中文", "tiktok繁体中文", "tiktok简体中文", "tiktok繁中", "tiktok简中"], fields: {
       caption: ["caption", "最终caption", "发布文案"],
       visibility: ["可见性"], interaction: ["互动权限"],
       disclosure: ["内容披露"], pinnedComment: ["置顶评论"]

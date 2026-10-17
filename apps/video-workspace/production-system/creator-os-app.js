@@ -7,6 +7,8 @@ const O=window.GuccCreatorOrchestrator;
 const Steps=window.GuccCreatorStepHistory;
 const Storage=window.GuccCreatorStorage;
 const Validation=window.GuccCreatorValidation;
+const Outcomes=window.GuccCreatorOutcomes;
+const Six=window.GuccCreatorSix;
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
@@ -17,7 +19,9 @@ const linkedProjectId=new URLSearchParams(window.location.search).get("project")
 if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
   store.selectedProjectId=linkedProjectId;
 }
-let activeView="system";
+let activeView="outcomes";
+let selectedOutcomeVideoKey="";
+let editingOutcome=null;
 let toastTimer;
 let flowExpanded=false;
 let selectedBranch="";
@@ -101,6 +105,7 @@ function render(){
   renderNav();
   renderProjectBar();
   renderSystem();
+  if(activeView==="outcomes")renderOutcomeBoard();
   if(activeView==="core")renderCore();
   if(activeView==="capabilities")renderCapabilities();
   if(activeView==="projects")renderProjects();
@@ -258,6 +263,109 @@ function renderFlow(p){
     box.append(more);
   }
 }
+
+/* OUTCOME BOARD: authoritative manual deliverable checklist, not a Prompt Flow gate. */
+function outcomeVideo(p){
+  const videos=Outcomes.videos(p);
+  if(!videos.length)return null;
+  return videos.find(v=>v.key===selectedOutcomeVideoKey)||
+    videos.find(v=>v.branch===selectedBranch||v.key===selectedBranch)||videos[0];
+}
+function renderOutcomeBoard(){
+  const sel=$("outcomeProjectSelect"),old=sel.value;
+  sel.replaceChildren();
+  const list=store.projects.filter(p=>p.status!=="TEST_FIXTURE");
+  if(!list.length){
+    sel.add(new Option("暂无项目，请新建",""));sel.disabled=true;
+    $("outcomeProjectMeta").textContent="新建项目后，即可管理六项成果。";
+    $("outcomeVideoTabs").replaceChildren();$("outcomeCards").innerHTML='<p class="outcomes-empty">尚无创作项目。创建项目后可以直接开始记录成果，不必先运行动态 Prompt。</p>';
+    $("outcomeProgressText").textContent="0 / 6";
+    $("outcomeProgressFill").style.width="0%";
+    $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
+    $("outcomeAddVideo").disabled=true;
+    return;
+  }
+  sel.disabled=false;
+  for(const item of list)sel.add(new Option((projectLife(item)==="active"?"":"["+lifeName(item)+"] ")+item.name,item.projectId));
+  const p=current();
+  if(!p){sel.selectedIndex=0;$("outcomeProjectMeta").textContent="请选择项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择一个项目。</p>';return;}
+  sel.value=p.projectId;
+  $("outcomeProjectMeta").textContent=[p.game||"未设置游戏",p.version||"未设置版本",lifeName(p)].join(" · ");
+  const videos=Outcomes.videos(p),video=outcomeVideo(p);
+  selectedOutcomeVideoKey=video?.key||"";
+  $("outcomeVideoTabs").innerHTML=videos.map(v=>
+    '<button type="button" data-outcome-video="'+esc(v.key)+'" class="'+(v.key===selectedOutcomeVideoKey?"active":"")+'">'+esc(v.name)+'</button>'
+  ).join("");
+  $("outcomeVideoTabs").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+    selectedOutcomeVideoKey=button.dataset.outcomeVideo;
+    const selected=Outcomes.videos(current()).find(v=>v.key===selectedOutcomeVideoKey);
+    window.GuccCreatorContext?.set({projectId:p.projectId,videoId:selected?.key==="SHARED"?"":selected?.key||""});
+    renderOutcomeBoard();
+  }));
+  const allowed=!p.deletedAt&&!p.archivedAt;
+  $("outcomeAddVideo").disabled=!allowed;
+  const total=Outcomes.summary(p,video);
+  $("outcomeProgressText").innerHTML=total.done+" / "+total.applicable+" <small>已完成"+(total.ignored?" · "+total.ignored+" 项不适用":"")+"</small>";
+  $("outcomeProgressHint").textContent="按照当前视频六项成果的人工验收记录统计。旧 Prompt 只有文件、质量和人工审核全部通过时，才作为已完成参考。";
+  $("outcomeProgressFill").style.width=total.percent+"%";
+  $("outcomeProgressMeter").setAttribute("aria-valuenow",String(total.percent));
+  $("outcomeCards").innerHTML=Six.ITEMS.map(item=>{
+    const rec=Outcomes.record(p,video,item.id);
+    const source=rec.source==="manual"?"手动记录":rec.source==="flow"?"由旧动态流程推断 · 可独立修正":"尚无独立进度记录";
+    const note=rec.note?'<p class="outcome-card-ref">'+esc(rec.note)+'</p>':"";
+    const ref=rec.artifactRef?'<p class="outcome-card-ref">成果：'+esc(rec.artifactRef)+'</p>':"";
+    return '<article class="outcome-card" data-status="'+esc(rec.status)+'">'+
+      '<div class="outcome-card-head"><span class="outcome-card-id">OUTCOME / '+esc(item.no)+'</span>'+
+      '<span class="outcome-status" data-status="'+esc(rec.status)+'">'+esc(Outcomes.LABELS[rec.status])+'</span></div>'+
+      '<h3>'+esc(item.name)+'</h3><p>'+esc(item.output)+'</p>'+ref+note+
+      '<div class="outcome-card-foot"><span class="outcome-card-source">'+esc(source)+'</span>'+
+      '<button class="button secondary" type="button" data-outcome-edit="'+esc(item.id)+'" '+(allowed?"":"disabled")+'>管理进度 ↗</button></div></article>';
+  }).join("");
+  $("outcomeCards").querySelectorAll("[data-outcome-edit]").forEach(button=>button.addEventListener("click",()=>openOutcomeEditor(button.dataset.outcomeEdit)));
+}
+function openOutcomeEditor(id){
+  const p=current(),video=outcomeVideo(p),item=Six.get(id);
+  if(!p||p.deletedAt||p.archivedAt||!video||!item)return;
+  const rec=Outcomes.record(p,video,id);
+  editingOutcome={projectId:p.projectId,videoKey:video.key,videoBranch:video.branch,id,baseline:JSON.stringify(rec)};
+  $("outcomeDialogTitle").textContent=item.no+" · "+item.name;
+  $("outcomeDialogContext").textContent=p.name+" / "+video.name+"；修改只影响这一个视频的这一项成果。";
+  $("outcomeEditStatus").value=rec.status;
+  $("outcomeEditArtifact").value=rec.artifactRef||"";
+  $("outcomeEditNote").value=rec.note||"";
+  $("outcomeEditVerified").checked=rec.status==="done"&&Boolean(rec.verifiedAt);
+  updateOutcomeVerificationVisibility();
+  $("outcomeDialog").showModal();
+}
+function updateOutcomeVerificationVisibility(){
+  const required=$("outcomeEditStatus").value==="done";
+  $("outcomeEditVerified").closest("label").hidden=!required;
+  $("outcomeEditArtifact").required=required;
+}
+function saveOutcomeEditor(e){
+  e.preventDefault();
+  if(!editingOutcome)return;
+  const p=current(),video=outcomeVideo(p);
+  if(!p||p.projectId!==editingOutcome.projectId||!video||
+    video.key!==editingOutcome.videoKey||video.branch!==editingOutcome.videoBranch||p.deletedAt||p.archivedAt){
+    return notify("项目或视频已经切换，请重新打开成果卡片");
+  }
+  if(JSON.stringify(Outcomes.record(p,video,editingOutcome.id))!==editingOutcome.baseline)
+    return notify("进度在编辑期间已更新，请重新打开卡片，避免覆盖新状态");
+  try{
+    Outcomes.update(p,video,editingOutcome.id,{
+      status:$("outcomeEditStatus").value,
+      artifactRef:$("outcomeEditArtifact").value,
+      note:$("outcomeEditNote").value,
+      verified:$("outcomeEditVerified").checked
+    });
+    p.updatedAt=new Date().toISOString();
+    const persisted=save();render();
+    $("outcomeDialog").close();
+    notify(persisted?"成果进度已保存；云端同步状态请查看页眉":"保存到浏览器失败，请尽快备份");
+  }catch(error){notify("无法保存："+error.message);}
+}
+
 function renderCore(){
   $("autonomyGrid").innerHTML=Object.entries(Core.AUTONOMY_LEVELS).map(([k,v])=>`<article class="panel"><span class="micro">${k}</span><h3>${esc(v.label)}</h3><p class="subtitle">${esc(v.summary)}</p></article>`).join("");
   $("coreRuleGrid").innerHTML=Object.values(Core.CORE_RULES).map(s=>`<article class="panel rule-card"><h3>${esc(s.title)}</h3><h4 class="hard">Hard</h4><ul>${s.hard.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4 class="best">Best Practice</h4><ul>${s.best.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
@@ -615,6 +723,21 @@ function applyNodeResult(result){
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+$("outcomeProjectSelect").addEventListener("change",e=>{
+  store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";
+  save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:""});
+});
+$("boardDynamicPrompt").addEventListener("click",()=>{
+  const video=outcomeVideo(current());
+  selectedBranch=video?.branch==="SHARED"?"":video?.branch||"";
+  activeView="system";render();
+});
+$("outcomeNewProject").addEventListener("click",()=>{$("createDialog").showModal();});
+$("outcomeAddVideo").addEventListener("click",()=>{$("addVideoDialog").showModal();});
+$("outcomeEditStatus").addEventListener("change",updateOutcomeVerificationVisibility);
+$("outcomeForm").addEventListener("submit",saveOutcomeEditor);
+$("outcomeDialog").querySelectorAll("[data-close-outcome]").forEach(b=>b.addEventListener("click",()=>{$("outcomeDialog").close();}));
+$("outcomeDialog").addEventListener("close",()=>{editingOutcome=null;});
 $("editProjectBtn").addEventListener("click",openProjectEditor);
 $("editProjectTopBtn").addEventListener("click",openProjectEditor);
 $("editProjectArchiveBtn").addEventListener("click",openProjectEditor);

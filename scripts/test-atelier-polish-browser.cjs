@@ -42,7 +42,7 @@ let browser;
   assert(await p.getByRole('dialog',{name:'选择工作区'}).evaluate(d=>d===document.activeElement||d.contains(document.activeElement)),'Sheet traps keyboard focus (dialog container itself is a valid focus stop)');
   await p.keyboard.press('Escape');
   await p.waitForFunction(()=>document.querySelector('[aria-label=选择工作区]').getAttribute('aria-expanded')==='false');
-  for(let i=5;i>=0;i--){await choose('工作区',i);assert(await p.locator(['#view-outcomes','#view-system','#view-projects','#view-core','#view-capabilities','#view-libraries'][i]).isVisible());}
+  for(let i=3;i>=0;i--){await choose('工作区',i);assert(await p.locator(['#view-outcomes','#view-creation','#view-release','#view-knowledge'][i]).isVisible());}
   assert(await p.locator('.os-nav').isHidden(),'No duplicate phone navigation');
   await shot(`creator-returned-${width}`);
   await p.evaluate(()=>window.scrollTo({top:450,behavior:'instant'}));

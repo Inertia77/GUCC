@@ -24,7 +24,7 @@ const uxBrowser = read('scripts/test-creator-ux-browser.cjs');
 
 assert.match(shell, /fixed:\s*\{/m, 'Global shell must expose Production as a creator destination.');
 assert.match(shell, /items:\s*\[childRoutes\.dashboard, childRoutes\.workbench, childRoutes\.distribution, childRoutes\.governance\]/, 'Creator menu must expose four distinct workspaces without promoting the optional cover tool.');
-assert.match(portal, /固定 Prompt Studio/, 'Portal enhancer must promote Production into the core launcher.');
+assert.match(portal, /项目中枢[\s\S]*创作工作台[\s\S]*规则与资料[\s\S]*发布与复盘/, 'Portal launcher must expose four Creator workspaces.');
 assert.match(shell, /dataset\.shellVersion = '5'/, 'Shell version must invalidate stale navigation DOM.');
 assert.match(shellCss, /grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/, 'Mobile global shell must keep exactly five primary slots.');
 assert.match(shellCss, /data-group="create"[\s\S]*repeat\(2, minmax\(0, 1fr\)\)/, 'Four creator destinations should render as a 2×2 menu.');

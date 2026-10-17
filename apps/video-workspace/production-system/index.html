@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080e19">
-<title>GameUp Creator OS · 制作中枢｜GUCC</title>
+<title>GUCC Creator · 四大创作工作区</title>
 <link rel="icon" href="../../../assets/icons/gucc-icon.svg?v=5">
 <script src="../../../assets/access-guard.js?v=15" data-root="../../../" data-guard="true" data-creator-prompts="true"></script>
 <script src="../../../assets/creator-shared-context.js?v=2"></script>
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
 <link rel="stylesheet" href="./creator-os-outcomes.css?v=1">
+<link rel="stylesheet" href="./creator-four-workspaces.css?v=2">
 <link rel="stylesheet" href="../../../assets/gucc-premium.css?v=4" data-gucc-premium>
+<script src="../../../assets/creator-project-folders.js?v=1" defer></script>
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -22,22 +24,18 @@
   <div class="topbar-center"><span class="center-line"></span><span>CREATIVE 工作区</span><span class="center-line"></span></div>
   <div class="top-actions">
     <span class="system-label"><span class="alive-dot"></span> CITY SIGNAL <i>/</i> CREATOR TERMINAL</span>
-    <a class="top-link mode-switch-link" href="../legacy-prompt-studio-v6.html">固定 Prompt Studio ↗</a>
-    <a class="top-link" href="../../cover-generator/">封面工具 ↗</a>
-    <a class="top-link top-link-icon" href="../../publishing-console/" aria-label="发布控制台">发布工具 ↗</a>
+    <a class="top-link" href="../legacy-prompt-studio-v6.html" target="_blank" rel="noopener">独立打开固定 Studio ↗</a>
+    <a class="top-link" href="../../publishing-console/" target="_blank" rel="noopener">独立打开发行控制台 ↗</a>
   </div>
 </header>
 
 <div class="os-shell">
   <aside class="os-nav">
-    <div class="nav-title"><span>工作区</span><small>01 / 06</small></div>
-    <button data-view="outcomes" class="active"><b>01</b><span>成果进度</span><i>›</i></button>
-    <button data-view="system"><b>02</b><span>动态 Prompt</span><i>›</i></button>
-    <button data-view="projects"><b>03</b><span>项目档案</span><i>›</i></button>
-    <div class="nav-section-label">规则与资料</div>
-    <button data-view="core"><b>04</b><span>规则与防错</span><i>›</i></button>
-    <button data-view="capabilities"><b>05</b><span>能力模块库</span><i>›</i></button>
-    <button data-view="libraries"><b>06</b><span>公共资料库</span><i>›</i></button>
+    <div class="nav-title"><span>工作区</span><small>01 / 04</small></div>
+    <button data-view="outcomes" class="active"><b>01</b><span>项目中枢</span><i>›</i></button>
+    <button data-view="creation"><b>02</b><span>创作工作台</span><i>›</i></button>
+    <button data-view="release"><b>03</b><span>发布与复盘</span><i>›</i></button>
+    <button data-view="knowledge"><b>04</b><span>规则与资料</span><i>›</i></button>
     <div class="nav-spacer"></div>
     <div class="nav-note">
       <span class="tiny-sigil">✦</span>
@@ -52,7 +50,7 @@
       <div>
         <p class="eyebrow"><span class="eyebrow-glyph">◉</span> GAMEUP <span class="slash">/</span> STUDIO</p>
         <h1>创作<span>中枢</span><span class="heading-period">.</span></h1>
-        <p class="workspace-deck">项目进度独立管理，Prompt 工具按需选择。</p>
+        <p class="workspace-deck">四个工作区 · 一个项目身份 · 六项成果独立验收</p>
       </div>
       <div data-creator-context></div>
       <div class="heading-status">
@@ -67,14 +65,12 @@
     <section id="view-outcomes" class="view active" aria-label="六项成果进度管理">
       <div class="outcomes-intro">
         <div><span class="micro">DELIVERABLE MANAGEMENT / 01—06</span>
-          <h2>项目成果<span class="outcome-period">.</span></h2>
-          <p>独立管理六项正式成果的完成状态。每条视频单独记录，使用哪种 Prompt 不影响进度。</p>
+          <h2>项目中枢<span class="outcome-period">.</span></h2>
+          <p>统一查看所有项目、视频与六项成果。制作工具和流程选择不会改写正式验收状态。</p>
         </div>
-        <div class="outcomes-methods"><span class="outcome-tools-caption">执行工具 · 按需使用</span>
-          <a class="button ghost" href="../legacy-prompt-studio-v6.html" id="boardFixedPrompt">固定 Prompt ↗</a>
-          <button type="button" class="button secondary" id="boardDynamicPrompt">动态 Prompt ↗</button>
-        </div>
+        <div class="outcomes-methods"><button type="button" class="button secondary" id="boardFixedPrompt">开始制作 · 选择方式 ↗</button><button type="button" class="button ghost" id="boardDynamicPrompt">灵活编排 ↗</button></div>
       </div>
+      <section class="portfolio-section" aria-label="所有创作项目"><div class="portfolio-heading"><span class="micro">PROJECT PORTFOLIO</span><strong>项目总览</strong><span id="portfolioStatus" class="portfolio-status"></span></div><div id="projectPortfolio" class="portfolio-grid"></div></section>
       <div class="outcomes-toolbar">
         <label>当前项目<select id="outcomeProjectSelect" aria-label="选择管理的项目"></select></label>
         <div class="outcomes-project-meta" id="outcomeProjectMeta"></div>
@@ -89,10 +85,45 @@
         <div class="outcomes-meter" role="progressbar" aria-label="当前视频成果完成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="outcomeProgressMeter"><span id="outcomeProgressFill"></span></div>
       </section>
       <div class="outcomes-cards" id="outcomeCards"></div>
-      <p class="outcomes-footnote">成果状态读取并写入 GUCC 正式成果记录；文件核验、字幕录音校验、版本历史和人工确认沿用现有成果档案。动态 Prompt 和固定 Prompt 都是可选的制作工具，不能单独改变完成状态。</p>
+      <p class="outcomes-footnote">正式完成率来自正式成果记录。文件核验、录音校验和人工确认均沿用已有规则；只做了 Prompt 不会自动算完成。</p>
+      <details id="projectRegistryDetails" class="portfolio-registry">
+        <summary><span>项目档案与高级管理</span><small>搜索、编辑、完成、归档、恢复及历史资料</small></summary>
+    <div id="view-projects" class="project-registry-inner">
+      <a class="top-link" href="./legacy-v1.html">兼容版 Production ↗</a><div class="section-head"><span class="micro">PROJECT REGISTRY</span><h2>项目总览</h2><p>正式项目身份来自 creator_projects，详细制作资料同步到关联表。默认聚焦进行中；已完成、归档及回收站独立管理。</p></div>
+      <div class="project-management-bar">
+        <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
+        <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="completed">已完成</option><option value="archived">已归档</option><option value="all">全部（不含回收站）</option><option value="trash">回收站</option></select>
+        <button id="editProjectArchiveBtn" type="button" class="button ghost">编辑项目资料</button>
+        <button id="completeCurrentProject" type="button" class="button secondary">标记已完成</button>
+        <button id="archiveCurrentProject" type="button" class="button ghost">归档项目</button>
+        <button id="deleteCurrentProject" type="button" class="button danger">删除项目</button>
+      </div>
+      <p id="projectCounts" class="project-counts" aria-live="polite"></p>
+      <div id="projectCards" class="project-cards"></div>
+      <section class="panel">
+        <div class="panel-head"><h3>当前项目 Artifact</h3><div class="button-row"><button class="button ghost" data-artifact="brief">PROJECT_BRIEF</button><button class="button ghost" data-artifact="contract">VIDEO_CONTRACT</button><button class="button ghost" data-artifact="workflow">PROJECT_WORKFLOW</button><button class="button ghost" data-artifact="flow">PROJECT_PROMPT_FLOW</button><button class="button ghost" data-artifact="task">CURRENT_TASK</button></div></div>
+        <pre id="artifactPreview" class="artifact-preview"></pre>
+      </section>
+      <section class="panel">
+        <details><summary>成熟 Prompt 方法继承记录（历史参考）</summary><div id="migrationTable"></div></details>
+      </section>
+    </div>
+      </details>
     </section>
 
-    <section id="view-system" class="view">
+    <section id="view-creation" class="view" aria-label="创作工作台">
+      <div class="section-head creator-unified-head"><span class="micro">PRODUCTION WORKBENCH</span><h2>创作工作台</h2><p>两种执行方式，同一项目身份；单项成果可直接制作，复杂项目可以自由编排。</p></div>
+      <div class="creation-switch" role="group" aria-label="选择创作方式">
+        <button type="button" data-creation-mode="fixed" class="active" aria-pressed="true"><span>FX / SIX DELIVERABLES</span><strong>固定成果 Prompt</strong><small>推荐 · 单项交付 · 高自主权</small></button>
+        <button type="button" data-creation-mode="dynamic" aria-pressed="false"><span>OS / FLEXIBLE FLOW</span><strong>灵活编排</strong><small>任务依赖、执行回执、修订与回退</small></button>
+      </div>
+      <div class="creation-pane active" data-creation-pane="fixed">
+        <div class="frame-heading"><p>选择六项成果并复制 Prompt。实际成果完成后回到项目中枢验收。</p><a href="../legacy-prompt-studio-v6.html" target="_blank" rel="noopener">全屏打开 ↗</a></div>
+        <iframe id="fixedStudioFrame" class="gucc-embed" title="固定成果 Prompt Studio" src="../legacy-prompt-studio-v6.html?embedded=1" loading="lazy"></iframe>
+      </div>
+      <div class="creation-pane" data-creation-pane="dynamic">
+        <div class="frame-heading"><p>保留原动态 Prompt 的完整执行和回退逻辑。状态与文件验收由项目中枢独立管理。</p></div>
+        <div id="view-system" class="creation-internal">
       <div data-creator-outcomes></div>
       <div class="hero-grid">
         <article class="panel current-task-panel">
@@ -115,6 +146,7 @@
             <button class="button secondary" id="applyResultBtn">导入 AI 执行结果 <span aria-hidden="true">↗</span></button>
             <button type="button" class="button ghost rewind-task-btn" id="rewindTaskBtn" title="撤回上一步的已导入结果，重新提交">← 返回上一步</button>
           </div>
+          <div id="dynamicCoverAssist" class="creator-cover-assist" data-visible="false"><div><strong>需要精细制作封面？</strong><p>默认先用当前 AI Prompt 完成三比例封面。需要手动控制排版、裁切与细节时，再打开高级封面编辑器。</p></div><a href="../../cover-generator/" target="_blank" rel="noopener">高级封面制作 ↗</a></div>
           <details class="task-details">
             <summary>查看所需输入、预期产物及完整 Prompt <span aria-hidden="true">⌄</span></summary>
             <div class="io-grid">
@@ -229,9 +261,25 @@
         <summary><span><span class="micro">PRODUCTION MAP</span><strong>01～07 制作生命周期</strong></span><span class="lifecycle-hint">查看宏观流程 · 不决定 Prompt 执行顺序 <span aria-hidden="true">⌄</span></span></summary>
         <div id="productionMap" class="production-map"></div>
       </details>
+        </div>
+      </div>
     </section>
 
-    <section id="view-core" class="view">
+    <section id="view-release" class="view" aria-label="发布与复盘">
+      <div class="section-head"><span class="micro">DISTRIBUTION / ANALYTICS</span><h2>发布与复盘</h2><p>六平台发布单、发布前检查、逐平台执行与数据复盘。原发布控制台的数据和历史全部保留。</p></div>
+      <div class="frame-heading"><p>直接在这里准备与复盘；需要更大空间时可以全屏打开，编辑数据保持一致。</p><a href="../../publishing-console/" target="_blank" rel="noopener">全屏打开 ↗</a></div>
+      <p id="releaseIdentityGate" class="panel" hidden>请先选择本项目下的具体视频，再编辑对应的发布单。 <button type="button" id="releaseChooseVideo" class="button secondary">选择视频</button></p>
+      <iframe id="publishConsoleFrame" class="gucc-embed" title="GUCC 发布与复盘控制台" src="../../publishing-console/?embedded=1" loading="lazy"></iframe>
+    </section>
+
+    <section id="view-knowledge" class="view" aria-label="规则与资料">
+      <div class="section-head"><span class="micro">REFERENCE / GOVERNANCE</span><h2>规则与资料</h2><p>创作规则、方法库与公共资料统一归档，按照需要切换查看，便于后续维护。</p></div>
+      <div class="reference-switch" role="group" aria-label="规则与资料分类">
+        <button type="button" data-reference="core" class="active" aria-pressed="true">创作规则与防错</button>
+        <button type="button" data-reference="capabilities" aria-pressed="false">能力方法库</button>
+        <button type="button" data-reference="libraries" aria-pressed="false">共享资料与数据</button>
+      </div>
+    <section id="view-core" class="reference-pane active">
       <div class="section-head"><span class="micro">00</span><h2>Core Rules & Failure Prevention</h2><p>长期规则稳定，Workflow 动态。只有真正会制造虚假产物的缺失才 HARD STOP。</p></div>
       <div id="autonomyGrid" class="card-grid"></div>
       <div id="coreRuleGrid" class="rule-grid"></div>
@@ -239,13 +287,13 @@
       <section class="panel"><div class="panel-head"><h3>Failure Prevention Library</h3><span class="pill">从旧 Prompt 踩坑迁移</span></div><div id="failureList" class="failure-list"></div></section>
     </section>
 
-    <section id="view-capabilities" class="view">
+    <section id="view-capabilities" class="reference-pane">
       <div class="section-head"><span class="micro">02</span><h2>Capability Library</h2><p>能力没有固定顺序。每个模块保留成熟 Prompt DNA、Guardrail、Quality Gate、Executor 与 Chat Fallback。</p></div>
       <div class="filters"><input id="capSearch" type="search" placeholder="搜索 Capability / 旧 Prompt 编号…"><select id="capDomain"></select></div>
       <div id="capabilityGrid" class="capability-grid"></div>
     </section>
 
-    <section id="view-libraries" class="view">
+    <section id="view-libraries" class="reference-pane">
       <div class="section-head"><span class="micro">03</span><h2>Global Libraries</h2><p>复用现有 Creator 数据层，不新建重复数据库。</p></div>
       <div class="library-grid">
         <article class="panel"><h3>Research Source Library</h3><p>复用 <code>creator_research_sources</code>：官方来源、版本语境、检查时间与事实快照。</p></article>
@@ -256,27 +304,9 @@
         <article class="panel"><h3>云端项目身份</h3><p>Creator Project 以 <code>creator_projects</code> 作为正式身份；详细制作中枢状态使用关联的 Creator OS 快照表。素材本体保存在本地。</p></article>
       </div>
     </section>
-
-    <section id="view-projects" class="view">
-      <a class="top-link" href="./legacy-v1.html">兼容版 Production ↗</a><div class="section-head"><span class="micro">PROJECT REGISTRY</span><h2>项目总览</h2><p>正式项目身份来自 creator_projects，详细制作资料同步到关联表。默认聚焦进行中；已完成、归档及回收站独立管理。</p></div>
-      <div class="project-management-bar">
-        <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
-        <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="completed">已完成</option><option value="archived">已归档</option><option value="all">全部（不含回收站）</option><option value="trash">回收站</option></select>
-        <button id="editProjectArchiveBtn" type="button" class="button ghost">编辑项目资料</button>
-        <button id="completeCurrentProject" type="button" class="button secondary">标记已完成</button>
-        <button id="archiveCurrentProject" type="button" class="button ghost">归档项目</button>
-        <button id="deleteCurrentProject" type="button" class="button danger">删除项目</button>
-      </div>
-      <p id="projectCounts" class="project-counts" aria-live="polite"></p>
-      <div id="projectCards" class="project-cards"></div>
-      <section class="panel">
-        <div class="panel-head"><h3>当前项目 Artifact</h3><div class="button-row"><button class="button ghost" data-artifact="brief">PROJECT_BRIEF</button><button class="button ghost" data-artifact="contract">VIDEO_CONTRACT</button><button class="button ghost" data-artifact="workflow">PROJECT_WORKFLOW</button><button class="button ghost" data-artifact="flow">PROJECT_PROMPT_FLOW</button><button class="button ghost" data-artifact="task">CURRENT_TASK</button></div></div>
-        <pre id="artifactPreview" class="artifact-preview"></pre>
-      </section>
-      <section class="panel">
-        <details><summary>成熟 Prompt 方法继承记录（历史参考）</summary><div id="migrationTable"></div></details>
-      </section>
     </section>
+
+
   </main>
 </div>
 
@@ -379,9 +409,9 @@
 <script src="./creator-os-validation.js?v=1"></script>
 <script src="./creator-os-step-history.js?v=2"></script>
 <script src="./creator-os-outcomes.js?v=1"></script>
-<script src="./creator-os-app.js?v=3.7.0"></script>
+<script src="./creator-os-app.js?v=4.0.1"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
-<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=3"></script>
+<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=4"></script>
 </body>
 </html>

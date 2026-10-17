@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="./studio.css?v=6.3.0">
 <script>document.addEventListener('DOMContentLoaded',()=>{const settings=document.querySelector('.studio-settings');const small=matchMedia('(max-width:700px)');const fit=()=>{settings.open=!small.matches};fit();small.addEventListener('change',fit)});const TEMPLATE_VERSION = "6.2.0";</script>
 <script src="./ai-prompts.js?v=6.2.0" defer></script><script src="./creator-six-deliverables.js?v=1.0.2" defer></script><script src="./studio.js?v=6.4.0" defer></script>
+<link rel="stylesheet" href="../../assets/creator-embed-shell.css?v=2">
+<script src="../../assets/creator-embed-shell.js?v=2" defer></script>
 <link rel="stylesheet" href="../../assets/gucc-premium.css?v=4" data-gucc-premium>
 </head>
 <body class="creator-prompt-page">
@@ -41,6 +43,7 @@
   <section class="prompt-panel" aria-label="当前任务 Prompt">
    <div class="prompt-head"><div><span class="micro" id="taskMeta"></span><h2 id="taskTitle"></h2></div><div class="prompt-top-actions"><span id="modeBadge" class="mode-badge"></span><button id="copyTopButton" type="button" class="copy-top">复制</button></div></div>
    <p class="task-purpose" id="taskPurpose"></p>
+   <aside id="coverAssistant" class="cover-assist" hidden><div><strong>封面精修 · 可选辅助工具</strong><p>通常直接用当前 AI Prompt 产出三比例封面。需要手工排版、细化裁切或调整元素时，可以使用高级封面工具。</p></div><a href="../cover-generator/" target="_blank" rel="noopener">打开高级封面工具 ↗</a></aside>
    <div class="mode-row"><span>执行环境</span><div id="modeTabs" class="segmented" aria-label="执行环境"></div></div><div id="voiceModeRow" class="mode-row" hidden><span>录音方式</span><div id="voiceModeTabs" class="segmented" aria-label="录音方式"></div></div>
    <div id="fallbackNotice" class="fallback-notice" hidden></div><div id="partTabs" class="part-tabs" hidden></div>
    <details class="io-details"><summary>输入与交付 <span id="ioHint"></span></summary><div class="io-grid"><div><h3>需要提供</h3><p id="taskInputs"></p></div><div><h3>正式产物</h3><p id="taskOutputs"></p></div></div></details>
@@ -66,5 +69,5 @@
 <dialog id="mappingDialog" class="creator-dialog"><div class="dialog-heading"><h2>原编号与现在的任务</h2><button type="button" data-close>关闭</button></div><p>合并同一输入下可连续完成的工作；确认命题、录音、时间线、资产和剪辑蓝图之间保留交接。</p><div class="table-wrap"><table><thead><tr><th>原 Notion 编号</th><th>当前任务</th><th>Chat 备用</th></tr></thead><tbody id="mappingBody"></tbody></table></div><p>依据 2026-10-05 读取的 Notion 母库重构。页面只生成当前版本 Prompt；原版留作迁移核对。</p></dialog>
 <div id="toast" class="creator-toast" role="status" aria-live="polite" hidden></div>
 <script src="../../assets/pwa-install.js?v=2" data-root="../../"></script>
-<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=3"></script>
+<script type="module" src="../../assets/creator-shared-context-ui.mjs?v=4"></script>
 </body></html>

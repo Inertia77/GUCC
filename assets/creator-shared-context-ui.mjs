@@ -1,3 +1,4 @@
+import "./creator-project-folders.js?v=1";
 import { CONFIG } from "../apps/command-center/src/config.js";
 import { getAccessToken, getSession } from "../apps/command-center/src/auth.js";
 import {
@@ -76,7 +77,7 @@ async function request(path, { method = "GET", body, headers = {} } = {}) {
 }
 const css = element("link", {
   rel: "stylesheet",
-  href: new URL("./creator-shared-context.css?v=3", import.meta.url).href,
+  href: new URL("./creator-shared-context.css?v=4", import.meta.url).href,
 });
 document.head.append(css);
 // Each workspace owns the placement of its context. Never insert a second workbench.
@@ -763,10 +764,15 @@ async function loadOutcomes(ctx) {
     return;
   }
   try {
-    const result = await request(
-      "creator_deliverable_records?select=*&project_id=eq." +
-        encodeURIComponent(ctx.projectId),
-    );
+    const result = [];
+    for(let offset=0;;offset+=200){
+      const page=await request("creator_deliverable_records?select=*&project_id=eq."+
+        encodeURIComponent(ctx.projectId)+"&order=video_id.asc,deliverable_key.asc&limit=200&offset="+offset);
+      if(run!==epoch)return;
+      if(!Array.isArray(page))throw Error("正式成果返回格式不正确");
+      result.push(...page);
+      if(page.length<200)break;
+    }
     if (run !== epoch) return;
     rows = new Map(
       result
@@ -1179,6 +1185,8 @@ function openCreation(isVideo, legacy = "") {
   gameField.hidden = isVideo;
   versionField.hidden = isVideo;
   idField.hidden = !isVideo;
+  const folderHelper=form.querySelector(".creator-folder-command");
+  if(folderHelper)folderHelper.hidden=isVideo;
   idInput.value = legacy;
   dialogMessage.textContent = legacy
     ? "此标识来自旧流程。核对视频身份后登记，旧节点、Lock 与文件不会被改写。"

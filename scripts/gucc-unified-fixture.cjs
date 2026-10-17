@@ -204,11 +204,10 @@ function fixture() {
           if (method === "GET")
             return route.fulfill({
               json: [...deliverables.values()].filter(
-                (r) =>
-                  r.project_id === p &&
-                  (!v || r.video_id === v) &&
-                  (!k || r.deliverable_key === k),
-              ),
+                (r) => (!p || r.project_id === p) &&
+                  (!v || r.video_id === v) && (!k || r.deliverable_key === k)
+              ).sort((a,b)=>(a.video_id+":"+a.deliverable_key).localeCompare(b.video_id+":"+b.deliverable_key))
+                .slice(Number(u.searchParams.get("offset")||0), Number(u.searchParams.get("offset")||0)+Number(u.searchParams.get("limit")||1000)),
             });
         }
         if (name === "rpc/creator_workspace_save_deliverable") {

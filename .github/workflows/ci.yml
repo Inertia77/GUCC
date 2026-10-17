@@ -64,6 +64,9 @@ jobs:
       - name: Run Atelier visual and interaction acceptance
         run: node scripts/test-atelier-browser.cjs
 
+      - name: Run four Creator workspaces and embedded tools acceptance
+        run: node scripts/test-creator-four-workspaces-browser.cjs
+
       - name: Run Atelier mobile navigation and polish acceptance
         run: node scripts/test-atelier-polish-browser.cjs
 
@@ -80,6 +83,7 @@ jobs:
             tmp/creator-ux-browser/
             tmp/gucc-premium-browser/
             tmp/unified-workspace-browser/
+            tmp/creator-four-workspaces/
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/

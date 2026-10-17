@@ -40,7 +40,7 @@ function renderPrompt(){if(state.viewMode==='simple'){renderSixPrompt();return;}
  const voiceRow=$('voiceModeRow'),voiceTabs=$('voiceModeTabs');voiceRow.hidden=t.id!=='read';voiceTabs.replaceChildren();if(t.id==='read'){for(const [value,label] of [['human','真人录音'],['ai','剪映 AI 朗读']]){const b=button(label,()=>{state.context.voiceMode=value;renderPrompt();save();},state.context.voiceMode===value?'active':'');b.setAttribute('aria-pressed',String(state.context.voiceMode===value));voiceTabs.append(b);}}
  const fallback=state.mode==='Chat'&&Boolean(t.fallback&&t.fallback.length>1);const fallbackLabel=t.modes[0]==='Chat'?'Chat 分步':'Chat 备用';$('fallbackNotice').hidden=!fallback;$('fallbackNotice').textContent=`${fallbackLabel}共 ${ps.length} 步。每次只复制当前一条，同一 Chat 直接沿用上一子步骤产物；只有真实需要本地执行时才运行脚本并把结果接回当前 Chat。`;$('partTabs').hidden=!fallback;$('partTabs').replaceChildren();
  if(fallback)for(const p of ps){const b=button(`${p.index+1}. ${p.name}`,()=>{state.part=p.index;renderPrompt();save();},state.part===p.index?'active':'');b.setAttribute('aria-pressed',String(state.part===p.index));$('partTabs').append(b);}
- $('taskInputs').textContent=p.inputs||t.inputs;$('taskOutputs').textContent=p.outputs||t.outputs;$('ioHint').textContent=fallback?`当前 ${p.index+1}/${ps.length}：只需本子步骤输入`:'同一 Chat 已有内容直接沿用；仅关键缺项补充';$('promptText').value=promptIdentity(P.build(t.id,state.context,state.mode,state.part));$('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';$('nextPartButton').hidden=!(fallback&&state.part<ps.length-1);$('handoffNote').textContent=fallback?`当前 ${state.part+1}/${ps.length}：${ps[state.part].name}。切换步骤只切换 Prompt，不会执行任务。`:'本条可独立复制。Work／Codex 的合并工作只限这项任务，不会自动越过下一个确认或交接点。';}
+ $('taskInputs').textContent=p.inputs||t.inputs;$('taskOutputs').textContent=p.outputs||t.outputs;$('ioHint').textContent=fallback?`当前 ${p.index+1}/${ps.length}：只需本子步骤输入`:'同一 Chat 已有内容直接沿用；仅关键缺项补充';$('promptText').value=promptIdentity(P.build(t.id,state.context,state.mode,state.part));$('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';$('nextPartButton').hidden=!(fallback&&state.part<ps.length-1);$('handoffNote').textContent=fallback?`当前 ${state.part+1}/${ps.length}：${ps[state.part].name}。切换步骤只切换 Prompt，不会执行任务。`:'本条可独立复制。Work／Codex 的合并工作只限这项任务，不会自动越过下一个确认或交接点。';$('coverAssistant').hidden=!/COVER_DESIGN|cover|封面/i.test([t.id,t.name,t.output].join(' '));}
 
 function renderSixNav(){
  const nav=$('sixNavList');nav.replaceChildren();
@@ -70,6 +70,7 @@ function renderSixPrompt(){
  $('promptLength').textContent=$('promptText').value.length.toLocaleString()+' 字';
  $('nextPartButton').hidden=true;
  $('handoffNote').textContent='只交这一项正式成果。AI 可自主研究、实施、检查与修订；缺少必要真实素材时如实说明。';
+ $('coverAssistant').hidden=item.id!=='cover';
 }
 function applyViewMode(){
  const simple=state.viewMode==='simple';
@@ -87,7 +88,11 @@ function switchView(view){
  render();save();
 }
 
-function render(){renderRoute();renderStages();renderTasks();renderSixNav();renderPrompt();applyViewMode();}
+function render(){renderRoute();renderStages();renderTasks();renderSixNav();renderPrompt();applyViewMode();
+ const item=state.viewMode==="simple"?S.get(state.simpleTask):P.task(state.task);
+ const aboutCover=state.viewMode==="simple"?state.simpleTask==="cover":/COVER_DESIGN|cover|封面/i.test([item?.id,item?.name,item?.output].join(" "));
+ $('coverAssistant').hidden=!aboutCover;
+}
 function download(name,text){const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function safeName(name){return String(name||'创作工作台').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,90);}
 async function copy(){const text=$('promptText').value;try{await navigator.clipboard.writeText(text);toast('已复制当前完整 Prompt');}catch{$('promptText').focus();$('promptText').select();let ok=false;try{ok=document.execCommand('copy');}catch{}toast(ok?'已复制当前完整 Prompt':'已选中完整 Prompt，请手动复制');}}

@@ -19,7 +19,10 @@ const linkedProjectId=new URLSearchParams(window.location.search).get("project")
 if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
   store.selectedProjectId=linkedProjectId;
 }
-let activeView="outcomes";
+const entryParams=new URLSearchParams(window.location.search);
+let activeView=["outcomes","creation","release","knowledge"].includes(entryParams.get("view"))?entryParams.get("view"):"outcomes";
+let creationMode=entryParams.get("mode")==="dynamic"?"dynamic":"fixed";
+let referenceTab=["core","capabilities","libraries"].includes(entryParams.get("ref"))?entryParams.get("ref"):"core";
 let selectedOutcomeVideoKey="";
 
 let toastTimer;
@@ -105,16 +108,39 @@ function render(){
   renderNav();
   renderProjectBar();
   renderSystem();
-  if(activeView==="outcomes")renderOutcomeBoard();
-  if(activeView==="core")renderCore();
-  if(activeView==="capabilities")renderCapabilities();
-  if(activeView==="projects")renderProjects();
+  if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();renderProjects();}
+  if(activeView==="knowledge"){
+    if(referenceTab==="core")renderCore();
+    if(referenceTab==="capabilities")renderCapabilities();
+  }
   window.dispatchEvent(new CustomEvent("gucc:creator-os:rendered"));
 }
 function renderNav(){
   document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
-  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
+  document.querySelectorAll("main.os-main > section.view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
+  document.querySelectorAll("[data-creation-mode]").forEach(b=>{
+    const active=b.dataset.creationMode===creationMode;
+    b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
+  });
+  document.querySelectorAll("[data-creation-pane]").forEach(p=>p.classList.toggle("active",p.dataset.creationPane===creationMode));
+  document.querySelectorAll("[data-reference]").forEach(b=>{
+    const active=b.dataset.reference===referenceTab;
+    b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
+  });
+  document.querySelectorAll(".reference-pane").forEach(v=>v.classList.toggle("active",v.id==="view-"+referenceTab));
 }
+function navigateTo(view,mode){
+  if(!["outcomes","creation","release","knowledge"].includes(view))return;
+  activeView=view;
+  if(["fixed","dynamic"].includes(mode))creationMode=mode;
+  const url=new URL(window.location.href);
+  url.searchParams.set("view",view);
+  if(view==="creation")url.searchParams.set("mode",creationMode);else url.searchParams.delete("mode");
+  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  render();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
 function projectLife(p){
   if(p?.deletedAt)return "trash";
   if(p?.archivedAt)return "archived";
@@ -127,6 +153,8 @@ function lifeName(p){
 function selectActiveAfterMove(id){
   if(store.selectedProjectId!==id)return;
   store.selectedProjectId=store.projects.find(p=>p.projectId!==id&&projectLife(p)==="active"&&p.status!=="TEST_FIXTURE")?.projectId||"";
+  selectedOutcomeVideoKey="";selectedBranch="";
+  window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
 }
 function renderProjectBar(){
   const sel=$("projectSelect");sel.replaceChildren();
@@ -194,6 +222,7 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel?`${t.qcLevel} · 待核验`:"未核验";
   $("currentReview").textContent=t.status==="INACTIVE"?"未安排":t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"回执后继续";
   $("currentPrompt").textContent=t.prompt||"";
+  $("dynamicCoverAssist").dataset.visible=t.sixOutcomeId==="cover"||/COVER_DESIGN/.test(t.capabilityUsed||"")?"true":"false";
   const canExecute=Boolean(p&&projectLife(p)==="active");
   const hasApprovedBrief=canExecute&&!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
   $("copyBuildFlowPrompt").disabled=!hasApprovedBrief;
@@ -264,11 +293,102 @@ function renderFlow(p){
   }
 }
 
+
+/* Portfolio uses formal cloud records; workflow node progress is intentionally excluded. */
+let portfolioFetching=false,portfolioLoaded=false,portfolioError="",portfolioEpoch=0;
+const portfolioVideos=new Map();
+function projectVideos(p){
+  const videos=Outcomes.videos(p);
+  for(const row of portfolioVideos.get(p?.projectId)||[]){
+    const found=videos.find(v=>v.key===row.video_id||v.branch===row.legacy_branch);
+    if(found){found.key=row.video_id;found.inferred=false;found.name=row.title||found.name;}
+    else videos.push({key:row.video_id,branch:row.legacy_branch||row.video_id,name:row.title||row.video_id});
+  }
+  return videos;
+}
+async function portfolioRows(request,table,id,order){
+  const all=[];
+  for(let offset=0;;offset+=200){
+    const page=await request(table+"?select=*&project_id=eq."+encodeURIComponent(id)+"&order="+order+"&limit=200&offset="+offset);
+    if(!Array.isArray(page))throw Error("正式资料返回格式不正确");
+    all.push(...page);
+    if(page.length<200)return all;
+  }
+}
+async function loadPortfolioOutcomes(){
+  if(portfolioFetching||portfolioLoaded)return;
+  const request=window.GuccCreatorWorkspace?.request;
+  if(!request)return; // shared authenticated client initializes asynchronously
+  portfolioFetching=true;portfolioError="";
+  const run=portfolioEpoch;
+  try{
+    await Promise.all(store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&(!portfolioVideos.has(p.projectId)||!officialProjectRecords.has(p.projectId))).map(async p=>{
+      const [rows,videos]=await Promise.all([
+        portfolioRows(request,"creator_deliverable_records",p.projectId,"video_id.asc,deliverable_key.asc"),
+        portfolioRows(request,"creator_video_workspaces",p.projectId,"video_id.asc")
+      ]);
+      if(run!==portfolioEpoch)return;
+      // A more recent editor read wins over a portfolio request already in flight.
+      const recent=officialProjectRecords.get(p.projectId)||[];
+      officialProjectRecords.set(p.projectId,rows.map(row=>{
+        const newer=recent.find(r=>r.video_id===row.video_id&&r.deliverable_key===row.deliverable_key&&r.revision>row.revision);
+        return newer||row;
+      }));
+      portfolioVideos.set(p.projectId,videos);
+    }));
+    if(run!==portfolioEpoch)return;
+    portfolioLoaded=store.projects.filter(p=>p.status!=="TEST_FIXTURE").every(p=>portfolioVideos.has(p.projectId));
+  }catch(error){if(run===portfolioEpoch)portfolioError=String(error?.message||"读取失败");}
+  finally{
+    portfolioFetching=false;
+    if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}
+  }
+}
+function renderProjectPortfolio(){
+  const box=$("projectPortfolio");if(!box)return;
+  if(portfolioLoaded&&store.projects.some(p=>p.status!=="TEST_FIXTURE"&&!portfolioVideos.has(p.projectId)))portfolioLoaded=false;
+  const projects=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&projectLife(p)!=="trash")
+    .sort((a,b)=>(projectLife(a)==="active"?0:1)-(projectLife(b)==="active"?0:1));
+  $("portfolioStatus").textContent=portfolioError?"云端读取失败 · 请刷新成果":portfolioLoaded?"正式成果已核对":"正式成果读取中";
+  if(!projects.length){
+    box.innerHTML='<div class="portfolio-empty">暂无项目。新建项目后会在这里集中查看各期制作进度。</div>';return;
+  }
+  box.innerHTML=projects.map(p=>{
+    const videos=projectVideos(p),rows=officialProjectRecords.get(p.projectId);
+    const verified=Array.isArray(rows)&&videos.length>0;
+    const complete=verified?videos.reduce((sum,v)=>sum+Outcomes.summary(rows,v).done,0):0;
+    const total=videos.length*6;
+    const percent=verified&&total?Math.round(complete/total*100):0;
+    const meta=[p.game||"游戏待设",p.version||"版本待设",videos.length?videos.length+" 条视频":"待登记视频"].join(" · ");
+    return '<button type="button" class="portfolio-card '+(p.projectId===store.selectedProjectId?'active':'')+'" data-portfolio-project="'+esc(p.projectId)+'">'+
+      '<span class="portfolio-top"><span class="portfolio-code">'+esc(p.projectCode||p.projectId)+'</span><span class="portfolio-life">'+esc(lifeName(p))+'</span></span>'+
+      '<strong>'+esc(p.name)+'</strong><span class="portfolio-metadata">'+esc(meta)+'</span>'+
+      '<span class="portfolio-progress"><span>'+esc(verified?"六项成果验收":"正式进度")+'</span><span>'+esc(verified?complete+" / "+total:"待核对")+'</span></span>'+
+       '<span class="portfolio-meter" aria-hidden="true"><span style="width:'+percent+'%"></span></span>'+
+      '<span class="portfolio-videos">'+videos.map(v=>{
+        const summary=Outcomes.summary(rows,v);
+        const next=summary.items.find(item=>item.status!=="confirmed");
+        const label=next?Six.ITEMS.find(item=>item.id===next.id)?.name:"六项已确认";
+        return '<span class="portfolio-video"><span>'+esc(v.name)+'</span><span>'+esc(verified?summary.done+" / 6":"待核对")+'</span></span>'+
+          '<span class="portfolio-next">'+esc(verified?(next?"下一项 · ":"")+label:"等待正式成果核对")+'</span>';
+      }).join("")+'</span></button>';
+  }).join("");
+  box.querySelectorAll("[data-portfolio-project]").forEach(b=>b.addEventListener("click",()=>{
+    if(store.selectedProjectId===b.dataset.portfolioProject)return;
+    store.selectedProjectId=b.dataset.portfolioProject;
+    selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
+    $("artifactPreview").textContent="";
+    save(false);render();
+    window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
+  }));
+  if(!portfolioLoaded&&!portfolioFetching&&!portfolioError)void loadPortfolioOutcomes();
+}
+
 /* OUTCOME BOARD: view and edit the SAME canonical deliverables used by all GUCC tools. */
 let outcomeFetchingProject="";
 let outcomeLoadError="";
 function outcomeVideo(p){
-  const videos=Outcomes.videos(p);
+  const videos=projectVideos(p);
   if(!videos.length)return null;
   const ctx=window.GuccCreatorContext?.read?.();
   return videos.find(v=>v.key===selectedOutcomeVideoKey)||
@@ -279,12 +399,12 @@ async function loadCanonicalOutcomes(p){
   if(!p||officialProjectRecords.has(p.projectId)||outcomeFetchingProject===p.projectId)return;
   const request=window.GuccCreatorWorkspace?.request;
   if(!request)return; // Shared editor module is still loading; its ready event will retry.
-  const id=p.projectId;
+  const id=p.projectId,run=portfolioEpoch;
   outcomeFetchingProject=id;outcomeLoadError="";
   try{
     const result=await request("creator_deliverable_records?select=*&project_id=eq."+encodeURIComponent(id));
     if(!Array.isArray(result))throw Error("云端成果格式异常");
-    if(!officialProjectRecords.has(id))officialProjectRecords.set(id,result);
+    if(run===portfolioEpoch&&!officialProjectRecords.has(id))officialProjectRecords.set(id,result);
   }catch(error){outcomeLoadError=String(error?.message||"云端读取失败");}
   finally{
     if(outcomeFetchingProject===id)outcomeFetchingProject="";
@@ -312,14 +432,14 @@ function renderOutcomeBoard(){
   if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';return;}
   sel.value=p.projectId;
   $("outcomeProjectMeta").textContent=[p.game||"未设置游戏",p.version||"未设置版本",lifeName(p)].join(" · ");
-  const videos=Outcomes.videos(p),video=outcomeVideo(p);
+  const videos=projectVideos(p),video=outcomeVideo(p);
   selectedOutcomeVideoKey=video?.key||"";
   $("outcomeVideoTabs").innerHTML=videos.map(v=>
     '<button type="button" data-outcome-video="'+esc(v.key)+'" class="'+(v.key===selectedOutcomeVideoKey?"active":"")+'">'+esc(v.name)+'</button>'
   ).join("");
   $("outcomeVideoTabs").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
     selectedOutcomeVideoKey=button.dataset.outcomeVideo;
-    const v=Outcomes.videos(current()).find(x=>x.key===selectedOutcomeVideoKey);
+    const v=projectVideos(current()).find(x=>x.key===selectedOutcomeVideoKey);
     window.GuccCreatorContext?.set({projectId:p.projectId,videoId:v?.inferred?"":v?.key||""});
     renderOutcomeBoard();
   }));
@@ -385,7 +505,7 @@ async function openCanonicalOutcomeEditor(id){
 
 function renderCore(){
   $("autonomyGrid").innerHTML=Object.entries(Core.AUTONOMY_LEVELS).map(([k,v])=>`<article class="panel"><span class="micro">${k}</span><h3>${esc(v.label)}</h3><p class="subtitle">${esc(v.summary)}</p></article>`).join("");
-  $("coreRuleGrid").innerHTML=Object.values(Core.CORE_RULES).map(s=>`<article class="panel rule-card"><h3>${esc(s.title)}</h3><h4 class="hard">Hard</h4><ul>${s.hard.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4 class="best">Best Practice</h4><ul>${s.best.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
+  $("coreRuleGrid").innerHTML=Object.values(Core.CORE_RULES).map(s=>`<article class="panel rule-card"><h3>${esc(s.title)}</h3><h4 class="hard">长期硬规则</h4><ul>${s.hard.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4 class="best">可调整建议</h4><ul>${s.best.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
   $("hardStopList").innerHTML=Core.HARD_STOP_RULES.map(x=>`<div class="failure-item"><code>${esc(x.id)}</code> · <strong>${esc(x.action)}</strong> · ${esc(x.when)}<br><span class="subtitle">${esc(x.reason)}</span></div>`).join("");
   $("failureList").innerHTML=Object.entries(Fail.LIBRARY).map(([cat,items])=>`<div class="failure-block"><h4>${esc(cat)}</h4>${items.map(x=>`<div class="failure-item"><code>${esc(x.id)}</code> <span class="status ${x.level==="HARD_CONSTRAINT"?"WAITING":"PENDING"}">${esc(x.level)}</span><br>${esc(x.rule)}</div>`).join("")}</div>`).join("");
 }
@@ -417,8 +537,9 @@ function renderProjects(){
     </article>`;
   }).join("")||'<p class="flow-empty">此筛选下暂无项目。</p>';
   document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{
-    store.selectedProjectId=card.dataset.project;
+    store.selectedProjectId=card.dataset.project;selectedOutcomeVideoKey="";selectedBranch="";
     $("artifactPreview").textContent="";save();render();
+    window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
   }));
   const enabled=Boolean(selected&&selected.status!=="TEST_FIXTURE");
   $("completeCurrentProject").disabled=!enabled||Boolean(selected?.deletedAt);
@@ -739,28 +860,93 @@ function applyNodeResult(result){
 }
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
-document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>navigateTo(b.dataset.view)));
+document.querySelectorAll("[data-creation-mode]").forEach(b=>b.addEventListener("click",()=>{
+  navigateTo("creation",b.dataset.creationMode);
+}));
+// Presentation and explicit shared identity only; never transfers task completion.
+const embeddedFrames=()=>[$("fixedStudioFrame"),$("publishConsoleFrame")];
+const embeddedStates=new Map();
+function syncEmbeddedViewport(){
+  const viewport=window.visualViewport;
+  const viewportTop=viewport?.offsetTop||0,viewportHeight=viewport?.height||innerHeight;
+  for(const frame of embeddedFrames()){
+    if(!frame?.getClientRects().length)continue;
+    const rect=frame.getBoundingClientRect();
+    const top=Math.max(0,viewportTop-rect.top);
+    const height=Math.max(120,Math.min(rect.bottom,viewportTop+viewportHeight)-Math.max(rect.top,viewportTop));
+    frame.contentWindow?.postMessage({type:"gucc:embedded-tool-viewport",top,height},location.origin);
+  }
+}
+function syncEmbeddedContext(){
+  const ctx=window.GuccCreatorContext?.read();
+  if(!ctx)return;
+  const needsVideo=Boolean(ctx.projectId&&!ctx.videoId);
+  $("releaseIdentityGate").hidden=!needsVideo;
+  $("publishConsoleFrame").hidden=needsVideo;
+  for(const frame of embeddedFrames())frame?.contentWindow?.postMessage({type:"gucc:embedded-tool-context",ctx},location.origin);
+}
+window.addEventListener("message",event=>{
+  if(event.origin!==location.origin)return;
+  const frame=embeddedFrames().find(f=>f?.contentWindow===event.source);
+  if(!frame)return;
+  if(event.data?.type==="gucc:embedded-tool-height"){
+    const value=Number(event.data.height);
+    if(Number.isFinite(value)&&value>=200&&value<100000&&Math.abs(parseFloat(frame.style.height||"0")-value)>4)frame.style.height=Math.ceil(value)+"px";
+    syncEmbeddedViewport();
+  }
+  if(event.data?.type==="gucc:embedded-tool-ready"){syncEmbeddedContext();syncEmbeddedViewport();}
+  if(event.data?.type==="gucc:embedded-tool-state"){
+    const prior=embeddedStates.get(frame);
+    embeddedStates.set(frame,event.data);
+    if(event.data.modal&&!prior?.modal){
+      frame.scrollIntoView({block:"start",behavior:"instant"});
+      window.scrollBy({top:-64,behavior:"instant"});
+    }
+    document.body.classList.toggle("creator-embedded-modal",[...embeddedStates.values()].some(s=>s.modal||s.editing));
+    syncEmbeddedViewport();
+  }
+  if(event.data?.type==="gucc:embedded-tool-context"){
+    const C=window.GuccCreatorContext;
+    if(C&&C.key(C.read())!==C.key(event.data.ctx))C.set(event.data.ctx);
+  }
+});
+window.addEventListener("scroll",syncEmbeddedViewport,{passive:true});
+window.addEventListener("resize",syncEmbeddedViewport,{passive:true});
+window.visualViewport?.addEventListener("resize",syncEmbeddedViewport,{passive:true});
+window.addEventListener("gucc:creator-context-changed",syncEmbeddedContext);
+window.addEventListener("gucc:workspace-ready",syncEmbeddedContext);
+window.addEventListener("gucc:creator-os:rendered",()=>{syncEmbeddedViewport();});
+$("releaseChooseVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
+document.querySelectorAll("[data-reference]").forEach(b=>b.addEventListener("click",()=>{
+  referenceTab=b.dataset.reference;
+  const url=new URL(window.location.href);url.searchParams.set("ref",referenceTab);
+  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  render();
+}));
 $("outcomeProjectSelect").addEventListener("change",e=>{
   store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
-  save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:""});
+  save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
 });
+$("boardFixedPrompt").addEventListener("click",()=>navigateTo("creation","fixed"));
 $("boardDynamicPrompt").addEventListener("click",()=>{
   const video=outcomeVideo(current());
   selectedBranch=video?.branch==="SHARED"?"":video?.branch||"";
-  activeView="system";render();
+  navigateTo("creation","dynamic");
 });
 $("outcomeRefresh").addEventListener("click",()=>{
   const p=current();if(!p)return;
-  if(outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
-  officialProjectRecords.delete(p.projectId);outcomeLoadError="";
-  void loadCanonicalOutcomes(p);renderOutcomeBoard();
+  if(portfolioFetching||outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
+  portfolioEpoch++;officialProjectRecords.clear();portfolioVideos.clear();portfolioLoaded=false;portfolioError="";outcomeLoadError="";
+  renderProjectPortfolio();renderOutcomeBoard();void loadPortfolioOutcomes();
 });
+window.addEventListener("gucc:workspace-project-created",e=>{portfolioEpoch++;portfolioVideos.delete(e.detail?.projectId);portfolioLoaded=false;portfolioError="";if(activeView==="outcomes")void loadPortfolioOutcomes();});
 $("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 $("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
-window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes")renderOutcomeBoard();});
+window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;
-  if(id){officialProjectRecords.delete(id);outcomeLoadError="";if(activeView==="outcomes"&&current()?.projectId===id)void loadCanonicalOutcomes(current());}
+  if(id){portfolioEpoch++;officialProjectRecords.delete(id);portfolioLoaded=false;portfolioError="";outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();if(current()?.projectId===id)void loadCanonicalOutcomes(current());}}
 });
 $("editProjectBtn").addEventListener("click",openProjectEditor);
 $("editProjectTopBtn").addEventListener("click",openProjectEditor);
@@ -810,8 +996,8 @@ $("deleteCurrentProject").addEventListener("click",()=>{
   save();render();notify("已移入回收站；可恢复");
 });
 $("projectSelect").addEventListener("change",e=>{
- store.selectedProjectId=e.target.value;flowExpanded=false;save();
- if(window.GuccCreatorContext&&store.selectedProjectId)window.GuccCreatorContext.set({projectId:store.selectedProjectId,videoId:""});
+ store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";flowExpanded=false;save();
+ if(window.GuccCreatorContext&&store.selectedProjectId)window.GuccCreatorContext.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
  $("artifactPreview").textContent="";render();
 });
 $("addVideoBtn").addEventListener("click",()=>{
@@ -965,7 +1151,9 @@ window.GuccCreatorWorkspaceAdapter={
   let found=store.projects.find(p=>p.projectId===ctx.projectId&&!p.deletedAt);
   if(!found&&snapshot){window.GuccCreatorOS?.putProject(snapshot,{fromCloud:true});found=store.projects.find(p=>p.projectId===ctx.projectId);}
   if(!found)return false; // Never create a phantom project from a URL or selector.
+  if(store.selectedProjectId!==ctx.projectId)selectedOutcomeVideoKey="";
   store.selectedProjectId=ctx.projectId;
+  selectedOutcomeVideoKey=ctx.videoId||"";
   selectedBranch=video?.branch||ctx.videoId||"";
   flowExpanded=false;
   save(false);render();
@@ -974,6 +1162,7 @@ window.GuccCreatorWorkspaceAdapter={
  }
 };
 window.GuccCreatorOS={
+  navigate:navigateTo,
   projects:()=>JSON.parse(JSON.stringify(store.projects)),
   selectedId:()=>store.selectedProjectId,
   current:()=>JSON.parse(JSON.stringify(current())),
@@ -997,6 +1186,6 @@ window.GuccCreatorOS={
   }
 };
 if(new URLSearchParams(window.location.search).get("newProject")==="1")$("createDialog").showModal();
-window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(current()?.projectId===e.detail.projectId)render();});
+window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(activeView==="outcomes")renderProjectPortfolio();if(current()?.projectId===e.detail.projectId)render();});
 render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

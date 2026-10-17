@@ -27,7 +27,8 @@ let browser;
   }
   await page.goto('https://gucc.test/apps/video-workspace/production-system/');await page.waitForFunction(()=>window.GuccCreatorOS?.current()?.projectId==='QA-BROWSER');
   assert(await page.locator('#view-outcomes').isVisible(),'Creator opens in independent outcomes workspace');
-  await page.locator('.os-nav [data-view=system]').evaluate(el=>el.click());
+  await page.locator('.os-nav [data-view=creation]').evaluate(el=>el.click());
+  await page.locator('[data-creation-mode=dynamic]').evaluate(el=>el.click());
   assert.equal(await page.locator('[data-branch]').count(),2);
   await page.locator('[data-branch="TWO"]').click();assert.equal(await page.locator('#flowList .flow-node').count(),1);await page.click('#clearBranchFilter');
   async function receipt(r){await page.click('#applyResultBtn');await page.fill('#resultInput',JSON.stringify(r));await page.click('#applyResultConfirm');}

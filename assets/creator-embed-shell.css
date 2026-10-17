@@ -1,0 +1,36 @@
+/* Creator workspace compact mode — only when ?embedded=1. */
+.gucc-embedded-tool body{min-height:auto!important}
+.gucc-embedded-tool .gucc-shell-dock,.gucc-embedded-tool .gucc-shell-menu,.gucc-embedded-tool .gucc-shell-popover,.gucc-embedded-tool .gucc-global-nav,.gucc-embedded-tool .gucc-mobile-picker-workspace{display:none!important}
+.gucc-embedded-tool body.creator-prompt-page .creator-top,.gucc-embedded-tool body.creator-prompt-page .creator-footer{display:none!important}
+.gucc-embedded-tool body.creator-prompt-page .creator-shell{width:100%!important;max-width:none!important;padding:12px 14px 24px!important}
+.gucc-embedded-tool body.creator-prompt-page .studio-context-row{margin-top:0}
+.gucc-embedded-tool body.publishing-console-page>.topbar .brand{display:none!important}
+.gucc-embedded-tool body.publishing-console-page .topbar{position:relative!important;top:auto!important;min-height:64px!important}
+.gucc-embedded-tool body.publishing-console-page .shell{width:100%!important;max-width:none!important;padding:16px 14px 34px!important}
+.gucc-embedded-tool body.publishing-console-page .hero{margin-top:5px!important}
+@media(max-width:700px){
+ .gucc-embedded-tool body.creator-prompt-page .creator-shell{padding:8px 9px 20px!important}
+ .gucc-embedded-tool body.publishing-console-page .shell{padding:9px 9px 24px!important}
+}
+/* A child viewport can be thousands of pixels tall. Anchor native dialogs to the
+   visible parent viewport, rather than the bottom of the expanded iframe. */
+.gucc-embedded-tool body dialog[open]{position:fixed!important;inset:auto!important;top:calc(var(--embed-visible-top,0px) + 12px)!important;left:0!important;right:0!important;margin:0 auto!important;max-height:calc(var(--embed-visible-height,600px) - 24px)!important;overflow:auto!important;overscroll-behavior:contain}
+.gucc-embedded-tool [data-creator-context]{display:none!important}
+.gucc-embedded-tool .sticky-actions{position:static!important}
+.gucc-embedded-tool .hero{padding-top:8px!important}
+
+.gucc-embedded-tool body{padding-bottom:0!important;height:auto!important;min-height:0!important}
+.gucc-embedded-tool body.creator-prompt-page #promptText{height:480px!important}
+@media(max-width:700px){.gucc-embedded-tool body.creator-prompt-page #promptText{height:360px!important}}
+/* Outer workspace owns sticky navigation. Child pickers must remain in document
+   flow or browser scrollIntoView can move a touch target under the outer dock. */
+.gucc-embedded-tool .gucc-mobile-picker{position:static!important;top:auto!important}
+.gucc-embedded-tool html{scroll-behavior:auto!important}
+html.gucc-embedded-tool{scroll-behavior:auto!important;scroll-padding-block:96px 110px}
+.gucc-embedded-tool :is(button,input,select,textarea,summary,a){scroll-margin-block:96px 110px}
+/* The outer release workspace already introduces the tool; retain only useful
+   publishing status and the original utility controls inside the frame. */
+.gucc-embedded-tool body.publishing-console-page .hero>div:first-child{display:none!important}
+.gucc-embedded-tool body.publishing-console-page .hero{display:block!important;min-height:0!important;padding:12px 0!important;margin:0 0 14px!important}
+.gucc-embedded-tool body.publishing-console-page .hero-status{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.gucc-embedded-tool body.publishing-console-page .topbar{min-height:44px!important;justify-content:flex-end!important;padding:6px 14px!important}

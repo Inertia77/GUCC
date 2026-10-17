@@ -78,18 +78,18 @@
       <div class="outcomes-toolbar">
         <label>当前项目<select id="outcomeProjectSelect" aria-label="选择管理的项目"></select></label>
         <div class="outcomes-project-meta" id="outcomeProjectMeta"></div>
-        <button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
+        <button class="button ghost" type="button" id="outcomeRefresh">↻ 刷新成果</button><button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
       </div>
       <div class="outcomes-video-line"><span class="micro">VIDEO / WORK ITEMS</span><div class="outcomes-video-tabs" id="outcomeVideoTabs" role="group" aria-label="选择视频"></div>
-        <button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频</button>
+        <button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频 ↗</button>
       </div>
       <section class="outcomes-progress" aria-label="成果完成情况">
         <div class="outcomes-progress-head"><div><span class="micro">DELIVERY HEALTH</span><strong id="outcomeProgressText">0 / 6 <small>已完成</small></strong></div>
-          <p id="outcomeProgressHint">仅用户确认过的交付成果计为完成；旧 Prompt 状态仅供参考。</p></div>
+          <p id="outcomeProgressHint">只有经过真实文件核验并人工确认的正式成果才计为完成。</p></div>
         <div class="outcomes-meter" role="progressbar" aria-label="当前视频成果完成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="outcomeProgressMeter"><span id="outcomeProgressFill"></span></div>
       </section>
       <div class="outcomes-cards" id="outcomeCards"></div>
-      <p class="outcomes-footnote">成果记录保存在项目快照中，沿用现有本地保存与登录后的云同步。更改成果进度不会伪造 AI 执行回执、真实文件、云端锁定或发布记录。</p>
+      <p class="outcomes-footnote">成果状态读取并写入 GUCC 正式成果记录；文件核验、字幕录音校验、版本历史和人工确认沿用现有成果档案。动态 Prompt 和固定 Prompt 都是可选的制作工具，不能单独改变完成状态。</p>
     </section>
 
     <section id="view-system" class="view">
@@ -280,22 +280,6 @@
   </main>
 </div>
 
-
-<dialog id="outcomeDialog" aria-label="修改成果进度">
-  <form id="outcomeForm" class="dialog-card">
-    <div class="panel-head"><div><span class="micro">OUTCOME / VERIFICATION</span><h2 id="outcomeDialogTitle">更新成果</h2></div><button type="button" class="icon-button" data-close-outcome aria-label="关闭">×</button></div>
-    <p id="outcomeDialogContext" class="outcome-dialog-context"></p>
-    <label>制作状态<select id="outcomeEditStatus" name="status" required>
-      <option value="pending">未开始</option><option value="working">制作中</option>
-      <option value="review">待核验</option><option value="done">已完成</option><option value="na">不适用</option>
-    </select></label>
-    <label>成果定位信息 <small>文件名、项目相对路径或云端链接；无需上传文件</small><input id="outcomeEditArtifact" name="artifactRef" maxlength="300" placeholder="例：SCRIPT_FINAL.md / exports/final.mp4"></label>
-    <label>进度备注 <small>可选；标记不适用时需说明原因</small><textarea id="outcomeEditNote" name="note" rows="3" maxlength="1200" placeholder="版本、剩余工作、验收意见…"></textarea></label>
-    <label class="outcome-verified"><input id="outcomeEditVerified" type="checkbox"> 我已实际检查成果文件或内容，确认质量通过</label>
-    <p class="outcome-dialog-note">“已完成”必须填写成果引用并勾选人工核验。进度修改只记录事实，不会自动推进 Prompt Flow 或发布。</p>
-    <footer><button type="button" class="button ghost" data-close-outcome>取消</button><button type="submit" class="button primary">保存进度</button></footer>
-  </form>
-</dialog>
 
 <dialog id="addVideoDialog" aria-label="登记正式视频身份"><form id="addVideoForm" class="dialog-card"><div class="panel-head"><h2>登记本项目的视频</h2><button type="button" data-close-video class="icon-button">×</button></div><p>只有在本项目确实需要一条独立视频时才登记。旧项目可使用现有任务分支 ID；已完成的任务、脚本与 Lock 不会被重置。</p><label>视频名称<input name="videoName" required maxlength="100" placeholder="例：菲欧妮机制解析"></label><label>视频标识（选填）<input name="videoId" pattern="[A-Za-z][A-Za-z0-9_-]{0,30}" maxlength="31" placeholder="例：FIONI；留空自动生成"></label><footer><button type="button" data-close-video class="button ghost">取消</button><button type="submit" class="button primary">登记并保留原进度</button></footer></form></dialog>
 <dialog id="nodeDialog">

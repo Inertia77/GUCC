@@ -749,9 +749,15 @@ $("boardDynamicPrompt").addEventListener("click",()=>{
   selectedBranch=video?.branch==="SHARED"?"":video?.branch||"";
   activeView="system";render();
 });
+$("outcomeRefresh").addEventListener("click",()=>{
+  const p=current();if(!p)return;
+  if(outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
+  officialProjectRecords.delete(p.projectId);outcomeLoadError="";
+  void loadCanonicalOutcomes(p);renderOutcomeBoard();
+});
 $("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 $("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
-window.addEventListener("gucc:workspace-ready",()=>{if(activeView==="outcomes")renderOutcomeBoard();});
+window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes")renderOutcomeBoard();});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;
   if(id){officialProjectRecords.delete(id);outcomeLoadError="";if(activeView==="outcomes"&&current()?.projectId===id)void loadCanonicalOutcomes(current());}

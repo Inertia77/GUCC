@@ -19,7 +19,7 @@ assert(studio.includes("ai-prompts.js?v=6.2.0")&&studio.includes("studio.js?v=6.
 assert(read("apps/video-workspace/studio.js").includes("KEY='gucc_creator_prompt_v6'"),"fixed drafts remain isolated");
 assert(chooser.includes('href="./legacy-prompt-studio-v6.html"')&&chooser.includes('href="./production-system/"'),"two equal chooser entries");
 assert(!chooser.includes("location.replace("),"chooser must never auto-redirect");
-assert(portal.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"')&&portal.includes('href="./apps/video-workspace/production-system/"'),"both options available on portal");
+assert(["outcomes","creation","release","knowledge"].every(view=>portal.includes('href="./apps/video-workspace/production-system/?view='+view+'"')),"Four Creator destinations available on portal");
 assert(shell.includes("childRoutes.dashboard, childRoutes.workbench, childRoutes.distribution, childRoutes.governance"),"Four creation workspaces available in global creative menu");
 assert(dynamic.includes('href="../legacy-prompt-studio-v6.html"'),"dynamic creator has a return link");
 const cacheVersion=Number(worker.match(/gucc-static-v(\d+)/)?.[1]);

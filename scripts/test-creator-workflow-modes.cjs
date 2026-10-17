@@ -20,7 +20,7 @@ assert(read("apps/video-workspace/studio.js").includes("KEY='gucc_creator_prompt
 assert(chooser.includes('href="./legacy-prompt-studio-v6.html"')&&chooser.includes('href="./production-system/"'),"two equal chooser entries");
 assert(!chooser.includes("location.replace("),"chooser must never auto-redirect");
 assert(portal.includes('href="./apps/video-workspace/legacy-prompt-studio-v6.html"')&&portal.includes('href="./apps/video-workspace/production-system/"'),"both options available on portal");
-assert(shell.includes("childRoutes.fixed, childRoutes.workspace"),"both options in global creative menu");
+assert(shell.includes("childRoutes.dashboard, childRoutes.workbench, childRoutes.distribution, childRoutes.governance"),"Four creation workspaces available in global creative menu");
 assert(dynamic.includes('href="../legacy-prompt-studio-v6.html"'),"dynamic creator has a return link");
 const cacheVersion=Number(worker.match(/gucc-static-v(\d+)/)?.[1]);
 assert(cacheVersion>=38,"PWA cache must invalidate the pre-upgrade shell");

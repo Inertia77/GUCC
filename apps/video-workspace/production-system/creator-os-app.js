@@ -291,6 +291,60 @@ function renderFlow(p){
   }
 }
 
+
+/* Portfolio uses formal cloud records; workflow node progress is intentionally excluded. */
+let portfolioFetching=false,portfolioLoaded=false,portfolioError="";
+async function loadPortfolioOutcomes(){
+  if(portfolioFetching||portfolioLoaded)return;
+  const request=window.GuccCreatorWorkspace?.request;
+  if(!request)return; // shared authenticated client initializes asynchronously
+  portfolioFetching=true;portfolioError="";
+  try{
+    const records=await request("creator_deliverable_records?select=*&order=project_id.asc");
+    if(!Array.isArray(records))throw Error("正式成果列表返回格式不正确");
+    for(const p of store.projects.filter(x=>x.status!=="TEST_FIXTURE")){
+      if(!officialProjectRecords.has(p.projectId))
+        officialProjectRecords.set(p.projectId,records.filter(row=>row.project_id===p.projectId));
+    }
+    portfolioLoaded=true;
+  }catch(error){portfolioError=String(error?.message||"读取失败");}
+  finally{
+    portfolioFetching=false;
+    if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}
+  }
+}
+function renderProjectPortfolio(){
+  const box=$("projectPortfolio");if(!box)return;
+  const projects=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&projectLife(p)!=="trash")
+    .sort((a,b)=>(projectLife(a)==="active"?0:1)-(projectLife(b)==="active"?0:1));
+  $("portfolioStatus").textContent=portfolioError?"云端读取失败 · 请刷新成果":portfolioLoaded?"正式成果已核对":"正式成果读取中";
+  if(!projects.length){
+    box.innerHTML='<div class="portfolio-empty">暂无项目。新建项目后会在这里集中查看各期制作进度。</div>';return;
+  }
+  box.innerHTML=projects.map(p=>{
+    const videos=Outcomes.videos(p),rows=officialProjectRecords.get(p.projectId);
+    const verified=Array.isArray(rows)&&videos.length>0;
+    const complete=verified?videos.reduce((sum,v)=>sum+Outcomes.summary(rows,v).done,0):0;
+    const total=videos.length*6;
+    const percent=verified&&total?Math.round(complete/total*100):0;
+    const meta=[p.game||"游戏待设",p.version||"版本待设",videos.length?videos.length+" 条视频":"待登记视频"].join(" · ");
+    return '<button type="button" class="portfolio-card '+(p.projectId===store.selectedProjectId?'active':'')+'" data-portfolio-project="'+esc(p.projectId)+'">'+
+      '<span class="portfolio-top"><span class="portfolio-code">'+esc(p.projectCode||p.projectId)+'</span><span class="portfolio-life">'+esc(lifeName(p))+'</span></span>'+
+      '<strong>'+esc(p.name)+'</strong><span class="portfolio-metadata">'+esc(meta)+'</span>'+
+      '<span class="portfolio-progress"><span>'+esc(verified?"六项成果验收":"正式进度")+'</span><span>'+esc(verified?complete+" / "+total:"待核对")+'</span></span>'+
+      '<span class="portfolio-meter" aria-hidden="true"><span style="width:'+percent+'%"></span></span></button>';
+  }).join("");
+  box.querySelectorAll("[data-portfolio-project]").forEach(b=>b.addEventListener("click",()=>{
+    if(store.selectedProjectId===b.dataset.portfolioProject)return;
+    store.selectedProjectId=b.dataset.portfolioProject;
+    selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
+    $("artifactPreview").textContent="";
+    save(false);render();
+    window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:""});
+  }));
+  if(!portfolioLoaded&&!portfolioFetching&&!portfolioError)void loadPortfolioOutcomes();
+}
+
 /* OUTCOME BOARD: view and edit the SAME canonical deliverables used by all GUCC tools. */
 let outcomeFetchingProject="";
 let outcomeLoadError="";
@@ -788,16 +842,16 @@ $("boardDynamicPrompt").addEventListener("click",()=>{
 });
 $("outcomeRefresh").addEventListener("click",()=>{
   const p=current();if(!p)return;
-  if(outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
-  officialProjectRecords.delete(p.projectId);outcomeLoadError="";
-  void loadCanonicalOutcomes(p);renderOutcomeBoard();
+  if(portfolioFetching||outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
+  officialProjectRecords.clear();portfolioLoaded=false;portfolioError="";outcomeLoadError="";
+  renderProjectPortfolio();void loadPortfolioOutcomes();
 });
 $("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 $("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;
-  if(id){officialProjectRecords.delete(id);outcomeLoadError="";if(activeView==="outcomes"&&current()?.projectId===id)void loadCanonicalOutcomes(current());}
+  if(id){officialProjectRecords.delete(id);portfolioLoaded=false;portfolioError="";outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();if(current()?.projectId===id)void loadCanonicalOutcomes(current());}}
 });
 $("editProjectBtn").addEventListener("click",openProjectEditor);
 $("editProjectTopBtn").addEventListener("click",openProjectEditor);
@@ -1035,6 +1089,6 @@ window.GuccCreatorOS={
   }
 };
 if(new URLSearchParams(window.location.search).get("newProject")==="1")$("createDialog").showModal();
-window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(current()?.projectId===e.detail.projectId)render();});
+window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(activeView==="outcomes")renderProjectPortfolio();if(current()?.projectId===e.detail.projectId)render();});
 render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

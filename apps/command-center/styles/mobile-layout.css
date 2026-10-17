@@ -23,3 +23,127 @@
   body.command-center-page.gucc-enhanced .filter-toolbar::after { display: none; }
   body.command-center-page.gucc-enhanced .item[data-game-code] .item-summary > .meta::before { display: none; }
 }
+
+
+/* Character cards: collapsed mobile state is a single scan row. */
+@media (max-width: 900px) {
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed {
+    min-height: 0 !important;
+    padding: 8px 10px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .item-head {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .item-summary {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .character-title {
+    display: block !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .character-title-mainline {
+    display: block !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .character-title-primary {
+    display: block !important;
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed :is(
+    .character-title-localized,
+    .character-title-full
+  ) {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .meta {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 5px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .meta .badge {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .meta .badge.status-highlight {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    min-height: 30px !important;
+    padding: 3px 7px 3px 16px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .item-summary::before,
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .item-summary::after {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .collapsible-actions {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .collapsible-actions > :not(.collapse-toggle) {
+    display: none !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .collapse-toggle {
+    width: auto !important;
+    min-width: 58px !important;
+    min-height: 44px !important;
+    padding: 5px 10px !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed {
+    padding-inline: 8px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .item-summary {
+    gap: 6px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .meta {
+    gap: 4px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .meta .badge.status-highlight {
+    padding-inline: 15px 6px !important;
+    font-size: 11.5px !important;
+  }
+
+  body.command-center-page.gucc-enhanced #characterResults .item.is-collapsed .collapse-toggle {
+    min-width: 54px !important;
+    padding-inline: 8px !important;
+  }
+}

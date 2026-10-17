@@ -8,6 +8,8 @@ const {
   scanCopyRisk
 } = require('../apps/publishing-console/platform-rules.js');
 
+const PublishMd = require('../apps/publishing-console/publish-md.js');
+
 const samplePackage = `
 # 可粘贴到【06 发布包：简中】的内容
 
@@ -77,10 +79,10 @@ assert.equal(scanCopyRisk('这是全网第一，转发抽奖').length, 2, '应�
 const html = readFileSync(resolve(__dirname, '../apps/publishing-console/index.html'), 'utf8');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
 assert.equal(new Set(ids).size, ids.length, '发布控制台不应包含重复 HTML id');
-for (const requiredAsset of ['./styles.css?v=2', './platform-rules.js?v=1', './app.js?v=4', './publish-cloud.mjs?v=2']) {
+for (const requiredAsset of ['./styles.css?v=2', './platform-rules.js?v=1', './publish-md.js?v=1', './app.js?v=5', './publish-cloud.mjs?v=2']) {
   assert.equal(html.includes(requiredAsset), true, `发布控制台应加载 ${requiredAsset}`);
 }
-for (const requiredId of ['assistantState', 'pickVideoPathButton', 'openLoginButton', 'oneClickPrepareButton', 'automationJob']) {
+for (const requiredId of ['assistantState', 'pickVideoPathButton', 'openLoginButton', 'openAllPlatformsButton', 'oneClickPrepareButton', 'automationJob', 'copyPublishAiPromptButton', 'downloadEditablePublishMdButton', 'importPublishMdButton', 'publishMdFile']) {
   assert.equal(html.includes(`id="${requiredId}"`), true, `发布控制台应包含 #${requiredId}`);
 }
 
@@ -93,5 +95,38 @@ const assistantAdapters = readFileSync(resolve(__dirname, 'publisher-assistant/a
 assert.equal(assistantServer.includes('const HOST = "127.0.0.1"'), true, '本机助手必须只监听 loopback');
 assert.equal(assistantServer.includes('ready_for_review'), true, '本机助手应停在最终检查阶段');
 assert.equal(assistantAdapters.includes('PROTECTED_ACTION'), true, '适配器必须保护最终发布动作');
+
+const editable = PublishMd.makeTemplate({
+  project: { title: '测试视频' },
+  enabled: { bilibili: true, douyin: false, xiaohongshu: false, wechat: false, youtube: true, tiktok: false },
+  platforms: {
+    bilibili: { title: 'B站测试标题', tags: '绝区零，复刻攻略', danmakuPolls: '06:45 你会抽吗？\n会 / 观望 / 跳过' },
+    youtube: { title: 'YT測試標題', description: '繁體中文影片介紹',
+      chapters: '00:00 開場\n00:35 角色解析\n02:10 配裝' }
+  }
+});
+const parsedMd = PublishMd.parse(editable);
+assert.deepEqual(parsedMd.sections, ['bilibili', 'youtube'], '编辑 MD 只包含启用的平台');
+assert.equal(parsedMd.platforms.bilibili.title, 'B站测试标题');
+const withIdentity = PublishMd.parse(PublishMd.makeTemplate({ ...{ project: { title: '测试', creatorProjectId: 'p-1', videoId: 'v-1' }, enabled: { bilibili: true }, platforms: { bilibili: { title: '保留视频身份' } } } }));
+assert.deepEqual(withIdentity.identity, { projectId: 'p-1', videoId: 'v-1' }, '导出模板应带有视频身份，防止跨视频导入');
+assert.match(parsedMd.platforms.bilibili.danmakuPolls, /观望/, '弹幕投票作为人工待办保留');
+assert.equal(parsedMd.platforms.youtube.chapters.split('\n').length, 3);
+assert.equal(PublishMd.buildYouTubeDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters).description.includes('02:10 配裝'), true);
+assert.match(PublishMd.buildYouTubeReleaseDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters, '#絕區零, #ZZZ').description, /#絕區零 #ZZZ/, 'Hashtags 自动合并到简介');
+assert.equal(PublishMd.buildYouTubeDescription('00:00 已有章節\n00:30 下一章\n01:00 結尾', parsedMd.platforms.youtube.chapters).warnings.length, 1, '已有简介章节不能重复注入');
+assert.equal(PublishMd.checkYouTubeChapters('00:00 開場\n00:05 解析\n00:30 結尾').valid, false, '时间重叠必须阻断自动合并');
+assert.equal(PublishMd.checkYouTubeChapters('00:05 開場\n00:30 解析\n01:00 結尾').valid, false, '首章必须从零开始');
+assert.equal(PublishMd.parse('## YouTube 繁體中文\n### 最終標題\n（待填写）\n### 标题\n标题测试').platforms.youtube.title, '标题测试', '繁中标题兼容');
+assert.throws(() => PublishMd.parse('## 无关平台\n### 标题\n不应污染草稿'), /未识别有效平台/);
+const prompt = PublishMd.makeAiPrompt({ enabled: { bilibili: true, youtube: true } }, { youtube: 'https://studio.youtube.com/' });
+assert.match(prompt, /真实 SRT/);
+assert.match(prompt, /https:\/\/studio.youtube.com\//);
+const appSource = readFileSync(resolve(__dirname, '../apps/publishing-console/app.js'), 'utf8');
+assert.match(appSource, /PublishMd\.parse\(markdown\)/, '导入与独立视频草稿相连');
+assert.match(appSource, /await assistantRequest\("\/api\/open-login"/, '批量打开复用本机浏览器和官方发布链接');
+assert.match(appSource, /PublishMd\.buildYouTubeReleaseDescription/, '章节及 Hashtags 在自动提交字段前组装');
+assert.match(appSource, /openAllPlatformsButton.*openAllPlatformPages/, '一键打开平台按钮已绑定');
+assert.equal(PLATFORMS.youtube.fields.find(f => f.key === 'hashtags').hardItems, undefined, '三条显眼 hashtags 不得误当硬上限');
 
 console.log('发布控制台测试通过：发布包解析、字段限制、本机助手安全边界与一键准备入口正常。');

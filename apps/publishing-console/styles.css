@@ -384,3 +384,9 @@ td strong { color: var(--text); }
   .platform-form { border-top-color: var(--platform-accent); }
   .platform-toggle input:checked + span { border-color: var(--platform-accent); }
 }
+
+/* Editable Markdown release handoff: compact, mobile-friendly actions. */
+.publish-md-panel .check-actions { justify-content: flex-start; flex-wrap: wrap; margin: 12px 0; }
+.publish-md-panel .check-actions .button { min-height: 39px; }
+.publish-md-panel .hint { line-height: 1.7; }
+@media (max-width: 700px) { .publish-md-panel .check-actions { flex-direction: column; align-items: stretch; } .publish-md-panel .check-actions .button { width: 100%; } }

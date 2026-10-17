@@ -18,6 +18,8 @@
         { key: "tags", label: "普通标签", type: "tags", required: true, safeItems: 5 },
         { key: "category", label: "分区", type: "text", required: true, placeholder: "例：游戏 / 手机游戏" },
         { key: "copyright", label: "版权类型", type: "select", required: true, options: ["原创", "转载"] },
+        { key: "chapters", label: "分段章节（发布后设置）", type: "textarea" },
+        { key: "danmakuPolls", label: "弹幕投票（发布后设置）", type: "textarea" },
         { key: "pinnedComment", label: "置顶评论", type: "textarea" }
       ]
     },
@@ -69,8 +71,9 @@
       fields: [
         { key: "title", label: "标题", type: "text", required: true, hardMax: 100, safeMax: 65 },
         { key: "description", label: "简介", type: "textarea", required: true, hardMax: 5000, safeMax: 500 },
-        { key: "hashtags", label: "Hashtags", type: "tags", required: true, hardItems: 3 },
+        { key: "hashtags", label: "Hashtags", type: "tags", required: true, safeItems: 3 },
         { key: "backendTags", label: "后台 Tags", type: "tags", safeItems: 8 },
+        { key: "chapters", label: "视频章节（合并到简介）", type: "textarea" },
         { key: "playlist", label: "播放列表", type: "text" },
         { key: "visibility", label: "可见性", type: "select", required: true, options: ["私享", "不公开列出", "公开", "定时发布"] },
         { key: "madeForKids", label: "儿童内容设置", type: "select", required: true, options: ["否，不是面向儿童的内容", "是，面向儿童的内容", "发布页人工确认"] },

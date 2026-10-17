@@ -246,9 +246,9 @@ for (const expected of [
   'id="view-capabilities"',
   'id="view-libraries"',
   'id="view-projects"',
-  'src="./core-rules.js?v=2.2.0"',
-  'src="./failure-prevention.js?v=2.0.0"',
-  'src="./capability-library.js?v=2.2.0"',
+  'src="./core-rules.js?v=2.2.1"',
+  'src="./failure-prevention.js?v=2.0.1"',
+  'src="./capability-library.js?v=2.2.1"',
   'src="./orchestrator.js?v=',
   'src="./creator-os-app.js?v='
 ]) {

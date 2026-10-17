@@ -161,6 +161,7 @@
       "六平台同一完整视频，但标题、简介、话题和后台标签独立适配，不夸大、不诱导违规互动。",
       "严守 Markdown 结构：## 平台 与 ### 字段标题原样保留；不加未知平台，不用 JSON 或代码围栏包裹全文；不确定就保留（待填写）。",
       "仅输出可直接保存为 .md 后导入 GUCC 的正文；保留已审核字段，除非理由充分。",
+      "GUCC 实际自动化源码请先阅读：https://github.com/Inertia77/GUCC/blob/main/apps/publishing-console/platform-rules.js 和 https://github.com/Inertia77/GUCC/blob/main/scripts/publisher-assistant/adapters.cjs。逐字段区分可预填和发布后手动操作，不要把平台页面未实测等同于已支持。",
       "已有官方投稿入口（供核查页面，不代表开放上传 API）：\n" + refs,
       "以下是待加工的 Markdown：\n\n" + makeTemplate(state)
     ].join("\n\n");

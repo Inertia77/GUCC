@@ -1,4 +1,4 @@
-const STATIC_CACHE = "gucc-static-v50";
+const STATIC_CACHE = "gucc-static-v51";
 const RUNTIME_CACHE = "gucc-runtime-v46";
 
 const APP_SHELL = [
@@ -8,7 +8,7 @@ const APP_SHELL = [
   "./assets/gucc-shell.js?v=16",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
-  "./apps/video-workspace/creator-six-deliverables.js?v=1",
+  "./apps/video-workspace/creator-six-deliverables.js?v=1.0.1",
   "./apps/video-workspace/production-system/creator-os-storage.js?v=1",
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",

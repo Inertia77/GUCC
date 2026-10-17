@@ -220,7 +220,9 @@ const sizes = [
       .evaluate((e) => e.getBoundingClientRect().height < 240),
   );
   assert(!(await p.locator("#copyCurrentPrompt").isVisible()));
-  await p.locator(".gcc-overview-list [data-gcc-outcome=script]").click();
+  assert(await p.locator("#view-outcomes").isVisible());
+  await p.waitForFunction(() => document.querySelector("#outcomeProgressText")?.textContent.includes("1 / 6"));
+  await p.locator("#outcomeCards [data-outcome-edit=script]").click();
   assert(await p.getByLabel("成果内容", { exact: true }).isDisabled());
   await p.locator(".gcc-history>summary").click();
   await p.waitForFunction(

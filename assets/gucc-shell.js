@@ -57,7 +57,25 @@
     }
   };
 
+  const creatorSection = new URLSearchParams(location.search).get('view') || 'outcomes';
+  const creatorHome = `${normalizedRoot}apps/video-workspace/production-system/`;
   const childRoutes = {
+    dashboard: {
+      icon: 'PR', label: '项目中枢', note: '各项目 · 每条视频 · 六项验收',
+      href: creatorHome, active: productionActive && creatorSection === 'outcomes'
+    },
+    workbench: {
+      icon: 'FX', label: '创作工作台', note: '固定 Prompt / 灵活编排',
+      href: creatorHome + '?view=creation', active: productionActive && creatorSection === 'creation'
+    },
+    distribution: {
+      icon: 'PUB', label: '发布与复盘', note: '六平台投稿 · 数据回顾',
+      href: creatorHome + '?view=release', active: productionActive && creatorSection === 'release'
+    },
+    governance: {
+      icon: 'LIB', label: '规则与资料', note: '创作规则 · 能力 · 资料',
+      href: creatorHome + '?view=knowledge', active: productionActive && creatorSection === 'knowledge'
+    },
     workspace: {
       icon: 'OS', label: '动态 Creator OS', note: 'AI 编排 · 项目与云端进度',
       href: `${normalizedRoot}apps/video-workspace/production-system/`,
@@ -112,9 +130,9 @@
 
   const groups = {
     create: {
-      title: '创作流程',
-      hint: '固定流程 / 动态编排 · 两种制作方式',
-      items: [childRoutes.fixed, childRoutes.workspace, childRoutes.cover, childRoutes.publish]
+      title: '创作工作区',
+      hint: '项目 · 制作 · 发行 · 规则',
+      items: [childRoutes.dashboard, childRoutes.workbench, childRoutes.distribution, childRoutes.governance]
     },
     library: {
       title: '资料与研究',
@@ -183,8 +201,8 @@
       primary.href=`${normalizedRoot}apps/video-workspace/production-system/`;
       primary.querySelector('.launch-code')?.replaceChildren(document.createTextNode('OS'));
       const title=primary.querySelector('strong'),note=primary.querySelector('small');
-      if(title)title.textContent='动态 Creator OS';
-      if(note)note.textContent='AI 编排 · 项目进度 · 云同步';
+      if(title)title.textContent='Creator 创作中枢';
+      if(note)note.textContent='项目 · 创作 · 发布复盘 · 规则资料';
     }
     // Keep one fixed and one dynamic production entry; only remove stale PRD clones.
     const duplicates=[...grid.querySelectorAll('a.launch-card')].filter(card=>

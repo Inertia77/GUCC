@@ -1,0 +1,14 @@
+/* Creator workspace compact mode — only when ?embedded=1. */
+.gucc-embedded-tool body{min-height:auto!important}
+.gucc-embedded-tool .gucc-shell-dock,.gucc-embedded-tool .gucc-shell-menu,.gucc-embedded-tool .gucc-shell-popover,.gucc-embedded-tool .gucc-global-nav,.gucc-embedded-tool .gucc-mobile-picker-workspace{display:none!important}
+.gucc-embedded-tool body.creator-prompt-page .creator-top,.gucc-embedded-tool body.creator-prompt-page .creator-footer{display:none!important}
+.gucc-embedded-tool body.creator-prompt-page .creator-shell{width:100%!important;max-width:none!important;padding:12px 14px 24px!important}
+.gucc-embedded-tool body.creator-prompt-page .studio-context-row{margin-top:0}
+.gucc-embedded-tool body.publishing-console-page>.topbar .brand{display:none!important}
+.gucc-embedded-tool body.publishing-console-page .topbar{position:relative!important;top:auto!important;min-height:64px!important}
+.gucc-embedded-tool body.publishing-console-page .shell{width:100%!important;max-width:none!important;padding:16px 14px 34px!important}
+.gucc-embedded-tool body.publishing-console-page .hero{margin-top:5px!important}
+@media(max-width:700px){
+ .gucc-embedded-tool body.creator-prompt-page .creator-shell{padding:8px 9px 20px!important}
+ .gucc-embedded-tool body.publishing-console-page .shell{padding:9px 9px 24px!important}
+}

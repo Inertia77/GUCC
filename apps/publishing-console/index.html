@@ -99,6 +99,18 @@
 
       </div>
 
+      <div class="panel publish-md-panel">
+        <div class="panel-title"><h3>AI 协助的 Markdown 发布单</h3><span class="pill">导出 → 人工修改 → 导入</span></div>
+        <p class="hint">复制指令交给 AI，或直接下载可编辑 MD。审核修改后导入：只更新识别出的非空字段，不触碰原视频、账号和其他草稿。</p>
+        <div class="check-actions">
+          <button id="copyPublishAiPromptButton" class="button subtle" type="button">复制给 AI 的生成指令</button>
+          <button id="downloadEditablePublishMdButton" class="button subtle" type="button">下载可编辑 MD</button>
+          <button id="importPublishMdButton" class="button primary" type="button">导入已审核 MD</button>
+          <input id="publishMdFile" type="file" accept=".md,.markdown,text/markdown,text/plain" hidden />
+        </div>
+        <p id="publishMdImportState" class="hint" role="status" aria-live="polite">支持六平台独立字段；YouTube 章节合并简介；B站章节和弹幕投票保留发布后待办。</p>
+      </div>
+
       <div class="panel">
         <div class="panel-title"><h3>平台范围</h3><span id="platformSelectionHint">已启用 6 个平台</span></div>
         <div id="platformToggles" class="platform-toggles"></div>
@@ -123,7 +135,7 @@
         <div class="score-card"><span>检查结果</span><strong id="checkScore">—</strong><small id="checkScoreNote">点击运行检查</small></div>
         <div class="check-actions">
           <button id="runChecksButton" class="button primary" type="button">运行全部检查</button>
-          <button id="downloadPackageButton" class="button subtle" type="button">下载发布包 Markdown</button>
+          <button id="downloadPackageButton" class="button subtle" type="button">下载可编辑发布 MD</button>
         </div>
       </div>
 
@@ -149,16 +161,16 @@
       <div class="one-click-panel">
         <div>
           <span class="eyebrow">ONE CLICK PREPARE</span>
-          <h3>自动上传并填好全部平台</h3>
-          <p>使用专用登录浏览器逐个平台选择成片、尝试上传封面、填写元数据，最后停在人工检查阶段。</p>
+          <h3>打开平台并协助填表</h3>
+          <p>复用已有平台投稿链接；自动操作会尝试上传素材、填写可定位字段，特殊字段仍需人工补完，绝不代点最终发布。</p>
         </div>
         <button id="oneClickPrepareButton" class="button primary one-click-button" type="button">一键准备全部平台</button>
       </div>
       <div id="automationJob" class="automation-job empty-state">尚未启动自动准备任务。</div>
 
       <div class="execution-banner">
-        <div><strong>安全边界</strong><span>控制台不会保存账号密码，也不会在你看不见的情况下点击公开发布。</span></div>
-        <button id="openPublishingBatchHelp" class="button subtle" type="button">批量打开方式</button>
+        <div><strong>安全边界</strong><span>上传与字段填写只是准备操作；B站原生章节、投票和置顶评论等须发布后检查。不会自动公开投稿。</span></div>
+        <div class="execution-buttons"><button id="openAllPlatformsButton" class="button primary" type="button">一键打开已选平台发布页</button><button id="openPublishingBatchHelp" class="button subtle" type="button">其他打开方式</button></div>
       </div>
 
       <div id="executionList" class="execution-list"></div>
@@ -223,7 +235,8 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="./platform-rules.js?v=1"></script>
-  <script src="./app.js?v=4"></script>
+  <script src="./publish-md.js?v=1"></script>
+  <script src="./app.js?v=5"></script>
   <script type="module" src="./publish-cloud.mjs?v=2"></script>
   <script src="../../assets/creator-publish-asset-discovery.js?v=2"></script>
 <script type="module" src="../../assets/creator-shared-context-ui.mjs?v=3"></script>

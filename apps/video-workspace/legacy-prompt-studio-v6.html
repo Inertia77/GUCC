@@ -41,6 +41,7 @@
   <section class="prompt-panel" aria-label="当前任务 Prompt">
    <div class="prompt-head"><div><span class="micro" id="taskMeta"></span><h2 id="taskTitle"></h2></div><div class="prompt-top-actions"><span id="modeBadge" class="mode-badge"></span><button id="copyTopButton" type="button" class="copy-top">复制</button></div></div>
    <p class="task-purpose" id="taskPurpose"></p>
+   <aside id="coverAssistant" class="cover-assist" hidden><div><strong>封面精修 · 可选辅助工具</strong><p>通常直接用当前 AI Prompt 产出三比例封面。需要手工排版、细化裁切或调整元素时，可以使用高级封面工具。</p></div><a href="../cover-generator/" target="_blank" rel="noopener">打开高级封面工具 ↗</a></aside>
    <div class="mode-row"><span>执行环境</span><div id="modeTabs" class="segmented" aria-label="执行环境"></div></div><div id="voiceModeRow" class="mode-row" hidden><span>录音方式</span><div id="voiceModeTabs" class="segmented" aria-label="录音方式"></div></div>
    <div id="fallbackNotice" class="fallback-notice" hidden></div><div id="partTabs" class="part-tabs" hidden></div>
    <details class="io-details"><summary>输入与交付 <span id="ioHint"></span></summary><div class="io-grid"><div><h3>需要提供</h3><p id="taskInputs"></p></div><div><h3>正式产物</h3><p id="taskOutputs"></p></div></div></details>

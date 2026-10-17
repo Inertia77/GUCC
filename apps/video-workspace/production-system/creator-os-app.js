@@ -19,7 +19,10 @@ const linkedProjectId=new URLSearchParams(window.location.search).get("project")
 if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
   store.selectedProjectId=linkedProjectId;
 }
-let activeView="outcomes";
+const entryParams=new URLSearchParams(window.location.search);
+let activeView=["outcomes","creation","release","knowledge"].includes(entryParams.get("view"))?entryParams.get("view"):"outcomes";
+let creationMode=entryParams.get("mode")==="dynamic"?"dynamic":"fixed";
+let referenceTab=["core","capabilities","libraries"].includes(entryParams.get("ref"))?entryParams.get("ref"):"core";
 let selectedOutcomeVideoKey="";
 
 let toastTimer;
@@ -105,16 +108,39 @@ function render(){
   renderNav();
   renderProjectBar();
   renderSystem();
-  if(activeView==="outcomes")renderOutcomeBoard();
-  if(activeView==="core")renderCore();
-  if(activeView==="capabilities")renderCapabilities();
-  if(activeView==="projects")renderProjects();
+  if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();renderProjects();}
+  if(activeView==="knowledge"){
+    if(referenceTab==="core")renderCore();
+    if(referenceTab==="capabilities")renderCapabilities();
+  }
   window.dispatchEvent(new CustomEvent("gucc:creator-os:rendered"));
 }
 function renderNav(){
   document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
-  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
+  document.querySelectorAll("main.os-main > section.view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
+  document.querySelectorAll("[data-creation-mode]").forEach(b=>{
+    const active=b.dataset.creationMode===creationMode;
+    b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
+  });
+  document.querySelectorAll("[data-creation-pane]").forEach(p=>p.classList.toggle("active",p.dataset.creationPane===creationMode));
+  document.querySelectorAll("[data-reference]").forEach(b=>{
+    const active=b.dataset.reference===referenceTab;
+    b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
+  });
+  document.querySelectorAll(".reference-pane").forEach(v=>v.classList.toggle("active",v.id==="view-"+referenceTab));
 }
+function navigateTo(view,mode){
+  if(!["outcomes","creation","release","knowledge"].includes(view))return;
+  activeView=view;
+  if(["fixed","dynamic"].includes(mode))creationMode=mode;
+  const url=new URL(window.location.href);
+  url.searchParams.set("view",view);
+  if(view==="creation")url.searchParams.set("mode",creationMode);else url.searchParams.delete("mode");
+  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  render();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
 function projectLife(p){
   if(p?.deletedAt)return "trash";
   if(p?.archivedAt)return "archived";
@@ -194,6 +220,7 @@ function renderSystem(){
   $("currentQc").textContent=t.qcLevel?`${t.qcLevel} · 待核验`:"未核验";
   $("currentReview").textContent=t.status==="INACTIVE"?"未安排":t.reviewMode==="APPROVAL_REQUIRED"?"需要人工批准":"回执后继续";
   $("currentPrompt").textContent=t.prompt||"";
+  $("dynamicCoverAssist").dataset.visible=t.sixOutcomeId==="cover"||/COVER_DESIGN/.test(t.capabilityUsed||"")?"true":"false";
   const canExecute=Boolean(p&&projectLife(p)==="active");
   const hasApprovedBrief=canExecute&&!["DRAFT","IMPORTED_LEGACY"].includes(p.status);
   $("copyBuildFlowPrompt").disabled=!hasApprovedBrief;
@@ -739,15 +766,25 @@ function applyNodeResult(result){
 }
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
-document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>navigateTo(b.dataset.view)));
+document.querySelectorAll("[data-creation-mode]").forEach(b=>b.addEventListener("click",()=>{
+  navigateTo("creation",b.dataset.creationMode);
+}));
+document.querySelectorAll("[data-reference]").forEach(b=>b.addEventListener("click",()=>{
+  referenceTab=b.dataset.reference;
+  const url=new URL(window.location.href);url.searchParams.set("ref",referenceTab);
+  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  render();
+}));
 $("outcomeProjectSelect").addEventListener("change",e=>{
   store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
   save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:""});
 });
+$("boardFixedPrompt").addEventListener("click",()=>navigateTo("creation","fixed"));
 $("boardDynamicPrompt").addEventListener("click",()=>{
   const video=outcomeVideo(current());
   selectedBranch=video?.branch==="SHARED"?"":video?.branch||"";
-  activeView="system";render();
+  navigateTo("creation","dynamic");
 });
 $("outcomeRefresh").addEventListener("click",()=>{
   const p=current();if(!p)return;
@@ -757,7 +794,7 @@ $("outcomeRefresh").addEventListener("click",()=>{
 });
 $("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 $("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
-window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes")renderOutcomeBoard();});
+window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;
   if(id){officialProjectRecords.delete(id);outcomeLoadError="";if(activeView==="outcomes"&&current()?.projectId===id)void loadCanonicalOutcomes(current());}
@@ -974,6 +1011,7 @@ window.GuccCreatorWorkspaceAdapter={
  }
 };
 window.GuccCreatorOS={
+  navigate:navigateTo,
   projects:()=>JSON.parse(JSON.stringify(store.projects)),
   selectedId:()=>store.selectedProjectId,
   current:()=>JSON.parse(JSON.stringify(current())),

@@ -70,3 +70,13 @@
 }
 @media(max-width:390px){.creation-switch>button{padding:11px 10px}.creation-switch>button>strong{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.creation-switch button,.portfolio-card{transition:none}}
+body.creator-embedded-modal .gucc-shell-dock{display:none!important}
+.portfolio-videos{display:grid;gap:7px;margin-top:3px;padding-top:10px;border-top:1px solid var(--os-hairline)}
+.portfolio-video{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;line-height:1.5;color:var(--os-soft)}
+.portfolio-video>span:first-child{min-width:0;overflow-wrap:anywhere}
+.portfolio-video>span:last-child{white-space:nowrap;color:var(--os-mint)}
+.portfolio-next{font-size:10px;line-height:1.6;color:var(--os-muted)}
+
+.gucc-embed[hidden],.creator-folder-command[hidden]{display:none!important}
+html:has(body.creator-os-page){scroll-padding-block:96px 110px}
+.creator-os-page :is(button,input,select,textarea,summary,a){scroll-margin-block:96px 110px}

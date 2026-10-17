@@ -1,11 +1,11 @@
-const STATIC_CACHE = "gucc-static-v55";
-const RUNTIME_CACHE = "gucc-runtime-v46";
+const STATIC_CACHE = "gucc-static-v56";
+const RUNTIME_CACHE = "gucc-runtime-v47";
 
 const APP_SHELL = [
   "./assets/access-guard.js?v=15",
   "./assets/gucc-premium.css?v=4",
   "./assets/gucc-shell-nav-v2.css?v=6",
-  "./assets/gucc-shell.js?v=16",
+  "./assets/gucc-shell.js?v=17",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/creator-six-deliverables.js?v=1.0.2",
@@ -13,10 +13,11 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
-  "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.0",
-  "./apps/video-workspace/production-system/creator-four-workspaces.css?v=1",
-  "./assets/creator-embed-shell.css?v=1",
-  "./assets/creator-embed-shell.js?v=1",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.1",
+  "./apps/video-workspace/production-system/creator-four-workspaces.css?v=2",
+  "./assets/creator-embed-shell.css?v=2",
+  "./assets/creator-embed-shell.js?v=2",
+  "./assets/creator-project-folders.js?v=1",
   "./apps/video-workspace/production-system/creator-os-outcomes.js?v=1",
   "./apps/video-workspace/production-system/creator-os-outcomes.css?v=1",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.1",
@@ -115,8 +116,8 @@ const APP_SHELL = [
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/studio.js?v=6.4.0",
   "./assets/creator-shared-context.js?v=2",
-  "./assets/creator-shared-context-ui.mjs?v=3",
-  "./assets/creator-shared-context.css?v=3",
+  "./assets/creator-shared-context-ui.mjs?v=4",
+  "./assets/creator-shared-context.css?v=4",
   "./apps/cover-generator/cover-studio.css?v=2",
   "./assets/creator-artifact-observation.mjs",
   "./apps/video-workspace/studio.css?v=6.3.0",

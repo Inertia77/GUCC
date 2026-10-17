@@ -10,8 +10,9 @@
 <script src="../../../assets/creator-shared-context.js?v=2"></script>
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
 <link rel="stylesheet" href="./creator-os-outcomes.css?v=1">
-<link rel="stylesheet" href="./creator-four-workspaces.css?v=1">
+<link rel="stylesheet" href="./creator-four-workspaces.css?v=2">
 <link rel="stylesheet" href="../../../assets/gucc-premium.css?v=4" data-gucc-premium>
+<script src="../../../assets/creator-project-folders.js?v=1" defer></script>
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -267,6 +268,7 @@
     <section id="view-release" class="view" aria-label="发布与复盘">
       <div class="section-head"><span class="micro">DISTRIBUTION / ANALYTICS</span><h2>发布与复盘</h2><p>六平台发布单、发布前检查、逐平台执行与数据复盘。原发布控制台的数据和历史全部保留。</p></div>
       <div class="frame-heading"><p>直接在这里准备与复盘；需要更大空间时可以全屏打开，编辑数据保持一致。</p><a href="../../publishing-console/" target="_blank" rel="noopener">全屏打开 ↗</a></div>
+      <p id="releaseIdentityGate" class="panel" hidden>请先选择本项目下的具体视频，再编辑对应的发布单。 <button type="button" id="releaseChooseVideo" class="button secondary">选择视频</button></p>
       <iframe id="publishConsoleFrame" class="gucc-embed" title="GUCC 发布与复盘控制台" src="../../publishing-console/?embedded=1" loading="lazy"></iframe>
     </section>
 
@@ -407,9 +409,9 @@
 <script src="./creator-os-validation.js?v=1"></script>
 <script src="./creator-os-step-history.js?v=2"></script>
 <script src="./creator-os-outcomes.js?v=1"></script>
-<script src="./creator-os-app.js?v=4.0.0"></script>
+<script src="./creator-os-app.js?v=4.0.1"></script>
 <script type="module" src="./creator-os-cloud.mjs?v=4"></script>
 <script type="module" src="./creator-os-local-folder.mjs?v=1"></script>
-<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=3"></script>
+<script type="module" src="../../../assets/creator-shared-context-ui.mjs?v=4"></script>
 </body>
 </html>

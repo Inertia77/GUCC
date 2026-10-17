@@ -83,6 +83,7 @@ jobs:
             tmp/creator-ux-browser/
             tmp/gucc-premium-browser/
             tmp/unified-workspace-browser/
+            tmp/creator-four-workspaces/
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/

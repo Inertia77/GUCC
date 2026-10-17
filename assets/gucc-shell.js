@@ -493,6 +493,10 @@
         return;
       }
       openKey = key;
+      if(key==='create'&&productionActive){
+        const view=new URLSearchParams(location.search).get('view')||'outcomes';
+        group.items.forEach((item,index)=>item.active=['outcomes','creation','release','knowledge'][index]===view);
+      }
       menu.dataset.group = key;
       menu.innerHTML = `
         <div class="gucc-shell-menu-head">

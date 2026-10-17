@@ -27,12 +27,13 @@ assert(fixed.includes('id="coverAssistant"')&&fixed.includes('href="../cover-gen
 assert(studioJs.includes("$('coverAssistant').hidden=!aboutCover"));
 assert(shell.includes("childRoutes.dashboard, childRoutes.workbench, childRoutes.distribution, childRoutes.governance"));
 assert(!shell.includes("items: [childRoutes.fixed, childRoutes.workspace, childRoutes.cover, childRoutes.publish]"));
-assert(app.includes('creator_deliverable_records?select=*&order=project_id.asc'));
+assert(app.includes('portfolioRows(request,"creator_deliverable_records"'));
+assert(app.includes('&limit=200&offset='));
 assert(app.includes('Outcomes.summary(rows,v).done'));
 assert(!app.includes("p.outcomeProgress="),"Never duplicate formal outcome truth into snapshot");
 assert(app.includes('document.querySelectorAll("main.os-main > section.view")'));
 assert(app.includes('data-creation-pane')&&app.includes('data-reference'));
 assert(app.includes('e.data?.type')===false||app.includes('gucc:embedded-tool-height'));
-assert(fixed.includes("creator-embed-shell.js?v=1")&&publisher.includes("creator-embed-shell.js?v=1"));
+assert(fixed.includes("creator-embed-shell.js?v=2")&&publisher.includes("creator-embed-shell.js?v=2"));
 assert(stylesheet.includes("@media(max-width:760px)"));
 console.log("Four creator workspace contracts passed: four navigation views, project registry, fixed+dynamic editor, publisher+review, governance, contextual cover, canonical outcome source.");

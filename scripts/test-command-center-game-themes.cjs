@@ -29,7 +29,7 @@ const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
 const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=3");
-const mobileLayoutIndex = mainSource.indexOf("mobile-layout.css?v=3");
+const mobileLayoutIndex = mainSource.indexOf("mobile-layout.css?v=4");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
 assert(gamePremiumIndex >= 0, "Missing premium game material stylesheet");
@@ -160,6 +160,16 @@ assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed :is\([\
 assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.meta \.badge[\s\S]*?display:\s*none\s*!important/);
 assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.meta \.badge\.status-highlight[\s\S]*?display:\s*inline-flex\s*!important/);
 assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.collapsible-actions > :not\(\.collapse-toggle\)[\s\S]*?display:\s*none\s*!important/);
+
+// Parties, mechanisms and versions use the same single-row mobile collapse grammar.
+for (const resultId of ["partyResults", "mechanismResults", "versionResults"]) {
+  assert.match(mobileLayoutStyles, new RegExp(`#partyResults, #mechanismResults, #versionResults`), "Missing shared collapsed-row rule");
+  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.item-head\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/);
+  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.meta\s*\{\s*display:\s*none\s*!important/);
+  assert.match(mobileLayoutStyles, /\.item\.is-collapsed\s*\.collapsible-actions > :not\(\.collapse-toggle\)\s*\{\s*display:\s*none\s*!important/);
+  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.collapse-toggle\s*\{[\s\S]*?min-height:\s*44px\s*!important/);
+}
+assert.match(mobileLayoutStyles, /#versionResults \.item\.is-collapsed \.version-title\s*\{[\s\S]*?display:\s*flex\s*!important/);
 
 // Decorations remain CSS-only and retreat on small screens / reduced motion.
 assert.doesNotMatch(gameThemeStyles, /url\s*\(/i);

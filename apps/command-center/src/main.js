@@ -16,7 +16,7 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
   ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
   ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=3'],
-  ['gucc-mobile-layout-final', '../styles/mobile-layout.css?v=3'],
+  ['gucc-mobile-layout-final', '../styles/mobile-layout.css?v=4'],
   ['gucc-premium-final', '../../../assets/gucc-premium.css?v=4']
 ];
 

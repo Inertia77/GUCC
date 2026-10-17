@@ -8,6 +8,8 @@ const Caps=require("../apps/video-workspace/production-system/capability-library
 const Fail=require("../apps/video-workspace/production-system/failure-prevention.js");
 const O=require("../apps/video-workspace/production-system/orchestrator.js");
 const Steps=require("../apps/video-workspace/production-system/creator-os-step-history.js");
+const Outcomes=require("../apps/video-workspace/production-system/creator-os-outcomes.js");
+const Six=require("../apps/video-workspace/creator-six-deliverables.js");
 const migration=require("../apps/video-workspace/production-system/legacy-prompt-migration.json");
 
 assert.equal(Core.AUTONOMY_LEVELS.L2.label,"High Autonomy");
@@ -58,7 +60,7 @@ function testTaskFirstUiHandoff(){
     if(elements.has(id))return elements.get(id);
     const e={
       id,dataset:{},children:[],options:[],classList:{toggle(){}},style:{},value:"",textContent:"",innerHTML:"",hidden:false,
-      replaceChildren(){this.children=[];},append(x){this.children.push(x);},
+      replaceChildren(){this.children=[];},append(x){this.children.push(x);},add(x){this.options.push(x);},
       addEventListener(type,fn){(callbacks[id] ||= {})[type]=fn;},
       setAttribute(){},showModal(){},close(){},closest(){return {classList:{toggle(){}}};},querySelector(){return {reset(){}};},querySelectorAll(){return [];}
     };
@@ -67,12 +69,12 @@ function testTaskFirstUiHandoff(){
   const draft=O.createProject({projectId:"QA_DRAFT",name:"QA 草案",idea:"测试 Project Builder 与 Flow Compiler"});
   storage.set(O.STORAGE_KEY,JSON.stringify({projects:[draft],selectedProjectId:draft.projectId}));
   const sandbox={
-    window:{GuccCreatorCoreRules:Core,GuccCreatorFailurePrevention:Fail,GuccCreatorCapabilities:Caps,GuccCreatorOrchestrator:O,GuccCreatorStepHistory:Steps,confirm:()=>true,location:{search:""},dispatchEvent(){},addEventListener(){}},
+    window:{GuccCreatorOutcomes:Outcomes,GuccCreatorSix:Six,GuccCreatorCoreRules:Core,GuccCreatorFailurePrevention:Fail,GuccCreatorCapabilities:Caps,GuccCreatorOrchestrator:O,GuccCreatorStepHistory:Steps,confirm:()=>true,location:{search:""},dispatchEvent(){},addEventListener(){}},
     document:{getElementById:element,querySelectorAll:()=>[],createElement:t=>element(t+"_"+elements.size),body:{append(){}}},
     localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},
     navigator:{clipboard:{writeText:async()=>{}}},
     setTimeout:()=>1,clearTimeout:()=>{},fetch:async()=>({json:async()=>({mappings:[]})}),
-    Option:function(){},CustomEvent:function(){},URLSearchParams,console
+    Option:function(label,value){this.label=label;this.value=value;},CustomEvent:function(){},URLSearchParams,console
   };
   vm.runInNewContext(source,sandbox,{filename:"creator-os-app.js"});
   assert.equal(element("currentTaskId").textContent,"PROJECT_BUILDER");

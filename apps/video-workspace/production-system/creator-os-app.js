@@ -7,6 +7,8 @@ const O=window.GuccCreatorOrchestrator;
 const Steps=window.GuccCreatorStepHistory;
 const Storage=window.GuccCreatorStorage;
 const Validation=window.GuccCreatorValidation;
+const Outcomes=window.GuccCreatorOutcomes;
+const Six=window.GuccCreatorSix;
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let migration=[];
@@ -17,7 +19,9 @@ const linkedProjectId=new URLSearchParams(window.location.search).get("project")
 if(linkedProjectId&&store.projects.some(p=>p.projectId===linkedProjectId)){
   store.selectedProjectId=linkedProjectId;
 }
-let activeView="system";
+let activeView="outcomes";
+let selectedOutcomeVideoKey="";
+
 let toastTimer;
 let flowExpanded=false;
 let selectedBranch="";
@@ -101,6 +105,7 @@ function render(){
   renderNav();
   renderProjectBar();
   renderSystem();
+  if(activeView==="outcomes")renderOutcomeBoard();
   if(activeView==="core")renderCore();
   if(activeView==="capabilities")renderCapabilities();
   if(activeView==="projects")renderProjects();
@@ -258,6 +263,126 @@ function renderFlow(p){
     box.append(more);
   }
 }
+
+/* OUTCOME BOARD: view and edit the SAME canonical deliverables used by all GUCC tools. */
+let outcomeFetchingProject="";
+let outcomeLoadError="";
+function outcomeVideo(p){
+  const videos=Outcomes.videos(p);
+  if(!videos.length)return null;
+  const ctx=window.GuccCreatorContext?.read?.();
+  return videos.find(v=>v.key===selectedOutcomeVideoKey)||
+    videos.find(v=>v.key===ctx?.videoId&&p?.projectId===ctx?.projectId)||
+    videos.find(v=>v.branch===selectedBranch||v.key===selectedBranch)||videos[0];
+}
+async function loadCanonicalOutcomes(p){
+  if(!p||officialProjectRecords.has(p.projectId)||outcomeFetchingProject===p.projectId)return;
+  const request=window.GuccCreatorWorkspace?.request;
+  if(!request)return; // Shared editor module is still loading; its ready event will retry.
+  const id=p.projectId;
+  outcomeFetchingProject=id;outcomeLoadError="";
+  try{
+    const result=await request("creator_deliverable_records?select=*&project_id=eq."+encodeURIComponent(id));
+    if(!Array.isArray(result))throw Error("云端成果格式异常");
+    if(!officialProjectRecords.has(id))officialProjectRecords.set(id,result);
+  }catch(error){outcomeLoadError=String(error?.message||"云端读取失败");}
+  finally{
+    if(outcomeFetchingProject===id)outcomeFetchingProject="";
+    if(activeView==="outcomes"&&current()?.projectId===id)renderOutcomeBoard();
+  }
+}
+function renderOutcomeBoard(){
+  const sel=$("outcomeProjectSelect");
+  sel.replaceChildren();
+  const list=store.projects.filter(p=>p.status!=="TEST_FIXTURE");
+  if(!list.length){
+    sel.add(new Option("暂无项目，请先新建",""));sel.disabled=true;
+    $("outcomeProjectMeta").textContent="项目可以在 GUCC 共享项目选择器中建立。";
+    $("outcomeVideoTabs").replaceChildren();
+    $("outcomeCards").innerHTML='<p class="outcomes-empty">尚无创作项目。可以新建项目并登记视频，再独立管理六项正式成果。</p>';
+    $("outcomeProgressText").textContent="尚无项目";
+    $("outcomeProgressFill").style.width="0%";
+    $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
+    $("outcomeAddVideo").disabled=true;
+    return;
+  }
+  sel.disabled=false;
+  for(const item of list)sel.add(new Option((projectLife(item)==="active"?"":"["+lifeName(item)+"] ")+item.name,item.projectId));
+  const p=current();
+  if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';return;}
+  sel.value=p.projectId;
+  $("outcomeProjectMeta").textContent=[p.game||"未设置游戏",p.version||"未设置版本",lifeName(p)].join(" · ");
+  const videos=Outcomes.videos(p),video=outcomeVideo(p);
+  selectedOutcomeVideoKey=video?.key||"";
+  $("outcomeVideoTabs").innerHTML=videos.map(v=>
+    '<button type="button" data-outcome-video="'+esc(v.key)+'" class="'+(v.key===selectedOutcomeVideoKey?"active":"")+'">'+esc(v.name)+'</button>'
+  ).join("");
+  $("outcomeVideoTabs").querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{
+    selectedOutcomeVideoKey=button.dataset.outcomeVideo;
+    const v=Outcomes.videos(current()).find(x=>x.key===selectedOutcomeVideoKey);
+    window.GuccCreatorContext?.set({projectId:p.projectId,videoId:v?.inferred?"":v?.key||""});
+    renderOutcomeBoard();
+  }));
+  $("outcomeAddVideo").disabled=Boolean(p.deletedAt||p.archivedAt);
+  if(!video){
+    $("outcomeProgressText").textContent="待登记视频";
+    $("outcomeCards").innerHTML='<p class="outcomes-empty">该项目尚未登记视频。使用「＋ 登记视频」建立正式视频身份，六项成果将分别记录到该视频。</p>';
+    $("outcomeProgressFill").style.width="0%";
+    $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
+    return;
+  }
+  if(!officialProjectRecords.has(p.projectId)&&outcomeFetchingProject!==p.projectId&&!outcomeLoadError)
+    void loadCanonicalOutcomes(p);
+  const remote=officialProjectRecords.get(p.projectId);
+  const total=Outcomes.summary(remote,video);
+  $("outcomeProgressText").innerHTML=total.loaded?total.done+' / 6 <small>已确认</small>':
+    (outcomeLoadError?"读取失败":"云端核对中");
+  $("outcomeProgressHint").textContent=outcomeLoadError
+    ?"无法核对正式成果："+outcomeLoadError+"。连接恢复前不显示推测的完成状态。"
+    :"完成数量只取正式成果表的已确认状态；动态 Prompt 执行结果不会直接改变它。";
+  $("outcomeProgressFill").style.width=total.percent+"%";
+  $("outcomeProgressMeter").setAttribute("aria-valuenow",String(total.percent));
+  const writable=!p.deletedAt&&!p.archivedAt&&Boolean(window.GuccCreatorContextUI);
+  $("outcomeCards").innerHTML=Six.ITEMS.map(item=>{
+    const rec=Outcomes.record(remote,video,item.id);
+    const status=total.loaded?rec?.status||"not_started":"";
+    const label=total.loaded?Outcomes.LABELS[status]||"待核对":outcomeLoadError?"暂不可读":"正在读取";
+    const file=Outcomes.evidenceLabel(rec);
+    const note=rec?.review_note||"";
+    return '<article class="outcome-card" data-status="'+esc(status||"loading")+'">'+
+      '<div class="outcome-card-head"><span class="outcome-card-id">OUTCOME / '+esc(item.no)+'</span>'+
+      '<span class="outcome-status" data-status="'+esc(status||"loading")+'">'+esc(label)+'</span></div>'+
+      '<h3>'+esc(item.name)+'</h3><p>'+esc(item.output)+'</p>'+
+      (file?'<p class="outcome-card-ref">已登记：'+esc(file)+'</p>':"")+
+      (note?'<p class="outcome-card-ref">'+esc(note)+'</p>':"")+
+      '<div class="outcome-card-foot"><span class="outcome-card-source">'+
+      esc(total.loaded?(rec?"正式记录 · R"+rec.revision:"尚未提交正式记录"):"云端资料尚未核验")+
+      '</span><button class="button secondary" type="button" data-outcome-edit="'+esc(item.id)+'" '+
+      (!writable||!total.loaded?"disabled":"")+'>查看 / 管理 ↗</button></div></article>';
+  }).join("");
+  $("outcomeCards").querySelectorAll("[data-outcome-edit]").forEach(button=>
+    button.addEventListener("click",()=>void openCanonicalOutcomeEditor(button.dataset.outcomeEdit)));
+}
+async function openCanonicalOutcomeEditor(id){
+  const p=current(),v=outcomeVideo(p),ui=window.GuccCreatorContextUI;
+  if(!p||!v||!ui||!officialProjectRecords.has(p.projectId))return;
+  if(v.inferred){
+    notify("这是旧视频分支，请先登记为正式视频身份");
+    ui.openSwitcher();return;
+  }
+  try{
+    const ctx=window.GuccCreatorWorkspace?.context?.();
+    if(ctx?.projectId!==p.projectId||ctx?.videoId!==v.key){
+      await ui.reload({projectId:p.projectId,videoId:v.key});
+    }
+    const ready=window.GuccCreatorWorkspace?.context?.();
+    if(ready?.projectId!==p.projectId||ready?.videoId!==v.key){
+      notify("请先在共享项目选择器中确认正式视频身份");ui.openSwitcher();return;
+    }
+    ui.openOutcome(id);
+  }catch(error){notify("无法打开成果档案："+(error?.message||"请检查连接"));}
+}
+
 function renderCore(){
   $("autonomyGrid").innerHTML=Object.entries(Core.AUTONOMY_LEVELS).map(([k,v])=>`<article class="panel"><span class="micro">${k}</span><h3>${esc(v.label)}</h3><p class="subtitle">${esc(v.summary)}</p></article>`).join("");
   $("coreRuleGrid").innerHTML=Object.values(Core.CORE_RULES).map(s=>`<article class="panel rule-card"><h3>${esc(s.title)}</h3><h4 class="hard">Hard</h4><ul>${s.hard.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4 class="best">Best Practice</h4><ul>${s.best.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></article>`).join("");
@@ -615,6 +740,28 @@ function applyNodeResult(result){
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>{activeView=b.dataset.view;render();}));
+$("outcomeProjectSelect").addEventListener("change",e=>{
+  store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
+  save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:""});
+});
+$("boardDynamicPrompt").addEventListener("click",()=>{
+  const video=outcomeVideo(current());
+  selectedBranch=video?.branch==="SHARED"?"":video?.branch||"";
+  activeView="system";render();
+});
+$("outcomeRefresh").addEventListener("click",()=>{
+  const p=current();if(!p)return;
+  if(outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
+  officialProjectRecords.delete(p.projectId);outcomeLoadError="";
+  void loadCanonicalOutcomes(p);renderOutcomeBoard();
+});
+$("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
+$("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
+window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes")renderOutcomeBoard();});
+window.addEventListener("gucc:creator-outcome-saved",e=>{
+  const id=e.detail?.projectId;
+  if(id){officialProjectRecords.delete(id);outcomeLoadError="";if(activeView==="outcomes"&&current()?.projectId===id)void loadCanonicalOutcomes(current());}
+});
 $("editProjectBtn").addEventListener("click",openProjectEditor);
 $("editProjectTopBtn").addEventListener("click",openProjectEditor);
 $("editProjectArchiveBtn").addEventListener("click",openProjectEditor);
@@ -850,6 +997,6 @@ window.GuccCreatorOS={
   }
 };
 if(new URLSearchParams(window.location.search).get("newProject")==="1")$("createDialog").showModal();
-window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);if(current()?.projectId===e.detail.projectId)render();});
+window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(current()?.projectId===e.detail.projectId)render();});
 render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

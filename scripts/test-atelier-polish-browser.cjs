@@ -39,10 +39,10 @@ let browser;
   await p.getByRole('button',{name:'选择工作区',exact:true}).click();
   await shot(`creator-navigation-${width}`);
   for(let i=0;i<14;i++)await p.keyboard.press('Tab');
-  assert(await p.getByRole('dialog',{name:'选择工作区'}).evaluate(d=>d.contains(document.activeElement)),'Sheet traps keyboard focus');
+  assert(await p.getByRole('dialog',{name:'选择工作区'}).evaluate(d=>d===document.activeElement||d.contains(document.activeElement)),'Sheet traps keyboard focus (dialog container itself is a valid focus stop)');
   await p.keyboard.press('Escape');
   await p.waitForFunction(()=>document.querySelector('[aria-label=选择工作区]').getAttribute('aria-expanded')==='false');
-  for(let i=4;i>=0;i--){await choose('工作区',i);assert(await p.locator(['#view-system','#view-projects','#view-core','#view-capabilities','#view-libraries'][i]).isVisible());}
+  for(let i=5;i>=0;i--){await choose('工作区',i);assert(await p.locator(['#view-outcomes','#view-system','#view-projects','#view-core','#view-capabilities','#view-libraries'][i]).isVisible());}
   assert(await p.locator('.os-nav').isHidden(),'No duplicate phone navigation');
   await shot(`creator-returned-${width}`);
   await p.evaluate(()=>window.scrollTo({top:450,behavior:'instant'}));
@@ -86,7 +86,7 @@ let browser;
  assert.equal(f.writes.length,0,'Navigation, copy, panels and preview must not write formal projects or deliverables');
  // Completed projects continue to foreground their outcome overview.
  f.snapshots.A.completedAt='2026-10-15T00:00:00Z';await go('creator');await shot('creator-completed-390');
- assert(await p.locator('.gcc-overview').isVisible());assert(!(await p.locator('#copyCurrentPrompt').isVisible()));
+ assert(await p.locator('#view-outcomes').isVisible());assert(!(await p.locator('#copyCurrentPrompt').isVisible()));
  // Long project/video names remain readable inside selectors and do not widen the page.
  f.projectRows[0].name='绝区零 3.3｜菲欧妮与赛维里安双视频前瞻项目｜共享研究资料与多视频制作';
  f.videos.get(f.key('A','FIONI')).title='菲欧妮角色解析｜机制、队伍与实战策略的完整制作版本';

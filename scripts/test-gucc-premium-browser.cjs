@@ -25,7 +25,10 @@ let browser;
       const downloaded=page.waitForEvent('download');await page.click('#exportBtn');const file=await (await downloaded).path();const png=await fs.readFile(file);assert.equal(png.readUInt32BE(16),w);assert.equal(png.readUInt32BE(20),h);assert.deepEqual(png,Buffer.from(preview.split(",")[1],"base64"),"Export bytes must match the actual preview canvas");
     }
   }
-  await page.goto('https://gucc.test/apps/video-workspace/production-system/');await page.waitForFunction(()=>window.GuccCreatorOS?.current()?.projectId==='QA-BROWSER');assert.equal(await page.locator('[data-branch]').count(),2);
+  await page.goto('https://gucc.test/apps/video-workspace/production-system/');await page.waitForFunction(()=>window.GuccCreatorOS?.current()?.projectId==='QA-BROWSER');
+  assert(await page.locator('#view-outcomes').isVisible(),'Creator opens in independent outcomes workspace');
+  await page.locator('.os-nav [data-view=system]').evaluate(el=>el.click());
+  assert.equal(await page.locator('[data-branch]').count(),2);
   await page.locator('[data-branch="TWO"]').click();assert.equal(await page.locator('#flowList .flow-node').count(),1);await page.click('#clearBranchFilter');
   async function receipt(r){await page.click('#applyResultBtn');await page.fill('#resultInput',JSON.stringify(r));await page.click('#applyResultConfirm');}
   await receipt({promptId:'QA-1'});assert.equal(await page.evaluate(()=>GuccCreatorOS.current().promptFlow[0].status),'PENDING');await page.locator('#resultDialog').evaluate(d=>d.close());

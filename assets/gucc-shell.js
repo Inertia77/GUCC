@@ -319,6 +319,27 @@
       choices.setAttribute('aria-label', title);
       heading.append(headingText, close);
       dialog.append(heading, choices);
+      // Explicit focus loop for keyboard users. Native dialog Tab traversal may
+      // focus the document when the number of workspace choices changes.
+      dialog.addEventListener('keydown', event => {
+        if (event.key !== 'Tab' || !dialog.open) return;
+        const focusable = [close, ...choices.querySelectorAll('button:not([disabled])')]
+          .filter(el => el.getClientRects().length && !el.hidden);
+        if (!focusable.length) {
+          event.preventDefault();
+          dialog.focus({ preventScroll: true });
+          return;
+        }
+        const current = document.activeElement;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && (current === first || current === dialog)) {
+          event.preventDefault();
+          last.focus({ preventScroll: true });
+        } else if (!event.shiftKey && (current === last || current === dialog)) {
+          event.preventDefault();
+          first.focus({ preventScroll: true });
+        }
+      });
       document.body.append(dialog);
       const count = document.createElement('span');
       count.className = 'gucc-picker-count';

@@ -1,4 +1,4 @@
-const STATIC_CACHE = "gucc-static-v53";
+const STATIC_CACHE = "gucc-static-v54";
 const RUNTIME_CACHE = "gucc-runtime-v46";
 
 const APP_SHELL = [
@@ -151,6 +151,8 @@ const APP_SHELL = [
   "./apps/publishing-console/app.js?v=2",
   "./apps/publishing-console/publish-cloud.mjs?v=1",
   "./apps/publishing-console/app.js?v=4",
+  "./apps/publishing-console/app.js?v=5",
+  "./apps/publishing-console/publish-md.js?v=1",
   "./apps/publishing-console/publish-cloud.mjs?v=2",
   "./assets/creator-publish-asset-discovery.js?v=2",
   "./reference/resource-library.html",

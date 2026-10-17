@@ -15,6 +15,7 @@ const interfaceChromeStyles = read("apps/command-center/styles/interface-chrome.
 const responsiveLayoutStyles = read("apps/command-center/styles/responsive-layout.css");
 const gameOsStyles = read("apps/command-center/styles/game-os.css");
 const interactionContrastStyles = read("apps/command-center/styles/interaction-contrast.css");
+const mobileLayoutStyles = read("apps/command-center/styles/mobile-layout.css");
 
 // Command Center stays search-first: no dashboard/game-hub layer should reappear.
 for (const forbidden of ["TODAY", "Next Action", "game-overview", "game-hub", "six-game-overview"]) {
@@ -28,15 +29,18 @@ const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
 const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=3");
+const mobileLayoutIndex = mainSource.indexOf("mobile-layout.css?v=3");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
 assert(gamePremiumIndex >= 0, "Missing premium game material stylesheet");
 assert(interfaceChromeIndex >= 0, "Missing final shared interface chrome stylesheet");
 assert(responsiveLayoutIndex >= 0, "Missing final responsive layout stylesheet");
+assert(mobileLayoutIndex >= 0, "Missing final mobile layout stylesheet");
 assert(searchUxIndex < gameThemeIndex, "Neutral search UX must load before game variants");
 assert(gameThemeIndex < gamePremiumIndex, "Premium material finish must load after game geometry");
 assert(gamePremiumIndex < interfaceChromeIndex, "Shared chrome must load after card material finish");
-assert(interfaceChromeIndex < responsiveLayoutIndex, "Responsive layout contract must load last");
+assert(interfaceChromeIndex < responsiveLayoutIndex, "Responsive layout must follow shared chrome");
+assert(responsiveLayoutIndex < mobileLayoutIndex, "Mobile layout must refine the responsive contract");
 assert.match(mainSource, /ensureFinalStyleSheets\(\{ reorder: true \}\)/);
 
 // All six games need explicit selectors in both identity and material layers.
@@ -148,6 +152,14 @@ assert.match(gameOsStyles, /grid-template-columns:\s*minmax\(70px, \.8fr\) minma
 assert.match(gameOsStyles, /character-title-localized[\s\S]*?display:\s*flex/);
 assert.match(gameOsStyles, /character-title-localized[\s\S]*?flex-wrap:\s*wrap/);
 assert.match(responsiveLayoutStyles, /min-height:\s*44px/);
+
+// Collapsed character cards on phones reduce to one scan row: name, two status chips, expand.
+assert.match(mobileLayoutStyles, /Character cards: collapsed mobile state is a single scan row/);
+assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.item-head[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/);
+assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed :is\([\s\S]*?character-title-localized[\s\S]*?character-title-full[\s\S]*?display:\s*none\s*!important/);
+assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.meta \.badge[\s\S]*?display:\s*none\s*!important/);
+assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.meta \.badge\.status-highlight[\s\S]*?display:\s*inline-flex\s*!important/);
+assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.collapsible-actions > :not\(\.collapse-toggle\)[\s\S]*?display:\s*none\s*!important/);
 
 // Decorations remain CSS-only and retreat on small screens / reduced motion.
 assert.doesNotMatch(gameThemeStyles, /url\s*\(/i);

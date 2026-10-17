@@ -25,9 +25,14 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
    assert(await page.locator('#view-creation').isVisible());
    assert(await page.locator('[data-creation-pane="fixed"]').isVisible());
    const studio=page.frameLocator("#fixedStudioFrame");
-   await studio.locator("#sixNavList .six-step").first().waitFor();
+   await studio.locator("#sixNavList .six-step").first().waitFor({state:"attached"});
    assert(await studio.locator("#coverAssistant").isHidden());
-   await studio.locator("#sixNavList .six-step").nth(4).click();
+   if(width<=700){
+    await studio.getByRole("button",{name:"选择成果",exact:true}).click();
+    await studio.getByRole("dialog",{name:"选择成果"}).locator("nav button").nth(4).click();
+   }else{
+    await studio.locator("#sixNavList .six-step").nth(4).click();
+   }
    assert(await studio.locator("#coverAssistant").isVisible(),"Advanced cover helper only alongside the cover Prompt");
    await page.screenshot({path:path.join(out,"creation-fixed-"+width+".png"),fullPage:true,animations:"disabled"});
    await page.locator('[data-creation-mode="dynamic"]').click();

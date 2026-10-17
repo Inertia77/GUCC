@@ -113,6 +113,7 @@ assert.deepEqual(withIdentity.identity, { projectId: 'p-1', videoId: 'v-1' }, '�
 assert.match(parsedMd.platforms.bilibili.danmakuPolls, /观望/, '弹幕投票作为人工待办保留');
 assert.equal(parsedMd.platforms.youtube.chapters.split('\n').length, 3);
 assert.equal(PublishMd.buildYouTubeDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters).description.includes('02:10 配裝'), true);
+assert.match(PublishMd.buildYouTubeReleaseDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters, '#絕區零, #ZZZ').description, /#絕區零 #ZZZ/, 'Hashtags 自动合并到简介');
 assert.equal(PublishMd.buildYouTubeDescription('00:00 已有章節\n00:30 下一章\n01:00 結尾', parsedMd.platforms.youtube.chapters).warnings.length, 1, '已有简介章节不能重复注入');
 assert.equal(PublishMd.checkYouTubeChapters('00:00 開場\n00:05 解析\n00:30 結尾').valid, false, '时间重叠必须阻断自动合并');
 assert.equal(PublishMd.checkYouTubeChapters('00:05 開場\n00:30 解析\n01:00 結尾').valid, false, '首章必须从零开始');
@@ -124,7 +125,7 @@ assert.match(prompt, /https:\/\/studio.youtube.com\//);
 const appSource = readFileSync(resolve(__dirname, '../apps/publishing-console/app.js'), 'utf8');
 assert.match(appSource, /PublishMd\.parse\(markdown\)/, '导入与独立视频草稿相连');
 assert.match(appSource, /await assistantRequest\("\/api\/open-login"/, '批量打开复用本机浏览器和官方发布链接');
-assert.match(appSource, /PublishMd\.buildYouTubeDescription/, '章节在自动提交字段前组装');
+assert.match(appSource, /PublishMd\.buildYouTubeReleaseDescription/, '章节及 Hashtags 在自动提交字段前组装');
 assert.match(appSource, /openAllPlatformsButton.*openAllPlatformPages/, '一键打开平台按钮已绑定');
 assert.equal(PLATFORMS.youtube.fields.find(f => f.key === 'hashtags').hardItems, undefined, '三条显眼 hashtags 不得误当硬上限');
 

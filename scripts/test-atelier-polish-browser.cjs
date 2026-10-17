@@ -86,7 +86,7 @@ let browser;
  assert.equal(f.writes.length,0,'Navigation, copy, panels and preview must not write formal projects or deliverables');
  // Completed projects continue to foreground their outcome overview.
  f.snapshots.A.completedAt='2026-10-15T00:00:00Z';await go('creator');await shot('creator-completed-390');
- assert(await p.locator('.gcc-overview').isVisible());assert(!(await p.locator('#copyCurrentPrompt').isVisible()));
+ assert(await p.locator('#view-outcomes').isVisible());assert(!(await p.locator('#copyCurrentPrompt').isVisible()));
  // Long project/video names remain readable inside selectors and do not widen the page.
  f.projectRows[0].name='绝区零 3.3｜菲欧妮与赛维里安双视频前瞻项目｜共享研究资料与多视频制作';
  f.videos.get(f.key('A','FIONI')).title='菲欧妮角色解析｜机制、队伍与实战策略的完整制作版本';

@@ -1,4 +1,4 @@
-const STATIC_CACHE = "gucc-static-v54";
+const STATIC_CACHE = "gucc-static-v55";
 const RUNTIME_CACHE = "gucc-runtime-v46";
 
 const APP_SHELL = [
@@ -13,7 +13,10 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
-  "./apps/video-workspace/production-system/creator-os-app.js?v=3.7.0",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.0",
+  "./apps/video-workspace/production-system/creator-four-workspaces.css?v=1",
+  "./assets/creator-embed-shell.css?v=1",
+  "./assets/creator-embed-shell.js?v=1",
   "./apps/video-workspace/production-system/creator-os-outcomes.js?v=1",
   "./apps/video-workspace/production-system/creator-os-outcomes.css?v=1",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.1",

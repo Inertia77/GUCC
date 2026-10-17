@@ -108,6 +108,8 @@ const editable = PublishMd.makeTemplate({
 const parsedMd = PublishMd.parse(editable);
 assert.deepEqual(parsedMd.sections, ['bilibili', 'youtube'], '编辑 MD 只包含启用的平台');
 assert.equal(parsedMd.platforms.bilibili.title, 'B站测试标题');
+const withIdentity = PublishMd.parse(PublishMd.makeTemplate({ ...{ project: { title: '测试', creatorProjectId: 'p-1', videoId: 'v-1' }, enabled: { bilibili: true }, platforms: { bilibili: { title: '保留视频身份' } } } }));
+assert.deepEqual(withIdentity.identity, { projectId: 'p-1', videoId: 'v-1' }, '导出模板应带有视频身份，防止跨视频导入');
 assert.match(parsedMd.platforms.bilibili.danmakuPolls, /观望/, '弹幕投票作为人工待办保留');
 assert.equal(parsedMd.platforms.youtube.chapters.split('\n').length, 3);
 assert.equal(PublishMd.buildYouTubeDescription('繁體中文影片介紹', parsedMd.platforms.youtube.chapters).description.includes('02:10 配裝'), true);

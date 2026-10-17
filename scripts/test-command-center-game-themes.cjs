@@ -162,13 +162,11 @@ assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.meta 
 assert.match(mobileLayoutStyles, /#characterResults \.item\.is-collapsed \.collapsible-actions > :not\(\.collapse-toggle\)[\s\S]*?display:\s*none\s*!important/);
 
 // Parties, mechanisms and versions use the same single-row mobile collapse grammar.
-for (const resultId of ["partyResults", "mechanismResults", "versionResults"]) {
-  assert.match(mobileLayoutStyles, new RegExp(`#partyResults, #mechanismResults, #versionResults`), "Missing shared collapsed-row rule");
-  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.item-head\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/);
-  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.meta\s*\{\s*display:\s*none\s*!important/);
-  assert.match(mobileLayoutStyles, /\.item\.is-collapsed\s*\.collapsible-actions > :not\(\.collapse-toggle\)\s*\{\s*display:\s*none\s*!important/);
-  assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.collapse-toggle\s*\{[\s\S]*?min-height:\s*44px\s*!important/);
-}
+assert.match(mobileLayoutStyles, /:is\(#partyResults, #mechanismResults, #versionResults\)/);
+assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.item-head\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/);
+assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.meta\s*\{\s*display:\s*none\s*!important/);
+assert.match(mobileLayoutStyles, /\.item\.is-collapsed\s*\.collapsible-actions > :not\(\.collapse-toggle\)\s*\{\s*display:\s*none\s*!important/);
+assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.collapse-toggle\s*\{[\s\S]*?min-height:\s*44px\s*!important/);
 assert.match(mobileLayoutStyles, /#versionResults \.item\.is-collapsed \.version-title\s*\{[\s\S]*?display:\s*flex\s*!important/);
 
 // Decorations remain CSS-only and retreat on small screens / reduced motion.

@@ -347,11 +347,10 @@ async function loadPortfolioOutcomes(){
 function renderProjectPortfolio(){
   const box=$("projectPortfolio");if(!box)return;
   if(portfolioLoaded&&store.projects.some(p=>p.status!=="TEST_FIXTURE"&&!portfolioVideos.has(p.projectId)))portfolioLoaded=false;
-  const projects=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&projectLife(p)!=="trash")
-    .sort((a,b)=>(projectLife(a)==="active"?0:1)-(projectLife(b)==="active"?0:1));
+  const projects=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&projectLife(p)==="active");
   $("portfolioStatus").textContent=portfolioError?"云端读取失败 · 请刷新成果":portfolioLoaded?"正式成果已核对":"正式成果读取中";
   if(!projects.length){
-    box.innerHTML='<div class="portfolio-empty">暂无项目。新建项目后会在这里集中查看各期制作进度。</div>';return;
+    box.innerHTML='<div class="portfolio-empty">暂无进行中的项目。新建项目后可在这里查看制作进度；已完成和已归档项目可在下方项目档案中查看。</div>';return;
   }
   box.innerHTML=projects.map(p=>{
     const videos=projectVideos(p),rows=officialProjectRecords.get(p.projectId);

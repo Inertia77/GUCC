@@ -60,7 +60,7 @@ async function main(){
     writes.push({kind:"deliverable",data});
     const id=key(data.p_project_id,data.p_video_id,data.p_key),cur=deliverables.get(id);
     if((cur?.revision||0)!==data.p_expected_revision)return route.fulfill({status:400,json:{message:"Revision conflict"}});
-    if(data.p_status==="confirmed"&&(!data.p_evidence?.humanConfirmed||!data.p_evidence?.fileName||!(data.p_evidence?.sizeBytes>0)))
+    if(data.p_status==="confirmed"&&(!data.p_evidence?.humanConfirmed||(!(data.p_evidence?.confirmationMethod==="manual"&&data.p_evidence?.confirmationSource==="human_ui")&&(!data.p_evidence?.fileName||!(data.p_evidence?.sizeBytes>0)))))
       return route.fulfill({status:400,json:{message:"Confirmed requires observed file and human QC"}});
     const row={project_id:data.p_project_id,video_id:data.p_video_id,deliverable_key:data.p_key,
        status:data.p_status,evidence:data.p_evidence,review_note:data.p_note,revision:(cur?.revision||0)+1};
@@ -98,13 +98,26 @@ async function main(){
   assert.equal(deliverables.get(key("A","FIONI","script")).status,"in_progress");
   await page.locator(".gcc-outcome-editor select").nth(1).selectOption("confirmed");
   await page.getByRole("button",{name:"保存成果状态",exact:true}).click();
-  assert.match(await page.locator(".gcc-outcome-editor > small").textContent(),/必须选择实际文件/);
-  assert.equal(deliverables.get(key("A","FIONI","script")).revision,1);
+  await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor > small")?.textContent.includes("版本 2"));
+  const manual = deliverables.get(key("A","FIONI","script"));
+  assert.equal(manual.status,"confirmed");
+  assert.equal(manual.evidence.confirmationMethod,"manual");
+  assert.equal(manual.evidence.confirmationSource,"human_ui");
+  assert.equal(manual.evidence.fileName,"");
+  assert.deepEqual(manual.evidence.artifacts,[]);
+  assert.equal(manual.evidence.recording,null);
+  // Reopen preserves the explicit lock and revision history; file inspection remains optional.
+  await page.getByRole("button",{name:"重新打开已锁定成果",exact:true}).click();
+  await page.locator(".gcc-confirm input").fill("补充可选附件");
+  await page.locator(".gcc-confirm button[type=submit]").click();
+  await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor > small")?.textContent.includes("版本 3"));
+  await page.locator(".gcc-optional-files > summary").click();
+  await page.locator(".gcc-outcome-editor select").nth(1).selectOption("confirmed");
   await page.locator('[aria-label="选择实际成果文件"]').setInputFiles({name:'SCRIPT_FINAL.md',mimeType:'text/markdown',buffer:Buffer.from('真实字节')});
   await page.waitForFunction(()=>document.querySelector('.gcc-files').textContent.includes('SCRIPT_FINAL.md'));
   await page.locator(".gcc-evidence input").check();
   await page.getByRole("button",{name:"保存成果状态",exact:true}).click();
-  await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor > small")?.textContent.includes("版本 2"));
+  await page.waitForFunction(()=>document.querySelector(".gcc-outcome-editor > small")?.textContent.includes("版本 4"));
   assert.equal(deliverables.get(key("A","FIONI","script")).status,"confirmed");
   assert.equal(deliverables.get(key("A","FIONI","script")).evidence.humanConfirmed,true);
   await page.goto(origin+"/apps/cover-generator/");
@@ -213,7 +226,7 @@ async function main(){
   assert.equal(snapshots[created.projectId].promptFlow.length,12);
   await openSwitcher();await page.getByLabel('搜索创作项目',{exact:true}).fill('单视频');
   assert.equal(await page.locator('[aria-label="选择 GUCC 项目"] option').count(),2);
-  assert.equal(writes.filter(w=>w.kind==="deliverable").length,7,"No implicit outcome writes on draft switching");
+  assert.equal(writes.filter(w=>w.kind==="deliverable").length,9,"No implicit outcome writes on draft switching");
   assert.deepEqual(errors,[]);
   console.log("Unified Creator browser QA passed: single-project creation, same-project dual videos, Creator/Studio/Cover/Publish context, completed access, real-byte QC, scoped text/SRT drafts, refresh, search, desktop and mobile screenshots.");
  }finally{await browser.close();}

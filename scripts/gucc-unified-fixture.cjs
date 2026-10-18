@@ -222,8 +222,8 @@ function fixture() {
           if (
             data.p_status === "confirmed" &&
             (!data.p_evidence?.humanConfirmed ||
-              !data.p_evidence?.fileName ||
-              !(data.p_evidence?.sizeBytes > 0))
+              (!(data.p_evidence?.confirmationMethod === "manual" && data.p_evidence?.confirmationSource === "human_ui") &&
+                (!data.p_evidence?.fileName || !(data.p_evidence?.sizeBytes > 0))))
           )
             return route.fulfill({
               status: 400,

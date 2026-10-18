@@ -16,7 +16,7 @@ let browser;
  }}});
  const p=await c.newPage();c.setDefaultTimeout(10000);p.on('pageerror',e=>errors.push(e.message));
  const shot=async name=>{await p.mouse.move(0,0);await p.evaluate(()=>document.fonts.ready);await p.screenshot({path:path.join(out,name+'.png'),animations:'disabled'});};
- const go=async name=>{await p.goto('https://gucc.test'+pages[name]);await p.waitForSelector('.gucc-shell-dock');if(name==='db')await p.waitForSelector('#characterResults .item');if(name==='story')await p.waitForFunction(()=>document.querySelector('#doc')?.textContent.includes('崩坏'));await p.evaluate(()=>document.fonts.ready);};
+ const go=async name=>{await p.goto('https://gucc.test'+pages[name]);await p.waitForSelector('.gucc-shell-dock');if(name==='db'){await p.locator('[data-tab="characters"]').click();await p.waitForSelector('#characterResults .item');}if(name==='story')await p.waitForFunction(()=>document.querySelector('#doc')?.textContent.includes('崩坏'));await p.evaluate(()=>document.fonts.ready);};
  for(const [w,h]of sizes){
   await p.setViewportSize({width:w,height:h});
   for(const name of Object.keys(pages)){

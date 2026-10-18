@@ -123,6 +123,74 @@ let browser;
     assert(await card.locator('.meta').isVisible(),`${fixture.tab}: expanded card lost metadata`);
    }
   }
+  // Isolated Chromium acceptance: all six material skins must keep identical
+  // folded desktop heights. Very long translated names remain in expanded
+  // records and a complete primary title stays available as a tooltip.
+  for(const width of [1024,1366,1440]){
+   await p.setViewportSize({width,height:900});
+   await go('db');
+   for(const fixture of [
+    {tab:'characters',id:'characterResults'},
+    {tab:'parties',id:'partyResults'},
+    {tab:'mechanisms',id:'mechanismResults'},
+    {tab:'versions',id:'versionResults'}
+   ]){
+    await p.locator(`[data-tab="${fixture.tab}"]`).click();
+    await p.evaluate(({id,tab})=>{
+     const list=document.getElementById(id);
+     const games=['崩','绝','鸣','终','异','阴'];
+     const buttons=`<div class="actions collapsible-actions">
+      <button type="button" data-card-toggle class="secondary collapse-toggle">展开</button>
+      <button type="button" class="secondary">详情/编辑</button>
+      <button type="button" class="danger">删除</button></div>`;
+     list.innerHTML=games.map((game,i)=>{
+      const name=i===1?'非常长的角色姓名及专项完整描述测试其他字段不可压迫布局':'砂金 · 戏浪';
+      const title=tab==='characters'
+       ? `<div class="item-title character-title">
+        <div class="character-title-mainline"><span class="character-title-primary">${name}</span>
+        <span class="character-title-localized"><span>EN ExtremelyLongCharacterName</span><span>JP アベンチュリンとても長い名前</span><span>KR 아주 긴 이름</span></span></div>
+        <span class="character-title-full">全名 超长登记资料</span></div>`
+       : tab==='versions'
+       ? `<div class="item-title version-title"><span class="version-no">3.2</span><span>${name} 超长版本名</span></div>`
+       : `<div class="item-title">${name} 超长机制标题或阵容名称</div>`;
+      return `<article class="item is-collapsed" data-item-id="desktop-${i}" data-game-code="${game}">
+       <div class="item-head"><div class="item-summary">${title}
+       <div class="meta"><span class="badge">游戏</span><span class="badge">机制分类</span>
+       <span class="badge">来源</span><span class="badge status-highlight">研究 △</span>
+       <span class="badge status-highlight">养成 ×</span><span class="badge">扩展说明</span></div></div>
+       ${buttons}</div><div class="item-content" data-card-content hidden>完整展开信息</div>
+       </article>`;
+     }).join('');
+    },fixture);
+    const data=await p.locator(`#${fixture.id} > .item`).evaluateAll(cards=>cards.map(card=>{
+     const rect=o=>o.getBoundingClientRect(),r=rect(card),
+       name=card.querySelector('.character-title-primary, .item-title'),
+       nr=rect(name),button=card.querySelector('.collapse-toggle'),br=rect(button),
+       actions=rect(card.querySelector('.actions'));
+     return {game:card.dataset.gameCode,height:r.height,titleRight:nr.right,
+       buttonLeft:br.left,buttonRight:br.right,actionsRight:actions.right,
+       cardRight:r.right,cardLeft:r.left,
+       localized:card.querySelector('.character-title-localized')
+        ?getComputedStyle(card.querySelector('.character-title-localized')).display:null,
+       expandedHidden:card.querySelector('.item-content').hidden,
+       metaWrap:getComputedStyle(card.querySelector('.meta')).flexWrap
+     };
+    }));
+    assert.equal(data.length,6,`${fixture.tab} ${width}: expected six game variants`);
+    for(const d of data){
+     assert(Math.abs(d.height-76)<=1,`${fixture.tab} ${width} ${d.game}: collapsed height ${d.height}`);
+     assert(d.buttonLeft>=d.titleRight-1,`${fixture.tab} ${width} ${d.game}: title overlaps controls`);
+     assert(d.buttonRight<=d.cardRight+1,`${fixture.tab} ${width} ${d.game}: button clipped`);
+     assert(d.actionsRight<=d.cardRight+1,`${fixture.tab} ${width} ${d.game}: actions clipped`);
+     assert.equal(d.metaWrap,'nowrap',`${fixture.tab} ${width} ${d.game}: badges wrap`);
+     assert(d.expandedHidden,`${fixture.tab} ${width} ${d.game}: content leaked into folded row`);
+     if(fixture.tab==='characters')assert.equal(d.localized,'none',`${width} ${d.game}: localized name breaks row height`);
+    }
+    assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${fixture.tab} ${width}: horizontal overflow`);
+    if(width===1366&&fixture.tab==='characters')await shot('db-desktop-compact-six-skins-1366');
+   }
+  }
+  await p.setViewportSize({width:390,height:844});await go('db');
   await p.setViewportSize({width:390,height:844});
   await p.locator('[data-tab="more"]').click();await shot('db-more-390');
   await p.setViewportSize({width:390,height:500});await p.getByRole('button',{name:'资料',exact:true}).click();await shot('short-screen-menu-390');await p.keyboard.press('Escape');

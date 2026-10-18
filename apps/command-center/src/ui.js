@@ -117,6 +117,13 @@ function setCardCollapsed(card, collapsed) {
   const button = card?.querySelector('[data-card-toggle]');
   if (!card || !content || !button) return;
 
+  // Desktop quick-scan rows may visually elide unusually long primary names.
+  // Keep the complete label accessible via hover and the expand control.
+  const primaryTitle = card.querySelector('.character-title-primary, .item-title');
+  if (primaryTitle && !primaryTitle.hasAttribute('title')) {
+    primaryTitle.title = primaryTitle.textContent.replace(/\s+/g, ' ').trim();
+  }
+
   content.hidden = collapsed;
   card.classList.toggle('is-collapsed', collapsed);
   button.setAttribute('aria-expanded', String(!collapsed));

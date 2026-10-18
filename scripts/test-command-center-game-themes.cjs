@@ -141,7 +141,7 @@ assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\)[\s\S]*?height:\s*
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form[\s\S]*?grid-template-rows:\s*minmax\(0, 1fr\) auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form > \.editor-body[\s\S]*?overflow-y:\s*auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) \.editor-footer[\s\S]*?min-height:\s*68px\s*!important/);
-assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=3/);
+assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=4/);
 
 // Readability / search density / touch targets stay explicit.
 assert.match(gameThemeStyles, /character-title-localized[\s\S]*?font-size:\s*13px/);

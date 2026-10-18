@@ -6,7 +6,7 @@ import { initParties, searchParties } from './features/parties.js';
 import { initMechanisms, searchMechanisms } from './features/mechanisms.js';
 import { initResources } from './features/resources.js';
 import { initVersions, searchVersions } from './features/versions.js';
-import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
+import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js?v=2';
 import { getSavedTab, saveTab } from './ux-state.js';
 import { hydrateFixedFieldFilters } from './fixed-field-options.js?v=2';
 
@@ -15,7 +15,7 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-game-themes-final', '../styles/game-themes.css?v=9'],
   ['gucc-game-premium-final', '../styles/game-premium.css?v=1'],
   ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
-  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=3'],
+  ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=4'],
   ['gucc-mobile-layout-final', '../styles/mobile-layout.css?v=4'],
   ['gucc-premium-final', '../../../assets/gucc-premium.css?v=4']
 ];

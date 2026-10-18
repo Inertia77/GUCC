@@ -137,6 +137,7 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
   assert.equal(await page.evaluate(()=>GuccCreatorOS.current().videos.length),2);
   page.on("dialog",dialog=>dialog.accept());
   await page.locator("#archiveCurrentProject").click();
+  assert.equal(await page.locator('[data-portfolio-project="A"]').count(),0,"Archived projects leave the active portfolio");
   await page.locator("#projectArchiveFilter").selectOption("archived");
   await page.locator('#projectCards [data-project="A"]').click();
   await page.waitForFunction(()=>GuccCreatorWorkspace.context().projectId==="A");
@@ -144,9 +145,43 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
   assert.equal(await page.evaluate(()=>GuccCreatorOS.current().archivedAt),null);
   assert.equal(await page.evaluate(()=>GuccCreatorOS.current().videos.length),2);
   assert.equal(await page.evaluate(()=>GuccCreatorContext.read().projectId),"A");
+  assert.equal(await page.locator('[data-portfolio-project="A"]').count(),1,"Restoring an active project returns its card");
+  await page.locator("#completeCurrentProject").click();
+  assert.equal(await page.locator('[data-portfolio-project="A"]').count(),0,"Completed projects leave the active portfolio");
+  await page.locator("#projectArchiveFilter").selectOption("completed");
+  await page.locator('#projectCards [data-project="A"]').click();
+  await page.locator("#completeCurrentProject").click();
+  assert.equal(await page.locator('[data-portfolio-project="A"]').count(),1,"Reopening a completed project restores its card");
   assert.equal(f.writes.filter(w=>w.kind==="deliverable").length,0,"Navigation and Prompt edits never mark formal outcomes complete");
   assert.deepEqual(errors,[],"No uncaught errors in embedded tools");
   await context.close();
+  // A fresh isolated owner can confirm all six deliverables without files on desktop and phone.
+  for(const width of [1440,390]){
+   const manual=fixture(),ctx=await b.newContext({serviceWorkers:"block",viewport:{width,height:900}});
+   await manual.install(ctx);const p=await ctx.newPage();
+   await p.goto(manual.origin+"/apps/video-workspace/production-system/?project=B&video=MAIN");
+   await p.waitForFunction(()=>window.GuccCreatorOS?.current()?.projectId==="B");
+   await p.locator('.gcc-outcome-trigger').click();
+   for(const key of ["script","subtitle","visual","sound","cover","publish"]){
+    await p.locator('.gcc-outcome-chips [data-gcc-outcome="'+key+'"]').click();
+    await p.getByLabel("成果状态",{exact:true}).selectOption("confirmed");
+    await p.getByRole("button",{name:"保存成果状态",exact:true}).click();
+    await p.waitForFunction(()=>document.querySelector('.gcc-outcome-editor > small')?.textContent.includes("已同步"));
+    const row=manual.deliverables.get(manual.key("B","MAIN",key));
+    assert.equal(row.status,"confirmed");assert.equal(row.revision,1);
+    assert.equal(row.evidence.humanConfirmed,true);assert.equal(row.evidence.locked,true);
+    assert.equal(row.evidence.confirmationMethod,"manual");assert.equal(row.evidence.confirmationSource,"human_ui");
+    assert.deepEqual(row.evidence.artifacts,[]);assert.equal(row.evidence.recording,null);
+    assert.equal(row.evidence.fileName,"");assert.equal(row.evidence.sizeBytes,0);
+   }
+   await p.screenshot({path:path.join(out,"manual-confirmation-"+width+".png"),animations:"disabled"});
+   await p.keyboard.press("Escape");await p.reload();
+   await p.waitForFunction(()=>document.querySelector('[data-portfolio-project="B"]')?.textContent.includes("6 / 6"));
+   assert.equal(manual.writes.filter(w=>w.kind==="deliverable").length,6,"Only explicit saves confirm outcomes");
+   assert.equal([...manual.deliverables.values()].filter(r=>r.project_id==="A").length,0,"No cross-project status changes");
+   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+   await ctx.close();
+  }
   console.log("Four-workspace browser acceptance passed: desktop/mobile, fixed cover assistant, flexible flow, release review, reference tabs.");
  }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

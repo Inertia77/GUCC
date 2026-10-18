@@ -226,7 +226,7 @@ const recording = element("input", { type: "file", accept: "audio/*,video/*" });
 recording.setAttribute("aria-label", "选择真实录音");
 const recordingField = field("字幕依据的真实录音", recording);
 const check = element("input", { type: "checkbox" }),
-  checkLabel = field("我已检查实际文件并确认；字幕已逐句核对真实录音", check);
+  checkLabel = field("可选：已核对所登记文件；字幕已逐句核对录音", check);
 checkLabel.className = "gcc-evidence";
 const artifactList = element("div", { className: "gcc-files" }),
   message = element("small", { className: "gcc-feedback" });
@@ -295,14 +295,17 @@ editor.append(
     destination,
   ]),
   field("内容与说明", content),
-  element("section", { className: "gcc-artifact-section" }, [
-    element("h3", { textContent: "实际产物" }),
-    artifactList,
-    field("选择文件 · 文件保留在本机", files),
-    recordingField,
+  element("p", { className: "gcc-empty", textContent: "由你判断成果是否完成。选择‘已确认’并保存即可，无需选择文件或录音。" }),
+  field("审核备注（可选）", note),
+  element("details", { className: "gcc-optional-files" }, [
+    element("summary", { textContent: "附件与文件核对（可选，不上传）" }),
+    element("section", { className: "gcc-artifact-section" }, [
+      artifactList,
+      field("选择文件 · 文件保留在本机", files),
+      recordingField,
+      checkLabel,
+    ]),
   ]),
-  field("审核备注", note),
-  checkLabel,
   advanced,
   history,
   element("div", { className: "gcc-conflict-actions" }, [
@@ -475,7 +478,7 @@ function showArtifacts() {
     artifactList.append(
       element("p", {
         className: "gcc-empty",
-        textContent: "尚未登记实际文件。制作完成后，选择文件核对。",
+        textContent: "未登记附件。你可以直接确认成果状态；需要留存文件信息时再选择文件，文件不会上传。",
       }),
     );
   for (const a of observations) {
@@ -854,14 +857,6 @@ async function saveOutcome({ reopening = false } = {}) {
     notice("本浏览器编辑与云端来自不同版本，请先核对历史并选择保留的内容。");
     return;
   }
-  if (d.status === "confirmed" && (!check.checked || !d.artifacts.length)) {
-    notice("必须选择实际文件并勾选人工核验；文件路径不能作为已生成成果的证明");
-    return;
-  }
-  if (d.status === "confirmed" && key === "subtitle" && !d.recording) {
-    notice("字幕确认前必须选择真实录音，并逐句核对时序");
-    return;
-  }
   const pendingKey = draftId(ctx, key),
     pendingStore = "gucc_outcome_pending_" + owner(),
     pending = readJSON(pendingStore),
@@ -882,6 +877,8 @@ async function saveOutcome({ reopening = false } = {}) {
     fileName: d.artifacts[0]?.fileName || "",
     sizeBytes: d.artifacts[0]?.sizeBytes || 0,
     humanConfirmed: d.status === "confirmed",
+    confirmationMethod: d.status === "confirmed" ? "manual" : null,
+    confirmationSource: d.status === "confirmed" ? "human_ui" : null,
     subtitleTimingReviewed: key === "subtitle" && check.checked,
     locked: d.status === "confirmed",
     requestId,

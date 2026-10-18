@@ -45,7 +45,7 @@ for(const [url,adapter] of [
  ["apps/cover-generator/index.html",null],
  ["apps/publishing-console/index.html","app.js"]]){
  assert.match(source(url),/creator-shared-context\.js\?v=2/);
- assert.match(source(url),/creator-shared-context-ui\.mjs\?v=4/);
+ assert.match(source(url),/creator-shared-context-ui\.mjs\?v=5/);
  if(adapter)assert.match(source("apps/"+(url.includes("video-workspace")?"video-workspace/":"publishing-console/")+adapter),/GuccCreatorWorkspaceAdapter/);
 }
 const studio=source("apps/video-workspace/studio.js");
@@ -56,3 +56,10 @@ const publish=source("apps/publishing-console/app.js");
 assert.match(publish,/draftKey\(/);
 assert.match(publish,/applyCreatorContext/);
 console.log("Creator unified workspace contracts: Unicode identities, scoped drafts, explicit video registration and RLS migration verified.");
+
+const manualMigration=source("supabase/migrations/"+fs.readdirSync(path.join(root,"supabase/migrations")).find(n=>n.endsWith("_creator_manual_outcome_confirmation.sql")));
+for(const guard of ["OWNER_ACCESS_REQUIRED","VIDEO_NOT_AVAILABLE","DELIVERABLE_REVISION_CONFLICT","DELIVERABLE_LOCKED","CONFIRM_REQUIRES_HUMAN_REVIEW","CONFIRMED_OUTPUT_MUST_BE_LOCKED","INVALID_FILE_OBSERVATION","SUBTITLE_REQUIRES_REAL_RECORDING_AND_TIMING_REVIEW"])assert(manualMigration.includes(guard));
+assert.match(manualMigration,/confirmationMethod',''\)='manual'/);
+assert.match(manualMigration,/confirmationSource',''\)='human_ui'/);
+assert.doesNotMatch(manualMigration,/create table|delete from|truncate/i);
+assert.doesNotMatch(source("assets/creator-shared-context-ui.mjs"),/必须选择实际文件|字幕确认前必须选择真实录音/);

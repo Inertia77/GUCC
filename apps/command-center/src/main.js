@@ -6,7 +6,7 @@ import { initParties, searchParties } from './features/parties.js';
 import { initMechanisms, searchMechanisms } from './features/mechanisms.js';
 import { initResources } from './features/resources.js';
 import { initVersions, searchVersions } from './features/versions.js';
-import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js?v=2';
+import { $, $$, closeActiveDrawer, log, setHidden, withBusy } from './ui.js';
 import { getSavedTab, saveTab } from './ux-state.js';
 import { hydrateFixedFieldFilters } from './fixed-field-options.js?v=2';
 

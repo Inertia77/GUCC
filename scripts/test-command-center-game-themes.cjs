@@ -28,7 +28,7 @@ const searchUxIndex = mainSource.indexOf("game-os.css?v=4");
 const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
-const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=3");
+const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=4");
 const mobileLayoutIndex = mainSource.indexOf("mobile-layout.css?v=4");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
@@ -168,6 +168,20 @@ assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.meta\s*\{\s*display:\s*
 assert.match(mobileLayoutStyles, /\.item\.is-collapsed\s*\.collapsible-actions > :not\(\.collapse-toggle\)\s*\{\s*display:\s*none\s*!important/);
 assert.match(mobileLayoutStyles, /\.item\.is-collapsed \.collapse-toggle\s*\{[\s\S]*?min-height:\s*44px\s*!important/);
 assert.match(mobileLayoutStyles, /#versionResults \.item\.is-collapsed \.version-title\s*\{[\s\S]*?display:\s*flex\s*!important/);
+
+// Desktop collapse is one strictly-sized row for all four work modes and
+// retains character primary names while moving translations to expanded mode.
+assert.match(responsiveLayoutStyles, /DESKTOP COLLAPSED RECORD ROWS — stable 76px/);
+assert.match(responsiveLayoutStyles, /@media \(min-width: 901px\)/);
+assert.match(responsiveLayoutStyles, /> \.item\.is-collapsed\s*\{[\s\S]*?height:\s*76px\s*!important;[\s\S]*?max-height:\s*76px\s*!important/);
+assert.match(responsiveLayoutStyles, /> \.item\.is-collapsed \.item-head\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/);
+assert.match(responsiveLayoutStyles, /#characterResults > \.item\.is-collapsed :is\(\.character-title-localized, \.character-title-full\)\s*\{\s*display:\s*none\s*!important/);
+assert.match(responsiveLayoutStyles, /#versionResults > \.item\.is-collapsed \.version-title\s*\{[\s\S]*?flex-wrap:\s*nowrap/);
+assert.match(responsiveLayoutStyles, /\.meta \.badge\.status-highlight/);
+assert.match(responsiveLayoutStyles, /\.item-summary > \.meta::before\s*\{\s*display:\s*none\s*!important/);
+assert.match(responsiveLayoutStyles, /@media \(min-width: 901px\) and \(max-width: 1100px\)/);
+const uiSource = read("apps/command-center/src/ui.js");
+assert.match(uiSource, /primaryTitle\.title = primaryTitle\.textContent\.replace/);
 
 // Decorations remain CSS-only and retreat on small screens / reduced motion.
 assert.doesNotMatch(gameThemeStyles, /url\s*\(/i);

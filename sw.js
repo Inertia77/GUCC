@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v58";
-const RUNTIME_CACHE = "gucc-runtime-v49";
+const STATIC_CACHE = "gucc-static-v59";
+const RUNTIME_CACHE = "gucc-runtime-v50";
 
 const APP_SHELL = [
   "./assets/access-guard.js?v=15",

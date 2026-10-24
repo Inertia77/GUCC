@@ -7,6 +7,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  assert.equal(portal.activeTasks(projects).length,1);assert.equal(portal.nextTask(projects[0]).title,'六项成果已确认');assert.equal(portal.nextTask(projects[1]),null);
  const date=await import('../apps/command-center/src/date-window.mjs'),now=Date.parse('2026-10-24T12:00:00Z');
  for(const [start,end,status] of [[null,null,'unknown'],[null,'2026-10-23T12:00Z','ended'],['2026-10-25T12:00Z',null,'upcoming'],['2026-10-23T12:00Z',null,'unknown'],['2026-10-23T12:00Z','2026-10-25T12:00Z','current'],['2026-10-25T12:00Z','2026-10-23T12:00Z','invalid']])assert.equal(date.classifyWindow(start,end,now).status,status);
+ assert.equal(date.classifyWindow('2026-10-23T12:00:00','2026-10-25T12:00:00',now).status,'unknown');
  assert.match(date.formatWindow(null,null),/待核实/);assert.match(date.formatWindow('2026-10-24T12:00:00',null),/时区待核实/);
  const out=require('../apps/video-workspace/production-system/creator-os-outcomes.js');assert.equal(out.confirmationLabel({status:'confirmed',evidence:{confirmationMethod:'manual'}}),'已确认 · 人工判断');
  const flow=read('.github/workflows/ci.yml');

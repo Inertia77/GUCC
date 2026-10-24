@@ -1,6 +1,6 @@
 // Only an explicit, valid interval can be called current. Unknown dates stay unknown.
 export function classifyWindow(start,end,now=Date.now()){
- const parse=v=>typeof v==='string'&&v.trim()?Date.parse(v):NaN;
+ const parse=v=>typeof v==='string'&&/(?:Z|[+-]\d{2}:\d{2})$/.test(v)?Date.parse(v):NaN;
  const from=parse(start),to=parse(end);
  if(Number.isFinite(from)&&Number.isFinite(to)&&from>=to)return {status:'invalid',label:'日期区间异常'};
  if(Number.isFinite(to)&&now>=to)return {status:'ended',label:'已结束'};

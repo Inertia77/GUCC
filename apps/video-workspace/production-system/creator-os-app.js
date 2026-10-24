@@ -475,7 +475,7 @@ function renderOutcomeBoard(){
       (file?'<p class="outcome-card-ref">已登记：'+esc(file)+'</p>':"")+
       (note?'<p class="outcome-card-ref">'+esc(note)+'</p>':"")+
       '<div class="outcome-card-foot"><span class="outcome-card-source">'+
-      esc(total.loaded?(rec?"正式记录 · R"+rec.revision:"尚未提交正式记录"):"云端资料尚未核验")+
+      esc(total.loaded?(rec?(rec.status==="confirmed"?Outcomes.confirmationLabel(rec)+" · ":"")+"正式记录 · R"+rec.revision:"尚未提交正式记录"):"云端资料尚未核验")+
       '</span><button class="button secondary" type="button" data-outcome-edit="'+esc(item.id)+'" '+
       (!writable||!total.loaded?"disabled":"")+'>查看 / 管理 ↗</button></div></article>';
   }).join("");
@@ -527,12 +527,13 @@ function renderProjects(){
     &&(filter==="all"?projectLife(p)!=="trash":projectLife(p)===filter));
   $("projectCounts").textContent=`进行中 ${counts.active} · 已完成 ${counts.completed} · 归档 ${counts.archived} · 回收站 ${counts.trash}`;
   $("projectCards").innerHTML=matching.map(p=>{
-    const progress=(p.promptFlow||[]).filter(n=>["DONE","SKIPPED"].includes(n.status)).length;
-    const total=p.promptFlow?.length||0;
+    const videos=projectVideos(p), rows=officialProjectRecords.get(p.projectId);
+    const progress=Array.isArray(rows)?videos.reduce((n,v)=>n+Outcomes.summary(rows,v).done,0):null;
+    const total=videos.length*6;
     return `<article class="panel project-card ${p.projectId===store.selectedProjectId?"active":""}" data-project="${esc(p.projectId)}">
       <span class="micro">${esc(p.projectCode||p.projectId)}</span>
       <h3>${esc(p.name)}</h3>
-      <p>${esc(p.game||"未设定游戏")} · ${esc(p.version||"未设定版本")} · ${lifeName(p)} · ${progress}/${total} 节点</p>
+      <p>${esc(p.game||"未设定游戏")} · ${esc(p.version||"未设定版本")} · ${lifeName(p)} · 正式成果 ${progress===null?"待核对":progress+"/"+total}</p>
     </article>`;
   }).join("")||'<p class="flow-empty">此筛选下暂无项目。</p>';
   document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{

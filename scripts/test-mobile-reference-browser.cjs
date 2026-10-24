@@ -136,6 +136,7 @@ let browser;
     {tab:'versions',id:'versionResults'}
    ]){
     await p.locator(`[data-tab="${fixture.tab}"]`).click();
+    await p.waitForLoadState('networkidle'); // Finish tab's API response before installing layout-only cards.
     await p.evaluate(({id,tab})=>{
      const list=document.getElementById(id);
      const games=['崩','绝','鸣','终','异','阴'];

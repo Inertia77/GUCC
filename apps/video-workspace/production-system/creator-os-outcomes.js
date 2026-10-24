@@ -44,5 +44,12 @@
     const file=files.find(f=>f?.fileName)?.fileName;
     return file||e.fileName||"";
   }
-  return {IDS,LABELS,videos,record,summary,evidenceLabel};
+  function confirmationLabel(row){
+    const e=row?.evidence||{};
+    if(row?.status!=="confirmed")return LABELS[row?.status]||"未开始";
+    if(e.confirmationMethod==="manual")return "已确认 · 人工判断";
+    if(e.artifacts?.some(a=>["browser_file","generated_bytes"].includes(a.observation)&&a.sha256&&a.sizeBytes>0))return "已确认 · 文件已读取";
+    return "已确认 · 人工判断";
+  }
+  return {IDS,LABELS,videos,record,summary,evidenceLabel,confirmationLabel};
 });

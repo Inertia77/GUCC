@@ -1,0 +1,1 @@
+create index character_status_verifications_verified_by_idx on gucc_private.character_status_verifications(verified_by);

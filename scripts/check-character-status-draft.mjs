@@ -30,4 +30,7 @@ assert(!markup.slice(charactersStart, partiesStart).includes('startCharacterStat
 assert(wizardDrawer > wizardButton, 'Wizard drawer must stay outside the hidden Characters panel');
 assert.match(markup.slice(moreStart), /角色状态校准/);
 
-console.log('Character status draft-only workflow invariants: passed');
+assert.match(wizard, /wizardSubmitSelected/);
+assert.match(wizard, /expected_updated_at/);
+assert.match(wizard, /verified_at/);
+console.log('Character status local selection + explicit owner submit/readback invariants: passed');

@@ -1,3 +1,4 @@
+import {classifyWindow,formatWindow} from '../date-window.mjs';
 import { API } from '../api.js';
 import {
   $,
@@ -111,13 +112,6 @@ function acquisitionTypeLabel(value) {
   }[normalizeToken(value)] || value || '其他非卡池获取';
 }
 
-function formatWindow(start, end) {
-  const from = String(start || '').trim();
-  const to = String(end || '').trim();
-  if (!from && !to) return '';
-  if (from && to) return `${from} → ${to}`;
-  return from ? `开始 ${from}` : `结束 ${to}`;
-}
 
 function renderVersionNote(note) {
   if (!note) return '';
@@ -140,6 +134,7 @@ function renderBannerChip(banner) {
       <span class="banner-character">${escapeHtml(character)}</span>
       <span class="banner-type">${escapeHtml(`${poolTypeLabel(banner.pool_type)} · ${entryRoleLabel(banner.entry_role)}${featured}`)}</span>
       ${poolName}
+      <small>${escapeHtml(classifyWindow(banner.start_at,banner.end_at).label)} · 区服及来源见备注</small>
       ${window}
       ${note}
     </div>`;

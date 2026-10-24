@@ -2,7 +2,7 @@
 #view-outcomes,#view-creation,#view-release,#view-knowledge{min-width:0;max-width:1540px}
 .portfolio-section{margin:0 0 22px}
 .portfolio-heading{display:flex;align-items:baseline;gap:15px;margin:0 0 12px}
-.portfolio-heading strong{font-size:17px;font-weight:650;color:#deecf2}
+.portfolio-heading strong{flex-shrink:0;white-space:nowrap;font-size:17px;font-weight:650;color:#deecf2}
 .portfolio-status{font-size:11px;color:var(--os-muted);margin-left:auto}
 .portfolio-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .portfolio-card{min-width:0;text-align:left;border:1px solid var(--os-hairline-strong);border-radius:11px;padding:18px 19px;background:linear-gradient(135deg,rgba(21,38,52,.88),rgba(10,22,35,.92));color:var(--os-text);display:flex;flex-direction:column;align-items:stretch;gap:9px;min-height:146px;transition:border-color .15s,background .15s}
@@ -54,6 +54,9 @@
 .creator-cover-assist[data-visible="true"]{display:flex}
 @media(max-width:1200px){.portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){
+  .portfolio-heading{flex-wrap:wrap;gap:6px 12px}
+  .portfolio-heading>.micro{width:100%}
+  .portfolio-status{margin-left:auto;max-width:65%;overflow-wrap:anywhere}
   .portfolio-grid{grid-template-columns:minmax(0,1fr)}
   .portfolio-card{min-height:125px;padding:16px}
   .portfolio-registry>summary{padding:16px;flex-wrap:wrap;gap:5px}

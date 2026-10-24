@@ -217,7 +217,7 @@ const note = element("input", {
 });
 note.setAttribute("aria-label", "成果审核备注");
 const reference = element("input", {
-  placeholder: "文件位置或链接，仅作为待核实线索",
+  placeholder: "可选：对话链接、Work 结果、本地相对路径、文件名或 Drive 链接",
 });
 reference.setAttribute("aria-label", "未核实文件线索");
 const files = element("input", { type: "file", multiple: true });
@@ -277,7 +277,7 @@ advanced.append(
   element("summary", { textContent: "Prompt 与文件详情" }),
   field("本轮 Prompt", prompt),
   promptImport,
-  field("待核实的文件线索", reference),
+  field("成果位置或链接（可选）", reference),
 );
 const destination = element("a", {
   className: "gcc-tool-destination",
@@ -670,7 +670,7 @@ function render() {
     : row
       ? `版本 ${row.revision} · ${row.updated_at ? new Date(row.updated_at).toLocaleDateString("zh-CN") : "已同步"}`
       : "尚无正式记录 · 草稿仅保留在本浏览器";
-  lockBadge.textContent = row?.evidence?.locked ? "已确认 · 已锁定" : "";
+  lockBadge.textContent = row?.evidence?.locked ? "已确认 · 人工判断 · 已锁定" : "";
   lockBadge.hidden = !row?.evidence?.locked;
   const tool = {
     script: "studio",

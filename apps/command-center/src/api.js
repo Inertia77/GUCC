@@ -63,3 +63,13 @@ export const API = {
   deleteVersion: (payload) => callApi('deleteVersion', payload),
   searchResources: (payload) => callApi('searchResources', payload)
 };
+
+// Narrow owner-authenticated status RPCs; no public table grants are needed.
+async function statusRpc(name, payload){
+ const token=await getAccessToken();
+ const response=await fetch(CONFIG.SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/rpc/'+name,{
+  method:'POST',headers:{apikey:CONFIG.SUPABASE_ANON_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'});
+ const result=await response.json();if(!response.ok)throw Error(result.message||'角色状态保存失败');return result;
+}
+API.characterVerifications=()=>statusRpc('character_status_verifications',{});
+API.verifyCharacterStatus=payload=>statusRpc('app_update_character_status',{p_payload:payload});

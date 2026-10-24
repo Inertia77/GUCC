@@ -25,6 +25,8 @@ const state = {
   step: 'research',
   research: '',
   includeAnswered: false,
+  onlyUnverified: true,
+  verification: {},
   loading: false,
   summary: false,
   error: '',
@@ -83,7 +85,7 @@ function resetStep() {
 function toNextWithinGame(from = -1) {
   const rows = currentRows();
   for (let i = from + 1; i < rows.length; i++) {
-    if (state.includeAnswered || (!isAnswered(rows[i]) && !state.seen.has(rows[i].id))) {
+    if ((!state.onlyUnverified || !state.verification[rows[i].id]?.verified_at || isAnswered(rows[i])) && (state.includeAnswered || (!isAnswered(rows[i]) && !state.seen.has(rows[i].id)))) {
       return i;
     }
   }
@@ -92,7 +94,7 @@ function toNextWithinGame(from = -1) {
 function nextPendingGame() {
   const index = GAMES.findIndex(([code]) => code === state.game);
   const ordered = [...GAMES.slice(index + 1), ...GAMES.slice(0, index + 1)];
-  const match = ordered.find(([code]) => (state.rows[code] || []).some(row => !isAnswered(row) && !state.seen.has(row.id)));
+  const match = ordered.find(([code]) => (state.rows[code] || []).some(row => (!state.onlyUnverified || !state.verification[row.id]?.verified_at) && !isAnswered(row) && !state.seen.has(row.id)));
   return match?.[0] || '';
 }
 function advance() {
@@ -138,7 +140,7 @@ function saveLocalAnswer(buildStatus) {
   render();
 }
 function choose(value) {
-  if (!current() || state.loading) return;
+  if (!current() || state.loading || state.saving) return;
   if (state.step === 'research') {
     state.research = value;
     state.step = 'build';
@@ -212,7 +214,7 @@ function renderSummary() {
           '<button type="button" id="wizardDownload">下载完整 JSON</button>' +
           '<button type="button" id="wizardCopy" class="secondary">复制完整结果</button></div>'
         : '<p class="status-wizard-feedback">还差 ' + (total - finished) + ' 位角色。可点击任意游戏继续选择；未完成前不会生成最终提交文件。</p>'}
-      <p class="status-wizard-no-write">数据库写入：未执行 · 草稿仅保存于当前浏览器</p>
+      <button type="button" id="wizardSubmitSelected" ${state.saving||!finished?'disabled':''}>保存已选 ${finished} 位并回读核对</button><p class="status-wizard-no-write">只有点击保存才写入数据库；其他角色及备注保持原样。</p>
     </section>`;
 }
 function render() {
@@ -231,9 +233,10 @@ function render() {
       '<button id="closeStatusWizard" type="button" class="icon-button" aria-label="关闭校准界面">×</button>',
     '</div>',
     '<div class="status-wizard-content">',
-      '<p class="status-wizard-no-write">草稿模式 · 所有角色选完后，再统一提交给助手修改数据库</p>',
+      '<p class="status-wizard-no-write">先选择并保存本地草稿；可在总进度中统一保存已选角色</p>',
       '<div class="status-wizard-controls">',
         '<label>游戏<select id="wizardGame"' + (state.loading ? ' disabled' : '') + '>' + gameOptions + '</select></label>',
+        '<label class="wizard-checkbox"><input id="wizardOnlyUnverified" type="checkbox"'+(state.onlyUnverified?' checked':'')+'>仅尚未核实</label>',
         '<label class="wizard-checkbox"><input id="wizardIncludeReviewed" type="checkbox"' +
           (state.includeAnswered ? ' checked' : '') + '>复查已选角色</label>',
         '<button type="button" id="wizardShowSummary" class="secondary">' + (state.summary ? '继续选择' : '查看总进度') + '</button>',
@@ -267,6 +270,7 @@ function render() {
         '<div class="status-wizard-original">数据库目前：研究 ' +
            escapeHtml(displayCharacterStatus(row.research_status)) + ' / 养成 ' +
            escapeHtml(displayCharacterStatus(row.build_status)) + '</div>',
+        '<p class="status-wizard-original">'+(state.verification[row.id]?.verified_at?'人工核实 · '+new Date(state.verification[row.id].verified_at).toLocaleString('zh-CN',{timeZone:'Asia/Tokyo'}):'历史状态 · 尚未核实')+'</p>',
         (localAnswer ? '<div class="status-wizard-original">本地草稿：研究 ' +
           escapeHtml(localAnswer.research_status) + ' / 养成 ' +
           escapeHtml(localAnswer.build_status) + '</div>' : ''),
@@ -332,6 +336,25 @@ function render() {
   });
   editor.querySelector('#wizardCopy')?.addEventListener('click', () => void copyResults());
   editor.querySelector('#wizardDownload')?.addEventListener('click', downloadResults);
+  editor.querySelector('#wizardOnlyUnverified')?.addEventListener('change',e=>{state.onlyUnverified=e.target.checked;state.position=toNextWithinGame(-1);resetStep();render();});
+  editor.querySelector('#wizardSubmitSelected')?.addEventListener('click',()=>void submitSelected());
+}
+async function submitSelected(){
+ if(state.saving)return;state.saving=true;state.error='';render();
+ let saved=0;
+ try{
+  for(const row of allRows().filter(isAnswered)){
+   const answer=state.answers[row.id],before=state.verification[row.id];
+   const result=await API.verifyCharacterStatus({id:row.id,...answer,verification_source:'human_ui',expected_updated_at:before?.updated_at||null});
+   const verification=await API.characterVerifications(),read=verification.find(v=>v.character_id===row.id);
+   const detail=normalizeRows(await API.searchCharacters({keyword:row.character_name||row.name,game_code:row.game_code,limit:1000})).find(c=>c.id===row.id);
+   if(!read?.verified_at||detail?.research_status!==answer.research_status||detail?.build_status!==answer.build_status||result.id!==row.id)throw Error('保存回读不一致，请重新核对 '+(row.character_name||row.name));
+   state.verification[row.id]=read;Object.assign(row,answer);delete state.answers[row.id];persistDraft();saved++;
+  }
+  state.notice='已保存并回读核对 '+saved+' 位角色，其他角色未修改';
+  window.dispatchEvent(new CustomEvent('gucc:character-status-saved'));
+ }catch(error){state.error='已核对 '+saved+' 位；其余草稿保留。'+error.message;}
+ finally{state.saving=false;render();}
 }
 async function load() {
   state.loading = true;
@@ -343,6 +366,8 @@ async function load() {
       return [code, normalizeRows(result)];
     }));
     state.rows = Object.fromEntries(batches);
+    const verified=await API.characterVerifications();
+    state.verification=Object.fromEntries(verified.map(v=>[v.character_id,v]));
     state.answers = readDraft();
     state.seen.clear();
     state.position = toNextWithinGame(-1);

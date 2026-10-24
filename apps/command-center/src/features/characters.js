@@ -413,3 +413,5 @@ export function initCharacters() {
     }
   });
 }
+
+window.addEventListener('gucc:character-status-saved',()=>document.querySelector('#searchCharBtn')?.click());

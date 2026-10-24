@@ -23,7 +23,7 @@ function taskCard({project,task}){
   '<span class="cp-task-go">打开 ↗</span></a>';
 }
 function projectCard(p){
-  const progress=p.totalNodes?Math.round(p.doneNodes/p.totalNodes*100):0;
+  const progress=p.totalDeliverables?Math.round(p.confirmedDeliverables/p.totalDeliverables*100):0;
   const label=LABELS[p.lifecycle]||"待接入";
   const task=nextTask(p);
   const desc=p.lifecycle==="active"?(task?.title||"查看项目")
@@ -34,8 +34,8 @@ function projectCard(p){
     '<div class="cp-project-main"><div class="cp-project-top"><span class="cp-life">'+esc(label)+'</span>'+
     '<small>'+esc(p.game)+(p.version?" · "+esc(p.version):"")+'</small></div>'+
     '<strong>'+esc(p.name)+'</strong><span>'+esc(desc)+'</span></div>'+
-    '<div class="cp-project-side"><span>'+(p.totalNodes?p.doneNodes+"/"+p.totalNodes+" 节点":"项目档案")+'</span>'+
-    (p.totalNodes?'<div class="cp-progress"><i style="width:'+progress+'%"></i></div>':"")+
+    '<div class="cp-project-side"><span>'+(p.totalDeliverables?"正式成果 "+p.confirmedDeliverables+"/"+p.totalDeliverables:"待登记视频")+'</span>'+
+    (p.totalDeliverables?'<div class="cp-progress"><i style="width:'+progress+'%"></i></div>':"")+
     '<small>更新 '+esc(date(p.updatedAt))+'</small></div><span class="cp-chevron">↗</span></a>';
 }
 function renderProjects(){

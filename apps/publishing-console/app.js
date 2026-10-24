@@ -828,8 +828,7 @@
   }
 
   function localDateTimeValue(date = new Date()) {
-    const offset = date.getTimezoneOffset() * 60000;
-    return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+    return new Intl.DateTimeFormat("sv-SE", {timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(date).replace(" ","T");
   }
 
   function populateSnapshotPlatforms() {
@@ -941,6 +940,8 @@
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         platform: $("#snapshotPlatform").value,
         at: $("#snapshotAt").value,
+        capturedAt: new Date($("#snapshotAt").value+":00+09:00").toISOString(),
+        publicationId: $("#snapshotPublication")?.value || "",
         window: $("#snapshotWindow").value,
         impressions: numberOrNull("#metricImpressions"), views: numberOrNull("#metricViews"),
         avgWatch: numberOrNull("#metricAvgWatch"), completion: numberOrNull("#metricCompletion"),

@@ -20,6 +20,9 @@ export function normalizeProjects(payload) {
       version:String(row.version||""),
       status:String(row.status||"LEGACY"),
       doneNodes:done,totalNodes:total,
+      videoCount:Math.max(0,Number(row.videoCount)||0),
+      confirmedDeliverables:Math.max(0,Number(row.confirmedDeliverables)||0),
+      totalDeliverables:Math.max(0,Number(row.totalDeliverables)||0),
       nextNode:row.nextNode&&typeof row.nextNode==="object"?row.nextNode:null
     };
   });
@@ -31,6 +34,13 @@ export function countsFor(projects){
 }
 export function nextTask(project){
   if(project.lifecycle!=="active")return null;
+  if(project.totalDeliverables>0&&project.confirmedDeliverables===project.totalDeliverables)return {
+    title:"六项成果已确认",reason:"可继续修改，或在项目档案自行标记完成",label:"收尾确认",owner:"你"
+  };
+  if(project.totalDeliverables>0)return {
+    title:`继续制作 · 正式成果 ${project.confirmedDeliverables}/${project.totalDeliverables}`,
+    reason:`${project.videoCount} 条视频分别记录六项成果`,label:"制作中",owner:"你 / AI"
+  };
   const status=project.status;
   if(status==="DRAFT"||status==="IMPORTED_LEGACY")return {
     title:"建立项目事实与制作方向",reason:"确认选题价值，生成 PROJECT_BRIEF 和 VIDEO_CONTRACT",

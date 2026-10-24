@@ -1,5 +1,7 @@
-const STATIC_CACHE = "gucc-static-v59";
-const RUNTIME_CACHE = "gucc-runtime-v50";
+const STATIC_CACHE = "gucc-static-v60";
+const RUNTIME_CACHE = "gucc-runtime-v51";
+const RUNTIME_LIMIT = 180;
+let runtimeWrite = Promise.resolve();
 
 const APP_SHELL = [
   "./assets/access-guard.js?v=15",
@@ -166,8 +168,7 @@ const APP_SHELL = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+      .then((cache) => cache.addAll([...new Set(APP_SHELL)]))
   );
 });
 
@@ -177,12 +178,12 @@ self.addEventListener("activate", (event) => {
       .then((keys) => Promise.all(
         keys
           .filter((key) => (
-            (key.startsWith("gucc-pwa-") || key.startsWith("gucc-"))
+            (key.startsWith("gucc-pwa-") || key.startsWith("gucc-static-") || key.startsWith("gucc-runtime-"))
             && ![STATIC_CACHE, RUNTIME_CACHE].includes(key)
           ))
           .map((key) => caches.delete(key))
       ))
-      .then(() => self.clients.claim())
+
   );
 });
 
@@ -233,7 +234,7 @@ async function networkFirst(request) {
   const cacheKey = runtimeCacheKey(request);
   try {
     const response = await fetch(request, { cache: "no-cache" });
-    if (response.ok) await cache.put(cacheKey, response.clone());
+    if (response.ok) await putRuntime(cacheKey, response.clone()).catch(()=>{});
     return response;
   } catch {
     return (
@@ -252,8 +253,7 @@ async function cacheFirst(request) {
   try {
     const response = await fetch(request);
     if (response.ok) {
-      const cache = await caches.open(RUNTIME_CACHE);
-      await cache.put(request, response.clone());
+      await putRuntime(request, response.clone()).catch(()=>{});
     }
     return response;
   } catch {
@@ -262,4 +262,16 @@ async function cacheFirst(request) {
       statusText: "Offline"
     });
   }
+}
+
+// Serialize eviction with writes so parallel image loads cannot exceed the cap.
+function putRuntime(key,response){
+  const operation=runtimeWrite.then(async()=>{
+    const cache=await caches.open(RUNTIME_CACHE);
+    await cache.put(key,response);
+    const keys=await cache.keys();
+    await Promise.all(keys.slice(0,Math.max(0,keys.length-RUNTIME_LIMIT)).map(k=>cache.delete(k)));
+  });
+  runtimeWrite=operation.catch(()=>{});
+  return runtimeWrite;
 }

@@ -390,3 +390,7 @@ td strong { color: var(--text); }
 .publish-md-panel .check-actions .button { min-height: 39px; }
 .publish-md-panel .hint { line-height: 1.7; }
 @media (max-width: 700px) { .publish-md-panel .check-actions { flex-direction: column; align-items: stretch; } .publish-md-panel .check-actions .button { width: 100%; } }
+
+/* Publishing Console owns manual accounting controls. */
+.publication-record-actions{grid-column:1 / -1;display:flex;align-items:center;flex-wrap:wrap;gap:10px;min-width:0;border-top:1px solid var(--line, #33443f);padding-top:12px}
+.publication-record-actions small,.publication-record-feedback{overflow-wrap:anywhere;color:var(--muted,#adc0b8);line-height:1.6}

@@ -73,6 +73,12 @@ jobs:
       - name: Run phone database and reference layout regression
         run: node scripts/test-mobile-reference-browser.cjs
 
+      - name: Run stabilization publication and responsive regression
+        run: node scripts/test-stabilization-browser.cjs
+
+      - name: Run real Service Worker upgrade and offline regression
+        run: node scripts/test-stabilization-sw-browser.cjs
+
       - name: Retain isolated browser screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v5
@@ -87,5 +93,73 @@ jobs:
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/
+            tmp/stabilization-browser/
+            tmp/stabilization-sw/results.json
           if-no-files-found: ignore
           retention-days: 7
+
+  pages-source:
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fix/creator-os-stabilization-20261024')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+    steps:
+      - name: Require workflow-based Pages source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = context.repo;
+            const current = await github.request('GET /repos/{owner}/{repo}/pages', repo);
+            if (current.data.build_type !== 'workflow') {
+              await github.request('PUT /repos/{owner}/{repo}/pages', {...repo, build_type: 'workflow'});
+            }
+            const verified = await github.request('GET /repos/{owner}/{repo}/pages', repo);
+            if (verified.data.build_type !== 'workflow') throw new Error('Legacy Pages source is still enabled');
+
+  deploy:
+    needs: [test, pages-source]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gucc-production-pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject obsolete main build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$GITHUB_SHA"
+      - uses: actions/configure-pages@v5
+      - name: Prepare static site with deployment identity
+        run: |
+          node scripts/build-pages.cjs _site
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment
+      - name: Production smoke and exact deployment identity
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          node --input-type=module -e '
+            const base=process.env.SITE_URL;
+            let verified=false;
+            for(let i=0;i<12;i++){
+              const r=await fetch(new URL("release.json?sha="+process.env.GITHUB_SHA,base),{cache:"no-store"});
+              if(r.ok&&(await r.json()).sha===process.env.GITHUB_SHA){verified=true;break;}
+              await new Promise(resolve=>setTimeout(resolve,5000));
+            }
+            if(!verified)throw Error("Pages deployment identity mismatch");
+            for(const path of ["", "apps/video-workspace/production-system/", "apps/publishing-console/", "sw.js"]){
+              const r=await fetch(new URL(path,base),{cache:"no-store"});
+              if(!r.ok)throw Error("Production smoke failed: "+path+" "+r.status);
+            }'

@@ -58,7 +58,7 @@
 .cp-trash .cp-life{color:#ffb8c6;background:rgba(255,140,167,.09);border-color:rgba(255,140,167,.18)}
 .cp-archived .cp-life{color:#d1c0f3;background:rgba(165,139,217,.13)}
 .cp-project-top small,.cp-project-main>span,.cp-project-side{font-size:11px;color:#93a5b8}
-.cp-project-main strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cp-project-main strong{font-size:14px;overflow-wrap:anywhere;white-space:normal;line-height:1.55}
 .cp-project-main>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cp-project-side{display:grid;gap:7px;justify-items:end;font-variant-numeric:tabular-nums}
 .cp-progress{width:110px;height:4px;background:rgba(168,191,213,.13);border-radius:99px;overflow:hidden}
@@ -77,7 +77,7 @@
  .cp-total{font-size:10px}.cp-task{padding:12px;gap:10px}
  .cp-task-copy strong{font-size:14px}.cp-task-go{font-size:11px}
  .cp-project{grid-template-columns:minmax(0,1fr) 18px;gap:8px;padding:12px}
- .cp-project-side{display:none}.cp-chevron{grid-column:2}
+ .cp-project-side{display:grid;grid-column:1;justify-items:start;gap:5px}.cp-chevron{grid-column:2;grid-row:1 / span 2}
  .cp-calm{padding:14px}
 }
 @media(max-width:380px){.cp-counters{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-filters button{padding:8px 10px}}

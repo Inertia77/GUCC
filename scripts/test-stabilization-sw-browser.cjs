@@ -6,7 +6,7 @@ const {chromium}=require('playwright-core'),{build,stamp}=require('./build-pages
  build(path.join(out,'old'),shaA);build(path.join(out,'new'),shaB);
  // Baseline contains duplicate shell entries; deduplicate only the old fixture so
  // its legacy caching/update strategy can be installed and exercised for upgrade.
- const oldSource=cp.execFileSync('git',['show','abc46013e209f4e04625cf4c5e13204edcace795:sw.js'],{encoding:'utf8'});
+ const oldSource=fs.readFileSync(path.join(__dirname,'fixtures/legacy-sw.js'),'utf8');
  fs.writeFileSync(path.join(out,'old/sw.js'),stamp(oldSource,shaA).replace('cache.addAll(APP_SHELL)','cache.addAll([...new Set(APP_SHELL)])').replace('gucc-static-v59','gucc-static-'+shaA).replace('gucc-runtime-v50','gucc-runtime-'+shaA));
  let stage='old';
  const server=http.createServer(async(req,res)=>{

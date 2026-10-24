@@ -76,6 +76,9 @@ jobs:
       - name: Run stabilization publication and responsive regression
         run: node scripts/test-stabilization-browser.cjs
 
+      - name: Run character verification explicit-save regression
+        run: node scripts/test-character-verification-browser.cjs
+
       - name: Run real Service Worker upgrade and offline regression
         run: node scripts/test-stabilization-sw-browser.cjs
 

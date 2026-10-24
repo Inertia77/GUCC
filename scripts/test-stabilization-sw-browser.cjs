@@ -32,6 +32,9 @@ const {chromium}=require('playwright-core'),{build,stamp}=require('./build-pages
   await page.evaluate(async()=>{await fetch('/assets/creator-portal-core.mjs?release='+ 'b'.repeat(40));});
   await context.setOffline(true);await page.reload();assert(await page.title());assert.equal(await page.evaluate(()=>localStorage.getItem('gucc_creator_os_v2')),'draft-preserve');
   const offlineCode=await page.evaluate(async()=>{const r=await fetch('/assets/creator-portal-core.mjs?release='+'b'.repeat(40));return {ok:r.ok,text:await r.text()}});assert(offlineCode.ok);assert(offlineCode.text.includes('confirmedDeliverables'));
+  for(const asset of ['apps/publishing-console/publication-records.mjs?v=1&release='+shaB,'apps/command-center/src/date-window.mjs?release='+shaB]){
+   const available=await page.evaluate(async asset=>(await fetch('/'+asset)).ok,asset);assert(available,'new module missing from offline shell: '+asset);
+  }
   await fsp.writeFile(path.join(out,'results.json'),JSON.stringify({old:shaA,current:shaB,upgrade:'passed',offline:'passed',draftPreserved:true},null,2));
   console.log('Real Service Worker upgrade passed: previous worker → waiting → activation, SHA resource identity, offline code and user draft preservation.');
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -160,6 +160,8 @@ const APP_SHELL = [
   "./apps/publishing-console/app.js?v=5",
   "./apps/publishing-console/publish-md.js?v=1",
   "./apps/publishing-console/publish-cloud.mjs?v=2",
+  "./apps/publishing-console/publication-records.mjs?v=1",
+  "./apps/command-center/src/date-window.mjs",
   "./assets/creator-publish-asset-discovery.js?v=2",
   "./reference/resource-library.html",
   "./reference/resource-library.js"

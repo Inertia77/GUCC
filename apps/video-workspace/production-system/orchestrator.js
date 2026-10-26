@@ -270,7 +270,7 @@
       const stepIds={};
       for(const item of Six.ITEMS){
         const id=track?"PF-"+branch+"-"+item.no:"PF-"+item.no;
-        const requirements={script:[],subtitle:[stepIds.script],visual:[stepIds.script],sound:[stepIds.subtitle],cover:[stepIds.script],publish:[stepIds.script,stepIds.subtitle,stepIds.visual,stepIds.sound,stepIds.cover]};
+        const requirements={script:[],subtitle:[stepIds.script],visual:[stepIds.script],sound:[stepIds.subtitle],cover:[stepIds.script],publish:[stepIds.script]};
         const n=node(id,(track?track.name+" · ":"")+item.name,capIds[item.id],executors[item.id],requirements[item.id],{
           branch,purpose:item.tag,requiredInput:[item.needs],expectedOutput:[item.output],saveAs:[item.output],
           qcLevel:item.id==="subtitle"?"Q2":"Q1",
@@ -286,11 +286,12 @@
   }
 
   function sixOutcomePrompt(project,n){
-    const item=Six.get(n.sixOutcomeId),context={
-      title:project.name,game:project.game,server:project.server,version:project.version,
+    const item=Six.get(n.sixOutcomeId),video=project.videos?.find(v=>String(v.videoId||v.branch||"")===String(n.videoId||n.branch||"")),context={
+      title:video?.name||project.name,game:project.game,server:project.server,version:project.version,
       route:project.productType,format:project.format,
       authorQuestion:project.authorQuestion,authorContribution:project.authorContribution,
       coreThesis:project.coreThesis,audienceQuestion:project.audienceQuestion,
+      visualStyle:project.videoStyles?.[n.videoId]||project.videoStyles?.[n.branch]||video?.visualStyle||"",
       notes:[project.idea,project.videos?.length>1?"本轮视频："+(project.videos.find(x=>String(x.videoId||"")===n.videoId)?.name||n.branch):"",project.doNotUse?.length?"禁止/证据边界："+project.doNotUse.join("、"):""].filter(Boolean).join("\n")
     };
     const current=Six.build(item.id,context);
@@ -326,6 +327,7 @@
       `AUTHOR_QUESTION: ${project.authorQuestion||"UNCONFIRMED"}`,
       `AUTHOR_CONTRIBUTION: ${project.authorContribution||"UNCONFIRMED; no invented first-person experience"}`,
       `CORE_THESIS: ${project.coreThesis||"UNCONFIRMED"}`,
+      `VIDEO_VISUAL_STYLE: ${project.videoStyles?.[n.videoId]||project.videoStyles?.[n.branch]||project.videos?.find(v=>String(v.videoId||v.branch||"")===String(n.videoId||n.branch||""))?.visualStyle||"DEFAULT / USE PROJECT CONTEXT"}`,
       `VIDEO_BRANCH: ${n.branch||"SHARED"}`,
       `AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}`,
       project.doNotUse?.length?`DO_NOT_USE: ${project.doNotUse.join(" / ")}`:"",

@@ -424,7 +424,7 @@ function renderOutcomeBoard(){
     $("outcomeProgressText").textContent="尚无项目";
     $("outcomeProgressFill").style.width="0%";
     $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
-    $("outcomeAddVideo").disabled=true;
+    $("outcomeAddVideo").disabled=true;$("outcomeVideoStyleBtn").disabled=true;
     return;
   }
   sel.disabled=false;
@@ -445,6 +445,7 @@ function renderOutcomeBoard(){
     renderOutcomeBoard();
   }));
   $("outcomeAddVideo").disabled=Boolean(p.deletedAt||p.archivedAt);
+  $("outcomeVideoStyleBtn").disabled=!video||Boolean(p.deletedAt||p.archivedAt);
   if(!video){
     $("outcomeProgressText").textContent="待登记视频";
     $("outcomeCards").innerHTML='<p class="outcomes-empty">该项目尚未登记视频。使用「＋ 登记视频」建立正式视频身份，六项成果将分别记录到该视频。</p>';
@@ -946,6 +947,37 @@ $("outcomeRefresh").addEventListener("click",()=>{
 window.addEventListener("gucc:workspace-project-created",e=>{portfolioEpoch++;portfolioVideos.delete(e.detail?.projectId);portfolioLoaded=false;portfolioError="";if(activeView==="outcomes")void loadPortfolioOutcomes();});
 $("outcomeNewProject").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
 $("outcomeAddVideo").addEventListener("click",()=>window.GuccCreatorContextUI?.openSwitcher());
+$("outcomeVideoStyleBtn").addEventListener("click",()=>{
+  const p=current(),video=p&&outcomeVideo(p);
+  if(!p||!video||p.deletedAt||p.archivedAt)return notify("请先选择可编辑的正式视频");
+  const dialog=$("videoStyleDialog");
+  const style=p.videoStyles?.[video.key]??p.videoStyles?.[video.branch]??p.videos?.find(v=>v.videoId===video.key||v.branch===video.branch)?.visualStyle??"";
+  dialog.dataset.projectId=p.projectId;
+  dialog.dataset.videoKey=video.key;
+  dialog.dataset.videoBranch=video.branch||"";
+  dialog.dataset.initialStyle=style;
+  $("videoStyleContext").textContent="当前视频："+video.name+"。仅影响本视频后续生成的剪辑与视觉Prompt；不会重写已确认成果。";
+  $("videoStyleForm").elements.namedItem("visualStyle").value=style;
+  dialog.showModal();
+});
+$("videoStyleDialog").querySelectorAll("[data-close-video-style]").forEach(button=>button.addEventListener("click",()=>$("videoStyleDialog").close()));
+$("videoStyleForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const dialog=$("videoStyleDialog"),p=current(),video=p&&outcomeVideo(p);
+  if(!p||!video||p.deletedAt||p.archivedAt||p.projectId!==dialog.dataset.projectId||video.key!==dialog.dataset.videoKey)return notify("当前视频已变化，请重新打开风格设置");
+  const before=p.videoStyles?.[video.key]??p.videoStyles?.[video.branch]??p.videos?.find(v=>v.videoId===video.key||v.branch===video.branch)?.visualStyle??"";
+  if(before!==dialog.dataset.initialStyle)return notify("本视频风格在编辑期间发生变化，请重新打开");
+  const value=String(new FormData(event.currentTarget).get("visualStyle")||"").trim();
+  if(value===before){dialog.close();return notify("剪辑风格没有变化");}
+  p.videoStyles={...(p.videoStyles||{})};
+  const keys=[...new Set([video.key,video.branch].filter(Boolean))];
+  for(const key of keys){if(value)p.videoStyles[key]=value;else delete p.videoStyles[key];}
+  p.history||=[];
+  p.history.push({at:new Date().toISOString(),action:"VIDEO_VISUAL_STYLE_UPDATED",videoId:video.key});
+  if(p.promptFlow?.length)O.compilePromptFlow(p);
+  save();render();dialog.close();
+  notify("已保存本视频风格，后续生成的Prompt将使用新描述");
+});
 window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;

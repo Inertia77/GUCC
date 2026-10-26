@@ -43,7 +43,7 @@ for (const marker of [
 ]) assert.ok(creatorOsHtml.includes(marker), `Creator OS v2 missing ${marker}`);
 assert.match(creatorOsHtml, /core-rules\.js\?v=2\.2\.1/);
 assert.match(creatorOsHtml, /failure-prevention\.js\?v=2\.0\.1/);
-assert.match(creatorOsHtml, /capability-library\.js\?v=2\.2\.1/);
+assert.match(creatorOsHtml, /capability-library\.js\?v=2\.2\.2/);
 assert.match(creatorOsHtml, /orchestrator\.js\?v=/);
 assert.match(creatorOsHtml, /creator-os-app\.js\?v=/);
 assert.match(creatorOsCss, /@media\(max-width:760px\)/, 'Creator OS must keep a responsive phone layout.');

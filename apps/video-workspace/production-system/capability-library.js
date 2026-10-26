@@ -519,12 +519,13 @@
 
     cap("BGM_SFX_ASSET_PRODUCTION","Edit","BGM / SFX Asset Production",{
       purpose:"把声音蓝图落实成真实可用音频资产。",
-      whenToUse:["蓝图确实需要BGM/SFX"],
-      requiredInput:["SOUND_DIRECTION","SOUND_CUE_MAP"],
-      coreMethod:["只制作最终蓝图会用到的声音。","48kHz优先WAV、留headroom、BGM可循环、SFX短准。","真实文件完成后更新FILE_EXISTS与使用建议。"],
+      whenToUse:["蓝图确实需要BGM/SFX","用户已有AUDIO_MASTER和最终字幕，希望直接得到独立混音轨"],
+      requiredInput:["本期内容或声音命题","精确混音时必须可访问最终AUDIO_MASTER（或具备可靠完整时长的正式音频）"],
+      optionalInput:["SOUND_DIRECTION.md","SOUND_CUE_MAP.md","FINAL.srt","已有可用BGM/SFX素材"],
+      coreMethod:["SOUND_DIRECTION/CUE_MAP已存在则严格复用；若用户授权直接混音且只有AUDIO_MASTER和FINAL.srt，在本任务内先完成必要Cue设计，不因缺可选中间MD而阻塞。","音乐性需要经过实际试听：有明确旋律/和声/主题动机、自然起伏和情绪变化；禁止长时间嗡鸣、廉价鼓点或把音量合格当好听。","已有最终连续旁白且用户要完成品时优先真实渲染FINAL_BGM_SFX.wav：48kHz双声道、优先24-bit PCM、00:00同原点、总长与AUDIO_MASTER逐采样精确一致；只含BGM/SFX，绝不混入口播。","人声优先，按真实时间锚点留白、淡入淡出和音效，不要持续填满；默认保守响度、足够headroom，必要时参考-24 LUFS及不高于-6dBTP，最终由人耳微调。","无最终音频或用户要分轨时交分立素材并记录Cue和循环点；实际文件完成后更新FILE_EXISTS、Rights及使用建议。"],
       failureRefs:["TW_NO_FAKE_RENDER","PM_WRITE_TRUTH"],
-      qualityGate:["Must Use声音FILE_EXISTS=YES或明确MISSING","不混入口播"],
-      outputSchema:["BGM/SFX文件","SOUND_PACKAGE_INDEX.md"],
+      qualityGate:["Must Use声音FILE_EXISTS=YES或明确MISSING","最终预混不混入口播，00:00和总时长与AUDIO_MASTER一致","实际试听音乐的旋律/和声/情绪质量，技术数据不能替代听感","ffprobe确认48kHz立体声、24-bit（如可用）、安全峰值"],
+      outputSchema:["FINAL_BGM_SFX.wav（最终AUDIO_MASTER已具备并要求独立混音时）","BGM/SFX分立文件（需要时）","SOUND_CUE_MAP.md","SOUND_PACKAGE_INDEX.md"],
       defaultExecutor:"Codex",alternativeExecutor:["Chat"],
       chatFallback:"Chat交精确生成/本地脚本；没有实际文件时不能标完成。",
       qcLevel:"Q1",legacyPromptIds:["16A"]
@@ -595,11 +596,12 @@
 
     cap("SIX_PLATFORM_PUBLISH_PACKAGE","Publish","Six-platform Publish Package",{
       purpose:"生成六平台可直接投稿的标题、简介、标签、章节、封面适配、互动与合规检查。",
-      whenToUse:["最终内容/字幕/封面基本确定"],
-      requiredInput:["CORE_THESIS/最终稿","FINAL.srt/Timeline","COVER_PACKAGE_INDEX","PLATFORM_RULES_CHECK"],
-      coreMethod:["每个平台先交一套经标题/封面/正文兑现检查的首选正式稿；只有切入角度实质不同且确有用处时才附少量备选，不强凑五个标题。","B站/抖音/小红书/微信视频号简中，YouTube/TikTok繁中；结合平台真实字段分别写，不只繁简转换。","B站和YouTube从已真实对齐的FINAL.srt或Timeline选择有内容价值的章节，精确使用原始开始时刻；无可靠时间锚点不虚构章节。B站弹幕投票按实际可用性和讨论价值建议，不凑两到四项。","发布前根据当期官方投稿规则核对标题字数、简介、封面比例、AI语音披露、素材许可及归属；动态限制无法核实就标投稿时以UI为准。","交付六份可直接复制的MD和必要的规则核验说明，不声称已投稿或后台已登记。"],
+      whenToUse:["正式锁稿完成后即可先做六平台文案","最终成片和真实字幕可用后补全章节与发布检查"],
+      requiredInput:["经确认的正式锁稿或可核验成片内容"],
+      optionalInput:["FINAL.srt/Timeline（只在精确章节时必需）","COVER_PACKAGE_INDEX（用来核对标题和封面）","PLATFORM_RULES_CHECK（投稿前实时核验）"],
+      coreMethod:["先区分脚本版与发布终检版：SCRIPT_LOCK已确认即可生成六平台标题/简介/标签；缺真实SRT时章节留空且不可猜时码，缺成片时不自称看过正式成片。","每个平台先交一套经标题/封面/正文兑现检查的首选正式稿；只有切入角度实质不同且确有用处时才附少量备选，不强凑五个标题。","B站/抖音/小红书/微信视频号简中，YouTube/TikTok繁中；结合平台真实字段分别写，不只繁简转换。","B站和YouTube从已真实对齐的FINAL.srt或Timeline选择有内容价值的章节，精确使用原始开始时刻；无可靠时间锚点不虚构章节。B站弹幕投票按实际可用性和讨论价值建议，不凑两到四项。","发布前根据当期官方投稿规则核对标题字数、简介、封面比例、AI语音披露、素材许可及归属；动态限制无法核实就标投稿时以UI为准。","交付六份可直接复制的MD和必要的规则核验说明，不声称已投稿或后台已登记。"],
       failureRefs:["PB_LANGUAGE_TRACK","PB_TITLE_COVER_PROMISE","PB_HEADLINE_CAUSAL_CHECK","PB_ONE_PRIMARY_COPY","PB_ATTRIBUTION"],
-      qualityGate:["推荐文案与成片内容匹配，交付可直接发而不是候选素材堆。","字段符合当前平台规则","标题/封面/正文一致"],
+      qualityGate:["锁稿阶段已完成可定案文案，真实章节/成片披露未验证时明确为待补的投稿检查，不伪造时间","终检阶段成片内容和文案一致","字段按最新平台规则核对","标题/封面/正文一致"],
       outputSchema:["PUBLISH_PACKAGE.md"],
       defaultExecutor:"Work",alternativeExecutor:["Chat"],
       qcLevel:"Q2",reviewMode:"APPROVAL_REQUIRED",legacyPromptIds:["21"]

@@ -395,7 +395,7 @@
       whenToUse:["SCRIPT_LOCK后","录音前"],
       requiredInput:["SCRIPT_LOCK正文"],
       optionalInput:["真人/AI朗读模式","多人角色分配"],
-      coreMethod:["先确认本期采用真人录音还是剪映/其他AI朗读，不替用户强制切换。真人模式保持正式文本并按自然语义分块。","AI模式基于所选客户端实际上限分段，默认交每cue≤500可见字符的安全版；若适配需要另交≤300字符兼容版；按语义断句并优先减少朗读音频数量，不强行接近上限。","只在AI朗读副本处理多音字、生僻字、角色/组织名、英文、数字与易误读符号；将全部改写记入Pronunciation Map，正式SCRIPT_LOCK原文不动。","TTS_TEMP.srt每条安排可容纳朗读的临时时间槽，相邻cue故意留较长空档便于在剪映生成/挪动/拼接；间隔和槽长是导入占位而非音频真值，最终FINAL.srt重新依据AUDIO_MASTER对齐。","导出前检查每cue长度、排序、无时码重叠、锁稿全文片段映射、无漏字重字及改动范围；交付主版、按需兼容版与简明使用说明。"],
+      coreMethod:["先确认本期采用真人录音还是剪映/其他AI朗读，不替用户强制切换。真人模式保持正式文本并按自然语义分块。","AI模式基于所选客户端实际上限分段，默认交每cue≤500可见字符的安全版；若适配需要另交≤300字符兼容版；按语义断句并优先减少朗读音频数量，不强行接近上限。","只在AI朗读副本处理多音字、生僻字、角色/组织名、英文、数字与易误读符号；将全部改写记入Pronunciation Map，正式SCRIPT_LOCK原文不动。","TTS_TEMP.srt每条安排可容纳朗读的临时时间槽，相邻cue故意留明显空档便于在剪映生成/挪动/拼接；间隔和槽长是导入占位而非音频真值，最终FINAL.srt重新依据AUDIO_MASTER对齐。","导出前检查每cue长度、排序、无时码重叠、锁稿全文片段映射、无漏字重字及改动范围；交付主版、按需兼容版与简明使用说明。"],
       failureRefs:["TL_TTS_TEMP_NOT_FINAL","TL_TTS_LIMIT_GAP","TL_TTS_LOCKED_TEXT_QC","SC_LOCK_PROTECTION"],
       qualityGate:["源SCRIPT_LOCK原文未变且可追溯","朗读文本仅含有记录的发音安全替换，段序/完整性核验通过","主版各cue不超过所选上限，相邻cue留有明确占位空档","临时时码明确不进入FINAL.srt"],
       outputSchema:["SCRIPT_READ.md 或 TTS_TEMP.srt","TTS_PRONUNCIATION_MAP.md","TTS_README.md"],

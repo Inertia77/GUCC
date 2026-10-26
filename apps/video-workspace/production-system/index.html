@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="./creator-os-outcomes.css?v=1">
 <link rel="stylesheet" href="./creator-four-workspaces.css?v=3">
 <link rel="stylesheet" href="../../../assets/gucc-premium.css?v=4" data-gucc-premium>
-<script src="../../../assets/creator-project-folders.js?v=1" defer></script>
+<script src="../../../assets/creator-project-folders.js?v=2" defer></script>
 </head>
 <body class="creator-os-page">
 <div class="cosmos-grid" aria-hidden="true"></div>
@@ -74,7 +74,7 @@
       <div class="outcomes-toolbar">
         <label>当前项目<select id="outcomeProjectSelect" aria-label="选择管理的项目"></select></label>
         <div class="outcomes-project-meta" id="outcomeProjectMeta"></div>
-        <button class="button ghost" type="button" id="outcomeRefresh">↻ 刷新成果</button><button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
+        <button class="button secondary" type="button" id="outcomeFoldersBtn" data-open-project-folders disabled>▣ 本地目录</button><button class="button ghost" type="button" id="outcomeRefresh">↻ 刷新成果</button><button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
       </div>
       <div class="outcomes-video-line"><span class="micro">VIDEO / WORK ITEMS</span><div class="outcomes-video-tabs" id="outcomeVideoTabs" role="group" aria-label="选择视频"></div>
         <button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频 ↗</button>
@@ -93,6 +93,7 @@
       <div class="project-management-bar">
         <input id="projectSearch" type="search" placeholder="搜索项目名称、游戏、版本…" aria-label="搜索项目">
         <select id="projectArchiveFilter" aria-label="项目显示范围"><option value="active">进行中</option><option value="completed">已完成</option><option value="archived">已归档</option><option value="all">全部（不含回收站）</option><option value="trash">回收站</option></select>
+        <button id="archiveProjectFoldersBtn" type="button" class="button ghost" data-open-project-folders disabled>▣ 本地目录</button>
         <button id="editProjectArchiveBtn" type="button" class="button ghost">编辑项目资料</button>
         <button id="completeCurrentProject" type="button" class="button secondary">标记已完成</button>
         <button id="archiveCurrentProject" type="button" class="button ghost">归档项目</button>

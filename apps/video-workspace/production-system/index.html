@@ -77,7 +77,7 @@
         <button class="button secondary" type="button" id="outcomeFoldersBtn" data-open-project-folders disabled>▣ 本地目录</button><button class="button ghost" type="button" id="outcomeRefresh">↻ 刷新成果</button><button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
       </div>
       <div class="outcomes-video-line"><span class="micro">VIDEO / WORK ITEMS</span><div class="outcomes-video-tabs" id="outcomeVideoTabs" role="group" aria-label="选择视频"></div>
-        <button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频 ↗</button>
+        <button class="text-action" type="button" id="outcomeVideoStyleBtn" disabled>✦ 剪辑风格</button><button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频 ↗</button>
       </div>
       <section class="outcomes-progress" aria-label="成果完成情况">
         <div class="outcomes-progress-head"><div><span class="micro">DELIVERY HEALTH</span><strong id="outcomeProgressText">0 / 6 <small>已完成</small></strong></div>
@@ -312,6 +312,15 @@
 </div>
 
 
+<dialog id="videoStyleDialog" aria-label="本视频视觉与剪辑风格">
+  <form id="videoStyleForm" class="dialog-card">
+    <div class="panel-head"><div><span class="micro">VIDEO DIRECTION</span><h2>本视频的剪辑风格</h2></div><button type="button" data-close-video-style class="icon-button" aria-label="关闭">×</button></div>
+    <p id="videoStyleContext">仅对当前选中视频生效。会传入后续 Creator OS 视频相关 Prompt；不会修改已锁稿、已有画面或声音。</p>
+    <label>视觉与镜头语言<textarea name="visualStyle" rows="5" maxlength="800" placeholder="例如：好莱坞人物悬疑预告片 × 高级剧情纪录片；克制的电影转场、压迫感到释然，保留角色真实性，不随机拼PV。"></textarea></label>
+    <p class="subtitle">可留空恢复默认。风格描述是可调整制作偏好，不影响六项成果的正式完成状态。</p>
+    <footer><button type="button" data-close-video-style class="button ghost">取消</button><button type="submit" class="button primary">保存此视频风格</button></footer>
+  </form>
+</dialog>
 <dialog id="addVideoDialog" aria-label="登记正式视频身份"><form id="addVideoForm" class="dialog-card"><div class="panel-head"><h2>登记本项目的视频</h2><button type="button" data-close-video class="icon-button">×</button></div><p>只有在本项目确实需要一条独立视频时才登记。旧项目可使用现有任务分支 ID；已完成的任务、脚本与 Lock 不会被重置。</p><label>视频名称<input name="videoName" required maxlength="100" placeholder="例：菲欧妮机制解析"></label><label>视频标识（选填）<input name="videoId" pattern="[A-Za-z][A-Za-z0-9_-]{0,30}" maxlength="31" placeholder="例：FIONI；留空自动生成"></label><footer><button type="button" data-close-video class="button ghost">取消</button><button type="submit" class="button primary">登记并保留原进度</button></footer></form></dialog>
 <dialog id="nodeDialog">
   <div class="dialog-card">

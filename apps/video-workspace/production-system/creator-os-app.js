@@ -411,6 +411,8 @@ async function loadCanonicalOutcomes(p){
   }
 }
 function renderOutcomeBoard(){
+  const selectedProject=current();
+  $("outcomeFoldersBtn").disabled=!selectedProject||selectedProject.status==="TEST_FIXTURE"||Boolean(selectedProject.deletedAt);
   const sel=$("outcomeProjectSelect");
   sel.replaceChildren();
   const list=store.projects.filter(p=>p.status!=="TEST_FIXTURE");
@@ -542,6 +544,7 @@ function renderProjects(){
     window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
   }));
   const enabled=Boolean(selected&&selected.status!=="TEST_FIXTURE");
+  $("archiveProjectFoldersBtn").disabled=!enabled||Boolean(selected?.deletedAt);
   $("completeCurrentProject").disabled=!enabled||Boolean(selected?.deletedAt);
   $("completeCurrentProject").textContent=selected?.completedAt?"重新设为进行中":"标记已完成";
   $("archiveCurrentProject").disabled=!enabled||Boolean(selected?.deletedAt);

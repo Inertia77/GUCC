@@ -7,7 +7,7 @@
 .outcomes-methods{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .outcome-tools-caption{font:11px ui-monospace,monospace;color:var(--os-muted);margin-right:4px}
 .outcomes-methods .button{min-height:39px;padding:8px 14px;font-size:12px;text-decoration:none}
-.outcomes-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:end;gap:14px;padding:21px 24px;border:1px solid var(--os-hairline);background:linear-gradient(120deg,rgba(22,38,51,.74),rgba(13,26,40,.83));border-radius:12px}
+.outcomes-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto auto;align-items:end;gap:14px;padding:21px 24px;border:1px solid var(--os-hairline);background:linear-gradient(120deg,rgba(22,38,51,.74),rgba(13,26,40,.83));border-radius:12px}
 .outcomes-toolbar label{color:var(--os-muted);font-size:11px;letter-spacing:.04em;min-width:0}
 #outcomeProjectSelect{display:block;width:100%;height:46px;margin-top:8px;padding:0 15px;border:1px solid var(--os-hairline-strong);border-radius:8px;background:#0c1a28;color:var(--os-text);font-size:15px;font-weight:650}
 .outcomes-project-meta{align-self:center;color:var(--os-muted);font-size:11px;line-height:1.6;max-width:260px;overflow-wrap:anywhere}
@@ -47,7 +47,7 @@
 .outcomes-empty{grid-column:1/-1;padding:35px;border:1px dashed var(--os-hairline-strong);text-align:center;color:var(--os-muted);font-size:14px;border-radius:10px}
 .outcomes-footnote{font-size:11px;color:var(--os-muted);line-height:1.9;margin:20px 0 0}
 @media(max-width:1000px){
-  .outcomes-toolbar{grid-template-columns:minmax(0,1fr) auto auto}
+  .outcomes-toolbar{grid-template-columns:minmax(0,1fr) auto auto auto}
   .outcomes-project-meta{grid-column:1/-1;grid-row:2;max-width:none}
   .outcomes-intro{align-items:flex-start;flex-wrap:wrap}
   .outcomes-methods{justify-content:flex-start}

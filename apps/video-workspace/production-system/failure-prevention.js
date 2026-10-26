@@ -33,19 +33,26 @@
       {id:"SC_NO_ANNOUNCEMENT_TONE",level:"BEST_PRACTICE",rule:"避免公告腔、百科堆砌、机械转场、连续总结与 AI 模板句。"},
       {id:"SC_LOCK_PROTECTION",level:"HARD_CONSTRAINT",rule:"未 Reopen 或无充分新证据时不得修改 SCRIPT_LOCK。"},
       {id:"SC_DIFF_MODE",level:"BEST_PRACTICE",rule:"已确认稿件默认 DIFF MODE，只改事实错误、新正式资料或严重逻辑问题。"},
-      {id:"SC_THESIS_DELIVERY",level:"BEST_PRACTICE",rule:"标题/封面承诺、开场问题和正文核心结论必须互相兑现。"}
+      {id:"SC_THESIS_DELIVERY",level:"BEST_PRACTICE",rule:"标题/封面承诺、开场问题和正文核心结论必须互相兑现。"},
+      {id:"SC_QUESTION_MUST_BE_ANSWERED",level:"FAILURE_WARNING",rule:"悬念式标题要指出正文具体哪一段给出可验证答案；若只提供关联线索/触发条件而没有原因或真相，不得用“为什么/真相揭秘”暗示已完整回答。"},
+      {id:"SC_FALSE_CONTRAST",level:"FAILURE_WARNING",rule:"检查标题对立关系是否符合常识因果；若“前提A本就容易导致B”，不要硬写成“明明A却B”的伪反差。"},
+      {id:"SC_QC_BEFORE_LOCK",level:"BEST_PRACTICE",rule:"AI先独立核对事实/术语、内容逻辑/信息价值、去AI味/留存；能自行修复的先修订再复审，未真实验证的事实项不能宣称PASS或锁稿。"}
     ]),
     timeline:Object.freeze([
       {id:"TL_NO_ESTIMATE",level:"HARD_CONSTRAINT",rule:"禁止按字数、平均语速、脚本长度或句长猜时间。"},
       {id:"TL_ASR_NOT_TEXT_TRUTH",level:"HARD_CONSTRAINT",rule:"ASR 只提供时间参考，不能覆盖锁定角色名、术语与正式字幕文字。"},
       {id:"TL_AUDIO_MASTER_TRUTH",level:"HARD_CONSTRAINT",rule:"最终真实 AUDIO_MASTER 决定 WHEN；未有最终音频不能生成真实 FINAL.srt / TIMELINE_MASTER。"},
       {id:"TL_TTS_TEMP_NOT_FINAL",level:"FAILURE_WARNING",rule:"TTS_TEMP.srt 只用于 AI 朗读，临时时码不能污染最终时间线。"},
+      {id:"TL_TTS_LIMIT_GAP",level:"BEST_PRACTICE",rule:"剪映AI朗读按所用客户端实际字数上限分段；可选500字符安全版与300字符兼容版，优先减少段数而不强行凑满。临时SRT各段时间槽之间留足明显空档，避免生成音频相互挤占；占位时间不得进入最终字幕。"},
+      {id:"TL_TTS_LOCKED_TEXT_QC",level:"HARD_CONSTRAINT",rule:"发音安全化只调整多音字、角色/组织专名、英文、数字和符号读法；逐段比对锁稿，所有有意替换登记发音映射，禁止漏字、重字、段落错序和偷偷改写剧情结论。"},
       {id:"TL_ZERO_ORIGIN",level:"BEST_PRACTICE",rule:"AUDIO_MASTER / FINAL.srt / TIMELINE_MASTER / Codex 输出统一 00:00。"}
     ]),
     visual:Object.freeze([
       {id:"VS_NO_FAKE_GAMEPLAY",level:"HARD_CONSTRAINT",rule:"AI 解释动画、生成图不能冒充真实游戏画面或正式机制证据。"},
       {id:"VS_PIXEL_NOT_PPT",level:"FAILURE_WARNING",rule:"Pixel / HUD 动画要有动作、状态、资源与触发变化，不能退化成静态 PPT。"},
       {id:"VS_IDENTITY_REFERENCE",level:"HARD_CONSTRAINT",rule:"角色形象必须依据真实可读官方参考；缺参考不能凭空高还原。"},
+      {id:"VS_IDENTITY_AFTER_RENDER",level:"FAILURE_WARNING",rule:"封面生成后再次对照上传的官方参考检查脸、发型、眼睛、服饰、配饰和武器；角色明显不符即不交付，不能仅靠写过参考提示词判定通过。"},
+      {id:"VS_PREBUILD_WITHOUT_FAKE_TIMELINE",level:"BEST_PRACTICE",rule:"已锁稿但尚无最终配音时，允许提前实做独立的剧情关系/HUD/档案/像素动画与素材索引；仅保留语义锚点，不能编造最终SRT或成片精确镜头时间。"},
       {id:"VS_FUNCTION_OVER_DECOR",level:"BEST_PRACTICE",rule:"视觉服务理解、证据与节奏；不靠满屏光效或无信息装饰充数。"},
       {id:"VS_OPTIONAL_STYLE",level:"OPTIONAL_ENHANCEMENT",rule:"Pixel、几何、HUD、数据图、关系图按项目需要选择，不是固定步骤。"}
     ]),
@@ -64,6 +71,8 @@
       {id:"PB_LIVE_RULE_CHECK",level:"HARD_CONSTRAINT",rule:"平台投稿字段、字数、封面、版权、AI披露规则必须实时核验。"},
       {id:"PB_LANGUAGE_TRACK",level:"BEST_PRACTICE",rule:"B站/抖音/小红书/视频号简体；YouTube/TikTok繁体，除非项目覆盖。"},
       {id:"PB_TITLE_COVER_PROMISE",level:"HARD_CONSTRAINT",rule:"标题与封面不能夸大到正文无法兑现。"},
+      {id:"PB_HEADLINE_CAUSAL_CHECK",level:"FAILURE_WARNING",rule:"投稿前检查封面问句的前提、常识因果、正文回答位置；避免逻辑自相抵消的伪反差，以及只有线索没有答案的假揭秘。"},
+      {id:"PB_ONE_PRIMARY_COPY",level:"BEST_PRACTICE",rule:"每平台默认只交一套最优的可复制投稿稿；有实质不同策略才提供少量备选，不强凑五标题、多投票或固定章节数量。"},
       {id:"PB_ATTRIBUTION",level:"HARD_CONSTRAINT",rule:"ATTRIBUTION_REQUIRED / AI disclosure 在发布前必须处理。"}
     ])
   });

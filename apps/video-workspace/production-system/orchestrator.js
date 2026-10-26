@@ -291,7 +291,7 @@
       route:project.productType,format:project.format,
       authorQuestion:project.authorQuestion,authorContribution:project.authorContribution,
       coreThesis:project.coreThesis,audienceQuestion:project.audienceQuestion,
-      visualStyle:video?.visualStyle||"",
+      visualStyle:project.videoStyles?.[n.videoId]||project.videoStyles?.[n.branch]||video?.visualStyle||"",
       notes:[project.idea,project.videos?.length>1?"本轮视频："+(project.videos.find(x=>String(x.videoId||"")===n.videoId)?.name||n.branch):"",project.doNotUse?.length?"禁止/证据边界："+project.doNotUse.join("、"):""].filter(Boolean).join("\n")
     };
     const current=Six.build(item.id,context);
@@ -327,7 +327,7 @@
       `AUTHOR_QUESTION: ${project.authorQuestion||"UNCONFIRMED"}`,
       `AUTHOR_CONTRIBUTION: ${project.authorContribution||"UNCONFIRMED; no invented first-person experience"}`,
       `CORE_THESIS: ${project.coreThesis||"UNCONFIRMED"}`,
-      `VIDEO_VISUAL_STYLE: ${project.videos?.find(v=>String(v.videoId||v.branch||"")===String(n.videoId||n.branch||""))?.visualStyle||"DEFAULT / USE PROJECT CONTEXT"}`,
+      `VIDEO_VISUAL_STYLE: ${project.videoStyles?.[n.videoId]||project.videoStyles?.[n.branch]||project.videos?.find(v=>String(v.videoId||v.branch||"")===String(n.videoId||n.branch||""))?.visualStyle||"DEFAULT / USE PROJECT CONTEXT"}`,
       `VIDEO_BRANCH: ${n.branch||"SHARED"}`,
       `AUTONOMY_LEVEL: ${project.autonomyLevel||"L2"}`,
       project.doNotUse?.length?`DO_NOT_USE: ${project.doNotUse.join(" / ")}`:"",

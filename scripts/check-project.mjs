@@ -252,7 +252,7 @@ for (const expected of [
   'id="view-projects"',
   'src="./core-rules.js?v=2.2.1"',
   'src="./failure-prevention.js?v=2.0.1"',
-  'src="./capability-library.js?v="',
+  'src="./capability-library.js?v=2.2.2"',
   'src="./orchestrator.js?v=',
   'src="./creator-os-app.js?v='
 ]) {

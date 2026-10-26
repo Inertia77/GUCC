@@ -17,6 +17,28 @@ assert(Core.HARD_STOP_RULES.length>=5);
 assert(Caps.CAPABILITIES.length>=30);
 assert(Fail.all().some(x=>x.id==="SA_PROXY_MASTER_MAPPING"));
 
+// Character-story production lessons: cover promises, TTS boundaries, parallel assets, publishing.
+for(const id of ["SC_QUESTION_MUST_BE_ANSWERED","SC_FALSE_CONTRAST","SC_QC_BEFORE_LOCK",
+  "TL_TTS_LIMIT_GAP","TL_TTS_LOCKED_TEXT_QC","VS_IDENTITY_AFTER_RENDER",
+  "VS_PREBUILD_WITHOUT_FAKE_TIMELINE","PB_HEADLINE_CAUSAL_CHECK","PB_ONE_PRIMARY_COPY"])
+  assert(Fail.all().some(x=>x.id===id),`Missing creator regression rule: ${id}`);
+assert.match(Core.ruleText(["audioTimeline"]),/大间隔/);
+assert.match(Core.ruleText(["visual"]),/不把专门录游戏实机作为必经步骤/);
+const ttsPrep=Caps.get("READING_SCRIPT");
+assert(ttsPrep.failureRefs.includes("TL_TTS_LOCKED_TEXT_QC"));
+assert(ttsPrep.coreMethod.some(x=>x.includes("300字符兼容版")));
+assert(ttsPrep.coreMethod.some(x=>x.includes("明显空档")));
+const cover=Caps.get("COVER_DESIGN");
+assert(cover.failureRefs.includes("SC_FALSE_CONTRAST"));
+assert(cover.qualityGate.some(x=>x.includes("正文明确回答封面问题")));
+const publish=Caps.get("SIX_PLATFORM_PUBLISH_PACKAGE");
+assert(publish.coreMethod.some(x=>x.includes("不强凑五个标题")));
+assert(!publish.coreMethod.some(x=>x.includes("标题≥5")));
+assert(Caps.get("VISUAL_DIRECTION").whenToUse.some(x=>x.includes("SCRIPT_LOCK")));
+assert.match(Six.build("visual",{route:"story"}),/不把用户亲自录制游戏作为必经步骤/);
+assert.match(Six.build("cover",{route:"story"}),/生成之后再逐比例复核身份/);
+assert.match(Six.build("publish",{route:"story"}),/看似矛盾实际理所当然/);
+
 const p=O.testFixture();
 O.buildWorkflow(p);
 O.compilePromptFlow(p);

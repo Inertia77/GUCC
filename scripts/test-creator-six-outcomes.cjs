@@ -41,7 +41,7 @@ assert.equal(O.currentTask(simple).promptId,"PF-01");
 assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="visual").dependencies,["PF-01"]);
 assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="cover").dependencies,["PF-01"]);
 assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="sound").dependencies,["PF-02"]);
-assert.equal(simple.promptFlow.find(x=>x.sixOutcomeId==="publish").dependencies.length,5);
+assert.deepEqual(simple.promptFlow.find(x=>x.sixOutcomeId==="publish").dependencies,["PF-01"],"Lock稿之后即可准备六平台文案；真正发布仍需终检");
 O.markNode(simple,"PF-01","DONE");
 O.markNode(simple,"PF-02","WAITING");
 assert.equal(O.currentTask(simple).sixOutcomeId,"visual","Pending real audio must not block independent visual production");

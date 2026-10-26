@@ -39,6 +39,41 @@ assert.match(Six.build("visual",{route:"story"}),/不把用户亲自录制游戏
 assert.match(Six.build("cover",{route:"story"}),/生成之后再逐比例复核身份/);
 assert.match(Six.build("publish",{route:"story"}),/看似矛盾实际理所当然/);
 
+// Production experience: a script-locked release can begin before other media;
+// the final time-coded release still requires genuine aligned audio/SRT.
+const earlyPublish=Caps.get("SIX_PLATFORM_PUBLISH_PACKAGE");
+assert.equal(earlyPublish.requiredInput.length,1);
+assert(earlyPublish.requiredInput[0].includes("正式锁稿"));
+assert(earlyPublish.optionalInput.some(x=>x.includes("FINAL.srt")));
+assert.match(Six.build("publish",{route:"story"}),/正式锁稿确认后即可先/);
+assert.match(Six.build("sound",{route:"story"}),/FINAL_BGM_SFX.wav/);
+assert.match(Six.build("sound",{route:"story"}),/旋律\/和声/);
+assert.match(Six.build("visual",{route:"story",visualStyle:"美式电影大片感"}),/美式电影大片感/);
+assert.match(Six.build("visual",{route:"story"}),/FINAL_VIDEO_SILENT.mp4/);
+assert(Caps.get("BGM_SFX_ASSET_PRODUCTION").coreMethod.some(x=>x.includes("FINAL_BGM_SFX.wav")));
+assert(Caps.get("BGM_SFX_ASSET_PRODUCTION").qualityGate.some(x=>x.includes("实际试听")));
+
+const sixProject=O.createProject({projectId:"QA_STORY_STYLES",name:"剧情人物",game:"绝区零",
+  productType:"story",workflowMode:"six",videos:[{videoId:"FIONI",name:"菲欧妮"},{videoId:"OTHER",name:"另一个角色"}]});
+sixProject.videoStyles={FIONI:"电影人物悬疑感"};
+O.buildWorkflow(sixProject);
+O.compilePromptFlow(sixProject);
+const fioniNodes=sixProject.promptFlow.filter(x=>x.videoId==="FIONI");
+const release=fioniNodes.find(x=>x.sixOutcomeId==="publish");
+const script=fioniNodes.find(x=>x.sixOutcomeId==="script");
+assert.deepEqual(release.dependencies,[script.promptId],"Publishing draft depends on script, not final video/audio");
+assert.match(fioniNodes.find(x=>x.sixOutcomeId==="visual").prompt,/电影人物悬疑感/);
+assert.doesNotMatch(sixProject.promptFlow.find(x=>x.videoId==="OTHER"&&x.sixOutcomeId==="visual").prompt,/电影人物悬疑感/);
+sixProject.videoStyles.FIONI="电影纪实悬疑";
+O.compilePromptFlow(sixProject);
+assert.match(sixProject.promptFlow.find(x=>x.videoId==="FIONI"&&x.sixOutcomeId==="visual").prompt,/电影纪实悬疑/);
+const creatorPage=fs.readFileSync(path.join(root,"apps/video-workspace/production-system/index.html"),"utf8");
+const creatorJs=fs.readFileSync(path.join(root,"apps/video-workspace/production-system/creator-os-app.js"),"utf8");
+assert.match(creatorPage,/id="outcomeVideoStyleBtn"/);
+assert.match(creatorPage,/id="videoStyleDialog"/);
+assert.match(creatorJs,/VIDEO_VISUAL_STYLE_UPDATED/);
+
+
 const p=O.testFixture();
 O.buildWorkflow(p);
 O.compilePromptFlow(p);

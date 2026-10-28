@@ -39,9 +39,19 @@
       'guccUiuxV1'
     );
     if (document.querySelector('link[data-gucc-premium]')) ensurePremium();
+    ensureChroma();
   };
 
   const ensurePremium = () => ensureStylesheet('link[data-gucc-premium]', 'assets/gucc-premium.css?v=4', 'guccPremium');
+  const ensureChroma = () => {
+    const link = ensureStylesheet(
+      'link[data-gucc-chroma], link#gucc-chroma-final',
+      'assets/gucc-chroma-v1.css?v=1',
+      'guccChroma'
+    );
+    link.id = 'gucc-chroma-final';
+    return link;
+  };
 
   const ensureViewportFit = () => {
     let meta = document.querySelector('meta[name="viewport"]');

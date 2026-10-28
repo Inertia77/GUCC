@@ -7,19 +7,19 @@
   font-display: swap;
 }
 :root {
-  --g-ink: #0c1013;
-  --g-surface: #141a1f;
-  --g-raised: #1b2329;
-  --g-line: #303b43;
-  --g-text: #e9eeeb;
-  --g-muted: #a7b4ba;
-  --g-mint: #a4e1c9;
-  --g-cyan: #89c9da;
-  --g-violet: #b2aad6;
-  --g-warn: #e6bd81;
-  --g-error: #f0a5a5;
-  --g-field: #10161b;
-  --g-border-soft: #253038;
+  --g-ink: #0e1020;
+  --g-surface: #181b2c;
+  --g-raised: #23283d;
+  --g-line: #353b55;
+  --g-text: #f4f5ff;
+  --g-muted: #b8c2db;
+  --g-mint: #a6a3ff;
+  --g-cyan: #85bcff;
+  --g-violet: #d2adfa;
+  --g-warn: #ffd38d;
+  --g-error: #ff9dab;
+  --g-field: #111524;
+  --g-border-soft: #2c344c;
   --g-radius-dialog: 8px;
   --g-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --g-radius: 3px;

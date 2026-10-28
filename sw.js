@@ -1,11 +1,12 @@
-const STATIC_CACHE = "gucc-static-v60";
-const RUNTIME_CACHE = "gucc-runtime-v51";
+const STATIC_CACHE = "gucc-static-v61";
+const RUNTIME_CACHE = "gucc-runtime-v52";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
 const APP_SHELL = [
   "./assets/access-guard.js?v=15",
   "./assets/gucc-premium.css?v=4",
+  "./assets/gucc-chroma-v1.css?v=1",
   "./assets/gucc-shell-nav-v2.css?v=6",
   "./assets/gucc-shell.js?v=17",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",

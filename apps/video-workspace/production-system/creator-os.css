@@ -3,10 +3,10 @@
    The daily desktop is intentionally task-first; reference libraries stay in the backstage. */
 :root{
   color-scheme:dark;
-  --os-bg:#070d17;--os-ink:#0a111d;--os-layer:#101b2a;--os-raised:#142337;
+  --os-bg:#0e1020;--os-ink:#111527;--os-layer:#181d31;--os-raised:#222a43;
   --os-hairline:rgba(158,185,209,.15);--os-hairline-strong:rgba(169,199,224,.26);
-  --os-text:#ebf2f7;--os-soft:#c5d2df;--os-muted:#8295ab;
-  --os-mint:#86f0d9;--os-sea:#43b9c5;--os-sapphire:#8dbef5;--os-gold:#c8b58e;
+  --os-text:#f4f5ff;--os-soft:#d5dcf0;--os-muted:#a9b5d0;
+  --os-mint:#a6a3ff;--os-sea:#85bcff;--os-sapphire:#85bcff;--os-gold:#e8c3a6;
   --os-warn:#f5c88c;--os-danger:#efa7b0;--os-shadow:0 24px 65px rgba(0,0,0,.27);
   --os-panel:rgba(12,23,36,.92);--os-border:var(--os-hairline);
   --os-accent:var(--os-mint);--os-cyan:var(--os-sapphire);

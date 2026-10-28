@@ -32,7 +32,7 @@ let browser;
  const reports=[];
  for(const width of [390,1366,1440]){
   const ctx=await browser.newContext({serviceWorkers:'block',hasTouch:width===390,isMobile:width===390,viewport:{width,height:width===390?844:900}});
-  await fixture.routes(ctx,{auth:true,cloud:{route:route.fulfill({json:{ok:true,data:[]}})}});
+  await fixture.routes(ctx,{auth:true,cloud:{route:route=>route.fulfill({json:{ok:true,data:[]}})}});
   const p=await ctx.newPage();
   for(const entry of pages){
    await p.goto('https://gucc.test'+entry.url,{waitUntil:'domcontentloaded'});

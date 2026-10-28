@@ -73,6 +73,9 @@ jobs:
       - name: Run phone database and reference layout regression
         run: node scripts/test-mobile-reference-browser.cjs
 
+      - name: Run GUCC chromatic accessibility and cross-surface browser acceptance
+        run: node scripts/test-gucc-chroma-browser.cjs
+
       - name: Run stabilization publication and responsive regression
         run: node scripts/test-stabilization-browser.cjs
 
@@ -96,6 +99,7 @@ jobs:
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/
+            tmp/chroma-browser/
             tmp/stabilization-browser/
             tmp/stabilization-sw/results.json
           if-no-files-found: ignore

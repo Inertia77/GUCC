@@ -29,12 +29,11 @@ let browser;
 (async()=>{
  await fs.mkdir(out,{recursive:true});
  browser=await chromium.launch({headless:true,executablePath:process.env.GUCC_TEST_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage']});
- const ctx=await browser.newContext({serviceWorkers:'block',hasTouch:true,isMobile:true});
- await fixture.routes(ctx,{auth:true,cloud:{route:route=>route.fulfill({json:{ok:true,data:[]}})}});
- const p=await ctx.newPage();
  const reports=[];
  for(const width of [390,1366,1440]){
-  await p.setViewportSize({width,height:width===390?844:900});
+  const ctx=await browser.newContext({serviceWorkers:'block',hasTouch:width===390,isMobile:width===390,viewport:{width,height:width===390?844:900}});
+  await fixture.routes(ctx,{auth:true,cloud:{route:route.fulfill({json:{ok:true,data:[]}})}});
+  const p=await ctx.newPage();
   for(const entry of pages){
    await p.goto('https://gucc.test'+entry.url,{waitUntil:'domcontentloaded'});
    await p.waitForFunction(()=>document.body.classList.contains('gucc-enhanced')&&
@@ -68,6 +67,7 @@ let browser;
    await p.screenshot({path:path.join(out,entry.key+'-'+width+'.png'),animations:'disabled'});
    reports.push({page:entry.key,width,...result});
   }
+  await ctx.close();
  }
  await fs.writeFile(path.join(out,'results.json'),JSON.stringify({screenshots:reports.length,palette:'GUCC Chromatic Edition v1',reports},null,2));
  await browser.close();console.log('Chroma browser acceptance passed: '+reports.length+' viewport/page combinations; AAA body and primary-action contrast.');

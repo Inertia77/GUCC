@@ -17,7 +17,8 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-interface-chrome-final', '../styles/interface-chrome.css?v=1'],
   ['gucc-responsive-layout-final', '../styles/responsive-layout.css?v=4'],
   ['gucc-mobile-layout-final', '../styles/mobile-layout.css?v=4'],
-  ['gucc-premium-final', '../../../assets/gucc-premium.css?v=4']
+  ['gucc-premium-final', '../../../assets/gucc-premium.css?v=4'],
+  ['gucc-chroma-final', '../../../assets/gucc-chroma-v1.css?v=1']
 ];
 
 const TAB_LOADERS = {

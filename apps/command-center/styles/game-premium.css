@@ -427,12 +427,12 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-ga
   --game-inset: #151217;
   --game-border: #6f5c4c;
   --game-border-soft: #493d35;
-  --game-accent: #bd6253;
+  --game-accent: #e4a18f;
   --game-accent-2: #b49a61;
   --game-title: #f3e8d8;
   --game-text: #e5d8cb;
   --game-secondary: #cdbdab;
-  --game-muted: #aa9987;
+  --game-muted: #b9aa99;
   border-color: #6f5c4c !important;
   background:
     radial-gradient(ellipse at 91% -8%, rgba(189,98,83,.12), transparent 31%),

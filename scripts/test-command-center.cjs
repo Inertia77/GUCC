@@ -69,7 +69,8 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.doesNotMatch(indexSource, /styles\/[^"']+-v\d/i);
 
   const mainSource = read("apps/command-center/src/main.js");
-  assert.doesNotMatch(mainSource, /-v\d/i);
+  // Reject versioned *legacy module imports*; GUCC chroma-v1.css is a valid versioned stylesheet.
+  assert.doesNotMatch(mainSource, /^import\s+[^\n]+['"][^'"]+-v\d/mi);
   assert.match(mainSource, /initMechanisms, searchMechanisms/);
   assert.match(mainSource, /mechanisms: searchMechanisms/);
   assert(mainSource.indexOf("initMechanisms();") < mainSource.indexOf("initTabs();"), "Mechanism tab shell must exist before tab initialization");

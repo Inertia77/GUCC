@@ -22,6 +22,31 @@ let browser;
   for(const name of Object.keys(pages)){
    await go(name);await shot(name+'-'+w);
    const info=await p.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,links:[...document.querySelectorAll('.gucc-shell-dock>a')].map(a=>{const span=a.querySelector('span'),s=getComputedStyle(span),r=span.getBoundingClientRect(),ar=a.getBoundingClientRect();return{text:span.textContent,w:ar.width,h:ar.height,spanHeight:r.height,lineHeight:parseFloat(s.lineHeight),fontSize:parseFloat(s.fontSize),whiteSpace:s.whiteSpace,writingMode:s.writingMode}})}));
+   const chroma=await p.evaluate(()=>{
+    const root=getComputedStyle(document.documentElement),body=getComputedStyle(document.body);
+    const dock=document.querySelector('.gucc-shell-dock');
+    const dockStyle=dock?getComputedStyle(dock):null;
+    const resourceSelected=document.querySelector('body.resource-page .view-switch.is-active');
+    const selectedStyle=resourceSelected?getComputedStyle(resourceSelected):null;
+    return {
+      iris:root.getPropertyValue('--ch-iris').trim().toLowerCase(),
+      blue:root.getPropertyValue('--ch-blue').trim().toLowerCase(),
+      bodyColor:body.color,bodyBackground:body.backgroundColor,
+      dockBackground:dockStyle?.backgroundColor,
+      selectedBackground:selectedStyle?.backgroundColor,
+      selectedColor:selectedStyle?.color
+    };
+   });
+   if(verify){
+    assert.equal(chroma.iris,'#a6a3ff',`${name} ${w}: brand iris missing`);
+    assert.equal(chroma.blue,'#85bcff',`${name} ${w}: cobalt highlight missing`);
+    assert.equal(chroma.bodyColor,'rgb(244, 245, 255)',`${name} ${w}: text contrast base wrong`);
+    assert.equal(chroma.bodyBackground,'rgb(14, 16, 32)',`${name} ${w}: unexpected dark/green body surface`);
+    if(name==='resource'){
+     assert.equal(chroma.selectedBackground,'rgb(166, 163, 255)',`${name} ${w}: active AI navigation not violet`);
+     assert.equal(chroma.selectedColor,'rgb(17, 20, 38)',`${name} ${w}: active navigation needs dark contrast-safe ink`);
+    }
+   }
    metrics.push({page:name,...info});
    if(!verify)continue;
    assert(info.scrollWidth<=w+1,`${name} ${w}: viewport overflow`);assert.equal(info.links.length,5);if(w<1024)assert.equal(await p.locator('.gucc-shell-dock').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length),5,'Phone Dock must have exactly five equal slots');

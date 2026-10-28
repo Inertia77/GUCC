@@ -26,6 +26,6 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const context=vm.createContext({self:{addEventListener:(n,fn)=>handlers[n]=fn,location:{origin:'https://gucc.test'},clients:{claim:()=>{claimed=true}},skipWaiting:()=>{skipped=true}},caches,URL,Response,Promise,fetch:async()=>new Response('fresh')});vm.runInContext(read('sw.js'),context);
  let activation;handlers.activate({waitUntil:p=>activation=p});await activation;assert(cacheMap.has('gucc-user-drafts'));assert(!cacheMap.has('gucc-static-v59'));assert(!claimed&&!skipped);
  await Promise.all(Array.from({length:240},(_,i)=>vm.runInContext(`putRuntime('https://gucc.test/image-${i}',new Response('x'))`,context)));
- assert.equal(cacheMap.get('gucc-runtime-v51').size,180);
+ assert.equal(cacheMap.get('gucc-runtime-v52').size,180);
  console.log('Stabilization core: formal progress, independent lifecycle, date uncertainty, release stamping, CI failure gate matrix and worker cache bounds passed.');
 })().catch(e=>{console.error(e);process.exit(1)});

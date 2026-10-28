@@ -78,4 +78,28 @@ for(const item of entrypoints){
 const manifest=JSON.parse(read("manifest.webmanifest"));
 assert.equal(manifest.background_color,"#0e1020");
 assert.equal(manifest.theme_color,"#0e1020");
-console.log("GUCC chroma: 12 text/foreground pairs exceed 7:1, nine page entrypoints + global shell + DB late style + PWA checked.");
+// Game identity is preserved, but every exposed theme foreground also meets
+// AAA (>=7:1) against its darkest card surface. Onmyoji reads from the
+// final premium override rather than the obsolete parchment base palette.
+const themeSource=read("apps/command-center/styles/game-themes.css");
+const premiumSource=read("apps/command-center/styles/game-premium.css");
+const gamePalette=[
+ ["HSR","#151b24","#f7f9ff","#e9eef6","#c8d2df","#a8b4c3","#a9cff7"],
+ ["ZZZ","#181a1d","#fffef3","#f1f2ed","#d4d6d1","#afb2ae","#f2e83f"],
+ ["WW","#141b1d","#f5fbfb","#e9f1f1","#cbd8d9","#a7b9ba","#79d4d4"],
+ ["ENF","#1b1c1d","#f6f3ea","#edebe5","#d0ccc0","#b0aca2","#d9ab45"],
+ ["NTE","#171b27","#f8f8ff","#edeef5","#cfd2df","#aeb1c0","#78d2ec"],
+ ["YYS","#181416","#f3e8d8","#e5d8cb","#cdbdab","#b9aa99","#e4a18f"]
+];
+for(const [game,bg,title,body,secondary,muted,accent] of gamePalette){
+ const source=game==="YYS"?premiumSource:themeSource;
+ for(const [token,value] of [["surface",bg],["title",title],["text",body],["secondary",secondary],["muted",muted],["accent",accent]]){
+  assert(source.includes("--game-"+token+": "+value+";"),game+" "+token+" theme token changed without updating contrast audit");
+ }
+ for(const [type,foreground] of [["title",title],["body",body],["secondary",secondary],["muted",muted],["accent",accent]]){
+  const ratio=contrast(foreground,bg);
+  assert(ratio>=7,`${game} ${type}: ${ratio.toFixed(2)}:1 against ${bg}`);
+ }
+}
+
+console.log("GUCC chroma: 12 brand pairs + 30 game foreground pairs exceed 7:1, nine page entrypoints + global shell + DB late style + PWA checked.");

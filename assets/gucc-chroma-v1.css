@@ -1,0 +1,311 @@
+/* GUCC Chromatic Edition / v1
+   Creative direction: illuminated violet + cobalt interfaces on neutral midnight
+   graphite. The GUCC identity is independent of the six game skins.
+   Primary actions = periwinkle; information = near-white; caution = warm;
+   green is reserved for genuine success, never the default atmosphere.
+   Editing canvas pixels, game-themed result cards and semantic outcomes are
+   deliberately excluded from broad surface overrides. */
+:root {
+  --ch-ink:#0e1020;
+  --ch-panel:#181b2c;
+  --ch-raised:#23283d;
+  --ch-field:#111524;
+  --ch-line:#353b55;
+  --ch-strong-line:#526080;
+  --ch-text:#f4f5ff;
+  --ch-secondary:#bdc6dc;
+  --ch-muted:#a5afc7;
+  --ch-iris:#a6a3ff;
+  --ch-blue:#85bcff;
+  --ch-lilac:#d2adfa;
+  --ch-rose:#f0a7d5;
+  --ch-success:#8ae0c0;
+  --ch-warn:#ffd38d;
+  --ch-danger:#ff9dab;
+  --ch-on-bright:#111426;
+  color-scheme:dark;
+}
+body.gucc-enhanced {
+  --g-ink:var(--ch-ink);
+  --g-surface:var(--ch-panel);
+  --g-raised:var(--ch-raised);
+  --g-field:var(--ch-field);
+  --g-line:var(--ch-line);
+  --g-border-soft:#2c344c;
+  --g-text:var(--ch-text);
+  --g-muted:var(--ch-secondary);
+  --g-mint:var(--ch-iris); /* legacy variable name, now brand iris */
+  --g-cyan:var(--ch-blue);
+  --g-violet:var(--ch-lilac);
+  --g-warn:var(--ch-warn);
+  --g-error:var(--ch-danger);
+  --gucc-text:var(--ch-text);
+  --gucc-muted:var(--ch-secondary);
+  --gucc-dim:var(--ch-muted);
+  --gucc-cyan:var(--ch-blue);
+  --gucc-mint:var(--ch-iris);
+  --gucc-violet:var(--ch-lilac);
+  --gucc-danger:var(--ch-danger);
+  --gucc-line:var(--ch-line);
+  --mint:var(--ch-iris);
+  --cyan:var(--ch-blue);
+  --violet:var(--ch-lilac);
+  --accent:var(--ch-iris);
+  --accent2:var(--ch-blue);
+  --text:var(--ch-text);
+  --muted:var(--ch-secondary);
+  --dim:var(--ch-muted);
+}
+body:is(.portal-page,.creator-os-page,.creator-prompt-page,.command-center-page,.cover-generator-page,.publishing-console-page,.resource-page,.story-page,.prompt-page).gucc-enhanced {
+  color:var(--ch-text) !important;
+  background:
+    radial-gradient(ellipse 840px 420px at 94% -16%,rgba(129,137,245,.105),transparent 72%),
+    radial-gradient(ellipse 620px 410px at -12% 95%,rgba(75,130,229,.065),transparent 75%),
+    var(--ch-ink) !important;
+}
+body.gucc-enhanced :is(button,a,input,textarea,select,summary,[role="tab"]):focus-visible {
+  outline:2px solid var(--ch-blue) !important;
+  outline-offset:3px;
+}
+body.gucc-enhanced :is(input,textarea,select) {
+  caret-color:var(--ch-iris);
+}
+body.gucc-enhanced :is(input,textarea,select):not(:disabled):focus {
+  border-color:var(--ch-blue) !important;
+  box-shadow:0 0 0 3px rgba(133,188,255,.15) !important;
+}
+body.gucc-enhanced :is(.gucc-shell-dock,.gucc-shell-menu,.gucc-nav-dialog) {
+  background:var(--ch-panel) !important;
+  border-color:var(--ch-line) !important;
+  color:var(--ch-text) !important;
+  box-shadow:0 18px 44px rgba(3,5,17,.36) !important;
+}
+body.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger) {
+  color:var(--ch-secondary) !important;
+}
+body.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger):hover,
+body.gucc-enhanced .gucc-shell-menu-item:hover {
+  background:rgba(166,163,255,.12) !important;
+  color:var(--ch-text) !important;
+}
+body.gucc-enhanced .gucc-shell-dock > .is-active,
+body.gucc-enhanced .gucc-shell-menu-item.is-active {
+  background:rgba(166,163,255,.16) !important;
+  color:var(--ch-text) !important;
+}
+body.gucc-enhanced .gucc-shell-dock > .is-active::before,
+body.gucc-enhanced .gucc-shell-menu-item.is-active::before {
+  background:var(--ch-iris) !important;
+}
+body.gucc-enhanced .gucc-shell-dock > .is-active svg,
+body.gucc-enhanced .gucc-shell-dock > .is-active span {
+  color:#d7d1ff !important;
+}
+/* Portal: artistic entry point, not mint-green admin dashboard. */
+body.portal-page.gucc-enhanced :is(.intro h1 em,.portal-signature b,.cp-overline,.launch-arrow) {
+  color:var(--ch-iris) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-task,.cp-project,.cp-counter,.cp-calm,.cp-connect,.launch-card) {
+  border-color:rgba(173,186,225,.23) !important;
+  background:linear-gradient(135deg,rgba(35,41,65,.92),rgba(22,26,44,.96)) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-task,.cp-project,.launch-card):hover {
+  border-color:rgba(166,163,255,.62) !important;
+  background:linear-gradient(135deg,rgba(44,47,79,.98),rgba(27,34,59,.98)) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-task-mark,.cp-calm-icon,.cp-task-go,.cp-chevron,.cp-launch,.cp-project-side,.cp-refresh:hover) {
+  color:var(--ch-iris) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-task-mark,.cp-calm-icon) {
+  background:rgba(166,163,255,.12) !important;
+  border-color:rgba(166,163,255,.36) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-filters button.is-selected,.cp-launch) {
+  background:rgba(166,163,255,.15) !important;
+  color:#d7d1ff !important;
+  border-color:rgba(166,163,255,.55) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-project-main strong,.cp-task-copy strong,.cp-counter strong) {
+  color:var(--ch-text) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-project-main>span,.cp-task-copy>span,.cp-intro,.cp-counter span,.cp-calm small) {
+  color:var(--ch-secondary) !important;
+}
+body.portal-page.gucc-enhanced :is(.cp-progress i,.portfolio-meter>span) {
+  background:linear-gradient(90deg,var(--ch-iris),var(--ch-blue)) !important;
+}
+/* Creator OS: one saturated primary action, clear typography, muted equipment. */
+body.creator-os-page.gucc-enhanced {
+  --os-bg:var(--ch-ink);
+  --os-ink:var(--ch-field);
+  --os-layer:var(--ch-panel);
+  --os-raised:var(--ch-raised);
+  --os-text:var(--ch-text);
+  --os-soft:var(--ch-secondary);
+  --os-muted:var(--ch-muted);
+  --os-mint:var(--ch-iris);
+  --os-sea:var(--ch-blue);
+  --os-sapphire:var(--ch-blue);
+  --os-accent:var(--ch-iris);
+  --os-hairline:rgba(167,181,224,.24);
+  --os-hairline-strong:rgba(167,181,224,.35);
+}
+body.creator-os-page.gucc-enhanced :is(.os-topbar,.os-nav,.project-bar,.project-switcher) {
+  background:var(--ch-panel) !important;
+  border-color:var(--ch-line) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.os-nav button.active,.creation-switch>button.active,.reference-switch button.active) {
+  color:var(--ch-text) !important;
+  border-color:var(--ch-iris) !important;
+  background:rgba(166,163,255,.15) !important;
+  box-shadow:inset 3px 0 0 var(--ch-iris) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.button.primary,.mission-cta,.dock-button.primary) {
+  color:var(--ch-on-bright) !important;
+  background:var(--ch-iris) !important;
+  border-color:var(--ch-iris) !important;
+  box-shadow:none !important;
+}
+body.creator-os-page.gucc-enhanced :is(.current-task-panel,.portfolio-card,.project-summary,.flow-panel,.dock-item) {
+  border-color:rgba(173,186,225,.26) !important;
+  background:linear-gradient(145deg,#20253c,#181c2e) !important;
+  color:var(--ch-text) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.portfolio-card.active,.current-task-panel) {
+  border-color:rgba(166,163,255,.56) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.portfolio-card:hover,.dock-item:hover) {
+  border-color:var(--ch-iris) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.portfolio-progress,.portfolio-code,.task-eyebrow,.heading-status strong) {
+  color:var(--ch-blue) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.portfolio-meter>span,.portfolio-progress>span,.progress-fill) {
+  background:linear-gradient(90deg,var(--ch-iris),var(--ch-blue)) !important;
+}
+body.creator-os-page.gucc-enhanced :is(.portfolio-metadata,.workspace-deck,.project-caption,.flow-node small) {
+  color:var(--ch-secondary) !important;
+}
+/* Database neutral chrome changes, six game character cards keep their skin. */
+body.command-center-page.gucc-enhanced {
+  --console-accent:var(--ch-blue);
+  --console-accent-2:var(--ch-iris);
+  --console-line:var(--ch-line);
+  --console-glass:rgba(24,27,44,.97);
+  --console-inset:var(--ch-field);
+}
+body.command-center-page.gucc-enhanced :is(.topbar,.tabs,.filter-toolbar) {
+  background:linear-gradient(180deg,var(--ch-panel),var(--ch-field)) !important;
+  border-color:var(--ch-line) !important;
+}
+body.command-center-page.gucc-enhanced :is(.tabs [role="tab"].active,.tabs button.active) {
+  color:var(--ch-text) !important;
+  background:rgba(166,163,255,.18) !important;
+  border-color:var(--ch-iris) !important;
+}
+body.command-center-page.gucc-enhanced :is(.filter-toolbar button:not(.secondary),.editor-footer button[type="submit"]) {
+  background:var(--ch-iris) !important;
+  border-color:var(--ch-iris) !important;
+  color:var(--ch-on-bright) !important;
+}
+body.command-center-page.gucc-enhanced :is(.filter-toolbar input,.filter-toolbar select,.editor input,.editor textarea,.editor select) {
+  background:var(--ch-field) !important;
+  border-color:var(--ch-line) !important;
+  color:var(--ch-text) !important;
+}
+body.command-center-page.gucc-enhanced :is(.filter-toolbar input,.editor input,.editor textarea)::placeholder {
+  color:var(--ch-muted) !important;
+}
+body.command-center-page.gucc-enhanced .editor {
+  background:var(--ch-panel) !important;
+  color:var(--ch-text) !important;
+}
+/* Publish console: approachable blue-violet rather than aqua-green. */
+body.publishing-console-page.gucc-enhanced {
+  --bg:var(--ch-ink);
+  --panel:var(--ch-panel);
+  --panel-strong:var(--ch-raised);
+  --text:var(--ch-text);
+  --muted:var(--ch-secondary);
+  --dim:var(--ch-muted);
+  --mint:var(--ch-iris);
+  --cyan:var(--ch-blue);
+  --pink:var(--ch-rose);
+  --danger:var(--ch-danger);
+}
+body.publishing-console-page.gucc-enhanced :is(.panel,.score-card,.execution-banner,.platform-form) {
+  background:var(--ch-panel) !important;
+  border-color:var(--ch-line) !important;
+  color:var(--ch-text) !important;
+}
+body.publishing-console-page.gucc-enhanced :is(.button.primary,.one-click-button,.flow-step.active) {
+  color:var(--ch-on-bright) !important;
+  background:var(--ch-iris) !important;
+  border-color:var(--ch-iris) !important;
+}
+body.publishing-console-page.gucc-enhanced :is(.field input,.field textarea,.field select,.execution-meta input,.execution-meta select) {
+  background:var(--ch-field) !important;
+  color:var(--ch-text) !important;
+  border-color:var(--ch-line) !important;
+}
+/* Research and documentation: blue-purple navigation; never weaken content. */
+body.resource-page.gucc-enhanced {
+  --rl-bg:var(--ch-ink);
+  --rl-surface:var(--ch-panel);
+  --rl-surface-2:var(--ch-raised);
+  --rl-surface-3:#29304b;
+  --rl-text:var(--ch-text);
+  --rl-muted:var(--ch-secondary);
+  --rl-dim:var(--ch-muted);
+  --rl-mint:var(--ch-iris);
+  --rl-cyan:var(--ch-blue);
+  --rl-violet:var(--ch-lilac);
+}
+body.resource-page.gucc-enhanced :is(.atlas-hero,.hero-console,.atlas-toolbar,.research-note,.ai-project-card,.official-group,.intel-card) {
+  background-color:var(--ch-panel) !important;
+  border-color:var(--ch-line) !important;
+}
+body.resource-page.gucc-enhanced :is(.view-switch.is-active,.game-filter.is-active) {
+  background:var(--ch-iris) !important;
+  color:var(--ch-on-bright) !important;
+  border-color:var(--ch-iris) !important;
+}
+body.resource-page.gucc-enhanced .ai-project-open {
+  color:var(--ch-text) !important;
+  border-color:var(--ch-line) !important;
+}
+body.gucc-reference.gucc-enhanced {
+  --bg:var(--ch-ink);
+  --panel:var(--ch-panel);
+  --line:var(--ch-line);
+  --text:var(--ch-text);
+  --muted:var(--ch-secondary);
+  --dim:var(--ch-muted);
+  --mint:var(--ch-iris);
+  --cyan:var(--ch-blue);
+}
+body.gucc-reference.gucc-enhanced :is(.sidebar,.reader,.panel,.toc,.doc pre,.doc table) {
+  border-color:var(--ch-line) !important;
+}
+body.gucc-reference.gucc-enhanced :is(.doc p,.doc li,.subtitle) {
+  color:var(--ch-secondary) !important;
+}
+/* Cover Studio only: controls follow brand; exported creative canvas untouched. */
+body.cover-generator-page.gucc-enhanced :is(.hero,.panel,.inspector,.workspace-toolbar,.asset-panel) {
+  border-color:var(--ch-line) !important;
+}
+body.cover-generator-page.gucc-enhanced :is(.editor input,.editor select,.editor textarea) {
+  background:var(--ch-field) !important;
+  color:var(--ch-text) !important;
+  border-color:var(--ch-line) !important;
+}
+@media (max-width:900px) {
+  body.gucc-enhanced .gucc-shell-dock {
+    background:rgba(24,27,44,.98) !important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  body.gucc-enhanced :is(.gucc-shell-dock,.cp-task,.cp-project,.launch-card,.portfolio-card) {
+    transition:none !important;
+  }
+}

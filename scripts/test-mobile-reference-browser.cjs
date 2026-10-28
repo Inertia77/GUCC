@@ -162,7 +162,7 @@ let browser;
    ]){
     await p.locator(`[data-tab="${fixture.tab}"]`).click();
     await p.waitForLoadState('networkidle'); // Finish tab's API response before installing layout-only cards.
-    await p.evaluate(({id,tab})=>{
+    const data=await p.evaluate(({id,tab})=>{
      const list=document.getElementById(id);
      const games=['崩','绝','鸣','终','异','阴'];
      const buttons=`<div class="actions collapsible-actions">
@@ -187,8 +187,7 @@ let browser;
        ${buttons}</div><div class="item-content" data-card-content hidden>完整展开信息</div>
        </article>`;
      }).join('');
-    },fixture);
-    const data=await p.locator(`#${fixture.id} > .item`).evaluateAll(cards=>cards.map(card=>{
+     return [...list.querySelectorAll(':scope > .item')].map(card=>{
      const rect=o=>o.getBoundingClientRect(),r=rect(card),
        name=card.querySelector('.character-title-primary, .item-title'),
        nr=rect(name),button=card.querySelector('.collapse-toggle'),br=rect(button),
@@ -201,7 +200,8 @@ let browser;
        expandedHidden:card.querySelector('.item-content').hidden,
        metaWrap:getComputedStyle(card.querySelector('.meta')).flexWrap
      };
-    }));
+     });
+    },fixture);
     assert.equal(data.length,6,`${fixture.tab} ${width}: expected six game variants`);
     for(const d of data){
      assert(Math.abs(d.height-76)<=1,`${fixture.tab} ${width} ${d.game}: collapsed height ${d.height}`);

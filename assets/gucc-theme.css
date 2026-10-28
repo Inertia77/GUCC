@@ -2,23 +2,23 @@
    Used by every tool page to keep the portal, apps and reference docs in one visual system. */
 :root {
   color-scheme: dark;
-  --gucc-bg: #070a10;
-  --gucc-bg-2: #0b1020;
-  --gucc-panel: rgba(14, 19, 31, .78);
-  --gucc-panel-strong: rgba(17, 24, 39, .94);
+  --gucc-bg: #0e1020;
+  --gucc-bg-2: #141729;
+  --gucc-panel: rgba(24, 27, 44, .9);
+  --gucc-panel-strong: rgba(28, 33, 52, .97);
   --gucc-glass: rgba(255, 255, 255, .07);
   --gucc-glass-strong: rgba(255, 255, 255, .11);
   --gucc-line: rgba(255, 255, 255, .115);
-  --gucc-line-strong: rgba(116, 243, 255, .42);
-  --gucc-text: #f3f7ff;
-  --gucc-muted: #a8b6c8;
-  --gucc-dim: #708197;
-  --gucc-mint: #78ffba;
-  --gucc-cyan: #74f3ff;
-  --gucc-violet: #9da9ff;
-  --gucc-pink: #ff5da8;
-  --gucc-amber: #ffd166;
-  --gucc-danger: #ff6070;
+  --gucc-line-strong: rgba(166, 163, 255, .42);
+  --gucc-text: #f4f5ff;
+  --gucc-muted: #b8c2db;
+  --gucc-dim: #94a0bd;
+  --gucc-mint: #a6a3ff;
+  --gucc-cyan: #85bcff;
+  --gucc-violet: #d2adfa;
+  --gucc-pink: #f0a7d5;
+  --gucc-amber: #ffd38d;
+  --gucc-danger: #ff9dab;
   --gucc-radius-xl: 30px;
   --gucc-radius-lg: 22px;
   --gucc-radius-md: 16px;

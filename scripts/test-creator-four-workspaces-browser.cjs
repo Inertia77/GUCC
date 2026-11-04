@@ -33,6 +33,18 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
    assert((await page.locator('[data-portfolio-project="A"]').innerText()).includes("1 / 12"));
    assert((await page.locator('[data-portfolio-project="B"]').innerText()).includes("1 / 6"),await page.locator('[data-portfolio-project="B"]').innerText());
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Portfolio must not overflow");
+   const priority=await page.evaluate(()=>{
+     const bounds=selector=>document.querySelector(selector)?.getBoundingClientRect();
+     const project=bounds('#view-outcomes .outcomes-toolbar');
+     const videos=bounds('#view-outcomes .outcomes-video-line');
+     const results=bounds('#view-outcomes .outcomes-progress');
+     const portfolio=bounds('#view-outcomes .portfolio-section');
+     return {project:project?.top,videos:videos?.top,results:results?.top,portfolio:portfolio?.top};
+   });
+   assert(priority.project<priority.videos && priority.videos<priority.results
+      && priority.results<priority.portfolio,
+      "Creator must show current project, video and verified outcomes before cross-project portfolio");
+
    await page.screenshot({path:path.join(out,"dashboard-"+width+".png"),fullPage:true,animations:"disabled"});
    await navigate("creation",1);
    assert(await page.locator('#view-creation').isVisible());

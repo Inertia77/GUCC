@@ -99,7 +99,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/interface-chrome.css",
   "./apps/command-center/styles/responsive-layout.css",
   "./apps/command-center/src/main.js",
-  "./apps/command-center/src/main.js?v=3",
+  "./apps/command-center/src/main.js?v=4",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
   "./apps/command-center/src/config-state.js",

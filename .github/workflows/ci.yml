@@ -73,6 +73,9 @@ jobs:
       - name: Run phone database and reference layout regression
         run: node scripts/test-mobile-reference-browser.cjs
 
+      - name: Run DB final stylesheet runtime and cache identity regression
+        run: node scripts/test-db-style-order-browser.cjs
+
       - name: Run GUCC chromatic accessibility and cross-surface browser acceptance
         run: node scripts/test-gucc-chroma-browser.cjs
 
@@ -99,6 +102,7 @@ jobs:
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/
+            tmp/db-style-order-browser/
             tmp/chroma-browser/
             tmp/stabilization-browser/
             tmp/stabilization-sw/results.json

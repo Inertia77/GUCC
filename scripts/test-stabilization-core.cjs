@@ -27,7 +27,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  let activation;handlers.activate({waitUntil:p=>activation=p});await activation;assert(cacheMap.has('gucc-user-drafts'));assert(!cacheMap.has('gucc-static-v59'));assert(!claimed&&!skipped);
  await Promise.all(Array.from({length:240},(_,i)=>vm.runInContext(`putRuntime('https://gucc.test/image-${i}',new Response('x'))`,context)));
  const activeRuntimeCache=vm.runInContext('RUNTIME_CACHE',context);
-  assert.match(activeRuntimeCache,/^gucc-runtime-v\\d+$/);
+  assert.match(activeRuntimeCache,/^gucc-runtime-v\d+$/);
   assert.equal(cacheMap.get(activeRuntimeCache).size,180);
  console.log('Stabilization core: formal progress, independent lifecycle, date uncertainty, release stamping, CI failure gate matrix and worker cache bounds passed.');
 })().catch(e=>{console.error(e);process.exit(1)});

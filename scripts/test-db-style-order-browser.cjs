@@ -22,7 +22,7 @@ const expected = [
   ['gucc-chroma-final', '/assets/gucc-chroma-v1.css', '1']
 ];
 
-const rgb = s => String(s).match(/[\\d.]+/g)?.slice(0,3).map(Number);
+const rgb = s => String(s).match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);
 const luminance = s => rgb(s).map(n => {
   const x = n/255; return x<=0.04045 ? x/12.92 : ((x+0.055)/1.055)**2.4;
 }).reduce((n,v,i) => n+v*[0.2126,0.7152,0.0722][i],0);

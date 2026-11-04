@@ -1232,7 +1232,7 @@ body :is(.markdown-body, .story-content) {
     display: none;
   }
   body.portal-page #creatorDashboard {
-    margin-block: 28px;
+    margin-block: 16px;
   }
   body.creator-os-page .os-topbar {
     padding: 12px 18px;
@@ -2367,7 +2367,7 @@ body.publishing-console-page .form-grid {
   .portal-continue {
     gap: 12px;
     display: block;
-    padding: 12px 0;
+    padding: 8px 0;
   }
   .portal-continue > span {
     display: none;
@@ -2376,11 +2376,12 @@ body.publishing-console-page .form-grid {
     max-width: calc(100vw - 150px);
   }
   body.portal-page .intro {
-    padding: 28px 0 24px;
+    padding: 16px 0 14px;
   }
   body.portal-page .intro h1 {
-    font-size: 35px;
-    line-height: 1.25;
+    font-size: 29px;
+    line-height: 1.17;
+    margin: 8px 0 10px;
   }
   body.portal-page .intro p:not(.eyebrow) {
     font-size: 14px;
@@ -2388,6 +2389,11 @@ body.publishing-console-page .form-grid {
   body.portal-page .cp-counter span {
     font-size: 12px;
   }
+  /* Task-first portal: readable metadata without pushing the action below the dock. */
+  body.portal-page .cp-overline { font-size: 11px; }
+  body.portal-page .cp-intro { font-size: 13px; }
+  body.portal-page .cp-task-copy small,
+  body.portal-page .cp-task-copy > span { font-size: 12px; line-height: 1.55; }
   body.portal-page .cp-filters button {
     min-height: 44px;
     font-size: 13px;

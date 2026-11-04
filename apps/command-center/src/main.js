@@ -39,16 +39,27 @@ const GAME_THEME_CODES = [
 
 function ensureFinalStyleSheets({ reorder = false } = {}) {
   FINAL_STYLE_SHEETS.forEach(([id, relativePath]) => {
-    let link = document.getElementById(id) || (id === "gucc-premium-final" ? document.querySelector("link[data-gucc-premium]") : null);
-    if (link && id === "gucc-premium-final") link.id=id;
+    // Resolve against this module, not the HTML document: these paths are
+    // deliberately shared by the first render and the final cascade pass.
+    const expectedHref = new URL(relativePath, import.meta.url).href;
+    let link = document.getElementById(id)
+      || (id === 'gucc-premium-final' ? document.querySelector('link[data-gucc-premium]') : null)
+      || (id === 'gucc-chroma-final' ? document.querySelector('link[data-gucc-chroma]') : null);
+
     if (!link) {
       link = document.createElement('link');
       link.id = id;
       link.rel = 'stylesheet';
-      link.href = new URL(relativePath, import.meta.url).href;
+      link.href = expectedHref;
       document.head.appendChild(link);
       return;
     }
+
+    // An existing link is not evidence that its URL is current. Older HTML
+    // and PWA documents can still carry a previous query version.
+    if (link.id !== id) link.id = id;
+    if (link.rel !== 'stylesheet') link.rel = 'stylesheet';
+    if (link.href !== expectedHref) link.href = expectedHref;
     if (reorder) document.head.appendChild(link);
   });
 }

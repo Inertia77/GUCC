@@ -57,15 +57,15 @@ function render(){
     '<h2>我的创作项目</h2><p class="cp-intro">按云端项目管理状态展示。完成、归档、回收站不会进入制作待办。</p></div>'+
     '<div class="cp-head-actions"><button id="cpRefresh" class="cp-refresh" type="button">↻ 刷新</button>'+
     '<a class="cp-launch" href="./apps/video-workspace/production-system/">进入创作中枢 ↗</a></div></section>'+
-    '<section class="cp-counters" aria-label="项目管理状态">'+
-    [["active","进行中"],["completed","已完成"],["archived","已归档"],["trash","回收站"]]
-      .map(([key,label])=>'<button type="button" class="cp-counter" data-cp-filter="'+key+'"><strong>'+counts[key]+'</strong><span>'+label+'</span></button>').join("")+
-    '</section>'+
     '<section class="cp-today"><div class="cp-section-top"><div><p class="cp-overline">NEXT / ACTION</p><h3>当前制作任务</h3></div>'+
     '<span class="cp-total">'+tasks.length+' 个进行中任务</span></div>'+
     '<div class="cp-task-list">'+(tasks.length?tasks.slice(0,3).map(taskCard).join(""):
       '<div class="cp-calm"><span class="cp-calm-icon">✓</span><span><strong>目前没有进行中的视频项目</strong>'+
       '<small>已完成和回收站项目已经从当前任务中排除。</small></span></div>')+'</div></section>'+
+    '<section class="cp-counters" aria-label="项目管理状态">'+
+    [["active","进行中"],["completed","已完成"],["archived","已归档"],["trash","回收站"]]
+      .map(([key,label])=>'<button type="button" class="cp-counter" data-cp-filter="'+key+'"><strong>'+counts[key]+'</strong><span>'+label+'</span></button>').join("")+
+    '</section>'+
     '<section class="cp-library"><div class="cp-section-top"><div><p class="cp-overline">PROJECT / REGISTRY</p><h3>项目列表</h3></div>'+
     '<span class="cp-total">Supabase · '+items.length+' 个项目</span></div>'+
     '<div class="cp-filters" role="group" aria-label="项目类别">'+buttons(counts)+'</div>'+

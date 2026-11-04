@@ -89,6 +89,26 @@ const contrast = (a,b) => {
       assert.equal(state.selected,'true',label+': lost tab selection');
       assert(contrast(state.color,state.background)>=7,label+': base text under 7:1');
       assert(parseFloat(state.search.fontSize)>=14,label+': search text too small');
+      if(width<=430){
+        const actions=await page.evaluate(()=>{
+          const group=document.querySelector('#characters .filter-grid.filters-mobile-ready');
+          if(!group)return null;
+          return ['#searchCharBtn','.filter-mobile-toggle','#newCharBtn'].map(selector=>{
+            const el=group.querySelector(selector);if(!el)return null;
+            const r=el.getBoundingClientRect(),css=getComputedStyle(el);
+            return {left:r.left,top:r.top,width:r.width,height:r.height,
+              display:css.display,visible:r.width>0&&r.height>0};
+          });
+        });
+        assert(actions&&actions.every(Boolean),label+': missing Search/Filter/Add');
+        assert(actions.every(a=>a.visible&&a.height>=44),label+': unusable mobile action');
+        assert(actions[0].left<actions[1].left&&actions[1].left<actions[2].left,
+          label+': mobile action row order incorrect');
+        assert(actions.every(a=>Math.abs(a.top-actions[0].top)<=2),
+          label+': mobile Search/Filter/Add must share one row');
+        assert(actions[2].left+actions[2].width<=width+1,
+          label+': Add action spills beyond viewport');
+      }
       if(width===390||width===1440)
         await page.screenshot({path:path.join(out,label+'.png'),animations:'disabled'});
       reports.push({label,width,height,...state});

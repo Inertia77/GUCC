@@ -51,6 +51,19 @@ const sizes = [
             .textContent.includes("读取中"),
       );
       await p.evaluate(() => document.fonts.ready);
+      if (name === "portal") {
+        await p.waitForSelector("#creatorDashboard .cp-today");
+        const sections = await p.evaluate(() => ({
+          taskTop: document.querySelector(".cp-today").getBoundingClientRect().top,
+          taskCardTop: document.querySelector(".cp-task")?.getBoundingClientRect().top,
+          countersTop: document.querySelector(".cp-counters").getBoundingClientRect().top,
+        }));
+        assert(sections.taskTop < sections.countersTop,
+          "Portal must show actionable tasks before portfolio statistics");
+        if (w === 390 && sections.taskCardTop != null)
+          assert(sections.taskCardTop < 760,
+            "390px Portal: current task must be reachable in the first screen");
+      }
       await p.screenshot({
         animations: "disabled",
         path: path.join(out, `${name}-${w}.png`),

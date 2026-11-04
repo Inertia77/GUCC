@@ -16,7 +16,7 @@ const expected = [
   ['gucc-game-themes-final', '/apps/command-center/styles/game-themes.css', '9'],
   ['gucc-game-premium-final', '/apps/command-center/styles/game-premium.css', '1'],
   ['gucc-interface-chrome-final', '/apps/command-center/styles/interface-chrome.css', '1'],
-  ['gucc-responsive-layout-final', '/apps/command-center/styles/responsive-layout.css', '4'],
+  ['gucc-responsive-layout-final', '/apps/command-center/styles/responsive-layout.css', '5'],
   ['gucc-mobile-layout-final', '/apps/command-center/styles/mobile-layout.css', '4'],
   ['gucc-premium-final', '/assets/gucc-premium.css', '4'],
   ['gucc-chroma-final', '/assets/gucc-chroma-v1.css', '1']

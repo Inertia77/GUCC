@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v65";
-const RUNTIME_CACHE = "gucc-runtime-v56";
+const STATIC_CACHE = "gucc-static-v66";
+const RUNTIME_CACHE = "gucc-runtime-v57";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./assets/gucc-premium.css?v=4",
   "./assets/gucc-chroma-v1.css?v=1",
   "./assets/gucc-game-entry-v1.css?v=1",
+  "./assets/gucc-game-chrome-v1.css?v=1",
   "./assets/gucc-shell-nav-v2.css?v=6",
   "./assets/gucc-shell.js?v=17",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
@@ -102,7 +103,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/responsive-layout.css",
   "./apps/command-center/styles/responsive-layout.css?v=5",
   "./apps/command-center/src/main.js",
-  "./apps/command-center/src/main.js?v=4",
+  "./apps/command-center/src/main.js?v=5",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",
   "./apps/command-center/src/config-state.js",

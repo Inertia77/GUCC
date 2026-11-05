@@ -1,0 +1,171 @@
+/* GUCC / Shared Game Chrome v1
+   Non-invasive game-style surface treatment for tools and references.
+   Editing canvases, stored game skins, semantic alerts, contrast and
+   underlying controls remain owned by their respective apps. */
+body:is(.command-center-page,.publishing-console-page,.cover-generator-page,.resource-page,.story-page,.prompt-page,.creator-prompt-page) {
+  --command-iris:#b8abff;
+  --command-blue:#87cbff;
+  --command-outline:rgba(165,180,247,.33);
+  --command-metal:#19213c;
+  --command-midnight:#0b1024;
+  --command-text:#f3f1ff;
+  --command-muted:#b8c4e0;
+}
+/* The global system map is the same interaction pattern on each page. */
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-dock {
+  background:linear-gradient(155deg,rgba(34,40,82,.98),rgba(11,16,35,.98))!important;
+  border:1px solid rgba(161,179,255,.43)!important;
+  border-radius:12px 5px 12px 5px;
+  box-shadow:0 16px 42px #01030fc7,inset 0 1px #ffffff12!important;
+}
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger) {
+  font-weight:750;border-radius:7px 3px 7px 3px;color:#b9c4e3!important;
+}
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-dock > .is-active {
+  background:linear-gradient(118deg,rgba(156,136,247,.35),rgba(99,150,246,.18))!important;
+  box-shadow:inset 2px 0 #b9a8ff;color:#fff!important;
+}
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-menu {
+  background:linear-gradient(155deg,#222947,#11182d)!important;
+  border-color:rgba(159,173,253,.55)!important;
+  box-shadow:0 16px 55px #000b!important;
+}
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-menu-item {
+  min-height:80px;
+  border-bottom:1px solid rgba(157,178,251,.18);
+}
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-menu-item:hover,
+body.gucc-enhanced:not(.portal-page):not(.creator-os-page) .gucc-shell-menu-item.is-active {
+  border-color:#b2a8ff!important;background:rgba(151,137,238,.17)!important;
+}
+/* Database keeps all six in-game identities; only global chrome is touched. */
+body.command-center-page.gucc-enhanced :is(.topbar,.tabs) {
+  background:linear-gradient(126deg,rgba(30,38,70,.98),rgba(14,19,39,.98))!important;
+  border-color:var(--command-outline)!important;box-shadow:inset 0 1px #ffffff12,0 10px 28px #0004;
+}
+body.command-center-page.gucc-enhanced .topbar {border-left:3px solid var(--command-iris)!important}
+body.command-center-page.gucc-enhanced :is(.tabs [role="tab"].active,.tabs button.active) {
+  background:linear-gradient(115deg,rgba(134,120,230,.37),rgba(70,118,205,.18))!important;
+  border-color:#b8abff!important;box-shadow:inset 0 -3px #b6a9ff;
+}
+body.command-center-page.gucc-enhanced .filter-toolbar {
+  border-color:rgba(162,178,245,.29)!important;background:linear-gradient(135deg,#181f3b,#10172d)!important;
+}
+/* Publishing Console is a release mission, but not a simulated publication. */
+body.publishing-console-page.gucc-enhanced .topbar {
+  border-bottom:1px solid var(--command-outline);
+  background:linear-gradient(110deg,rgba(32,38,73,.97),rgba(13,19,41,.98));
+  box-shadow:0 8px 28px #0004;
+}
+body.publishing-console-page.gucc-enhanced .hero {
+  position:relative;overflow:hidden;
+  background:
+    repeating-linear-gradient(116deg,transparent 0 45px,rgba(137,154,235,.045) 46px 47px),
+    radial-gradient(circle at 91% 17%,rgba(123,116,240,.18),transparent 41%),
+    linear-gradient(135deg,rgba(30,37,75,.92),rgba(14,19,42,.9));
+  border:1px solid var(--command-outline);border-left:3px solid var(--command-iris);
+  border-radius:3px 22px 3px 22px;
+  box-shadow:0 14px 42px #01041555;
+}
+body.publishing-console-page.gucc-enhanced .hero .eyebrow {
+  color:var(--command-blue);font-weight:800;letter-spacing:.13em;
+}
+body.publishing-console-page.gucc-enhanced .hero h1 {
+  color:var(--command-text);font-weight:850;
+}
+body.publishing-console-page.gucc-enhanced .hero-status {
+  border-color:rgba(159,180,250,.34);
+}
+body.publishing-console-page.gucc-enhanced .flow-nav .flow-step.active,
+body.publishing-console-page.gucc-enhanced .gucc-mobile-picker button {
+  color:#d3cbff;border-color:#b9a8ff;
+}
+body.publishing-console-page.gucc-enhanced .panel.project-panel {
+  border:1px solid rgba(163,177,245,.3);
+  border-radius:3px 19px 3px 19px;
+  background:linear-gradient(125deg,rgba(27,34,66,.91),rgba(14,19,39,.97));
+  box-shadow:inset 0 1px #ffffff0b;
+}
+/* Cover Studio chrome only — canvas pixels and stage transforms are untouched. */
+body.cover-generator-page.gucc-enhanced .hero {
+  background:
+    radial-gradient(circle at 93% 26%,rgba(125,108,234,.19),transparent 35%),
+    linear-gradient(120deg,#202846,#10172e);
+  border:1px solid var(--command-outline);
+  border-left:3px solid var(--command-iris);
+  border-radius:3px 19px 3px 19px;
+  box-shadow:0 10px 32px #01041055;
+}
+body.cover-generator-page.gucc-enhanced .hero-mark {
+  background:linear-gradient(128deg,#dfcaff,#89caff);color:#12162b;
+}
+body.cover-generator-page.gucc-enhanced .cover-pane-tabs button[aria-pressed="true"] {
+  border-color:#b7aaff;color:#f4efff;
+  background:rgba(158,145,241,.18);
+}
+body.cover-generator-page.gucc-enhanced .ratio-tabs button.active {
+  box-shadow:inset 0 -2px #b6a9ff;
+}
+/* Reference Atlas becomes a codex screen, with labels still searchable. */
+body.resource-page.gucc-enhanced .library-topbar,
+body.story-page.gucc-enhanced .topline,
+body.prompt-page.gucc-enhanced .topline {
+  border-bottom:1px solid var(--command-outline);
+  background:linear-gradient(90deg,rgba(29,36,67,.34),transparent);
+}
+body.resource-page.gucc-enhanced .atlas-hero {
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(166,181,246,.3);
+  border-left:3px solid #a9a7ff;
+  border-radius:3px 22px 3px 22px;
+  background:
+    radial-gradient(circle at 88% 20%,rgba(136,120,240,.19),transparent 39%),
+    repeating-linear-gradient(115deg,transparent 0 39px,rgba(143,158,247,.025) 40px 41px),
+    linear-gradient(126deg,#1a2140,#11182e);
+}
+body.resource-page.gucc-enhanced .atlas-hero h1 {font-weight:850;color:#f4f2ff}
+body.resource-page.gucc-enhanced .atlas-hero .overline {color:var(--command-blue);letter-spacing:.17em}
+body.resource-page.gucc-enhanced .hero-console {
+  border-color:rgba(165,184,255,.26);
+  background:linear-gradient(125deg,#222848,#151d36);
+}
+body.resource-page.gucc-enhanced .view-switch.is-active {
+  background:linear-gradient(125deg,#c6b4ff,#94bbff)!important;color:#101429!important;
+}
+body.story-page.gucc-enhanced .hero {
+  position:relative;overflow:hidden;border:1px solid var(--command-outline);
+  border-left:3px solid #a5a8ff;border-radius:3px 22px 3px 22px;
+  background:
+    radial-gradient(circle at 92% 10%,rgba(128,127,255,.17),transparent 40%),
+    repeating-linear-gradient(120deg,transparent 0 47px,rgba(148,157,236,.036) 48px 49px),
+    linear-gradient(135deg,#1c2444,#10172c);
+}
+body.story-page.gucc-enhanced .hero h1 {color:#f1edff;font-weight:900}
+body.story-page.gucc-enhanced :is(.sidebar,.reader) {
+  border-color:rgba(165,180,245,.28);background:linear-gradient(135deg,#181f3b,#0c1428);
+}
+body.story-page.gucc-enhanced .doc-link.active {
+  border-left:2px solid #aeb0ff;background:rgba(154,146,241,.15);
+}
+body.prompt-page.gucc-enhanced .hero {border-left:3px solid #aca8ff}
+/* Prompt Studio is an editing tool; legibility and workflow hierarchy win. */
+body.creator-prompt-page.gucc-enhanced .creator-top {
+  background:linear-gradient(110deg,rgba(30,37,69,.84),rgba(15,20,40,.9));
+  border-bottom:1px solid var(--command-outline);
+}
+body.creator-prompt-page.gucc-enhanced .brand-mark {
+  background:linear-gradient(120deg,#d4c2ff,#8dcaff);color:#101629;
+}
+body.creator-prompt-page.gucc-enhanced .creator-mode-switch button[aria-pressed="true"] {
+  background:linear-gradient(120deg,rgba(144,128,235,.34),rgba(81,143,231,.2));
+  border-color:#b5a8ff;box-shadow:inset 3px 0 #b5a8ff;
+}
+body.creator-prompt-page.gucc-enhanced .prompt-panel {
+  border-color:rgba(169,182,246,.34);
+  border-top:3px solid #aaa3ff;
+  background:#151e37;
+}
+/* Preserve reduced motion and clear actionable keyboard focus. */
+@media(prefers-reduced-motion:reduce) {
+  body.gucc-enhanced .gucc-shell-dock :is(a,button) {transition:none!important}
+}

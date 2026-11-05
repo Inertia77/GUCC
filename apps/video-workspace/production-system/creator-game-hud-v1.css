@@ -1,0 +1,239 @@
+/* GUCC Creator / Game Interface v1.
+   Visual treatment only. Existing project identity, six formal outcomes,
+   revision locks, cloud sync and every original button retain their behavior. */
+body.creator-os-page.gucc-enhanced {
+  --hud-iris:#b8abff;
+  --hud-blue:#80caff;
+  --hud-line:rgba(178,190,255,.32);
+  --hud-ink:#080c1b;
+  --hud-panel:#171e36;
+  --hud-panel-deep:#0f162b;
+  background:
+    radial-gradient(ellipse 55% 35% at 90% 6%,rgba(117,109,231,.14),transparent 80%),
+    radial-gradient(ellipse 50% 35% at 10% 70%,rgba(54,101,205,.09),transparent 83%),#0d1124!important;
+}
+body.creator-os-page.gucc-enhanced .cosmos-grid {
+  opacity:.22;pointer-events:none;
+}
+body.creator-os-page.gucc-enhanced .os-topbar {
+  position:relative;min-height:72px;
+  background:linear-gradient(110deg,rgba(34,40,76,.96),rgba(15,19,41,.97))!important;
+  border-bottom:1px solid var(--hud-line)!important;
+  box-shadow:0 12px 35px #01041455;
+}
+body.creator-os-page.gucc-enhanced .os-topbar::after {
+  content:"CREATOR COMMAND / 01";position:absolute;right:16px;bottom:4px;pointer-events:none;
+  font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#92a8ef65;
+}
+body.creator-os-page.gucc-enhanced .os-monogram {
+  color:#10162e;background:linear-gradient(125deg,#cdb9ff,#80bcff);
+  box-shadow:0 0 28px #8a91ff38;
+}
+body.creator-os-page.gucc-enhanced .os-nav {
+  background:linear-gradient(185deg,rgba(24,30,58,.98),rgba(12,17,37,.99))!important;
+  border-right:1px solid var(--hud-line)!important;
+  box-shadow:12px 0 34px #03050c30;
+}
+body.creator-os-page.gucc-enhanced .os-nav .nav-title {
+  font:800 11px ui-monospace,Consolas,monospace;letter-spacing:.12em;color:#b6c8ee;
+}
+body.creator-os-page.gucc-enhanced .os-nav button[data-view] {
+  position:relative;min-height:59px;margin-bottom:5px;
+  border:1px solid transparent;border-radius:3px 13px 3px 13px;
+  font-size:14px;font-weight:700;transition:background .15s,border-color .15s,transform .15s;
+}
+body.creator-os-page.gucc-enhanced .os-nav button[data-view] b {
+  font:900 12px ui-monospace,Consolas,monospace;color:var(--hud-blue);
+}
+body.creator-os-page.gucc-enhanced .os-nav button[data-view].active {
+  background:linear-gradient(110deg,rgba(127,111,230,.38),rgba(79,131,221,.15))!important;
+  border-color:rgba(177,168,255,.72)!important;
+  box-shadow:inset 3px 0 #c5b5ff,0 10px 28px #03051580!important;color:#fff!important;
+}
+body.creator-os-page.gucc-enhanced .os-nav button[data-view]:hover {transform:translateX(2px);background:rgba(141,152,245,.09)}
+body.creator-os-page.gucc-enhanced .os-nav .nav-note {
+  border:1px solid rgba(163,178,244,.22);border-radius:3px 18px 3px 18px;
+  background:linear-gradient(135deg,#252d55aa,#10162caa);padding:15px;
+}
+body.creator-os-page.gucc-enhanced .os-main {position:relative}
+body.creator-os-page.gucc-enhanced .workspace-heading {
+  isolation:isolate;position:relative;overflow:hidden;
+  padding:23px 27px;min-height:168px;gap:20px;
+  border:1px solid rgba(176,184,255,.3);border-radius:3px 27px 3px 27px;
+  background:radial-gradient(circle at 86% 51%,rgba(93,102,228,.29),transparent 30%),linear-gradient(117deg,#1a2142,#101630);
+  box-shadow:0 16px 36px #02041355,inset 0 1px #ffffff16;
+}
+body.creator-os-page.gucc-enhanced .workspace-heading::before {
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:260px;height:260px;right:6%;top:-75px;
+  border:1px solid #aaa8ff42;border-radius:50%;
+  box-shadow:0 0 0 24px #8b9aff0a,0 0 0 51px #8b9aff08;
+  background:repeating-conic-gradient(from 2deg,#ccd4ff0d 0deg 1deg,transparent 1deg 29deg);
+}
+body.creator-os-page.gucc-enhanced .workspace-heading::after {
+  content:"GUCC // PROJECT OPERATIONS";position:absolute;right:16px;bottom:9px;
+  pointer-events:none;color:#bfc5ff7a;letter-spacing:.15em;font:800 9px ui-monospace,monospace;
+}
+body.creator-os-page.gucc-enhanced .workspace-heading .eyebrow {color:var(--hud-blue);font-weight:850;letter-spacing:.16em}
+body.creator-os-page.gucc-enhanced .workspace-heading h1 {
+  color:#f7f6ff;font-weight:900;letter-spacing:-.055em;text-shadow:0 4px 22px #02051b99;
+}
+body.creator-os-page.gucc-enhanced .workspace-heading h1 span:not(.heading-period) {color:#b9adff}
+body.creator-os-page.gucc-enhanced .workspace-deck {color:#b8c5e8!important;font-size:13px;line-height:1.6}
+body.creator-os-page.gucc-enhanced .heading-status {position:relative;z-index:1}
+body.creator-os-page.gucc-enhanced .outcomes-intro {
+  position:relative;padding:13px 0 10px 18px;border-left:3px solid #b5adff;
+  background:linear-gradient(90deg,rgba(125,107,223,.08),transparent 63%);
+}
+body.creator-os-page.gucc-enhanced .outcomes-intro .micro {
+  color:#96c9ff;letter-spacing:.12em;font-weight:800;
+}
+body.creator-os-page.gucc-enhanced .outcomes-intro h2 {
+  font-size:clamp(26px,3vw,38px);font-weight:850;color:#f8f7ff;
+}
+body.creator-os-page.gucc-enhanced .outcomes-intro p {color:#bac7e2;font-size:12px;line-height:1.6}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-toolbar {
+  position:relative;background:linear-gradient(125deg,#202949ed,#131b36f2)!important;
+  border:1px solid var(--hud-line)!important;border-left:3px solid #ad9aff!important;
+  border-radius:3px 19px 3px 19px;box-shadow:0 12px 32px #02041c55;
+}
+body.creator-os-page.gucc-enhanced #outcomeProjectSelect {
+  min-height:48px;color:#f0f3ff;background:#0d1530;border:1px solid #6f7dab;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-project-meta {color:#b5c6e4}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-video-line>.micro {
+  color:#9fb8ff;font-weight:850;letter-spacing:.12em;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-video-tabs button {
+  min-height:44px;padding:10px 14px;
+  border:1px solid #4a5682;border-radius:4px 12px 4px 12px;
+  background:#19213c;color:#d6dff4;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-video-tabs button.active {
+  color:#f9f7ff;background:linear-gradient(110deg,#4a4385,#293962);
+  border-color:#b5a7ff;box-shadow:inset 2px 0 #c7bfff;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress {
+  position:relative;overflow:hidden;padding:23px 27px 20px;
+  border:1px solid rgba(163,183,255,.37);border-radius:3px 21px 3px 21px;
+  background:
+    repeating-linear-gradient(125deg,transparent 0 27px,rgba(154,175,255,.028) 28px 29px),
+    linear-gradient(108deg,#1f284c,#111a34)!important;
+  box-shadow:inset 0 1px #ffffff15;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress::after {
+  content:"06";position:absolute;right:20px;top:-6px;pointer-events:none;
+  font:900 110px ui-monospace,Consolas,monospace;letter-spacing:-.08em;
+  color:#a8aaf011;line-height:1;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress-head {position:relative;z-index:1}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress-head strong {
+  font-weight:850;color:#eeeaff;font-size:clamp(32px,4vw,50px);line-height:1.1;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress-head .micro {
+  color:#91caff;letter-spacing:.14em;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress-head p {
+  color:#b9c4e4;line-height:1.6;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-meter {
+  height:8px;margin-top:20px;border-radius:2px;background:#0d1430;
+  border:1px solid #475078;box-shadow:inset 0 1px #000a;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-meter>span {
+  background:linear-gradient(90deg,#997cff,#9ac8ff);box-shadow:0 0 19px #a6abff8c;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card {
+  position:relative;overflow:hidden;min-height:189px;padding:23px;
+  border:1px solid rgba(172,187,248,.26);border-radius:3px 20px 3px 20px;
+  background:linear-gradient(144deg,#1c2642,#10172e);
+  box-shadow:0 7px 21px #03051642;transition:border-color .15s,transform .15s;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card::after {
+  content:"";position:absolute;pointer-events:none;bottom:0;left:0;
+  width:80px;height:3px;background:linear-gradient(90deg,#aaa5ff,transparent);
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card:hover {
+  transform:translateY(-2px);border-color:#a8a4ff;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card[data-status="confirmed"] {
+  border-color:rgba(125,225,190,.65);
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card-id {color:#a8b3ff;font-weight:850;letter-spacing:.15em}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card h3 {color:#f4f3ff;font-weight:800}
+body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card-foot button {min-height:44px}
+body.creator-os-page.gucc-enhanced #view-outcomes .portfolio-card {
+  background:linear-gradient(140deg,#1d2644,#11182f)!important;
+  border:1px solid rgba(162,178,244,.28)!important;
+  border-radius:3px 17px 3px 17px;box-shadow:0 6px 22px #02041155;
+}
+body.creator-os-page.gucc-enhanced #view-outcomes .portfolio-card.active {
+  border-color:#b7a9ff!important;box-shadow:inset 0 3px #b7a9ff,0 9px 26px #0a1020c0;
+}
+body.creator-os-page.gucc-enhanced :is(.creation-switch>button,.reference-switch button.active) {
+  border-radius:3px 17px 3px 17px;
+}
+body.creator-os-page.gucc-enhanced .creation-switch>button {
+  min-height:105px;background:linear-gradient(145deg,#1f2947,#13192f);
+  border-color:rgba(162,178,240,.3);padding:17px 20px;
+}
+body.creator-os-page.gucc-enhanced .creation-switch>button.active {
+  background:linear-gradient(116deg,#403969,#20355a)!important;
+  box-shadow:inset 3px 0 #b5a8ff,0 10px 24px #0205135a!important;
+}
+body.creator-os-page.gucc-enhanced .creation-switch>button strong {font-size:19px;color:#f6f3ff}
+body.creator-os-page.gucc-enhanced .creation-switch>button span {color:#9ec7ff}
+body.creator-os-page.gucc-enhanced .creation-switch>button small {color:#b5c1dd}
+body.creator-os-page.gucc-enhanced .portfolio-registry {
+  border-radius:3px 18px 3px 18px;background:#131b36;border-color:rgba(170,178,244,.3);
+}
+/* Match the new Portal game dock while protecting the same native actions. */
+body.creator-os-page.gucc-enhanced .gucc-shell-dock {
+  background:linear-gradient(155deg,rgba(34,40,82,.98),rgba(11,16,35,.98))!important;
+  border:1px solid rgba(161,179,255,.43)!important;border-radius:12px 5px 12px 5px;
+  box-shadow:0 16px 42px #01030fc7,inset 0 1px #ffffff12!important;
+}
+body.creator-os-page.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger) {
+  font-weight:750;border-radius:7px 3px 7px 3px;color:#b9c4e3!important;
+}
+body.creator-os-page.gucc-enhanced .gucc-shell-dock > .is-active {
+  background:linear-gradient(118deg,rgba(156,136,247,.35),rgba(99,150,246,.18))!important;
+  box-shadow:inset 2px 0 #b9a8ff;color:#fff!important;
+}
+@media(max-width:1000px) {
+  body.creator-os-page.gucc-enhanced .workspace-heading {padding:18px;min-height:0}
+}
+@media(max-width:760px) {
+  body.creator-os-page.gucc-enhanced .os-topbar {min-height:64px}
+  body.creator-os-page.gucc-enhanced .os-topbar::after {display:none}
+  body.creator-os-page.gucc-enhanced .workspace-heading {
+    padding:0 0 12px;border:0;border-bottom:1px solid var(--hud-line);
+    border-radius:0;background:none;box-shadow:none;
+  }
+  body.creator-os-page.gucc-enhanced .workspace-heading::before,
+  body.creator-os-page.gucc-enhanced .workspace-heading::after {display:none}
+  body.creator-os-page.gucc-enhanced .outcomes-intro {
+    padding:7px 0 7px 11px;border-left-width:2px;gap:10px;margin-bottom:13px;
+  }
+  body.creator-os-page.gucc-enhanced .outcomes-intro h2 {font-size:26px}
+  body.creator-os-page.gucc-enhanced .outcomes-intro p {font-size:12px}
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-toolbar {
+    padding:12px;border-radius:3px 15px 3px 15px;
+  }
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-video-tabs button {min-height:44px}
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress {
+    padding:17px;border-radius:3px 16px 3px 16px;margin-bottom:11px;
+  }
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress::after {font-size:65px;top:3px}
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress-head strong {font-size:36px}
+  body.creator-os-page.gucc-enhanced #view-outcomes .outcome-card {
+    min-height:171px;padding:17px;border-radius:3px 16px 3px 16px;
+  }
+  body.creator-os-page.gucc-enhanced .creation-switch>button {min-height:95px;padding:12px}
+  body.creator-os-page.gucc-enhanced .creation-switch>button strong {font-size:15px}
+}
+@media(prefers-reduced-motion:reduce) {
+  body.creator-os-page.gucc-enhanced :is(.outcome-card,.os-nav button[data-view]) {
+    transition:none!important;transform:none!important;
+  }
+}

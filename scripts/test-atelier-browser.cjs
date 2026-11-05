@@ -51,6 +51,10 @@ const sizes = [
             .textContent.includes("读取中"),
       );
       await p.evaluate(() => document.fonts.ready);
+      if (["studio","cover","publish"].includes(name)) {
+        assert.equal(await p.locator('[data-gucc-game-chrome]').count(), 1,
+          name + ": global game command chrome stylesheet must be present exactly once");
+      }
       if (name === "portal") {
         await p.waitForSelector("#creatorDashboard .cp-today");
         const sections = await p.evaluate(() => ({

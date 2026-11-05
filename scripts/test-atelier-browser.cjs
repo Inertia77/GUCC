@@ -60,6 +60,37 @@ const sizes = [
         }));
         assert(sections.taskTop < sections.countersTop,
           "Portal must show actionable tasks before portfolio statistics");
+        const gameEntry = await p.evaluate(() => {
+          const hero = document.querySelector(".intro");
+          const scene = document.querySelector(".hero-scene");
+          const enter = document.querySelector(".hero-enter");
+          const cards = [...document.querySelectorAll(".launch-card")];
+          const styles = getComputedStyle(hero);
+          const heroRect = hero.getBoundingClientRect();
+          const taskRect = document.querySelector(".cp-task")?.getBoundingClientRect();
+          return {
+            sceneHidden: scene?.getAttribute("aria-hidden"),
+            background: styles.backgroundImage,
+            heroTop: heroRect.top,
+            heroBottom: heroRect.bottom,
+            taskTop: taskRect?.top,
+            enterHeight: enter?.getBoundingClientRect().height,
+            link: enter?.getAttribute("href"),
+            numberOfCards: cards.length,
+            slotCount: cards.filter((c) => c.hasAttribute("data-hud-slot")).length,
+            columns: getComputedStyle(document.querySelector(".launch-grid")).gridTemplateColumns.split(" ").length,
+          };
+        });
+        assert.equal(gameEntry.sceneHidden, "true", "Portal scene is decorative and inaccessible");
+        assert.match(gameEntry.background, /gradient/, "Portal has an authored game scene");
+        assert(gameEntry.enterHeight >= 44, "Portal main action meets touch target");
+        assert(gameEntry.link.includes("view=outcomes"), "Portal CTA opens the real project center");
+        assert.equal(gameEntry.numberOfCards, 8, "All eight existing navigation destinations remain");
+        assert.equal(gameEntry.slotCount, 8, "Game menu visual slots are present");
+        assert(gameEntry.heroBottom < gameEntry.taskTop,
+          "The atmospheric hero must not obscure actionable production tasks");
+        if (w <= 430) assert.equal(gameEntry.columns, 2,
+          "Small-screen game menu remains a scannable 2-column grid");
         if (w === 390 && sections.taskCardTop != null)
           assert(sections.taskCardTop < 760,
             "390px Portal: current task must be reachable in the first screen");

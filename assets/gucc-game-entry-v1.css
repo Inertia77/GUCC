@@ -1,0 +1,354 @@
+/* GUCC / Game Command Entry v1 — original CSS-only tactical scene.
+   This file is the single owner of the Portal's game-like presentation.
+   It never changes project state, navigation destinations, authentication or data. */
+body.portal-page.gucc-enhanced {
+  --hud-ink:#080b1b;
+  --hud-deep:#10152b;
+  --hud-surface:#171d37;
+  --hud-line:rgba(172,185,244,.25);
+  --hud-strong:rgba(186,200,255,.57);
+  --hud-iris:#b6a5ff;
+  --hud-blue:#7bc8ff;
+  --hud-coral:#ff93c1;
+  --hud-gold:#f3d69b;
+  --hud-white:#f7f7ff;
+  --hud-muted:#b5c1e1;
+  --hud-cut:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
+  background:
+    radial-gradient(ellipse 90% 55% at 72% -7%,rgba(83,91,206,.27),transparent 70%),
+    radial-gradient(ellipse 55% 40% at -10% 68%,rgba(61,115,203,.12),transparent 80%),
+    linear-gradient(160deg,#080b1b,#10142a 58%,#070a17) !important;
+  color:var(--hud-white);
+}
+body.portal-page.gucc-enhanced::after {
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.15;
+  background:repeating-linear-gradient(0deg,transparent 0 67px,rgba(182,191,255,.11) 68px 69px),
+             repeating-linear-gradient(90deg,transparent 0 67px,rgba(182,191,255,.11) 68px 69px);
+  mask-image:linear-gradient(160deg,#0006,transparent 82%);
+}
+body.portal-page.gucc-enhanced .portal {
+  width:min(1420px,calc(100% - 168px));padding:14px 0 110px;position:relative;
+}
+body.portal-page.gucc-enhanced .topbar {
+  min-height:68px;padding:0 15px 0 0;
+  border:1px solid var(--hud-line);border-left:3px solid var(--hud-iris);
+  border-radius:0 14px 0 0;background:linear-gradient(95deg,rgba(34,41,78,.88),rgba(13,17,36,.95));
+  box-shadow:0 15px 38px #02040d55;backdrop-filter:blur(20px);
+}
+body.portal-page.gucc-enhanced .brand {padding-left:15px;gap:14px}
+body.portal-page.gucc-enhanced .brand strong {
+  font-size:18px;font-weight:850;letter-spacing:.15em;color:var(--hud-white);
+}
+body.portal-page.gucc-enhanced .brand small {
+  font:700 10px/1.5 ui-monospace,Consolas,monospace;letter-spacing:.14em;color:var(--hud-muted);
+}
+body.portal-page.gucc-enhanced .brand img {width:40px;height:40px}
+body.portal-page.gucc-enhanced .top-actions button {
+  min-height:44px;min-width:48px;background:rgba(162,179,255,.08);
+  border:1px solid var(--hud-line);border-radius:5px;color:var(--hud-white);
+}
+body.portal-page.gucc-enhanced .top-actions button:hover {border-color:var(--hud-iris);background:rgba(152,150,255,.2)}
+body.portal-page.gucc-enhanced .intro {
+  isolation:isolate;position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.82fr);
+  align-items:center;gap:20px;min-height:342px;margin:12px 0 0;padding:34px clamp(24px,4vw,58px);
+  border:1px solid var(--hud-strong);border-radius:4px 34px 4px 34px;
+  background:
+    radial-gradient(ellipse 52% 95% at 78% 50%,rgba(103,96,239,.29),transparent 95%),
+    linear-gradient(105deg,rgba(20,26,55,.99),rgba(13,18,40,.94));
+  box-shadow:0 26px 64px #01031075,inset 0 1px rgba(255,255,255,.09);
+  overflow:hidden;
+}
+body.portal-page.gucc-enhanced .intro::before {
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;
+  background:repeating-linear-gradient(116deg,transparent 0 49px,rgba(157,174,245,.045) 50px 51px);
+}
+body.portal-page.gucc-enhanced .intro::after {
+  content:"GUCC // FIELD 01";position:absolute;right:27px;bottom:16px;
+  font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.21em;color:var(--hud-muted);opacity:.78;
+}
+body.portal-page.gucc-enhanced .intro-content {position:relative;z-index:2;min-width:0}
+body.portal-page.gucc-enhanced .eyebrow {
+  display:inline-flex;align-items:center;gap:10px;letter-spacing:.2em;
+  color:var(--hud-blue);font:800 10px/1.5 ui-monospace,Consolas,monospace;
+}
+body.portal-page.gucc-enhanced .eyebrow::before {
+  content:"";width:26px;height:2px;background:var(--hud-blue);box-shadow:0 0 14px #75c7ff80;
+}
+body.portal-page.gucc-enhanced .intro h1 {
+  font-size:clamp(36px,4.2vw,64px);line-height:1.14;margin:13px 0 17px;
+  font-weight:900;letter-spacing:-.065em;text-wrap:balance;
+  text-shadow:0 3px 30px #01030f88;
+}
+body.portal-page.gucc-enhanced .intro h1 em {
+  display:block;font-style:normal;font-weight:750;color:var(--hud-iris) !important;
+  background:linear-gradient(95deg,#e8d9ff 3%,#b6a5ff 38%,#79cfff 90%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+body.portal-page.gucc-enhanced .intro p:not(.eyebrow) {
+  margin:0;color:var(--hud-muted);font-size:13px;line-height:1.65;max-width:510px;
+}
+body.portal-page.gucc-enhanced .hero-actions {display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+body.portal-page.gucc-enhanced .hero-enter {
+  display:inline-flex;align-items:center;justify-content:center;gap:15px;
+  min-height:47px;min-width:182px;padding:10px 18px;border:1px solid #b4a5ff;
+  clip-path:polygon(0 0,calc(100% - 13px) 0,100% 13px,100% 100%,0 100%);
+  background:linear-gradient(117deg,#d2bfff,#92bcff);color:#10132b;
+  text-decoration:none;font-size:14px;font-weight:900;letter-spacing:.03em;
+  box-shadow:inset 0 1px #ffffff88;
+}
+body.portal-page.gucc-enhanced .hero-enter-secondary {
+  min-width:142px;background:rgba(15,22,46,.71);color:var(--hud-white);
+  border-color:rgba(171,188,255,.53);
+}
+body.portal-page.gucc-enhanced .hero-enter:hover {filter:brightness(1.13);transform:translateY(-1px)}
+body.portal-page.gucc-enhanced .hero-enter:active {transform:translateY(1px)}
+body.portal-page.gucc-enhanced .hero-scene {
+  position:relative;min-width:0;min-height:270px;overflow:hidden;display:grid;place-items:center;
+  filter:drop-shadow(0 0 20px #6a7ddd30);
+}
+body.portal-page.gucc-enhanced .scene-rays {
+  position:absolute;inset:5% 4%;opacity:.52;
+  background:repeating-conic-gradient(from 2deg,rgba(173,186,255,.18) 0deg 1deg,transparent 1deg 21deg);
+  mask-image:radial-gradient(circle,transparent 0 28%,#000 53%,transparent 72%);
+}
+body.portal-page.gucc-enhanced .scene-ring {
+  width:min(290px,100%);aspect-ratio:1;position:absolute;border-radius:50%;
+  border:1px solid rgba(173,176,255,.4);box-shadow:0 0 0 24px rgba(150,149,255,.025),0 0 50px #7575ed20;
+}
+body.portal-page.gucc-enhanced .scene-ring::before {
+  content:"";position:absolute;inset:12%;border:2px dashed rgba(165,187,255,.33);border-radius:50%;
+}
+body.portal-page.gucc-enhanced .scene-ring::after {
+  content:"";position:absolute;inset:24%;border:1px solid rgba(175,199,255,.55);border-radius:50%;
+  background:radial-gradient(circle,rgba(133,146,249,.17),transparent 70%);
+}
+body.portal-page.gucc-enhanced .scene-core {
+  width:140px;aspect-ratio:1;position:relative;z-index:1;display:grid;place-items:center;
+  clip-path:polygon(50% 0,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%);
+  background:linear-gradient(140deg,rgba(132,138,245,.35),rgba(44,66,134,.32));
+  border:1px solid #a8a2ff;
+  text-align:center;
+}
+body.portal-page.gucc-enhanced .scene-core strong {
+  font:900 51px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.08em;color:#e9e5ff;
+  text-shadow:0 0 22px #c4baff8a;
+}
+body.portal-page.gucc-enhanced .scene-core small {
+  display:block;position:absolute;bottom:20px;font:700 9px ui-monospace,monospace;letter-spacing:.17em;color:#bfc9ff;
+}
+body.portal-page.gucc-enhanced .scene-marker {
+  position:absolute;z-index:2;padding:7px 10px;border:1px solid rgba(170,182,255,.4);
+  background:#101a38d9;color:#dae5ff;font:800 10px ui-monospace,Consolas,monospace;letter-spacing:.1em;
+}
+body.portal-page.gucc-enhanced .scene-marker-a {left:4%;top:16%}
+body.portal-page.gucc-enhanced .scene-marker-b {right:0;bottom:16%;color:#f2d69f;border-color:#f2d69f7b}
+body.portal-page.gucc-enhanced .scene-marker-c {right:4%;top:18%;color:#a8dcff}
+body.portal-page.gucc-enhanced .portal-signature {display:none}
+body.portal-page.gucc-enhanced .portal-continue {
+  display:flex;gap:14px;align-items:center;margin:0;padding:10px 15px;min-height:47px;
+  border:1px solid rgba(168,182,244,.22);border-top:0;
+  background:rgba(16,21,46,.7);color:var(--hud-blue);
+}
+body.portal-page.gucc-enhanced .portal-continue>span {
+  font:900 11px ui-monospace,Consolas,monospace;letter-spacing:.14em;white-space:nowrap;
+}
+body.portal-page.gucc-enhanced .portal-continue [data-creator-context] {min-width:0;flex:1}
+body.portal-page.gucc-enhanced #creatorDashboard {margin:15px 0 30px}
+body.portal-page.gucc-enhanced .cp-head {padding:7px 2px 10px;gap:12px}
+body.portal-page.gucc-enhanced .cp-head h2 {
+  font-size:clamp(20px,2.2vw,29px);font-weight:800;color:var(--hud-white);
+}
+body.portal-page.gucc-enhanced .cp-overline {font:850 10px ui-monospace,Consolas,monospace;letter-spacing:.17em;color:var(--hud-blue)!important}
+body.portal-page.gucc-enhanced .cp-intro {font-size:12px;line-height:1.5;color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .cp-head-actions :is(.cp-refresh,.cp-launch) {
+  min-height:44px;border-radius:3px 11px 3px 11px;
+  border-color:var(--hud-line);background:rgba(27,34,72,.81);color:#e7e9ff;
+}
+body.portal-page.gucc-enhanced .cp-today {
+  position:relative;border:1px solid rgba(173,192,255,.3);background:linear-gradient(115deg,#171e3c,#111830);
+  padding:17px 17px 13px;clip-path:var(--hud-cut);
+}
+body.portal-page.gucc-enhanced .cp-today::after {
+  content:"MISSION";position:absolute;top:12px;right:16px;pointer-events:none;
+  color:rgba(177,187,255,.17);font:950 35px/1 ui-monospace,monospace;letter-spacing:.12em;
+}
+body.portal-page.gucc-enhanced .cp-section-top {position:relative;z-index:1}
+body.portal-page.gucc-enhanced .cp-section-top h3 {font-size:19px;font-weight:800}
+body.portal-page.gucc-enhanced .cp-total {color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .cp-task {
+  position:relative;padding:14px 16px;border:1px solid rgba(164,173,255,.54)!important;
+  border-left:4px solid var(--hud-iris)!important;border-radius:3px 14px 3px 14px!important;
+  background:linear-gradient(115deg,rgba(67,61,127,.46),rgba(29,37,76,.88))!important;
+  box-shadow:0 10px 28px #05081865;min-height:86px;
+}
+body.portal-page.gucc-enhanced .cp-task-copy strong {font-size:clamp(16px,1.7vw,21px);font-weight:850}
+body.portal-page.gucc-enhanced .cp-task-copy small {color:#b9c6ff;font-size:12px}
+body.portal-page.gucc-enhanced .cp-task-copy>span {color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .cp-task-go {
+  padding:9px 12px;min-height:36px;border:1px solid #8ca7ff80;border-radius:4px;
+  color:#d8d1ff!important;align-self:center;
+}
+body.portal-page.gucc-enhanced .cp-counters {
+  margin:12px 0 22px;gap:8px;border:0;
+}
+body.portal-page.gucc-enhanced #creatorDashboard .cp-counter {
+  min-height:78px;padding:14px;align-items:flex-start;border:1px solid var(--hud-line)!important;
+  border-radius:3px 12px 3px 12px;background:rgba(23,30,56,.8)!important;box-shadow:inset 0 1px #ffffff0a;
+}
+body.portal-page.gucc-enhanced .cp-counter strong {font-weight:850;font-size:29px;color:#e9e4ff}
+body.portal-page.gucc-enhanced .cp-counter span {font-size:12px;color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .section-head {
+  margin:24px 0 12px;padding:0 2px 9px;border-bottom:1px solid var(--hud-line);
+}
+body.portal-page.gucc-enhanced .section-head h2 {font-size:20px;font-weight:850}
+body.portal-page.gucc-enhanced .section-head span {font-size:11px;color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .launch-grid {
+  grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;border:0;
+}
+body.portal-page.gucc-enhanced .launch-card {
+  position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:17px;
+  min-height:156px;overflow:hidden;padding:18px;border:1px solid rgba(170,184,249,.26)!important;
+  border-radius:3px 22px 3px 22px;isolation:isolate;
+  color:var(--hud-white);text-decoration:none;
+  background:
+    radial-gradient(circle at 105% 105%,color-mix(in srgb,var(--accent) 31%,transparent),transparent 66%),
+    linear-gradient(150deg,rgba(36,42,79,.99),rgba(16,22,44,.97))!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.1),0 7px 21px #01030e55;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+body.portal-page.gucc-enhanced .launch-card::before {
+  content:attr(data-hud-slot);position:absolute;right:13px;top:9px;
+  font:950 41px ui-monospace,monospace;letter-spacing:-.08em;color:var(--accent);opacity:.16;
+}
+body.portal-page.gucc-enhanced .launch-card::after {
+  content:"";position:absolute;bottom:0;left:0;width:48%;height:3px;
+  background:linear-gradient(90deg,var(--accent),transparent);box-shadow:0 0 12px var(--accent);
+}
+body.portal-page.gucc-enhanced .launch-card:hover,
+body.portal-page.gucc-enhanced .launch-card:focus-visible {
+  transform:translateY(-3px);border-color:var(--accent)!important;
+  box-shadow:inset 0 1px #fff2,0 17px 42px #020515b0;
+}
+body.portal-page.gucc-enhanced .launch-code {
+  width:46px;height:44px;min-width:0;min-height:0;display:grid;place-items:center;
+  color:#11172b;background:var(--accent);border:0;border-radius:4px 12px 4px 4px;
+  font:900 15px ui-monospace,Consolas,monospace;letter-spacing:0;
+}
+body.portal-page.gucc-enhanced .launch-card>span:nth-child(2) {min-width:0}
+body.portal-page.gucc-enhanced .launch-card strong {font-size:18px;font-weight:850;line-height:1.25}
+body.portal-page.gucc-enhanced .launch-card small {
+  margin-top:7px;font-size:12px;line-height:1.5;color:var(--hud-muted);
+  white-space:normal;overflow-wrap:anywhere;
+}
+body.portal-page.gucc-enhanced .launch-arrow {position:absolute;right:14px;bottom:13px;font-size:20px}
+body.portal-page.gucc-enhanced .cp-project {
+  background:linear-gradient(125deg,#202746,#121a35)!important;
+  border:1px solid var(--hud-line)!important;border-radius:3px 13px 3px 13px;
+  min-height:110px;padding:16px;
+}
+body.portal-page.gucc-enhanced .cp-filters button.is-selected {border-color:var(--hud-iris)!important}
+body.portal-page.gucc-enhanced .system-panel {
+  margin-top:28px;border:1px solid var(--hud-line);border-radius:3px 12px 3px 12px;
+  background:rgba(16,23,45,.74);overflow:hidden;
+}
+body.portal-page.gucc-enhanced .system-panel summary {padding:0 18px;color:var(--hud-muted)}
+body.portal-page.gucc-enhanced .system-panel summary:hover {background:rgba(170,177,255,.08)}
+body.portal-page.gucc-enhanced :is(.gate-card) {
+  border-color:rgba(174,175,255,.58);border-radius:4px 28px 4px 28px;
+  background:linear-gradient(140deg,#1c2445,#0c112a);box-shadow:0 30px 100px #020412b8;
+}
+body.portal-page.gucc-enhanced .gate {background:radial-gradient(circle at 70% 36%,#5555a537,transparent 45%)}
+body.portal-page.gucc-enhanced .gate-card .primary-btn {
+  color:#101329;background:linear-gradient(100deg,#d7bdff,#87caff);border-radius:3px 13px 3px 13px;
+}
+/* The shared navigation in the Portal is a playable-looking menu, not a grey toolbar. */
+body.portal-page.gucc-enhanced .gucc-shell-dock {
+  background:linear-gradient(155deg,rgba(34,40,82,.98),rgba(11,16,35,.98))!important;
+  border:1px solid rgba(161,179,255,.43)!important;border-radius:12px 5px 12px 5px;
+  box-shadow:0 16px 42px #01030fc7,inset 0 1px #ffffff12!important;
+}
+body.portal-page.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger) {
+  border-radius:7px 3px 7px 3px;font-weight:750;color:var(--hud-muted)!important;
+}
+body.portal-page.gucc-enhanced .gucc-shell-dock > .is-active {
+  background:linear-gradient(118deg,rgba(156,136,247,.35),rgba(99,150,246,.18))!important;
+  box-shadow:inset 2px 0 var(--hud-iris);color:#fff!important;
+}
+@media(max-width:1100px) {
+  body.portal-page.gucc-enhanced .launch-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.portal-page.gucc-enhanced .intro {grid-template-columns:minmax(0,1fr) 240px}
+  body.portal-page.gucc-enhanced .hero-scene {min-height:236px}
+}
+@media(max-width:1023px) {
+  body.portal-page.gucc-enhanced .portal {width:calc(100% - 36px);padding-top:12px}
+}
+@media(max-width:700px) {
+  body.portal-page.gucc-enhanced .portal {width:calc(100% - 22px);padding:7px 0 calc(110px + env(safe-area-inset-bottom))}
+  body.portal-page.gucc-enhanced .topbar {min-height:59px;padding-right:8px}
+  body.portal-page.gucc-enhanced .brand {gap:8px;padding-left:9px}
+  body.portal-page.gucc-enhanced .brand img {width:35px;height:35px}
+  body.portal-page.gucc-enhanced .brand strong {font-size:15px;letter-spacing:.09em}
+  body.portal-page.gucc-enhanced .top-actions button {min-height:44px;min-width:44px;padding-inline:7px}
+  body.portal-page.gucc-enhanced .intro {
+    display:block;min-height:229px;margin-top:8px;padding:18px 17px 20px;
+    border-radius:3px 22px 3px 22px;
+  }
+  body.portal-page.gucc-enhanced .intro-content {max-width:100%}
+  body.portal-page.gucc-enhanced .intro h1 {
+    position:relative;font-size:clamp(28px,7.8vw,36px);margin:9px 0 11px;line-height:1.13;max-width:330px;
+  }
+  body.portal-page.gucc-enhanced .intro p:not(.eyebrow) {
+    position:relative;font-size:11px;max-width:280px;line-height:1.5;
+  }
+  body.portal-page.gucc-enhanced .hero-actions {position:relative;gap:7px;margin-top:13px}
+  body.portal-page.gucc-enhanced .hero-enter {min-height:44px;min-width:0;padding:8px 12px;font-size:12px;gap:7px}
+  body.portal-page.gucc-enhanced .hero-enter-secondary {min-width:0}
+  body.portal-page.gucc-enhanced .hero-scene {
+    position:absolute;inset:0 0 0 auto;width:58%;min-height:0;opacity:.27;pointer-events:none;
+    mask-image:linear-gradient(90deg,transparent,#000 45%);
+  }
+  body.portal-page.gucc-enhanced .scene-marker {display:none}
+  body.portal-page.gucc-enhanced .intro::after {display:none}
+  body.portal-page.gucc-enhanced .portal-continue {min-height:44px;padding:6px 9px;gap:8px}
+  body.portal-page.gucc-enhanced .portal-continue>span {font-size:10px}
+  body.portal-page.gucc-enhanced #creatorDashboard {margin:10px 0 20px}
+  body.portal-page.gucc-enhanced .cp-head {display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:2px 0 8px}
+  body.portal-page.gucc-enhanced .cp-head h2 {font-size:18px}
+  body.portal-page.gucc-enhanced .cp-intro {font-size:11px;margin-top:3px}
+  body.portal-page.gucc-enhanced .cp-head-actions {margin-left:auto;gap:6px}
+  body.portal-page.gucc-enhanced .cp-head-actions :is(.cp-refresh,.cp-launch) {min-height:40px;font-size:11px;padding:0 8px}
+  body.portal-page.gucc-enhanced .cp-today {padding:11px 10px 10px}
+  body.portal-page.gucc-enhanced .cp-today::after {font-size:22px}
+  body.portal-page.gucc-enhanced .cp-section-top {gap:6px}
+  body.portal-page.gucc-enhanced .cp-section-top h3 {font-size:16px}
+  body.portal-page.gucc-enhanced .cp-task {min-height:82px;padding:10px 9px;gap:8px}
+  body.portal-page.gucc-enhanced .cp-task-copy strong {font-size:14px}
+  body.portal-page.gucc-enhanced .cp-task-go {display:none}
+  body.portal-page.gucc-enhanced .cp-counters {gap:6px;margin:10px 0 17px}
+  body.portal-page.gucc-enhanced #creatorDashboard .cp-counter {min-height:65px;padding:8px}
+  body.portal-page.gucc-enhanced .cp-counter strong {font-size:23px}
+  body.portal-page.gucc-enhanced .cp-counter span {font-size:11px}
+  body.portal-page.gucc-enhanced .launch-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.portal-page.gucc-enhanced .launch-card {
+    min-height:136px;padding:13px;gap:11px;border-radius:3px 17px 3px 17px;
+  }
+  body.portal-page.gucc-enhanced .launch-card::before {font-size:34px}
+  body.portal-page.gucc-enhanced .launch-code {width:39px;height:37px;font-size:13px}
+  body.portal-page.gucc-enhanced .launch-card strong {font-size:15px}
+  body.portal-page.gucc-enhanced .launch-card small {font-size:10px;line-height:1.45;margin-top:5px}
+  body.portal-page.gucc-enhanced .launch-arrow {display:none}
+  body.portal-page.gucc-enhanced .section-head span {font-size:10px;text-align:right}
+  body.portal-page.gucc-enhanced .cp-project {min-height:90px;padding:12px}
+}
+@media(max-width:355px) {
+  body.portal-page.gucc-enhanced .brand strong {font-size:13px}
+  body.portal-page.gucc-enhanced .intro {padding:15px 13px 18px;min-height:220px}
+  body.portal-page.gucc-enhanced .intro h1 {font-size:28px}
+  body.portal-page.gucc-enhanced .hero-enter {font-size:11px;padding:8px 9px}
+  body.portal-page.gucc-enhanced .cp-counters {grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.portal-page.gucc-enhanced .launch-card {padding:11px;min-height:144px}
+  body.portal-page.gucc-enhanced .launch-card strong {font-size:14px}
+}
+@media(prefers-reduced-motion:reduce) {
+  body.portal-page.gucc-enhanced :is(.launch-card,.hero-enter,.cp-task) {transition:none!important;transform:none!important}
+}

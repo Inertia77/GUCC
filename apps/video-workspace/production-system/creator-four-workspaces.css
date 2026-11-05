@@ -84,3 +84,59 @@ body.creator-embedded-modal .gucc-shell-dock{display:none!important}
 html:has(body.creator-os-page){scroll-padding-block:96px 110px}
 .creator-os-page :is(button,input,select,textarea,summary,a){scroll-margin-block:96px 110px}
 .portfolio-progress,.portfolio-code{font-family:var(--g-font,sans-serif);font-variant-numeric:tabular-nums}
+
+/* The active video's verified deliverables are the primary Creator dashboard.
+   Cross-project portfolio remains available below the current work, and only
+   the redundant mobile masthead is compacted — no controls are hidden. */
+@media (max-width: 760px) {
+  body.creator-os-page:has(#view-outcomes.active) .workspace-heading {
+    margin-bottom: 9px;
+  }
+  /* The local nav and section heading already identify the workspace. */
+  body.creator-os-page:has(#view-outcomes.active) .workspace-heading h1 {
+    display: none;
+  }
+  body.creator-os-page:has(#view-outcomes.active) .workspace-deck {
+    display: none;
+  }
+  body.creator-os-page:has(#view-outcomes.active) .os-main {
+    padding-top: 12px;
+  }
+  body.creator-os-page #view-outcomes .portfolio-section {
+    margin-top: 24px;
+    padding-top: 15px;
+    border-top: 1px solid var(--os-hairline);
+  }
+  body.creator-os-page #view-outcomes .outcomes-intro {
+    margin-bottom: 13px;
+  }
+  body.creator-os-page #view-outcomes .outcomes-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+  }
+  body.creator-os-page #view-outcomes .outcomes-toolbar > label,
+  body.creator-os-page #view-outcomes .outcomes-project-meta {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  body.creator-os-page #view-outcomes .outcomes-toolbar > label {
+    font-size: 12px;
+  }
+  body.creator-os-page #view-outcomes .outcomes-project-meta {
+    font-size: 12px;
+  }
+  body.creator-os-page #view-outcomes .outcomes-toolbar > .button {
+    justify-self: stretch;
+    min-width: 0;
+    min-height: 44px;
+    white-space: normal;
+    line-height: 1.35;
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+  body.creator-os-page #view-outcomes .outcomes-video-line {
+    padding-top: 12px;
+  }
+}

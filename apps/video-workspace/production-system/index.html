@@ -10,7 +10,7 @@
 <script src="../../../assets/creator-shared-context.js?v=2"></script>
 <link rel="stylesheet" href="./creator-os.css?v=2.1.1">
 <link rel="stylesheet" href="./creator-os-outcomes.css?v=1">
-<link rel="stylesheet" href="./creator-four-workspaces.css?v=3">
+<link rel="stylesheet" href="./creator-four-workspaces.css?v=4">
 <link rel="stylesheet" href="../../../assets/gucc-premium.css?v=4" data-gucc-premium>
 <link rel="stylesheet" href="../../../assets/gucc-chroma-v1.css?v=1" id="gucc-chroma-final" data-gucc-chroma>
 <script src="../../../assets/creator-project-folders.js?v=2" defer></script>
@@ -71,7 +71,6 @@
         </div>
         <div class="outcomes-methods"><button type="button" class="button secondary" id="boardFixedPrompt">开始制作 · 选择方式 ↗</button><button type="button" class="button ghost" id="boardDynamicPrompt">灵活编排 ↗</button></div>
       </div>
-      <section class="portfolio-section" aria-label="所有创作项目"><div class="portfolio-heading"><span class="micro">PROJECT PORTFOLIO</span><strong>项目总览</strong><span id="portfolioStatus" class="portfolio-status"></span></div><div id="projectPortfolio" class="portfolio-grid"></div></section>
       <div class="outcomes-toolbar">
         <label>当前项目<select id="outcomeProjectSelect" aria-label="选择管理的项目"></select></label>
         <div class="outcomes-project-meta" id="outcomeProjectMeta"></div>
@@ -86,6 +85,7 @@
         <div class="outcomes-meter" role="progressbar" aria-label="当前视频成果完成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="outcomeProgressMeter"><span id="outcomeProgressFill"></span></div>
       </section>
       <div class="outcomes-cards" id="outcomeCards"></div>
+      <section class="portfolio-section" aria-label="所有创作项目"><div class="portfolio-heading"><span class="micro">PROJECT PORTFOLIO</span><strong>项目总览</strong><span id="portfolioStatus" class="portfolio-status"></span></div><div id="projectPortfolio" class="portfolio-grid"></div></section>
       <p class="outcomes-footnote">正式完成率来自正式成果记录。文件核验、录音校验和人工确认均沿用已有规则；只做了 Prompt 不会自动算完成。</p>
       <details id="projectRegistryDetails" class="portfolio-registry">
         <summary><span>项目档案与高级管理</span><small>搜索、编辑、完成、归档、恢复及历史资料</small></summary>

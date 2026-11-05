@@ -315,6 +315,18 @@ body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code=
 body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]) .game-card-plate__glyph{border:1px solid #c26959;transform:rotate(45deg);height:10px;width:10px;background:linear-gradient(135deg,#ab5249aa,transparent);}
 body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]):not(.is-collapsed) .item-head{border-bottom-color:rgba(194,155,113,.2);}
 
+/* The new designed plate replaces the old duplicate in-chip product-family serial. */
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-summary > .meta::before{
+  display:none!important;
+}
+/* Themes now have a small, distinct signature even without saturation. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]) .meta .badge{border-radius:3px 9px 3px 9px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]) .meta .badge{border-radius:1px!important;letter-spacing:.035em;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]) .meta .badge{border-radius:12px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]) .meta .badge{border-radius:1px!important;border-left-width:3px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]) .meta .badge{border-radius:9px 3px 9px 3px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]) .meta .badge{border-radius:2px 8px 2px 8px!important;border-bottom-width:2px!important;}
+
 /* Make the same card become a readable dossier when expanded, not a table dump. */
 body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) .item-content {
   margin-top:9px!important;

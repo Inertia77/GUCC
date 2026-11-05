@@ -40,6 +40,29 @@ const FILTERS = {
 const COLLAPSE_KEY = 'versions';
 const VERSION_SEARCH_LIMIT = 500;
 
+function formatVersionWindow(row) {
+  if (row.end_date) return formatWindow(row.start_date, row.end_date);
+
+  const start = String(row.start_date || '');
+  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(start)) return '版本开始日期未录入';
+
+  // 阴阳师历史事件锚点不是连续客户端版本；各活动期限独立核对。
+  const versionNo = String(row.version_no || '');
+  if (row.game_code === 'YYS' && /^(?:YYS-|10TH(?:-|$))/.test(versionNo)) {
+    return `${start} · 活动锚点（截止另计）`;
+  }
+
+  // 仅显示状态，不在数据层推算或写入未公告的版本结束日期。
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  const part = (name) => parts.find((item) => item.type === name)?.value || '';
+  const todayJst = `${part('year')}-${part('month')}-${part('day')}`;
+  return start > todayJst
+    ? `${start} → 即将上线（结束日未公布）`
+    : `${start} → 进行中（结束日未公布）`;
+}
+
 function normalizeToken(value) {
   return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
 }
@@ -511,7 +534,7 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
               <span class="version-no">${escapeHtml(row.version_no || '')}</span>
               <span>${escapeHtml(row.version_name || '未命名版本')}</span>
             </div>
-            ${renderMeta([row.game_code, formatWindow(row.start_date, row.end_date)])}
+            ${renderMeta([row.game_code, formatVersionWindow(row)])}
           </div>
           <div class="actions collapsible-actions">
             ${renderCollapseButton(`${row.version_no || ''} ${row.version_name || ''}`.trim() || '版本详情')}

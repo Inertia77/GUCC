@@ -103,7 +103,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/game-os.css",
   "./apps/command-center/styles/game-themes.css",
   "./apps/command-center/styles/game-premium.css",
-  "./apps/command-center/styles/game-card-atelier-v2.css?v=1",
+  "./apps/command-center/styles/game-card-atelier.css?v=2",
   "./apps/command-center/src/game-card-plate.js",
   "./apps/command-center/styles/interface-chrome.css",
   "./apps/command-center/styles/responsive-layout.css",

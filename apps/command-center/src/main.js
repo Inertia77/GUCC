@@ -19,7 +19,8 @@ const FINAL_STYLE_SHEETS = [
   ['gucc-mobile-layout-final', '../styles/mobile-layout.css?v=4'],
   ['gucc-premium-final', '../../../assets/gucc-premium.css?v=4'],
   ['gucc-chroma-final', '../../../assets/gucc-chroma-v1.css?v=1'],
-  ['gucc-game-chrome-final', '../../../assets/gucc-game-chrome-v1.css?v=1']
+  ['gucc-game-chrome-final', '../../../assets/gucc-game-chrome-v1.css?v=1'],
+  ['gucc-game-card-atelier-final', '../styles/game-card-atelier.css?v=2']
 ];
 
 const TAB_LOADERS = {

@@ -1,0 +1,352 @@
+/* GUCC DB / Atelier Cards v2 · 2026-11-05
+   The six records are operational database controls, not decorative posters.
+   New identity plate is presentational only; status/data and controls remain
+   owned by their existing renderers. This layer comes LAST after Chroma.
+   Art direction: six coherent materials, consistent information semantics.
+*/
+body.command-center-page.gucc-enhanced .item[data-card-kind] {
+  --atelier-line: color-mix(in srgb,var(--game-accent,#b9c7ff) 45%,transparent);
+  --atelier-line-soft: color-mix(in srgb,var(--game-accent,#b9c7ff) 17%,transparent);
+  --atelier-glass: rgba(255,255,255,.025);
+  --atelier-glow: color-mix(in srgb,var(--game-accent,#b9c7ff) 18%,transparent);
+  --atelier-crest-base:rgba(16,20,32,.86);
+  --atelier-label:var(--game-secondary,#d3dded);
+  --atelier-plate-bg:linear-gradient(90deg,rgba(255,255,255,.038),transparent);
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid var(--atelier-line)!important;
+  transition:border-color .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] > .game-card-plate{
+  position:absolute!important;
+  z-index:4!important;
+  pointer-events:none;
+  left:14px;
+  right:14px;
+  top:8px;
+  height:23px;
+  display:flex;
+  align-items:center;
+  min-width:0;
+  gap:8px;
+  padding:0 0 0 4px;
+  border-bottom:1px solid var(--atelier-line-soft);
+  background:var(--atelier-plate-bg);
+  color:var(--atelier-label);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__crest{
+  position:relative;
+  flex:0 0 21px;
+  width:21px;
+  height:21px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--atelier-line);
+  border-radius:5px;
+  background:var(--atelier-crest-base);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.095),0 1px 7px rgba(0,0,0,.23);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__glyph{
+  position:relative;
+  display:block;
+  width:11px;
+  height:11px;
+  border:1px solid var(--game-accent,#adbeff);
+  box-shadow:0 0 8px var(--atelier-glow);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__glyph::before,
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__glyph::after{
+  content:"";position:absolute;pointer-events:none;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__name{
+  flex:0 0 auto;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.085em;
+  line-height:1.3;
+  color:var(--game-title,#fff);
+  white-space:nowrap;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__serial{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--atelier-label);
+  font-size:9px;
+  letter-spacing:.13em;
+  line-height:1.3;
+  font-weight:750;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__kind{
+  margin-left:auto;
+  flex:0 0 auto;
+  padding:3px 7px;
+  border:1px solid var(--atelier-line-soft);
+  background:color-mix(in srgb,var(--game-inset,#101727) 88%,transparent);
+  color:var(--atelier-label);
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.055em;
+  white-space:nowrap;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed){
+  padding-top:43px!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) .item-head{
+  padding-bottom:11px;
+  border-bottom:1px solid var(--atelier-line-soft);
+  transition:border-color .18s ease;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-summary{min-width:0;}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-title{position:relative;max-width:100%;text-wrap:pretty;}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .character-title-primary{letter-spacing:.015em!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .meta{row-gap:7px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .meta .badge{
+  border:1px solid var(--atelier-line-soft)!important;
+  background:color-mix(in srgb,var(--game-inset,#111722) 91%,white 9%)!important;
+  color:var(--game-secondary,#dae0ef)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
+  text-shadow:none!important;
+  padding-block:5px!important;
+  font-weight:700;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .meta .badge.status-highlight{
+  border-color:var(--atelier-line)!important;
+  background:linear-gradient(104deg,var(--atelier-glow),transparent 85%),var(--game-inset,#111722)!important;
+  color:var(--game-title,#fff)!important;
+  font-weight:850;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-content{
+  min-width:0;
+  border:1px solid var(--atelier-line-soft)!important;
+  border-top:1px solid var(--atelier-line)!important;
+  border-radius:8px!important;
+  background:linear-gradient(154deg,rgba(255,255,255,.022),transparent 50%),color-mix(in srgb,var(--game-inset,#121827) 95%,black 5%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-content-title{
+  color:var(--game-title,#fff)!important;
+  font-size:12px!important;
+  letter-spacing:.055em!important;
+  margin-bottom:1px!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-content-title::before{
+  content:"";
+  display:inline-block;
+  flex:0 0 4px;
+  width:4px;height:14px;
+  background:var(--game-accent,#a9bfff);
+  box-shadow:0 0 11px var(--atelier-glow);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-content-title::after{
+  background:linear-gradient(90deg,var(--atelier-line),transparent)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] :is(.note-block,.mechanism-section,.resource-card,.banner-phase,.version-acquisitions,.version-note){
+  border-color:var(--atelier-line-soft)!important;
+  color:var(--game-text,#f2f5fc)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.024)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .note-label,
+body.command-center-page.gucc-enhanced .item[data-card-kind] .mechanism-section h3,
+body.command-center-page.gucc-enhanced .item[data-card-kind] .phase-head{
+  font-weight:800;
+  letter-spacing:.025em;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions button{
+  min-height:40px!important;
+  border:1px solid var(--atelier-line)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 65%),var(--game-inset,#101727)!important;
+  color:var(--game-title,#fff)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.06),inset 0 -1px rgba(0,0,0,.3)!important;
+  transition:filter .15s ease,transform .12s ease,border-color .15s ease,background-color .15s ease!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions .collapse-toggle{
+  border-color:var(--atelier-line)!important;
+  color:var(--game-accent,#acc9ff)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions .danger{
+  border-color:rgba(235,130,139,.45)!important;
+  background:linear-gradient(180deg,rgba(215,106,113,.21),rgba(91,37,47,.64))!important;
+  color:#ffe8e9!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions .secondary:not(.collapse-toggle){
+  border-color:var(--atelier-line)!important;
+  background:linear-gradient(180deg,var(--atelier-glow),transparent),var(--game-inset,#101727)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions button:focus-visible{
+  outline:2px solid var(--game-accent,#abc5ff)!important;
+  outline-offset:2px;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions button:active{
+  transform:translateY(1px) scale(.986)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:focus-within{
+  outline:2px solid var(--game-accent,#abc5ff)!important;
+  outline-offset:2px;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-recently-updated{
+  border-color:var(--game-accent,#abc5ff)!important;
+  box-shadow:0 0 0 1px var(--atelier-line),0 0 24px var(--atelier-glow)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .version-title .version-no{
+  min-width:3ch;
+  text-align:center;
+  padding:4px 9px!important;
+  margin-right:3px;
+  border:1px solid var(--atelier-line)!important;
+  background:var(--game-inset,#111722)!important;
+  border-radius:5px;
+  font-size:16px!important;
+  font-variant-numeric:tabular-nums;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .banner-chip{
+  border:1px solid var(--atelier-line-soft)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.035);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed .game-card-plate{
+  top:3px;height:13px;
+  border-bottom:0;
+  background:transparent;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed .game-card-plate__crest,
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed .game-card-plate__serial,
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed .game-card-plate__kind{display:none;}
+body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed .game-card-plate__name{
+  padding-left:7px;
+  border-left:2px solid var(--game-accent,#abc5ff);
+  font-size:9px;
+  font-weight:850;
+  line-height:1;
+  letter-spacing:.10em;
+  color:var(--game-secondary,#dde4f3);
+}
+@media(hover:hover) and (pointer:fine){
+  body.command-center-page.gucc-enhanced .item[data-card-kind]:hover{
+    border-color:color-mix(in srgb,var(--game-accent,#acbfff) 72%,white 28%)!important;
+    filter:brightness(1.035);
+  }
+  body.command-center-page.gucc-enhanced .item[data-card-kind]:hover .game-card-plate{
+    border-bottom-color:var(--atelier-line);
+  }
+  body.command-center-page.gucc-enhanced .item[data-card-kind]:hover .game-card-plate__glyph{
+    box-shadow:0 0 14px var(--atelier-glow);
+  }
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .actions button:hover{
+    filter:brightness(1.11)!important;
+  }
+}
+@media(max-width:900px){
+  body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed){padding-top:44px!important;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed{padding-top:28px!important;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] > .game-card-plate{left:12px;right:12px;top:7px;height:24px;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind].is-collapsed > .game-card-plate{top:7px;height:15px;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__serial{letter-spacing:.07em;font-size:8.5px;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__kind{font-size:9px;padding:3px 5px;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .actions button{min-height:44px!important;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .item-content{border-radius:6px!important;padding:12px!important;}
+}
+@media(max-width:360px){
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__serial{display:none;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__name{font-size:10.5px;}
+  body.command-center-page.gucc-enhanced .item[data-card-kind] .game-card-plate__kind{font-size:9px;}
+}
+@media(prefers-reduced-motion:reduce){
+  body.command-center-page.gucc-enhanced .item[data-card-kind],body.command-center-page.gucc-enhanced .item[data-card-kind] *,body.command-center-page.gucc-enhanced .item[data-card-kind] *::before,body.command-center-page.gucc-enhanced .item[data-card-kind] *::after{
+    animation:none!important;transition:none!important;scroll-behavior:auto!important;
+  }
+}
+
+/* STAR RAIL — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]){--atelier-line:rgba(201,190,147,.58);--atelier-line-soft:rgba(190,198,208,.21);--atelier-glow:rgba(173,200,246,.17);--atelier-plate-bg:linear-gradient(90deg,rgba(204,184,119,.105),transparent 65%);--atelier-label:#bbc9db;--atelier-crest-base:#14212b;
+border-color:rgba(176,176,164,.43)!important;border-radius:3px 14px 3px 14px!important;
+ background:radial-gradient(ellipse at 88% 7%,rgba(153,190,232,.14),transparent 27%),linear-gradient(115deg,rgba(204,179,118,.085),transparent 25%),linear-gradient(155deg,#1d2a36 0%,#141d29 52%,#0d131f 100%)!important;
+ box-shadow:inset 0 1px rgba(240,240,255,.09),inset 0 -2px #05090ea6,0 12px 30px #0007!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]) .game-card-plate__crest{border-radius:50%;border-color:rgba(217,184,109,.8);box-shadow:0 0 0 2px #263039,inset 0 0 0 2px #111926;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]) .game-card-plate__glyph{clip-path:polygon(50% 0%,61% 38%,100% 50%,61% 62%,50% 100%,39% 62%,0 50%,39% 38%);background:#d4c293;transform:rotate(-12deg);border:0;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]):not(.is-collapsed) .item-head{border-bottom-color:rgba(205,184,137,.24);}
+
+/* ZENLESS — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]){--atelier-line:rgba(238,222,61,.64);--atelier-line-soft:rgba(234,228,132,.19);--atelier-glow:rgba(238,226,59,.12);--atelier-plate-bg:linear-gradient(90deg,rgba(235,227,64,.10),transparent 68%);--atelier-label:#d6d7cc;--atelier-crest-base:#15171a;
+border-radius:2px!important;border-color:rgba(236,226,69,.54)!important;
+ background:linear-gradient(112deg,rgba(234,228,65,.075) 0 2px,transparent 2px 100%),repeating-linear-gradient(90deg,rgba(237,239,218,.017) 0 1px,transparent 1px 5px),radial-gradient(ellipse at 93% -12%,rgba(234,226,64,.13),transparent 44%),linear-gradient(155deg,#292c30,#171a1e 52%,#111217)!important;
+ box-shadow:inset 0 1px rgba(255,254,236,.08),4px 5px 0 #090a0bd9,0 13px 26px #0007!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]) .game-card-plate__crest{border-radius:3px;transform:rotate(-5deg);border:2px solid #e9e040;background:#171b1e;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]) .game-card-plate__glyph{height:9px;width:13px;border:2px solid #eee857;border-radius:2px;background:radial-gradient(circle at 25% 50%,#eee857 0 2px,transparent 2.5px),radial-gradient(circle at 75% 50%,#eee857 0 2px,transparent 2.5px);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]):not(.is-collapsed) .item-head{border-bottom-style:dashed;}
+
+/* WUTHERING WAVES — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]){--atelier-line:rgba(133,223,217,.44);--atelier-line-soft:rgba(163,220,215,.17);--atelier-glow:rgba(125,216,210,.16);--atelier-plate-bg:linear-gradient(90deg,rgba(135,217,211,.07),transparent 60%);--atelier-label:#afcfcd;--atelier-crest-base:#0d2427;
+border-radius:19px 5px 19px 5px!important;border-color:rgba(128,215,210,.40)!important;
+ background:radial-gradient(ellipse at 87% 0%,rgba(117,223,218,.17),transparent 37%),radial-gradient(circle at 95% 26%,transparent 0 33px,rgba(169,233,229,.09) 34px 35px,transparent 36px 56px,rgba(129,218,213,.04) 57px 58px,transparent 59px),linear-gradient(150deg,#1a3034,#101e26 58%,#0c171e)!important;
+ box-shadow:inset 0 1px rgba(219,255,248,.09),inset 0 0 0 1px rgba(135,235,225,.02),0 12px 30px #0006!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]) .game-card-plate__crest{border-radius:50%;box-shadow:inset 0 0 0 2px rgba(140,224,220,.12);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]) .game-card-plate__glyph{border-radius:50%;border:1px solid #a2e9e6;background:radial-gradient(circle,#b9fff8 0 1px,transparent 2px);box-shadow:0 0 8px #7edbd877;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]):not(.is-collapsed) .item-head{border-bottom-color:rgba(139,218,213,.19);}
+
+/* ENDFIELD — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]){--atelier-line:rgba(216,166,70,.62);--atelier-line-soft:rgba(216,182,116,.22);--atelier-glow:rgba(223,175,71,.12);--atelier-plate-bg:linear-gradient(90deg,rgba(218,168,63,.09),transparent 75%);--atelier-label:#c9c5b5;--atelier-crest-base:#24231d;
+border-radius:2px!important;border-color:#847552!important;border-top:3px solid #dbad49!important;
+ background:linear-gradient(90deg,rgba(218,178,87,.038) 0 1px,transparent 1px 28px),linear-gradient(0deg,rgba(214,218,222,.025) 0 1px,transparent 1px 28px),linear-gradient(155deg,#262929,#191d20 56%,#111516)!important;
+ background-size:28px 28px,28px 28px,auto!important;
+ box-shadow:inset 0 1px #fff2c914,inset 0 -3px #0009,0 14px 27px #0007!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]) .game-card-plate__crest{border-radius:2px;border:1px solid #d1ae59;box-shadow:inset 0 0 0 3px #29271c,0 0 0 1px rgba(220,176,87,.26);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]) .game-card-plate__glyph{border:0;width:13px;height:13px;background:linear-gradient(90deg,transparent 45%,#ddb85d 45% 55%,transparent 55%),linear-gradient(0deg,transparent 45%,#ddb85d 45% 55%,transparent 55%);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]):not(.is-collapsed) .item-head{border-bottom-style:solid;}
+
+/* NEVERNESS — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]){--atelier-line:rgba(121,213,241,.48);--atelier-line-soft:rgba(194,142,224,.22);--atelier-glow:rgba(167,123,227,.20);--atelier-plate-bg:linear-gradient(90deg,rgba(94,193,234,.09),rgba(201,109,198,.04),transparent 82%);--atelier-label:#c0c5e4;--atelier-crest-base:#1c203d;
+border-radius:18px 5px 17px 5px!important;border-color:rgba(147,168,245,.46)!important;
+ background:linear-gradient(121deg,rgba(131,208,255,.08),transparent 24% 63%,rgba(217,126,211,.075)),radial-gradient(ellipse at 90% 0%,rgba(101,221,252,.18),transparent 40%),linear-gradient(145deg,#232941,#151b31 58%,#111324)!important;
+ box-shadow:inset 0 1px rgba(228,240,255,.12),inset 1px 0 rgba(180,186,255,.03),0 16px 35px #0007!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]) .game-card-plate__crest{border-radius:6px 2px 6px 2px;border:1px solid #92daf0;transform:rotate(45deg);box-shadow:0 0 12px #bb8fff55;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]) .game-card-plate__glyph{border-color:#d8a7ee;transform:rotate(45deg);width:8px;height:8px;background:linear-gradient(45deg,rgba(109,224,239,.6),transparent);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]):not(.is-collapsed) .item-head{border-bottom-color:rgba(197,144,231,.32);}
+
+/* ONMYOJI — independent physical design grammar. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]){--atelier-line:rgba(186,146,100,.53);--atelier-line-soft:rgba(191,141,109,.20);--atelier-glow:rgba(185,96,82,.16);--atelier-plate-bg:linear-gradient(90deg,rgba(152,83,69,.10),transparent 75%);--atelier-label:#bdaeaa;--atelier-crest-base:#261b20;
+border-radius:2px 13px 2px 13px!important;border-color:#77604e!important;border-left:4px solid #a96553!important;
+ background:radial-gradient(ellipse at 88% 0%,rgba(174,89,79,.13),transparent 35%),repeating-linear-gradient(0deg,rgba(209,177,137,.018) 0 1px,transparent 1px 9px),linear-gradient(145deg,#231a1d,#17141b 61%,#111016)!important;
+ box-shadow:inset 0 1px rgba(241,219,178,.07),inset 4px 0 rgba(176,76,61,.12),0 14px 31px #0008!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]) .game-card-plate__crest{border-radius:2px;transform:rotate(6deg);border:1px solid #c49a72;box-shadow:inset 0 0 0 2px #25161a;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]) .game-card-plate__glyph{border:1px solid #c26959;transform:rotate(45deg);height:10px;width:10px;background:linear-gradient(135deg,#ab5249aa,transparent);}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]):not(.is-collapsed) .item-head{border-bottom-color:rgba(194,155,113,.2);}
+
+/* The new designed plate replaces the old duplicate in-chip product-family serial. */
+body.command-center-page.gucc-enhanced .item[data-card-kind] .item-summary > .meta::before{
+  display:none!important;
+}
+/* Themes now have a small, distinct signature even without saturation. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="崩"],[data-game-code="HSR"]) .meta .badge{border-radius:3px 9px 3px 9px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="绝"],[data-game-code="ZZZ"]) .meta .badge{border-radius:1px!important;letter-spacing:.035em;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="鸣"],[data-game-code="WW"]) .meta .badge{border-radius:12px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]) .meta .badge{border-radius:1px!important;border-left-width:3px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="异"],[data-game-code="NTE"]) .meta .badge{border-radius:9px 3px 9px 3px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="阴"],[data-game-code="YYS"]) .meta .badge{border-radius:2px 8px 2px 8px!important;border-bottom-width:2px!important;}
+
+/* Make the same card become a readable dossier when expanded, not a table dump. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) .item-content {
+  margin-top:9px!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] .actions .collapse-toggle[aria-expanded="true"]{
+  background:linear-gradient(116deg,var(--atelier-glow),transparent 85%),var(--game-inset,#111722)!important;
+  border-color:var(--game-accent,#abc7ff)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) .game-card-plate__kind{
+  border-color:var(--atelier-line);
+}
+/* Source/evidence typography remains neutral and fully readable. */
+body.command-center-page.gucc-enhanced .item[data-card-kind] :is(.preserved-text,.rich-text,.mechanism-description,.mechanism-note,.version-note p,.resource-note){
+  text-shadow:none!important;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) :is(.meta,.item-content,.note-block,.mechanism-section,.resource-card,.banner-phase,.version-acquisitions,.version-note){
+  min-width:0;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind] :is(.meta .badge,.actions button,.banner-chip,.game-card-plate__kind){
+  -webkit-font-smoothing:antialiased;
+}

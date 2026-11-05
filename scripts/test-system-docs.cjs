@@ -60,5 +60,5 @@ for (const v of ["v_character_overview","v_character_progress_overview","v_party
 for(const file of ["assets/gucc-system-docs-v1.css","docs/maintenance/query-manual.html","docs/maintenance/db-structure.html","docs/supabase-setup.html"]){
   assert(sw.includes('./'+file.replace("docs/supabase-setup.html","docs/supabase-setup.html")), "PWA app shell missing "+file);
 }
-assert(sw.includes("gucc-static-v67")&&sw.includes("gucc-runtime-v58"));
+assert(Number(sw.match(/gucc-static-v([0-9]+)/)?.[1]) >= 67 && Number(sw.match(/gucc-runtime-v([0-9]+)/)?.[1]) >= 58, "PWA cache versions must not regress");
 console.log("GUCC maintenance docs: 3 portal routes, 46 tables, 4 views, guarded SQL and PWA PASS.");

@@ -20,7 +20,8 @@ const expected = [
   ['gucc-mobile-layout-final', '/apps/command-center/styles/mobile-layout.css', '4'],
   ['gucc-premium-final', '/assets/gucc-premium.css', '4'],
   ['gucc-chroma-final', '/assets/gucc-chroma-v1.css', '1'],
-  ['gucc-game-chrome-final', '/assets/gucc-game-chrome-v1.css', '1']
+  ['gucc-game-chrome-final', '/assets/gucc-game-chrome-v1.css', '1'],
+  ['gucc-game-card-atelier-final', '/apps/command-center/styles/game-card-atelier.css', '2']
 ];
 
 const rgb = s => String(s).match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);

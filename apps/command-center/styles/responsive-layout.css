@@ -550,12 +550,14 @@ body.command-center-page.gucc-enhanced .item .actions {
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-keyword,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-keyword {
     grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
     order: 1 !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn),
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn) {
     grid-column: 1 !important;
+    grid-row: 2 !important;
     order: 2 !important;
     min-height: 46px !important;
   }
@@ -563,6 +565,7 @@ body.command-center-page.gucc-enhanced .item .actions {
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-mobile-toggle,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-mobile-toggle {
     grid-column: 2 !important;
+    grid-row: 2 !important;
     order: 2 !important;
     min-height: 46px !important;
   }
@@ -570,6 +573,7 @@ body.command-center-page.gucc-enhanced .item .actions {
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > button[id^="new"],
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > button[id^="new"] {
     grid-column: 3 !important;
+    grid-row: 2 !important;
     order: 2 !important;
     min-height: 46px !important;
   }

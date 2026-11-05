@@ -1,3 +1,4 @@
+import { renderGameCardPlate } from '../game-card-plate.js';
 import { API } from '../api.js';
 import {
   $,
@@ -274,7 +275,8 @@ export async function searchParties({ visibleCount = 0, revealId = '' } = {}) {
     }
 
     renderProgressiveList(container, list, (row) => `
-      <article class="item" data-item-id="${escapeHtml(row.id)}" data-game-code="${escapeHtml(row.game_code || '')}" tabindex="-1">
+      <article class="item" data-item-id="${escapeHtml(row.id)}" data-game-code="${escapeHtml(row.game_code || '')}" data-card-kind="party" tabindex="-1">
+        ${renderGameCardPlate(row.game_code || row.game_title, 'party')}
         <div class="item-head">
           <div class="item-summary">
             <div class="item-title">${escapeHtml(row.summary)}</div>

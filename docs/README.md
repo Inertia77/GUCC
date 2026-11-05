@@ -21,9 +21,11 @@
 
 | 文件 | 用途 |
 |---|---|
-| `supabase-setup.html` | Command Center 的 Supabase、GitHub Pages、本地测试部署指南 |
+| `supabase-setup.html` | **当前** GUCC Creator OS v4、Supabase、GitHub Actions 部署与排障指南 |
 
-`supabase-setup.html` 已接入 GUCC Access Key，直接打开也会先检查门禁。
+新版 `maintenance/query-manual.html` 和 `maintenance/db-structure.html` 分别提供 SQL 安全巡检与生产 46 表结构索引，源码在 `reference/query-guides/query-manual.md`、`data/schema.md`。
+
+以上 HTML 页面均已接入 GUCC Access Key，直接打开也会先检查门禁。
 
 ## 维护规则
 

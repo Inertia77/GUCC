@@ -1,3 +1,4 @@
+import { renderGameCardPlate } from '../game-card-plate.js';
 import {classifyWindow,formatWindow} from '../date-window.mjs';
 import { API } from '../api.js';
 import {
@@ -502,7 +503,8 @@ export async function searchVersions({ visibleCount = 0, revealId = '' } = {}) {
     }
 
     renderProgressiveList(container, list, (row) => `
-      <article class="item version-card" data-item-id="${escapeHtml(row.id)}" data-game-code="${escapeHtml(row.game_code || '')}" tabindex="-1">
+      <article class="item version-card" data-item-id="${escapeHtml(row.id)}" data-game-code="${escapeHtml(row.game_code || '')}" data-card-kind="version" tabindex="-1">
+        ${renderGameCardPlate(row.game_code || row.game_title, 'version')}
         <div class="item-head version-head">
           <div class="item-summary">
             <div class="item-title version-title">

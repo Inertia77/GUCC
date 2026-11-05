@@ -316,6 +316,7 @@
   </style>
 <link rel="stylesheet" href="./assets/gucc-premium.css?v=4" data-gucc-premium>
 <link rel="stylesheet" href="assets/gucc-chroma-v1.css?v=1" id="gucc-chroma-final" data-gucc-chroma>
+<link rel="stylesheet" href="./assets/gucc-game-entry-v1.css?v=1" data-gucc-game-entry>
 </head>
 <body class="gucc-enhanced portal-page is-locked">
   <section class="gate" id="accessGate" aria-label="访问门禁">
@@ -337,7 +338,7 @@
     <header class="topbar">
       <a class="brand" href="./" aria-label="GUCC Portal 首页">
         <img src="./assets/icons/gucc-icon.svg?v=5" alt="" />
-        <span><strong>GUCC Portal</strong><small>高频入口集中在这一屏</small></span>
+        <span><strong>GUCC Portal</strong><small>GAMEUP / CREATOR COMMAND</small></span>
       </a>
       <div class="top-actions">
         <button class="install-btn" id="installAppBtn" type="button" hidden>安装</button>
@@ -346,10 +347,23 @@
     </header>
 
     <section class="intro" aria-labelledby="portalTitle">
-      <div><p class="eyebrow">GUCC / 个人创作工作台</p>
-      <h1 id="portalTitle">让每一个想法，<em>成为值得看的作品。</em></h1>
-      <p>从游戏世界的发现，到你自己的表达。继续当前制作，或在熟悉的工具里开始新的创作。</p></div>
-      <div class="portal-signature" aria-hidden="true"><b>G.</b><span>GAMEUP<br>CREATIVE WORKSPACE</span></div>
+      <div class="intro-content">
+        <p class="eyebrow">OPERATION 01 / GAMEUP CREATOR OS</p>
+        <h1 id="portalTitle">创作指挥室。<em>下一部作品，现在开始。</em></h1>
+        <p>继续推进正在制作的视频，或者进入你熟悉的游戏资料与创作工作区。</p>
+        <div class="hero-actions" aria-label="主要行动">
+          <a class="hero-enter" href="./apps/video-workspace/production-system/?view=outcomes">进入创作中枢 <span aria-hidden="true">↗</span></a>
+          <a class="hero-enter hero-enter-secondary" href="./apps/command-center/">游戏数据库 <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="hero-scene" aria-hidden="true">
+        <div class="scene-rays"></div>
+        <div class="scene-ring"></div>
+        <div class="scene-core"><strong>G.</strong><small>COMMAND</small></div>
+        <span class="scene-marker scene-marker-a">01 / CREATE</span>
+        <span class="scene-marker scene-marker-b">06 / WORLDS</span>
+        <span class="scene-marker scene-marker-c">TDX // OS</span>
+      </div>
     </section>
 
     <div class="portal-continue"><span>继续制作</span><div data-creator-context></div></div>
@@ -358,54 +372,54 @@
     </section>
 
     <div class="section-head">
-      <h2>常用入口</h2>
-      <span>8 个核心入口 · 创作统一为四个工作区</span>
+      <h2>功能终端 / MODULE SELECT</h2>
+      <span>八大功能区 · 选择要进入的系统</span>
     </div>
 
     <section class="launch-grid" aria-label="GUCC 常用入口">
-      <a class="launch-card" href="./apps/command-center/" style="--accent: var(--mint)">
+      <a class="launch-card" data-hud-slot="01" href="./apps/command-center/" style="--accent: var(--mint)">
         <span class="launch-code">DB</span>
         <span><strong>DB</strong><small>角色 · 阵容 · 版本 · 数据维护</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./apps/video-workspace/production-system/?view=outcomes" style="--accent: var(--violet)">
+      <a class="launch-card" data-hud-slot="02" href="./apps/video-workspace/production-system/?view=outcomes" style="--accent: var(--violet)">
         <span class="launch-code">PR</span>
         <span><strong>项目中枢</strong><small>多项目进度 · 六项成果验收 · 档案管理</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./apps/video-workspace/production-system/?view=creation" style="--accent: var(--cyan)">
+      <a class="launch-card" data-hud-slot="03" href="./apps/video-workspace/production-system/?view=creation" style="--accent: var(--cyan)">
         <span class="launch-code">FX</span>
         <span><strong>创作工作台</strong><small>固定六项 Prompt / 灵活编排</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./reference/ai-prompts.html" style="--accent: var(--violet)">
+      <a class="launch-card" data-hud-slot="04" href="./reference/ai-prompts.html" style="--accent: var(--violet)">
         <span class="launch-code">AI</span>
         <span><strong>AI Prompt</strong><small>常用 Prompt 直接复制</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./reference/story-library.html" style="--accent: var(--amber)">
+      <a class="launch-card" data-hud-slot="05" href="./reference/story-library.html" style="--accent: var(--amber)">
         <span class="launch-code">ST</span>
         <span><strong>Story</strong><small>五游剧情与世界观资料</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./apps/video-workspace/production-system/?view=knowledge" style="--accent: var(--pink)">
+      <a class="launch-card" data-hud-slot="06" href="./apps/video-workspace/production-system/?view=knowledge" style="--accent: var(--pink)">
         <span class="launch-code">LIB</span>
         <span><strong>规则与资料</strong><small>规则 · 能力方法 · 公共资料</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./apps/video-workspace/production-system/?view=release" style="--accent: var(--mint)">
+      <a class="launch-card" data-hud-slot="07" href="./apps/video-workspace/production-system/?view=release" style="--accent: var(--mint)">
         <span class="launch-code">PUB</span>
         <span><strong>发布与复盘</strong><small>发布单 · 预检 · 投稿 · 表现回顾</small></span>
         <span class="launch-arrow">›</span>
       </a>
 
-      <a class="launch-card" href="./reference/resource-library.html" style="--accent: var(--cyan)">
+      <a class="launch-card" data-hud-slot="08" href="./reference/resource-library.html" style="--accent: var(--cyan)">
         <span class="launch-code">LIB</span>
         <span><strong>资料库</strong><small>Wiki · 官方资料 · 研究入口</small></span>
         <span class="launch-arrow">›</span>

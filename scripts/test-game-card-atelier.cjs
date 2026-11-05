@@ -6,7 +6,7 @@ const path=require("node:path");
 const assert=require("node:assert/strict");
 const root=path.resolve(__dirname,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
-const css=read("apps/command-center/styles/game-card-atelier-v2.css");
+const css=read("apps/command-center/styles/game-card-atelier.css");
 const helper=read("apps/command-center/src/game-card-plate.js");
 const main=read("apps/command-center/src/main.js");
 const html=read("apps/command-center/index.html");
@@ -38,8 +38,8 @@ assert(css.includes(".is-recently-updated"),"Save feedback must be represented")
 assert(css.includes(".actions .danger"),"Danger action must retain semantic warning");
 assert(!css.includes("position:fixed"),"No overlays/viewport decorations on result cards");
 assert(html.includes('id="gucc-game-card-atelier-final"'));
-assert(main.includes("['gucc-game-card-atelier-final', '../styles/game-card-atelier-v2.css?v=1']"));
+assert(main.includes("['gucc-game-card-atelier-final', '../styles/game-card-atelier.css?v=2']"));
 assert(main.indexOf("gucc-game-chrome-final")<main.indexOf("gucc-game-card-atelier-final"),
   "Atelier layer must follow the shared chrome");
-assert(worker.includes("game-card-atelier-v2.css?v=1")&&worker.includes("src/game-card-plate.js"));
+assert(worker.includes("game-card-atelier.css?v=2")&&worker.includes("src/game-card-plate.js"));
 console.log("GUCC DB Atelier v2 source contract: 6 themes × 4 record types, CSS precedence, semantic controls PASS.");

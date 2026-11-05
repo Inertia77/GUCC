@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v64";
-const RUNTIME_CACHE = "gucc-runtime-v55";
+const STATIC_CACHE = "gucc-static-v65";
+const RUNTIME_CACHE = "gucc-runtime-v56";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -19,6 +19,7 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
   "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.2",
   "./apps/video-workspace/production-system/creator-four-workspaces.css?v=4",
+  "./apps/video-workspace/production-system/creator-game-hud-v1.css?v=1",
   "./assets/creator-embed-shell.css?v=3",
   "./assets/creator-embed-shell.js?v=2",
   "./assets/creator-project-folders.js?v=1",

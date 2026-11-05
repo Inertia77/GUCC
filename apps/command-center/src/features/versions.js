@@ -44,7 +44,7 @@ function formatVersionWindow(row) {
   if (row.end_date) return formatWindow(row.start_date, row.end_date);
 
   const start = String(row.start_date || '');
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(start)) return '版本开始日期未录入';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start)) return '版本开始日期未录入';
 
   // 阴阳师历史事件锚点不是连续客户端版本；各活动期限独立核对。
   const versionNo = String(row.version_no || '');

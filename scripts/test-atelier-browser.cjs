@@ -95,6 +95,28 @@ const sizes = [
           assert(sections.taskCardTop < 760,
             "390px Portal: current task must be reachable in the first screen");
       }
+
+      if (name === "creator") {
+        const hud = await p.evaluate(() => {
+          const progress = document.querySelector("#view-outcomes .outcomes-progress");
+          const tile = document.querySelector("#view-outcomes .outcome-card");
+          const firstNav = document.querySelector('.os-nav button[data-view="outcomes"]');
+          const css = document.querySelector('[data-gucc-creator-game-hud]');
+          return {
+            stylesheet: css?.getAttribute("href"),
+            scene: progress ? getComputedStyle(progress).backgroundImage : "",
+            tileRadius: tile ? getComputedStyle(tile).borderTopRightRadius : "",
+            selectedNav: firstNav?.classList.contains("active"),
+            buttonHeight: document.querySelector("#outcomeNewProject")?.getBoundingClientRect().height,
+          };
+        });
+        assert(hud.stylesheet?.includes("creator-game-hud-v1.css"),
+          "Creator command interface stylesheet is deployed");
+        assert.match(hud.scene, /gradient/, "Creator progress has authored interface treatment");
+        assert(hud.selectedNav, "Creator command navigation tracks the active workspace");
+        if (w <= 430) assert(hud.buttonHeight >= 44,
+          "Creator project actions retain touch targets on phones");
+      }
       await p.screenshot({
         animations: "disabled",
         path: path.join(out, `${name}-${w}.png`),

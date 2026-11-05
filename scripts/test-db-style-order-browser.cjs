@@ -105,7 +105,7 @@ const contrast = (a,b) => {
         assert(actions[0].left<actions[1].left&&actions[1].left<actions[2].left,
           label+': mobile action row order incorrect');
         assert(actions.every(a=>Math.abs(a.top-actions[0].top)<=2),
-          label+': mobile Search/Filter/Add must share one row');
+          label+': mobile Search/Filter/Add must share one row '+JSON.stringify(actions));
         assert(actions[2].left+actions[2].width<=width+1,
           label+': Add action spills beyond viewport');
       }

@@ -68,7 +68,9 @@ Portal 和主要 HTML 页面都接入了前端 Access Key 门禁。
 | AI Prompt Library | `reference/ai-prompts.html` | 公告整理、兑换码、前瞻、SQL、剧情资料维护 Prompt |
 | Story Library | `reference/story-library.html` | 网页阅读剧情资料库 Markdown |
 | Resource Library | `reference/resource-library.html` | 游戏 Wiki、官方资料、攻略参考入口 |
-| Setup Guide | `docs/supabase-setup.html` | Command Center 部署说明 |
+| System Operations Guide | `docs/supabase-setup.html` | 当前生产架构、CI/Pages 部署与故障排查 |
+| SQL Maintenance | `docs/maintenance/query-manual.html` | 已核验生产 SQL 巡检与定点维护 |
+| Database Schema | `docs/maintenance/db-structure.html` | 46 张表、4 个视图的展开式字段索引 |
 
 ## 项目结构
 

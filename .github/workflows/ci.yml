@@ -37,6 +37,9 @@ jobs:
       - name: Install isolated Chromium
         run: node node_modules/playwright-core/cli.js install --with-deps --only-shell chromium
 
+      - name: Run maintenance documentation browser acceptance
+        run: node scripts/test-system-docs-browser.cjs
+
       - name: Run Creator current-task UX regression
         run: node scripts/test-creator-ux-browser.cjs
 
@@ -106,6 +109,7 @@ jobs:
             tmp/chroma-browser/
             tmp/stabilization-browser/
             tmp/stabilization-sw/results.json
+            tmp/system-docs-browser/
           if-no-files-found: ignore
           retention-days: 7
 

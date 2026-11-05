@@ -542,35 +542,40 @@ body.command-center-page.gucc-enhanced .item .actions {
   body.command-center-page.gucc-enhanced .filter-mobile-toggle { display: inline-flex; align-items: center; justify-content: center; }
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    /* Keyword above one predictable action row: Search / Filter / Add. */
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     align-items: stretch !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-keyword,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-keyword {
     grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
     order: 1 !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn),
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn) {
-    grid-column: 1 / -1 !important;
+    grid-column: 1 !important;
+    grid-row: 2 !important;
     order: 2 !important;
-    min-height: 48px !important;
+    min-height: 46px !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-mobile-toggle,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-mobile-toggle {
-    grid-column: 1 !important;
-    order: 3 !important;
-    min-height: 44px !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    order: 2 !important;
+    min-height: 46px !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > button[id^="new"],
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > button[id^="new"] {
-    grid-column: 2 !important;
-    order: 3 !important;
-    min-height: 44px !important;
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    order: 2 !important;
+    min-height: 46px !important;
   }
 
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready.filters-expanded > :is(.game-filter, .filter-select, .filter-clear, .filter-guidance),
@@ -585,13 +590,16 @@ body.command-center-page.gucc-enhanced .item .actions {
     order: 5 !important;
   }
 
+  body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn),
+  body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > :is(#searchCharBtn, #searchPartyBtn, #searchMechanismBtn, #searchVersionBtn),
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > .filter-mobile-toggle,
   body.command-center-page.gucc-enhanced .filter-grid.filters-mobile-ready > button[id^="new"],
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > .filter-mobile-toggle,
   body.command-center-page.gucc-enhanced .filter-grid-simple.filters-mobile-ready > button[id^="new"] {
     width: 100% !important;
     min-width: 0 !important;
-    padding-inline: 8px !important;
+    padding-inline: 5px !important;
+    font-size: 13px !important;
   }
 }
 

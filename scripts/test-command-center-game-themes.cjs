@@ -28,7 +28,7 @@ const searchUxIndex = mainSource.indexOf("game-os.css?v=4");
 const gameThemeIndex = mainSource.indexOf("game-themes.css?v=9");
 const gamePremiumIndex = mainSource.indexOf("game-premium.css?v=1");
 const interfaceChromeIndex = mainSource.indexOf("interface-chrome.css?v=1");
-const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=4");
+const responsiveLayoutIndex = mainSource.indexOf("responsive-layout.css?v=5");
 const mobileLayoutIndex = mainSource.indexOf("mobile-layout.css?v=4");
 assert(searchUxIndex >= 0, "Missing final search UX stylesheet");
 assert(gameThemeIndex >= 0, "Missing final game theme stylesheet");
@@ -141,7 +141,7 @@ assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\)[\s\S]*?height:\s*
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form[\s\S]*?grid-template-rows:\s*minmax\(0, 1fr\) auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) > \.editor-form > \.editor-body[\s\S]*?overflow-y:\s*auto\s*!important/);
 assert.match(responsiveLayoutStyles, /\.editor:not\(\.hidden\) \.editor-footer[\s\S]*?min-height:\s*68px\s*!important/);
-assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=4/);
+assert.match(mainSource, /gucc-responsive-layout-final'[\s\S]*?responsive-layout\.css\?v=5/);
 
 // Readability / search density / touch targets stay explicit.
 assert.match(gameThemeStyles, /character-title-localized[\s\S]*?font-size:\s*13px/);

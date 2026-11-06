@@ -33,3 +33,8 @@
 - 旧文档由 Git 历史保留，不要复制 `final`、`new`、`copy` 这类版本名。
 - 新增 HTML 文档时同步加入 `scripts/check-project.mjs` 的入口检查。
 - Creator OS 日常操作说明必须以 current main 的真实 UI / runtime 为准；架构文档和历史实现说明不能覆盖 Production reality。
+
+
+## 历史审计与阶段设计归档
+
+2026-11-06 已把旧版 UI/UX 审计、Atelier 验收报告、早期 Creator 阶段文档移入仓库根目录 `archive/reports/`，避免误认为当前实现。当前操作以 `creator-os-user-guide.md` 和真实生产代码为准；历史文件与原始 Blob ID 见 `archive/ARCHIVE_MANIFEST.json`。

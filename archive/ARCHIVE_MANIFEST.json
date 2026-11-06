@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "archived_on": "2026-11-06",
+  "repo": "Inertia77/GUCC",
+  "base_commit": "9268dda6fc09a1fb0a34b04582ae48cacfb444bd",
+  "policy": "Non-destructive Git object reuse: each archived destination retains original blob SHA; source paths removed only after static reachability audit.",
+  "pages_excluded": true,
+  "total_files": 24,
+  "total_bytes": 577641,
+  "items": [
+    {
+      "from": "apps/video-workspace/production-system/LEGACY_PROMPT_AUDIT.md",
+      "to": "archive/reports/creator-phases/LEGACY_PROMPT_AUDIT.md",
+      "git_blob_sha": "b916c39d1b157d238955b5954c7515363e90acc1",
+      "bytes": 54159,
+      "reason": "legacy prompt migration audit; reference retained, active migration map unchanged"
+    },
+    {
+      "from": "data/exports from supabase/character_evaluations_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/character_evaluations_rows.csv",
+      "git_blob_sha": "91d0d2a5cdd14c844f9bc74459115a12d2c436cf",
+      "bytes": 35715,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/character_names_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/character_names_rows.csv",
+      "git_blob_sha": "fc8012044bf63609afd97e216170ef0a0bf96019",
+      "bytes": 91046,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/character_progress_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/character_progress_rows.csv",
+      "git_blob_sha": "d2aa7f13737b5c558a6ea9e8e56c134dd05cf0e7",
+      "bytes": 28909,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/characters_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/characters_rows.csv",
+      "git_blob_sha": "2f2f373b1ed1d22aca0f2cf5a70fe8c43e19e1f6",
+      "bytes": 40501,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/game_status_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/game_status_rows.csv",
+      "git_blob_sha": "6c8983908a910ef7ba70ab16e77a246608d6544f",
+      "bytes": 3020,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/game_versions_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/game_versions_rows.csv",
+      "git_blob_sha": "f6f6ae47e66b81d361a90569d8e69af9988bf443",
+      "bytes": 7199,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/games_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/games_rows.csv",
+      "git_blob_sha": "9cdab2512c11c02297c47bb1ef966849e3258e83",
+      "bytes": 2504,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/parties_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/parties_rows.csv",
+      "git_blob_sha": "2e19ab053ed9cd2ced0d294fac46ea8da42de4d7",
+      "bytes": 9663,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/party_members_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/party_members_rows.csv",
+      "git_blob_sha": "6fe526971bf840b056545358c02902bbdaf22b4b",
+      "bytes": 14462,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/platforms_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/platforms_rows.csv",
+      "git_blob_sha": "1da04f8fc57bef4d490f182ab93a8c92abfe0907",
+      "bytes": 681,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/resource_relations_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/resource_relations_rows.csv",
+      "git_blob_sha": "55343f9832bc46c6a8504dca21e5cd21fa959e82",
+      "bytes": 115997,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "data/exports from supabase/resources_rows.csv",
+      "to": "archive/supabase-exports/2026-11-06/resources_rows.csv",
+      "git_blob_sha": "a7df6261be5e97c6806766148134760e33e224c1",
+      "bytes": 114213,
+      "reason": "inactive database snapshot; no runtime references"
+    },
+    {
+      "from": "docs/creator-os-phase1.md",
+      "to": "archive/reports/creator-phases/creator-os-phase1.md",
+      "git_blob_sha": "0e33b842f3cb2aa9308861443587c17105b596de",
+      "bytes": 3889,
+      "reason": "superseded implementation phase notes; not linked from current UI"
+    },
+    {
+      "from": "docs/creator-os-phase2a-local-first.md",
+      "to": "archive/reports/creator-phases/creator-os-phase2a-local-first.md",
+      "git_blob_sha": "fa3d65208cd467e8c63cac266864c63e5c4d9be4",
+      "bytes": 5958,
+      "reason": "superseded implementation phase notes; not linked from current UI"
+    },
+    {
+      "from": "docs/creator-os-phase2a1-workspace-root.md",
+      "to": "archive/reports/creator-phases/creator-os-phase2a1-workspace-root.md",
+      "git_blob_sha": "8b925719c562324a27cd6e7d124e7c8e62f960f2",
+      "bytes": 1960,
+      "reason": "superseded implementation phase notes; not linked from current UI"
+    },
+    {
+      "from": "docs/creator-os-phase2c2-timeline.md",
+      "to": "archive/reports/creator-phases/creator-os-phase2c2-timeline.md",
+      "git_blob_sha": "287ba3d74278630a7827187851c331cead56e21c",
+      "bytes": 7579,
+      "reason": "superseded implementation phase notes; not linked from current UI"
+    },
+    {
+      "from": "docs/creator-unified-workspace-phase1.md",
+      "to": "archive/reports/creator-phases/creator-unified-workspace-phase1.md",
+      "git_blob_sha": "ff6722fda5f596a745347f538503e3a5c047d41d",
+      "bytes": 5400,
+      "reason": "superseded implementation phase notes; not linked from current UI"
+    },
+    {
+      "from": "docs/gucc-atelier-v2-acceptance-20261016.md",
+      "to": "archive/reports/uiux/gucc-atelier-v2-acceptance-20261016.md",
+      "git_blob_sha": "78943d694072e3a0f1dcc3fac3c05d5748325809",
+      "bytes": 5591,
+      "reason": "superseded visual acceptance report; retained as engineering history"
+    },
+    {
+      "from": "docs/gucc-atelier-visual-acceptance-20261015.md",
+      "to": "archive/reports/uiux/gucc-atelier-visual-acceptance-20261015.md",
+      "git_blob_sha": "863ceb463283e8257ca188c8178aff65821e4da9",
+      "bytes": 4524,
+      "reason": "superseded visual acceptance report; retained as engineering history"
+    },
+    {
+      "from": "docs/gucc-mobile-layout-repair-20261016.md",
+      "to": "archive/reports/uiux/gucc-mobile-layout-repair-20261016.md",
+      "git_blob_sha": "1016d9aef0f98e230523d258782d77005fff7ff6",
+      "bytes": 3994,
+      "reason": "superseded visual acceptance report; retained as engineering history"
+    },
+    {
+      "from": "docs/uiux-audit-2026-08-25-round2.md",
+      "to": "archive/reports/uiux/uiux-audit-2026-08-25-round2.md",
+      "git_blob_sha": "470cd423fbf67f325746869836f0feda1e245d4a",
+      "bytes": 5904,
+      "reason": "historical UX audit; current runtime does not load it"
+    },
+    {
+      "from": "docs/uiux-audit-2026-08-25-round3.md",
+      "to": "archive/reports/uiux/uiux-audit-2026-08-25-round3.md",
+      "git_blob_sha": "c2fb9c5d4211194407b6c4eed5cb27913fba6595",
+      "bytes": 7021,
+      "reason": "historical UX audit; current runtime does not load it"
+    },
+    {
+      "from": "docs/uiux-audit-2026-08-25.md",
+      "to": "archive/reports/uiux/uiux-audit-2026-08-25.md",
+      "git_blob_sha": "5134f7791770491fdf5f89457a43c813abd73c11",
+      "bytes": 7752,
+      "reason": "historical UX audit; current runtime does not load it"
+    }
+  ]
+}

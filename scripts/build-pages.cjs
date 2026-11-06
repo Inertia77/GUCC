@@ -13,8 +13,16 @@ function build(out,sha){
  if(!/^[a-f0-9]{40}$/.test(sha))throw Error('Full commit SHA required');
  fs.mkdirSync(out,{recursive:true});
  // Site files only. Never include developer fixtures, migrations, caches or local credentials.
- for(const name of ['apps','assets','reference','data','docs','scripts','automation','index.html','offline.html','manifest.webmanifest','.nojekyll','sw.js']){
-  fs.cpSync(path.join(root,name),path.join(out,name),{recursive:true});
+ for(const name of ['apps','assets','reference','data','docs','index.html','offline.html','manifest.webmanifest','.nojekyll','sw.js']){
+  fs.cpSync(path.join(root,name),path.join(out,name),{
+   recursive:true,
+   filter(source){
+    const rel=path.relative(root,source).split(path.sep).join('/');
+    // QA fixtures are active in CI but must not become public Pages payloads.
+    return rel!=='apps/video-workspace/production-system/fixtures'
+      && !rel.startsWith('apps/video-workspace/production-system/fixtures/');
+   }
+  });
  }
  const walk=dir=>{
   for(const e of fs.readdirSync(dir,{withFileTypes:true})){

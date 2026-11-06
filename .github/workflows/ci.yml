@@ -22,6 +22,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Inventory unused files and verify archived sources
+        run: node scripts/audit-repo-files.cjs --check
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -110,6 +113,7 @@ jobs:
             tmp/mobile-reference-after/
             tmp/db-style-order-browser/
             tmp/db-atelier-v2/
+            tmp/repo-archive-audit/
             tmp/chroma-browser/
             tmp/stabilization-browser/
             tmp/stabilization-sw/results.json

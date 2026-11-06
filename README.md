@@ -81,6 +81,7 @@ GUCC/
 │  ├─ video-workspace/            # 视频项目工作台（含 production-system）
 │  ├─ cover-generator/            # 封面生成器
 │  └─ publishing-console/         # 发布与复盘控制台
+├─ archive/                      # 无损历史归档（不进入 Pages 发布包）
 ├─ assets/                        # 图标、素材、封面背景、PSD 模板、门禁脚本
 ├─ automation/                    # 本地辅助批处理和资料工作流
 ├─ data/                          # 数据库结构、导入 CSV、备份说明
@@ -186,3 +187,10 @@ npm.cmd run creator:agent -- --bootstrap-project <projectId>
 4. Supabase SQL 统一放 `supabase/sql/`，不要散落在根目录。
 5. 新增图标或素材放 `assets/`，大文件只放真正复用的版本。
 6. 改完前端入口后运行 `node scripts/check-project.mjs`。
+
+
+## 仓库归档与正式站发布范围（2026-11-06）
+
+历史 Supabase CSV 导出和已替代的工程审计记录已无损移入 [archive/](archive/README.md)；详见 [归档清单](archive/ARCHIVE_MANIFEST.json) 与 [审计报告](docs/operations/repo-archive-audit-20261106.md)。
+
+开发期脚本 `scripts/`、本机自动化 `automation/` 和 Creator QA Fixture 仍留在仓库并参与必要的本地 / CI 工作，**但不再作为正式 Pages 网站资源发布**。固定版 Prompt、兼容 Production、创作素材、生产 SQL/迁移与六游资料均保留。

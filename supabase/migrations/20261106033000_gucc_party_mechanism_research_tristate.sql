@@ -155,6 +155,17 @@ begin
     end if;
   end if;
 
+  -- Prevent records that would vanish immediately due to out-of-scope members.
+  if exists (
+    select 1
+    from public.party_members pm
+    join public.character_progress cp on cp.character_id = pm.character_id
+    where pm.party_id = v_party_id
+      and (cp.research_status = '対象外' or cp.build_status = '対象外')
+  ) then
+    raise exception '阵容包含対象外角色，请调整成员或角色状态后保存';
+  end if;
+
   return jsonb_build_object('id',v_party_id,'saved',true);
 end $function$;
 

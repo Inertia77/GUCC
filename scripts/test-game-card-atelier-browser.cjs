@@ -22,8 +22,8 @@ const rows = Object.fromEntries(["searchCharacters","searchParties","searchMecha
     const id=uuid(mode*10+i+1);
     const common={id,game_code:code,game_title:label};
     if(mode===0)return {...common,name:label,character_name:label,full_name:label+" 典藏档案",release_date:"2026-10-01",rarity:"S",element:"测试",research_status:"△",build_status:"✕",progress_note:"隔离浏览器视图检查。非生产数据。"};
-    if(mode===1)return {...common,summary:label+" · 研究阵容",party_type:"实战研究",status:"待研究",hold_status:"YES",members:[{name:"档案成员一"},{name:"档案成员二"}],description:"隔离浏览器实测阵容说明。"};
-    if(mode===2)return {...common,title:label+" · 核心机制",mechanism_type:"机制解析",source_kind:"official",verified_at:"2026-11-01",description:"隔离机制说明"};
+    if(mode===1)return {...common,summary:label+" · 研究阵容",party_type:"实战研究",status:"△",members:[{name:"档案成员一"},{name:"档案成员二"}],description:"隔离浏览器实测阵容说明。"};
+    if(mode===2)return {...common,title:label+" · 核心机制",mechanism_type:"switch",research_status:"△",verified_at:"2026-11-01",description:"隔离机制说明"};
     return {...common,version_no:"3."+String(i+1),version_name:label+" · 版本记录",start_date:"2026-10-01",end_date:null,
       banners:[{phase:code==="阴"?"other":"first_half",pool_type:"limited",entry_role:"featured_new",
         character_name:"大天狗 · 高天铁羽",note:"官方版本消息与来源说明：长文本应该保持清晰可读。",

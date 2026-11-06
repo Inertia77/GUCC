@@ -549,6 +549,26 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-ga
   color: #e5d8cb !important;
 }
 
+
+/* Night archive version entries must never inherit legacy daylight-paper
+   backgrounds. Text on the inset is warm and intentionally high-contrast. */
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]).version-card .banner-chip {
+  border-color: #57483e !important;
+  background: linear-gradient(135deg, #1b171a, #111218) !important;
+  color: var(--game-text) !important;
+}
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]).version-card .banner-chip .banner-character {
+  color: var(--game-title) !important;
+}
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]).version-card .banner-chip .banner-type {
+  color: var(--game-secondary) !important;
+}
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]).version-card .banner-chip small {
+  color: var(--game-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
 body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) .item-content {
   border-top-color: #57483e !important;
 }

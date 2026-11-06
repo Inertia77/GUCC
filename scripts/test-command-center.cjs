@@ -106,7 +106,15 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.match(partySource, /研究.*displayCharacterStatus\(row\.status\)/);
   assert.match(mechanismSource, /mechanismTypeLabel\(row\.mechanism_type\)/);
   assert.match(triStateMigration, /alter table public\.parties alter column hold_status drop not null/);
+  // The previous migration introduced an unintended party-member exclusion;
+  // the follow-up migration must override both RPCs without that predicate.
+  const visibilityFix = read("supabase/migrations/20261106035528_restore_all_party_visibility_no_member_exclusion.sql");
   assert.match(triStateMigration, /cp\.research_status = '対象外'/);
+  assert.match(visibilityFix, /CREATE OR REPLACE FUNCTION public\.app_search_parties/);
+  assert.match(visibilityFix, /CREATE OR REPLACE FUNCTION public\.app_save_party/);
+  assert.doesNotMatch(visibilityFix, /character_progress|阵容包含対象外角色/);
+  assert.match(visibilityFix, /p\.status/);
+  assert.match(visibilityFix, /p_payload->>'status'/);
   assert.match(triStateMigration, /source_kind set default 'unspecified'/);
   assert.match(triStateMigration, /m\.research_status/);
   assert.match(mechanismSource, /verified_at/);

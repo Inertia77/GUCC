@@ -1,6 +1,6 @@
 -- User-requested correction to GUCC research-state change.
 -- Only PARTY STATUS options exclude 対象外; party members may have any character state.
--- Do not hide or reject any party based on character_progress.
+-- Do not hide or reject any party based on a member's character status.
 -- Deliberately supersedes the mistaken filter/guard introduced in migration 20261106033947.
 begin;
 

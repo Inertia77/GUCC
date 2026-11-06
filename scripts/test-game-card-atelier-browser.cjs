@@ -115,7 +115,7 @@ const modes=[
               .reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
           };
           const ratio=(foreground,background)=>{
-            const f=foreground.match(/[\\d.]+/g).slice(0,3).map(n=>Number(n).toString(16).padStart(2,"0")).join("");
+            const f=foreground.match(/\d+(?:\.\d+)?/g).slice(0,3).map(n=>Number(n).toString(16).padStart(2,"0")).join("");
             const a=lum("#"+f),b=lum(background);
             return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
           };

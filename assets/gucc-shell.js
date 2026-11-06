@@ -3,6 +3,14 @@
   const rootValue = currentScript?.dataset.root || './';
   const rootUrl = new URL(rootValue, window.location.href);
   const normalizedRoot = rootUrl.href.endsWith('/') ? rootUrl.href : `${rootUrl.href}/`;
+  // All GUCC modules using the shared shell get the same Android Notion behavior.
+  // The helper is intentionally loaded only on Android (desktop links stay native).
+  if (/\bAndroid\b/i.test(navigator.userAgent) && !document.querySelector('script[data-gucc-notion-app-links]')) {
+    const notionScript = document.createElement('script');
+    notionScript.src = new URL('assets/notion-app-links.js?v=20261106.1', normalizedRoot).href;
+    notionScript.dataset.guccNotionAppLinks = 'true';
+    document.head.appendChild(notionScript);
+  }
   const path = window.location.pathname.replace(/\/index\.html$/, '/');
   const isActive = (needle) => path.includes(needle);
   const productionActive = isActive('/apps/video-workspace/production-system/');

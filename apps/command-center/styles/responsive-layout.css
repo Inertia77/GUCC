@@ -323,14 +323,11 @@ body.command-center-page.gucc-enhanced .item .actions {
     display: none !important;
   }
 
-  /* Characters & teams show their two meaningful user-selected statuses.
-     Mechanics retain category/evidence, versions their date window. */
+  /* Show research badges consistently across characters, parties and mechanisms. */
   body.command-center-page.gucc-enhanced
   :is(#characterResults, #partyResults) > .item.is-collapsed .meta .badge.status-highlight,
   body.command-center-page.gucc-enhanced
-  #mechanismResults > .item.is-collapsed .meta .badge:nth-child(2),
-  body.command-center-page.gucc-enhanced
-  #mechanismResults > .item.is-collapsed .meta .badge:nth-child(3),
+  #mechanismResults > .item.is-collapsed .meta .badge.status-highlight,
   body.command-center-page.gucc-enhanced
   #versionResults > .item.is-collapsed .meta .badge:last-child {
     display: inline-flex !important;
@@ -439,7 +436,7 @@ body.command-center-page.gucc-enhanced .item .actions {
   }
 
   body.command-center-page.gucc-enhanced .filter-grid-simple .game-filter,
-  body.command-center-page.gucc-enhanced #mechanismSourceKind {
+  body.command-center-page.gucc-enhanced #mechanismResearchStatus {
     grid-column: 1 / -1 !important;
   }
 

@@ -3,6 +3,9 @@
 -- All old party OK rows mean previously researched; unclassified mechanism rows start at ✕.
 begin;
 
+-- Drop old two-value check before updating rows to the new ◯ / △ / ✕ enum.
+alter table public.parties drop constraint if exists parties_status_chk;
+
 update public.parties
 set status = case
   when status = 'OK' then '◯'
@@ -14,7 +17,6 @@ where status is distinct from case
   when status = '待研究' or status is null then '✕'
   else status end;
 
-alter table public.parties drop constraint if exists parties_status_chk;
 alter table public.parties add constraint parties_status_chk
   check (status in ('◯', '△', '✕'));
 alter table public.parties alter column status set default '✕';

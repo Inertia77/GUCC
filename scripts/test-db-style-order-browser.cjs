@@ -13,8 +13,8 @@ const out = path.resolve(root, 'tmp/db-style-order-browser');
 const viewports = [[320,700],[360,800],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1920,1080]];
 const expected = [
   ['gucc-search-ux-final', '/apps/command-center/styles/game-os.css', '4'],
-  ['gucc-game-themes-final', '/apps/command-center/styles/game-themes.css', '9'],
-  ['gucc-game-premium-final', '/apps/command-center/styles/game-premium.css', '1'],
+  ['gucc-game-themes-final', '/apps/command-center/styles/game-themes.css', '10'],
+  ['gucc-game-premium-final', '/apps/command-center/styles/game-premium.css', '2'],
   ['gucc-interface-chrome-final', '/apps/command-center/styles/interface-chrome.css', '1'],
   ['gucc-responsive-layout-final', '/apps/command-center/styles/responsive-layout.css', '5'],
   ['gucc-mobile-layout-final', '/apps/command-center/styles/mobile-layout.css', '4'],

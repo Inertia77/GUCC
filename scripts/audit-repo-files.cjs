@@ -93,6 +93,12 @@ if(process.argv.includes('--check')){
    if(!fs.existsSync(path.join(root,row.to)))throw Error('Archive target missing: '+row.to);
    const sha=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,row.to))).digest('hex');
    if(row.sha256 && sha!==row.sha256)throw Error('Archive content changed: '+row.to);
+   if(row.git_blob_sha){
+    const bytes=fs.readFileSync(path.join(root,row.to));
+    const gitSha=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\\0'.replace('\\0','\0'))).update(bytes).digest('hex');
+    if(gitSha!==row.git_blob_sha)throw Error('Git blob identity changed: '+row.to);
+    if(bytes.length!==row.bytes)throw Error('Archived byte length changed: '+row.to);
+   }
    const refs=references(row.from).filter(r=>!r.from.startsWith('archive/'));
    if(refs.some(r=>r.confidence==='explicit'&&r.deployment!=='documentation'))throw Error('Active path still references archived file: '+row.from);
   }

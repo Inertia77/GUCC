@@ -99,7 +99,7 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.doesNotMatch(read("apps/command-center/index.html"), /partyHoldStatus/);
   const partySource = read("apps/command-center/src/features/parties.js");
   const fixedOptions = read("apps/command-center/src/fixed-field-options.js");
-  const triStateMigration = read("supabase/migrations/20261106033000_gucc_party_mechanism_research_tristate.sql");
+  const triStateMigration = read("supabase/migrations/20261106033947_gucc_party_mechanism_research_tristate.sql");
   assert.match(fixedOptions, /partyStatus: Object\.freeze\(\['◯', '△', '✕'\]\)/);
   assert.match(fixedOptions, /mechanismResearchStatus: Object\.freeze\(\['◯', '△', '✕'\]\)/);
   assert.doesNotMatch(fixedOptions, /partyHoldStatus:/);

@@ -81,9 +81,9 @@ for (const materialPhrase of [
 
 // Regression: the original daylight-paper selector must not include the
 // version's inner banner-chip. The final premium layer owns its dark surface.
-assert.doesNotMatch(gameThemeStyles, /\\.version-note, \\.banner-chip\\)/, "Legacy Onmyoji parchment background reintroduced for banner entries");
-assert.match(gamePremiumStyles, /\\.version-card \\.banner-chip\\s*\\{[\\s\\S]*?background:\\s*linear-gradient\\(135deg, #1b171a, #111218\\)\\s*!important/);
-assert.match(gamePremiumStyles, /\\.version-card \\.banner-chip small\\s*\\{[\\s\\S]*?font-size:\\s*12px\\s*!important/);
+assert.doesNotMatch(gameThemeStyles, /\.version-note, \.banner-chip\)/, "Legacy Onmyoji parchment background reintroduced for banner entries");
+assert.match(gamePremiumStyles, /\.version-card \.banner-chip\s*\{[\s\S]*?background:\s*linear-gradient\(135deg, #1b171a, #111218\)\s*!important/);
+assert.match(gamePremiumStyles, /\.version-card \.banner-chip small\s*\{[\s\S]*?font-size:\s*12px\s*!important/);
 
 // Onmyoji must stay dark, warm and readable instead of returning to a bright
 // daylight parchment card. These tokens intentionally sit in the final material layer.

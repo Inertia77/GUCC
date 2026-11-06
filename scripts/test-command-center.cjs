@@ -97,6 +97,18 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.doesNotMatch(read("apps/command-center/src/features/parties.js"), /partyHoldStatus|name="hold_status"/);
   assert.match(read("apps/command-center/src/fixed-field-options.js"), /mechanismResearchStatus/);
   assert.doesNotMatch(read("apps/command-center/index.html"), /partyHoldStatus/);
+  const partySource = read("apps/command-center/src/features/parties.js");
+  const fixedOptions = read("apps/command-center/src/fixed-field-options.js");
+  const triStateMigration = read("supabase/migrations/20261106033000_gucc_party_mechanism_research_tristate.sql");
+  assert.match(fixedOptions, /partyStatus: Object\.freeze\(\['◯', '△', '✕'\]\)/);
+  assert.match(fixedOptions, /mechanismResearchStatus: Object\.freeze\(\['◯', '△', '✕'\]\)/);
+  assert.doesNotMatch(fixedOptions, /partyHoldStatus:/);
+  assert.match(partySource, /研究.*displayCharacterStatus\(row\.status\)/);
+  assert.match(mechanismSource, /mechanismTypeLabel\(row\.mechanism_type\)/);
+  assert.match(triStateMigration, /alter table public\.parties alter column hold_status drop not null/);
+  assert.match(triStateMigration, /cp\.research_status = '対象外'/);
+  assert.match(triStateMigration, /source_kind set default 'unspecified'/);
+  assert.match(triStateMigration, /m\.research_status/);
   assert.match(mechanismSource, /verified_at/);
   assert.match(mechanismSource, /window\.confirm/);
 

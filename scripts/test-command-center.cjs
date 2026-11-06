@@ -92,7 +92,11 @@ const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), "u
   assert.match(mechanismSource, /renderStructuredResourceEditor/);
   assert.match(mechanismSource, /collectStructuredResourceLinks/);
   assert.match(mechanismSource, /mechanism_type/);
-  assert.match(mechanismSource, /source_kind/);
+  assert.match(mechanismSource, /research_status/);
+  assert.doesNotMatch(mechanismSource, /mechanismSourceKind|name="source_kind"/);
+  assert.doesNotMatch(read("apps/command-center/src/features/parties.js"), /partyHoldStatus|name="hold_status"/);
+  assert.match(read("apps/command-center/src/fixed-field-options.js"), /mechanismResearchStatus/);
+  assert.doesNotMatch(read("apps/command-center/index.html"), /partyHoldStatus/);
   assert.match(mechanismSource, /verified_at/);
   assert.match(mechanismSource, /window\.confirm/);
 

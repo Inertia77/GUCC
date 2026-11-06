@@ -23,7 +23,8 @@ import {
   withBusy
 } from '../ui.js';
 import { applyPendingFilterValue, bindPersistentFilters, persistFilters } from '../ux-state.js';
-import { bindClearFilters, bindSelectAutoSearch } from '../search-filters.js';
+import { bindClearFilters, bindSelectAutoSearch, matchesStatus } from '../search-filters.js';
+import { renderFixedFieldOptions, displayCharacterStatus } from '../fixed-field-options.js';
 import {
   STANDARD_RESOURCE_RELATIONS,
   bindStructuredResourceEditor,
@@ -38,24 +39,26 @@ const FILTERS = {
   '#mechanismKeyword': 'mk',
   '#mechanismGame': 'mg',
   '#mechanismType': 'mt',
-  '#mechanismSourceKind': 'ms'
+  '#mechanismResearchStatus': 'mr'
 };
 
-const SOURCE_KIND_LABELS = {
-  official: '官方',
-  official_wiki: '官方 Wiki',
-  official_community: '官方社区',
-  community: '社区资料',
-  guide: '攻略'
-};
-
+const MECHANISM_TYPE_LABELS = Object.freeze({
+  action: '动作机制',
+  break: '削韧／破韧',
+  combat: '战斗机制',
+  core_combat: '核心战斗',
+  equipment: '装备机制',
+  reaction: '反应机制',
+  resource: '资源机制',
+  switch: '切换／换人',
+  system: '系统机制',
+  team: '队伍机制'
+});
+const mechanismTypeLabel = (value) => MECHANISM_TYPE_LABELS[value] || value || '未分类';
+const mechanismTypeKey = (value) => Object.entries(MECHANISM_TYPE_LABELS)
+  .find(([, label]) => label === value)?.[0] || value;
 let catalogRows = [];
 let catalogLoaded = false;
-
-function sourceKindLabel(value) {
-  const key = String(value || '').trim();
-  return SOURCE_KIND_LABELS[key] || key;
-}
 
 function ensureMechanismStyles() {
   if (document.querySelector('link[data-mechanism-styles]')) return;
@@ -86,8 +89,8 @@ function ensureMechanismShell() {
           <select id="mechanismType" class="filter-select" aria-label="机制类型">
             <option value="">全部机制类型</option>
           </select>
-          <select id="mechanismSourceKind" class="filter-select" aria-label="来源性质">
-            <option value="">全部来源性质</option>
+          <select id="mechanismResearchStatus" class="filter-select" aria-label="机制研究状态" data-fixed-field="mechanismResearchStatus">
+            ${renderFixedFieldOptions('mechanismResearchStatus', '', { emptyLabel: '全部研究状态' })}
           </select>
           <button id="searchMechanismBtn" type="button">搜索机制</button>
           <button id="clearMechanismFilters" type="button" class="secondary filter-clear">清空筛选</button>
@@ -135,12 +138,11 @@ function hydrateCatalogControls() {
     '全部游戏',
     (value, label) => `${value} · ${label}`
   );
-  replaceSelectOptions($('#mechanismType'), uniqueOptions(catalogRows, 'mechanism_type'), '全部机制类型');
   replaceSelectOptions(
-    $('#mechanismSourceKind'),
-    uniqueOptions(catalogRows, 'source_kind'),
-    '全部来源性质',
-    (value) => `${sourceKindLabel(value)} · ${value}`
+    $('#mechanismType'),
+    uniqueOptions(catalogRows, 'mechanism_type'),
+    '全部机制类型',
+    (value) => mechanismTypeLabel(value)
   );
 }
 
@@ -188,8 +190,10 @@ function renderMechanismDetails(row) {
 function openEditor(data = {}) {
   const editor = $('#mechanismEditor');
   const links = data.links || data.resources || [];
-  const mechanismTypes = uniqueOptions(catalogRows, 'mechanism_type').map(([value]) => value);
-  const sourceKinds = uniqueOptions(catalogRows, 'source_kind').map(([value]) => value);
+  const mechanismTypes = [...new Set([
+    ...Object.values(MECHANISM_TYPE_LABELS),
+    ...uniqueOptions(catalogRows, 'mechanism_type').map(([value]) => mechanismTypeLabel(value))
+  ])];
 
   editor.innerHTML = `
     <div class="editor-header">
@@ -212,12 +216,11 @@ function openEditor(data = {}) {
           <input name="title" required value="${escapeHtml(data.title || '')}" placeholder="例如：超击破" />
         </label>
         <label>机制类型
-          <input name="mechanism_type" list="mechanismTypeSuggestions" value="${escapeHtml(data.mechanism_type || '')}" placeholder="core_combat / resource / break / ..." />
+          <input name="mechanism_type" list="mechanismTypeSuggestions" value="${escapeHtml(data.mechanism_type ? mechanismTypeLabel(data.mechanism_type) : '')}" placeholder="选择或填写中文机制分类" />
           ${renderDatalist('mechanismTypeSuggestions', mechanismTypes)}
         </label>
-        <label>来源性质
-          <input name="source_kind" list="mechanismSourceSuggestions" required value="${escapeHtml(data.source_kind || 'community')}" placeholder="official / community / guide / ..." />
-          ${renderDatalist('mechanismSourceSuggestions', sourceKinds)}
+        <label>研究状态
+          <select name="research_status" required>${renderFixedFieldOptions('mechanismResearchStatus', data.research_status || (data.id ? '' : '✕'))}</select>
         </label>
         <label>已核验日期
           <input name="verified_at" type="date" value="${escapeHtml(data.verified_at || '')}" />
@@ -266,10 +269,10 @@ function openEditor(data = {}) {
           id: form.id || null,
           game_code: form.game_code,
           title: form.title,
-          mechanism_type: form.mechanism_type,
+          mechanism_type: mechanismTypeKey(form.mechanism_type),
           description: form.description,
           note: form.note,
-          source_kind: form.source_kind,
+          research_status: form.research_status,
           verified_at: form.verified_at,
           links: collectStructuredResourceLinks(event.currentTarget)
         });
@@ -299,10 +302,9 @@ export async function searchMechanisms({ visibleCount = 0, revealId = '' } = {})
       keyword: $('#mechanismKeyword').value.trim(),
       game_code: $('#mechanismGame').value,
       mechanism_type: $('#mechanismType').value,
-      source_kind: $('#mechanismSourceKind').value,
       limit: MECHANISM_SEARCH_LIMIT
     });
-    const list = normalizeRows(rows);
+    const list = normalizeRows(rows).filter((row) => matchesStatus(row.research_status, $('#mechanismResearchStatus').value));
 
     if (!list.length) {
       renderListState(container, '没有结果。');
@@ -317,8 +319,8 @@ export async function searchMechanisms({ visibleCount = 0, revealId = '' } = {})
             <div class="item-title">${escapeHtml(row.title)}</div>
             ${renderMeta([
               row.game_code || row.game_title,
-              row.mechanism_type,
-              sourceKindLabel(row.source_kind),
+              mechanismTypeLabel(row.mechanism_type),
+              { value: '研究 ' + displayCharacterStatus(row.research_status), tone: 'progress' },
               row.verified_at ? `已核验 ${row.verified_at}` : '未标核验日期'
             ])}
           </div>
@@ -355,7 +357,7 @@ export function initMechanisms() {
 
   bindPersistentFilters('mechanisms', FILTERS);
   bindSelectAutoSearch(
-    ['#mechanismGame', '#mechanismType', '#mechanismSourceKind'],
+    ['#mechanismGame', '#mechanismType', '#mechanismResearchStatus'],
     runSearch
   );
   bindClearFilters('#clearMechanismFilters', Object.keys(FILTERS), runSearch);

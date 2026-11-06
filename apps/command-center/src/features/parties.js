@@ -25,7 +25,7 @@ import {
   withBusy
 } from '../ui.js';
 import { bindPersistentFilters, persistFilters } from '../ux-state.js';
-import { renderFixedFieldOptions } from '../fixed-field-options.js';
+import { renderFixedFieldOptions, displayCharacterStatus } from '../fixed-field-options.js';
 import {
   bindClearFilters,
   bindGameFilter,
@@ -41,8 +41,7 @@ const FILTERS = {
   '#partyKeyword': 'pq',
   '#partyGame': 'pg',
   '#partyGameCustom': 'pgx',
-  '#partyStatus': 'ps',
-  '#partyHoldStatus': 'phs'
+  '#partyStatus': 'ps'
 };
 const COLLAPSE_KEY = 'parties';
 
@@ -57,7 +56,6 @@ function partyMatchesKeyword(row, keyword) {
     row.description,
     row.party_type,
     row.status,
-    row.hold_status,
     row.game_code,
     ...(row.members || []).map((member) => member.name || member.member_name_raw)
   ].some((value) => includesKeyword(value, keyword));
@@ -177,11 +175,8 @@ function openEditor(data = {}) {
         <label>游戏 code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" /></label>
         <label class="wide">简要描述 <input name="summary" required value="${escapeHtml(data.summary || '')}" /></label>
         <label>类型 <input name="party_type" value="${escapeHtml(data.party_type || '')}" /></label>
-        <label>状态
-          <select name="status" required>${renderFixedFieldOptions('partyStatus', data.status)}</select>
-        </label>
-        <label>持有状态
-          <select name="hold_status" required>${renderFixedFieldOptions('partyHoldStatus', data.hold_status)}</select>
+        <label>研究状态
+          <select name="status" required>${renderFixedFieldOptions('partyStatus', data.status || (data.id ? '' : '✕'))}</select>
         </label>
         ${Array.from({ length: PARTY_MEMBER_SLOT_COUNT }, (_, index) => `<label>成员 ${index + 1} <input name="m${index + 1}" value="${escapeHtml(members[index]?.name || members[index]?.member_name_raw || '')}" /></label>`).join('')}
         <label class="wide">
@@ -224,7 +219,6 @@ function openEditor(data = {}) {
           summary: form.summary,
           party_type: form.party_type,
           status: form.status,
-          hold_status: form.hold_status,
           description: composePartyDescription(form.description, collectPartyLinks(event.currentTarget)),
           members: membersPayload
         });
@@ -266,7 +260,6 @@ export async function searchParties({ visibleCount = 0, revealId = '' } = {}) {
     }
     list = list.filter((row) => (
       matchesStatus(row.status, $('#partyStatus').value)
-      && matchesStatus(row.hold_status, $('#partyHoldStatus').value)
     ));
     partyRows = new Map(list.map((row) => [String(row.id), row]));
     if (!list.length) {
@@ -283,8 +276,7 @@ export async function searchParties({ visibleCount = 0, revealId = '' } = {}) {
             ${renderMeta([
               row.game_code,
               row.party_type,
-              { value: row.status, tone: 'progress' },
-              { value: row.hold_status, tone: 'state' }
+              { value: '研究 ' + displayCharacterStatus(row.status), tone: 'progress' }
             ])}
           </div>
           <div class="actions collapsible-actions">
@@ -320,7 +312,7 @@ export function initParties() {
   bindPersistentFilters('parties', FILTERS);
   bindGameFilter('#partyGame', '#partyGameCustom');
   bindSelectAutoSearch(
-    ['#partyGame', '#partyStatus', '#partyHoldStatus'],
+    ['#partyGame', '#partyStatus'],
     runSearch
   );
   bindClearFilters('#clearPartyFilters', Object.keys(FILTERS), runSearch);

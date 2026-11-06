@@ -301,7 +301,7 @@ for (const [source, field] of [
   [characterFeatureSource, 'research_status'],
   [characterFeatureSource, 'build_status'],
   [partyFeatureSource, 'status'],
-  [partyFeatureSource, 'hold_status']
+  [readFileSync(resolve(appSource, 'features', 'mechanisms.js'), 'utf8'), 'research_status']
 ]) {
   if (!source.includes(`<select name="${field}" required>`)) {
     errors.push(`固定状态字段 ${field} 必须在编辑器中使用必选下拉框`);

@@ -1,8 +1,8 @@
 const FIXED_FIELD_OPTIONS = Object.freeze({
   characterResearchStatus: Object.freeze(['◯', '△', '✕', '対象外']),
   characterBuildStatus: Object.freeze(['◯', '△', '✕', '対象外']),
-  partyStatus: Object.freeze(['待研究', 'OK']),
-  partyHoldStatus: Object.freeze(['YES', 'NO'])
+  partyStatus: Object.freeze(['◯', '△', '✕']),
+  mechanismResearchStatus: Object.freeze(['◯', '△', '✕'])
 });
 
 function escapeHtml(value) {

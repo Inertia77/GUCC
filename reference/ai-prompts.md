@@ -165,8 +165,7 @@ select public.app_save_party($$
 "game_code": "绝",
 "summary": "队伍概要",
 "party_type": "常规配队/高难/开荒/整活/其他",
-"status": "待测试/可用/推荐/过时",
-"hold_status": "",
+"status": "✕",
 "description": "配队说明",
 "members": [
 {
@@ -188,6 +187,7 @@ $$::jsonb);
 * members 中 name 使用中文常用名。
 * slot_no 从 1 开始。
 * member_role 写主C、副C、辅助、生存、破盾、充能、后台等。
+* status 只用「◯ 已完成 / △ 进行中 / ✕ 未开始」。没有经过本人确认的研究成果，默认 ✕；不要传 hold_status、不要以角色账号持有情况推断阵容研究进度。
 * 如果角色存在，函数会自动关联 character_id；不存在也会保留 member_name_raw。
 * 如果没有明确配队资料，不要生成配队 SQL。
 

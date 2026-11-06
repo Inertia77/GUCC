@@ -367,7 +367,7 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-ga
 
 body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .badge,
 body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .actions button,
-body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
   border-radius: 0 !important;
   clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
 }
@@ -655,7 +655,7 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-ga
   color: #fff8ee !important;
 }
 
-body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
+body.command-center-page.gucc-enhanced .item:is([data-game-code="阴"], [data-game-code="YYS"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
   border-radius: 1px 12px 1px 12px !important;
   border-left: 3px solid rgba(161, 74, 61, .65) !important;
   background: #fbf4e7 !important;

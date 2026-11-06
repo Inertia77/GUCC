@@ -367,7 +367,7 @@ body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-ga
 
 body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .badge,
 body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) .actions button,
-body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note, .banner-chip) {
+body.command-center-page.gucc-enhanced .item:is([data-game-code="绝"], [data-game-code="ZZZ"]) :is(.note-block, .mechanism-section, .resource-card, .banner-phase, .version-acquisitions, .version-note) {
   border-radius: 0 !important;
   clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
 }

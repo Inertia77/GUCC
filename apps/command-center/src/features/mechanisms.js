@@ -12,6 +12,7 @@ import {
   log,
   normalizeRows,
   openDrawer,
+  bindEditorSaveFeedback,
   readForm,
   renderCollapseButton,
   renderListState,
@@ -255,11 +256,13 @@ function openEditor(data = {}) {
   $('#closeMechanismEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelMechanismEdit').addEventListener('click', () => closeDrawer(editor));
   bindStructuredResourceEditor($('#mechanismForm'));
+  const showSaveFeedback = bindEditorSaveFeedback($('#mechanismForm'));
   openDrawer(editor);
 
   $('#mechanismForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    showSaveFeedback('正在保存机制…', 'progress');
 
     await withBusy(submitButton, '保存中...', async () => {
       try {
@@ -283,7 +286,9 @@ function openEditor(data = {}) {
         restoreListContext($('#mechanismResults'), listContext, { focusId: result.id, highlight: true });
         showToast(data.id ? '机制已保存，资源关系已同步。' : '机制已新增并定位。');
       } catch (error) {
-        log($('#mechanismSaveLog'), error.message);
+        const message = error?.message || String(error);
+        log($('#mechanismSaveLog'), message);
+        showSaveFeedback(`保存失败：${message}`, 'error');
       }
     });
   });

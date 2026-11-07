@@ -59,3 +59,49 @@
     grid-template-columns: minmax(0, 1fr) minmax(88px, .52fr);
   }
 }
+
+
+/* Long edit forms used to hide API/validation errors inside the scrollable
+   body. Keep feedback in the same persistent area as Save; never behind
+   the header, global dock or the document's scroll position. */
+.editor-footer:has(.editor-save-feedback:not([hidden])) {
+  flex-wrap: wrap;
+}
+.editor-save-feedback {
+  order: -1;
+  flex: 0 0 100%;
+  width: 100%;
+  margin: 0 0 4px;
+  padding: 10px 12px;
+  border: 1px solid #677ab0;
+  border-radius: 6px;
+  background: #1c2640;
+  color: #e6edff;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  max-height: min(25dvh, 180px);
+  overflow-y: auto;
+}
+.editor-save-feedback[data-kind="error"] {
+  border-color: #c96f7a;
+  background: #342029;
+  color: #ffe1e5;
+}
+.editor-save-feedback[hidden] {
+  display: none !important;
+}
+.editor-form [aria-invalid="true"] {
+  border-color: #ffa5af !important;
+  outline: 2px solid #ffa5af !important;
+  outline-offset: 1px;
+}
+@media (max-width: 620px) {
+  .editor-save-feedback {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    font-size: 14px;
+  }
+}

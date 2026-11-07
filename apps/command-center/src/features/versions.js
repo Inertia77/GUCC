@@ -13,6 +13,7 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
+  bindEditorSaveFeedback,
   readForm,
   renderListState,
   renderMeta,
@@ -462,11 +463,13 @@ function openEditor(data = {}) {
   $('#cancelVersionEdit').addEventListener('click', () => closeDrawer(editor));
   bindBannerEditor($('#versionForm'));
   bindAcquisitionEditor($('#versionForm'));
+  const showSaveFeedback = bindEditorSaveFeedback($('#versionForm'));
   openDrawer(editor);
 
   $('#versionForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    showSaveFeedback('正在保存版本…', 'progress');
 
     await withBusy(submitButton, '保存中...', async () => {
       try {
@@ -499,7 +502,9 @@ function openEditor(data = {}) {
         restoreListContext($('#versionResults'), listContext, { focusId: result.id, highlight: true });
         showToast(data.id ? '版本已保存，卡池与非卡池获取已同步。' : '版本已新增并定位。');
       } catch (error) {
-        log($('#versionSaveLog'), error.message);
+        const message = error?.message || String(error);
+        log($('#versionSaveLog'), message);
+        showSaveFeedback(`保存失败：${message}`, 'error');
       }
     });
   });

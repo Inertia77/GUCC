@@ -79,6 +79,9 @@ jobs:
       - name: Run phone database and reference layout regression
         run: node scripts/test-mobile-reference-browser.cjs
 
+      - name: Run DB editor real Save button and validation regression
+        run: node scripts/test-db-editor-save-browser.cjs
+
       - name: Run six-game DB Atelier card browser acceptance
         run: node scripts/test-game-card-atelier-browser.cjs
 
@@ -111,6 +114,7 @@ jobs:
             tmp/atelier-after/
             tmp/atelier-polish-interactions/
             tmp/mobile-reference-after/
+            tmp/db-editor-save-feedback/
             tmp/db-style-order-browser/
             tmp/db-atelier-v2/
             tmp/repo-archive-audit/

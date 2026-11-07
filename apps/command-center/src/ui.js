@@ -65,6 +65,60 @@ export function closeActiveDrawer() {
   closeDrawer(activeDrawer);
 }
 
+// Editor form feedback is visible beside the persistent Save button.
+// HTML form validation prevents the submit event from firing, so the
+// capturing invalid handler is essential: otherwise Save appears inert.
+export function bindEditorSaveFeedback(form) {
+  if (!form) throw new Error('Missing editor form');
+  const footer = form.querySelector('.editor-footer');
+  if (!footer) throw new Error('Missing editor footer');
+  let feedback = footer.querySelector('.editor-save-feedback');
+  if (!feedback) {
+    feedback = document.createElement('p');
+    feedback.className = 'editor-save-feedback';
+    feedback.hidden = true;
+    footer.prepend(feedback);
+  }
+
+  const show = (message = '', kind = 'error') => {
+    feedback.hidden = !message;
+    feedback.textContent = String(message || '');
+    feedback.dataset.kind = kind;
+    feedback.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+    feedback.setAttribute('aria-live', kind === 'error' ? 'assertive' : 'polite');
+    return feedback;
+  };
+
+  form.addEventListener('invalid', (event) => {
+    const field = event.target;
+    if (!(field instanceof HTMLElement) || field !== form.querySelector(':invalid')) return;
+    const label = field.closest('label');
+    const title = label?.childNodes
+      ? [...label.childNodes].filter(node => node.nodeType === Node.TEXT_NODE)
+        .map(node => node.textContent.trim()).filter(Boolean).join(' ')
+      : '';
+    const fieldName = title || field.getAttribute('aria-label') || field.getAttribute('name') || '必填字段';
+    show(`无法保存：请检查「${fieldName}」。${field.validationMessage ? ' ' + field.validationMessage : ''}`);
+    field.setAttribute('aria-invalid', 'true');
+    requestAnimationFrame(() => {
+      if (!field.isConnected) return;
+      field.focus({ preventScroll: true });
+      field.scrollIntoView({ block: 'center', inline: 'nearest' });
+    });
+  }, true);
+
+  form.addEventListener('input', (event) => {
+    const field = event.target;
+    if (field instanceof HTMLElement) field.removeAttribute('aria-invalid');
+    if (feedback.dataset.kind === 'error') show('');
+  });
+  form.addEventListener('change', (event) => {
+    if (event.target instanceof HTMLElement) event.target.removeAttribute('aria-invalid');
+    if (feedback.dataset.kind === 'error') show('');
+  });
+  return show;
+}
+
 export function readForm(formEl) {
   const data = {};
   formEl.querySelectorAll('[name]').forEach((input) => {

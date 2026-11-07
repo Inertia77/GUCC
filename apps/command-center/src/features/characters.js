@@ -12,6 +12,7 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
+  bindEditorSaveFeedback,
   readForm,
   renderLinks,
   renderListState,
@@ -118,7 +119,13 @@ function collectLinks(form) {
       source: value('source'),
       note: value('note')
     };
-    const hasAnyValue = Object.values(link).some(Boolean);
+    // New/edit forms always render one empty row with a default relation_type.
+    // That selector alone is not a real link: otherwise every character with
+    // zero resources becomes impossible to save ("URL required").
+    const hasAnyValue = Boolean(
+      link.title || link.url || link.source || link.note
+      || (link.relation_type && link.relation_type !== DEFAULT_LINK_RELATION_TYPE)
+    );
     if (hasAnyValue && !link.url) throw new Error(`第 ${index + 1} 条链接需要填写 URL。`);
     return hasAnyValue ? link : null;
   }).filter(Boolean);
@@ -235,10 +242,12 @@ function openEditor(data = {}) {
   $('#closeCharEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelCharEdit').addEventListener('click', () => closeDrawer(editor));
   bindLinkEditor($('#charForm'));
+  const showSaveFeedback = bindEditorSaveFeedback($('#charForm'));
   openDrawer(editor);
   $('#charForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    showSaveFeedback('正在保存角色…', 'progress');
 
     await withBusy(submitButton, '保存中...', async () => {
       try {
@@ -281,7 +290,9 @@ function openEditor(data = {}) {
         restoreListContext($('#characterResults'), listContext, { focusId: result.id, highlight: true });
         showToast(data.id ? '角色已保存，已回到原列表位置。' : '角色已新增并定位。');
       } catch (error) {
-        log($('#charSaveLog'), error.message);
+        const message = error?.message || String(error);
+        log($('#charSaveLog'), message);
+        showSaveFeedback(`保存失败：${message}`, 'error');
       }
     });
   });

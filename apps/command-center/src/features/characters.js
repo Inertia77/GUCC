@@ -119,7 +119,13 @@ function collectLinks(form) {
       source: value('source'),
       note: value('note')
     };
-    const hasAnyValue = Object.values(link).some(Boolean);
+    // New/edit forms always render one empty row with a default relation_type.
+    // That selector alone is not a real link: otherwise every character with
+    // zero resources becomes impossible to save ("URL required").
+    const hasAnyValue = Boolean(
+      link.title || link.url || link.source || link.note
+      || (link.relation_type && link.relation_type !== DEFAULT_LINK_RELATION_TYPE)
+    );
     if (hasAnyValue && !link.url) throw new Error(`第 ${index + 1} 条链接需要填写 URL。`);
     return hasAnyValue ? link : null;
   }).filter(Boolean);

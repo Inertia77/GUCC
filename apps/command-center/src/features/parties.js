@@ -12,6 +12,7 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
+  bindEditorSaveFeedback,
   readForm,
   renderListState,
   renderMeta,
@@ -200,10 +201,12 @@ function openEditor(data = {}) {
   $('#closePartyEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelPartyEdit').addEventListener('click', () => closeDrawer(editor));
   bindPartyLinkEditor($('#partyForm'));
+  const showSaveFeedback = bindEditorSaveFeedback($('#partyForm'));
   openDrawer(editor);
   $('#partyForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    showSaveFeedback('正在保存阵容…', 'progress');
 
     await withBusy(submitButton, '保存中...', async () => {
       try {
@@ -227,7 +230,9 @@ function openEditor(data = {}) {
         restoreListContext($('#partyResults'), listContext, { focusId: result.id, highlight: true });
         showToast(data.id ? '阵容已保存，已回到原列表位置。' : '阵容已新增并定位。');
       } catch (error) {
-        log($('#partySaveLog'), error.message);
+        const message = error?.message || String(error);
+        log($('#partySaveLog'), message);
+        showSaveFeedback(`保存失败：${message}`, 'error');
       }
     });
   });

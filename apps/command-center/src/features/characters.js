@@ -12,6 +12,7 @@ import {
   normalizeRows,
   closeDrawer,
   openDrawer,
+  bindEditorSaveFeedback,
   readForm,
   renderLinks,
   renderListState,
@@ -235,10 +236,12 @@ function openEditor(data = {}) {
   $('#closeCharEditor').addEventListener('click', () => closeDrawer(editor));
   $('#cancelCharEdit').addEventListener('click', () => closeDrawer(editor));
   bindLinkEditor($('#charForm'));
+  const showSaveFeedback = bindEditorSaveFeedback($('#charForm'));
   openDrawer(editor);
   $('#charForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    showSaveFeedback('正在保存角色…', 'progress');
 
     await withBusy(submitButton, '保存中...', async () => {
       try {
@@ -281,7 +284,9 @@ function openEditor(data = {}) {
         restoreListContext($('#characterResults'), listContext, { focusId: result.id, highlight: true });
         showToast(data.id ? '角色已保存，已回到原列表位置。' : '角色已新增并定位。');
       } catch (error) {
-        log($('#charSaveLog'), error.message);
+        const message = error?.message || String(error);
+        log($('#charSaveLog'), message);
+        showSaveFeedback(`保存失败：${message}`, 'error');
       }
     });
   });

@@ -7,7 +7,7 @@
   // The helper is intentionally loaded only on Android (desktop links stay native).
   if (/\bAndroid\b/i.test(navigator.userAgent) && !document.querySelector('script[data-gucc-notion-app-links]')) {
     const notionScript = document.createElement('script');
-    notionScript.src = new URL('assets/notion-app-links.js?v=20261106.3', normalizedRoot).href;
+    notionScript.src = new URL('assets/notion-app-links.js?v=20261109.1', normalizedRoot).href;
     notionScript.dataset.guccNotionAppLinks = 'true';
     document.head.appendChild(notionScript);
   }

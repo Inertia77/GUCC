@@ -14,7 +14,7 @@ assert.equal(Outcomes.nextAction({loaded:false,items:states}),null,"Never recomm
 assert.equal(Outcomes.nextAction({loaded:true,items:states.map(x=>({...x,status:"confirmed"}))}),null,"Nothing to recommend after all six confirmed");
 for(const key of ["outcomeProjectSelect","outcomeVideoTabs","outcomeNextAction","outcomePendingToggle","outcomeCards","outcomeStatusBreakdown","outcomeProgressMeter","outcomeFoldersBtn","outcomeRefresh","outcomeNewProject"])assert(html.includes('id="'+key+'"'),"Missing existing or new UI hook "+key);
 assert(html.includes('data-creator-product-ui')&&html.includes("creator-product-surface-v2.css?v=1"));
-assert(js.includes("renderNextOutcome(p,video,total,outcomeLoadError)"));
+assert(js.includes("renderNextOutcome(p,video,total,error)"),"Next-step uses project-scoped read error");
 assert.equal((js.match(/outcomePendingToggle[^;]*addEventListener\("click"/g)||[]).length,1,"Only one filter listener registration");
 const navBody=js.slice(js.indexOf("function renderNav(){"),js.indexOf("function navigateTo("));
 assert(!navBody.includes('addEventListener("click"'),"Rendering must not register click events");

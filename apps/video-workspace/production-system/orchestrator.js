@@ -333,7 +333,10 @@
       project.doNotUse?.length?`DO_NOT_USE: ${project.doNotUse.join(" / ")}`:"",
       project.sharedSources?.length?`SHARED_SOURCE: ${project.sharedSources.join(" / ")}`:""
     ].filter(Boolean).join("\n");
-    return `【PROJECT PROMPT NODE · ${n.promptId}｜${n.name}】
+    return `【GUCC Creator Governance｜唯一 AI 规范入口】
+https://github.com/Inertia77/GUCC/blob/main/apps/video-workspace/creator-governance/CREATOR_RULEBOOK.md
+执行前应读取完整规则，结合当前 Capability 查阅同目录 CAPABILITY_RULES.md；当前 Prompt 已内嵌对应核心规则与失败防护。无法访问链接时不得声称已阅读，不得跳过现有硬约束与 QC。
+【PROJECT PROMPT NODE · ${n.promptId}｜${n.name}】
 【Executor】${n.executor}
 【Capability】${c.id} / ${c.name}
 【Autonomy】${project.autonomyLevel||"L2"}；REVIEW_OPTIONAL 不阻塞，APPROVAL_REQUIRED 才等待用户。

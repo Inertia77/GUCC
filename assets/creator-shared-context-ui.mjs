@@ -1193,6 +1193,7 @@ function openCreation(isVideo, legacy = "") {
 async function orchestrator() {
   if (window.GuccCreatorOrchestrator) return window.GuccCreatorOrchestrator;
   for (const path of [
+    "apps/video-workspace/creator-governance/creator-governance-runtime.js",
     "apps/video-workspace/creator-six-deliverables.js",
     "apps/video-workspace/production-system/core-rules.js",
     "apps/video-workspace/production-system/capability-library.js",

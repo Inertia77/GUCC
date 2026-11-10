@@ -123,7 +123,22 @@ function renderNav(){
     b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
   });
   document.querySelectorAll("[data-creation-pane]").forEach(p=>p.classList.toggle("active",p.dataset.creationPane===creationMode));
-  document.querySelectorAll("[data-reference]").forEach(b=>{
+  async function copyCreatorGovernance(full){
+  const names=full?["CREATOR_RULEBOOK.md","CAPABILITY_RULES.md","TASK_RULES.md"]:["CREATOR_RULEBOOK.md"];
+  try{
+    const texts=await Promise.all(names.map(async name=>{
+      const response=await fetch("../creator-governance/"+name+"?v=20261110",{cache:"no-cache"});
+      if(!response.ok)throw Error(name+" HTTP "+response.status);
+      const body=await response.text();
+      if(body.length<1500)throw Error(name+" 内容异常");
+      return body;
+    }));
+    await copy(texts.join("\n\n---\n\n"));
+  }catch(error){notify("读取规范失败，未使用不完整版本："+error.message);}
+}
+$("copyCreatorRulebook")?.addEventListener("click",()=>void copyCreatorGovernance(false));
+$("copyCreatorFullGovernance")?.addEventListener("click",()=>void copyCreatorGovernance(true));
+document.querySelectorAll("[data-reference]").forEach(b=>{
     const active=b.dataset.reference===referenceTab;
     b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
   });

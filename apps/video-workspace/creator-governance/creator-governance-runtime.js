@@ -1214,3 +1214,9 @@ root.CreatorPrompts=api;
 /* ===== GUCC CENTRALIZED GOVERNANCE MODULE ===== */
 
 ;(()=>{const g=typeof window!=="undefined"?window:globalThis;const api={core:g.GuccCreatorCoreRules,fail:g.GuccCreatorFailurePrevention,caps:g.GuccCreatorCapabilities,six:g.GuccCreatorSix,prompts:g.CreatorPrompts,VERSION:"2026-11-10"};g.GuccCreatorGovernance=api;if(typeof module==="object"&&module.exports)module.exports=api;})();
+/* Every generated prompt carries the canonical governance entrypoint. */
+;(()=>{
+ const g=typeof window!=="undefined"?window:globalThis;
+ const entry="【GUCC Creator OS 完整规范】https://github.com/Inertia77/GUCC/blob/main/apps/video-workspace/creator-governance/CREATOR_RULEBOOK.md\n【相关能力细则】同目录 CAPABILITY_RULES.md / TASK_RULES.md。只能在确实读取后声称已读取；执行仍须遵守本 Prompt 的完整专项要求。";
+ for(const key of ["six","prompts"]){const obj=g.GuccCreatorGovernance&&g.GuccCreatorGovernance[key];if(!obj||typeof obj.build!=="function")continue;const original=obj.build;obj.build=function(...args){return entry+"\n\n"+original.apply(this,args);};}
+})();

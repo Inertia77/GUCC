@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v69";
-const RUNTIME_CACHE = "gucc-runtime-v60";
+const STATIC_CACHE = "gucc-static-v70";
+const RUNTIME_CACHE = "gucc-runtime-v61";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -139,7 +139,10 @@ const APP_SHELL = [
   "./assets/creator-artifact-observation.mjs",
   "./apps/video-workspace/studio.css?v=6.3.0",
   "./apps/video-workspace/production-system/",
-  "./docs/ai-video-production/CREATOR_CONSTITUTION.md",
+  "./apps/video-workspace/creator-governance/CREATOR_RULEBOOK.md",
+  "./apps/video-workspace/creator-governance/CAPABILITY_RULES.md",
+  "./apps/video-workspace/creator-governance/TASK_RULES.md",
+  "./apps/video-workspace/creator-governance/creator-governance-runtime.js?v=20261110",
   "./apps/video-workspace/production-system/index.html",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.0",
   "./apps/video-workspace/production-system/core-rules.js?v=2.2.1",

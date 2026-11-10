@@ -6,7 +6,7 @@ const E = window.GuccProductionEngine;
 const G = window.GuccCreatorGlobal;
 const STORAGE_KEY = "gucc_ai_video_production_v1";
 const CREATOR_API = `${CONFIG.SUPABASE_URL.replace(/\/+$/, "")}/functions/v1/creator-project-api`;
-const CONSTITUTION_URL = new URL("../docs/ai-video-production/CREATOR_CONSTITUTION.md", import.meta.url);
+const CONSTITUTION_URL = new URL("../apps/video-workspace/creator-governance/CREATOR_RULEBOOK.md", import.meta.url);
 
 let contextEpoch = 0;
 let activeContext = null;

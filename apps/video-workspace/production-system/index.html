@@ -283,6 +283,13 @@
         <button type="button" data-reference="libraries" aria-pressed="false">共享资料与数据</button>
       </div>
     <section id="view-core" class="reference-pane active">
+      <article class="panel" id="creatorGovernancePortal">
+        <div class="panel-head"><div><span class="micro">CANONICAL / AI GOVERNANCE</span><h3>统一 AI 创作规范 · 唯一权威入口</h3></div><span class="pill">2026-11-10</span></div>
+        <p>长期硬规则、防错、全部能力方法、六成果与固定分步 Prompt 已归入同一规则中心。下面展示的规则卡片与方法库从同一运行规范读取。</p>
+        <p><a href="../creator-governance/CREATOR_RULEBOOK.md" target="_blank" rel="noopener">完整核心规范 ↗</a> · <a href="../creator-governance/CAPABILITY_RULES.md" target="_blank" rel="noopener">44 项能力细则 ↗</a> · <a href="../creator-governance/TASK_RULES.md" target="_blank" rel="noopener">任务详细要求 ↗</a> · <a href="../creator-governance/MIGRATION_MANIFEST.md" target="_blank" rel="noopener">无损迁移记录 ↗</a></p>
+        <div class="panel-actions"><button id="copyCreatorRulebook" type="button" class="button secondary">复制 AI 核心规范</button><button id="copyCreatorFullGovernance" type="button" class="button primary">复制 AI 全部规范（含任务细则）</button></div>
+        <p class="subtitle">复制后可给 ChatGPT、Work 或 Codex 当前任务使用。历史规则冲突已保留，尚未代替你裁决。</p>
+      </article>
       <div class="section-head"><span class="micro">00</span><h2>Core Rules & Failure Prevention</h2><p>长期规则稳定，Workflow 动态。只有真正会制造虚假产物的缺失才 HARD STOP。</p></div>
       <div id="autonomyGrid" class="card-grid"></div>
       <div id="coreRuleGrid" class="rule-grid"></div>
@@ -411,6 +418,7 @@
 
 <div id="toast" class="toast" hidden></div>
 
+<script src="../creator-governance/creator-governance-runtime.js?v=20261110"></script>
 <script src="./core-rules.js?v=2.2.1"></script>
 <script src="./failure-prevention.js?v=2.0.1"></script>
 <script src="./capability-library.js?v=2.2.2"></script>

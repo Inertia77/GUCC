@@ -226,7 +226,8 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
    }
    await p.screenshot({path:path.join(out,"manual-confirmation-"+width+".png"),animations:"disabled"});
    await p.keyboard.press("Escape");await p.reload();
-   await p.waitForFunction(()=>document.querySelector('[data-portfolio-project="B"]')?.textContent.includes("6 / 6"));
+   await p.waitForFunction(()=>document.querySelector("#outcomeProgressText")?.textContent.includes("6 / 6"));
+   assert.equal(await p.locator('[data-portfolio-project="B"]').count(),0,"Selected project is not duplicated in Other Projects");
    assert.equal(manual.writes.filter(w=>w.kind==="deliverable").length,6,"Only explicit saves confirm outcomes");
    assert.equal([...manual.deliverables.values()].filter(r=>r.project_id==="A").length,0,"No cross-project status changes");
    assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));

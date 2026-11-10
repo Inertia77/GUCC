@@ -369,17 +369,21 @@ function renderProjectPortfolio(){
   }
   box.innerHTML=projects.map(p=>{
     const videos=projectVideos(p),rows=officialProjectRecords.get(p.projectId);
-    const verified=Array.isArray(rows)&&videos.length>0;
-    const complete=verified?videos.reduce((sum,v)=>sum+Outcomes.summary(rows,v).done,0):0;
-    const total=videos.length*6;
+    const formal=videos.filter(v=>!v.inferred),legacyCount=videos.length-formal.length;
+    const verified=Array.isArray(rows)&&formal.length>0;
+    const complete=verified?formal.reduce((sum,v)=>sum+Outcomes.summary(rows,v).done,0):0;
+    const total=formal.length*6;
     const percent=verified&&total?Math.round(complete/total*100):0;
-    const meta=[p.game||"游戏待设",p.version||"版本待设",videos.length?videos.length+" 条视频":"待登记视频"].join(" · ");
+    const videoMeta=formal.length?formal.length+" 条正式视频":"待登记正式视频";
+    const meta=[p.game||"游戏待设",p.version||"版本待设",videoMeta,legacyCount?legacyCount+" 个旧分支待登记":""].filter(Boolean).join(" · ");
     return '<button type="button" class="portfolio-card '+(p.projectId===store.selectedProjectId?'active':'')+'" data-portfolio-project="'+esc(p.projectId)+'">'+
       '<span class="portfolio-top"><span class="portfolio-code">'+esc(p.projectCode||p.projectId)+'</span><span class="portfolio-life">'+esc(lifeName(p))+'</span></span>'+
       '<strong>'+esc(p.name)+'</strong><span class="portfolio-metadata">'+esc(meta)+'</span>'+
       '<span class="portfolio-progress"><span>'+esc(verified?"六项成果验收":"正式进度")+'</span><span>'+esc(verified?complete+" / "+total:"待核对")+'</span></span>'+
        '<span class="portfolio-meter" aria-hidden="true"><span style="width:'+percent+'%"></span></span>'+
       '<span class="portfolio-videos">'+videos.map(v=>{
+        if(v.inferred)return '<span class="portfolio-video"><span>'+esc(v.name)+'</span><span>待登记</span></span>'+
+          '<span class="portfolio-next">需建立正式视频身份后才统计成果</span>';
         const summary=Outcomes.summary(rows,v);
         const next=Outcomes.nextAction(summary);
         const label=next?Six.ITEMS.find(item=>item.id===next.id)?.name:"六项已确认";
@@ -655,9 +659,9 @@ function renderProjects(){
     &&(filter==="all"?projectLife(p)!=="trash":projectLife(p)===filter));
   $("projectCounts").textContent=`进行中 ${counts.active} · 已完成 ${counts.completed} · 归档 ${counts.archived} · 回收站 ${counts.trash}`;
   $("projectCards").innerHTML=matching.map(p=>{
-    const videos=projectVideos(p), rows=officialProjectRecords.get(p.projectId);
-    const progress=Array.isArray(rows)?videos.reduce((n,v)=>n+Outcomes.summary(rows,v).done,0):null;
-    const total=videos.length*6;
+    const videos=projectVideos(p),formal=videos.filter(v=>!v.inferred), rows=officialProjectRecords.get(p.projectId);
+    const progress=Array.isArray(rows)?formal.reduce((n,v)=>n+Outcomes.summary(rows,v).done,0):null;
+    const total=formal.length*6;
     return `<button type="button" class="panel project-card ${p.projectId===store.selectedProjectId?"active":""}" data-project="${esc(p.projectId)}" aria-pressed="${p.projectId===store.selectedProjectId}">
       <span class="micro">${esc(p.projectCode||p.projectId)}</span>
       <span class="project-card-title">${esc(p.name)}</span>

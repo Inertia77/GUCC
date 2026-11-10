@@ -27,11 +27,11 @@
     return official;
   }
   function record(records,video,id){
-    if(!IDS.includes(id)||!video?.key||!Array.isArray(records))return null;
+    if(!IDS.includes(id)||!video?.key||video.inferred||!Array.isArray(records))return null;
     return records.find(r=>r?.video_id===video.key&&r.deliverable_key===id)||null;
   }
   function summary(records,video){
-    const loaded=Array.isArray(records)&&Boolean(video?.key);
+    const loaded=Array.isArray(records)&&Boolean(video?.key)&&!video?.inferred;
     const items=IDS.map(id=>{
       const row=loaded?record(records,video,id):null;
       return {id,status:loaded?row?.status||"not_started":null,row};

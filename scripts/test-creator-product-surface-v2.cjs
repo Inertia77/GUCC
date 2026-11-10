@@ -6,6 +6,8 @@ const js=read("apps/video-workspace/production-system/creator-os-app.js");
 const css=read("apps/video-workspace/production-system/creator-product-surface-v2.css");
 const Outcomes=require("../apps/video-workspace/production-system/creator-os-outcomes.js");
 assert.equal(Outcomes.confirmationLabel({status:"confirmed",evidence:{}}),"已确认 · 确认方式待核对");
+assert.equal(Outcomes.summary([], {key:"OLD_BRANCH",branch:"OLD_BRANCH",inferred:true}).loaded,false,"Inferred branch has no formal outcome denominator");
+assert.equal(Outcomes.record([{video_id:"OLD_BRANCH",deliverable_key:"script",status:"confirmed"}],{key:"OLD_BRANCH",inferred:true},"script"),null,"Legacy branch cannot impersonate a confirmed formal record");
 assert.equal(Outcomes.confirmationLabel({status:"confirmed",evidence:{confirmationMethod:"manual"}}),"已确认 · 人工判断");
 assert.equal(Outcomes.confirmationLabel({status:"confirmed",evidence:{artifacts:[{observation:"browser_file",sha256:"f".repeat(64),sizeBytes:10}]}}),"已确认 · 文件已读取");
 const states=Outcomes.IDS.map(id=>({id,status:id==="sound"?"review":id==="visual"?"blocked":id==="subtitle"?"not_started":"confirmed"}));

@@ -965,14 +965,14 @@ window.addEventListener("popstate",()=>{
   render();
   window.scrollTo({top:0,behavior:"instant"});
 });
-const outcomeMore=document.querySelector("#view-outcomes .outcomes-more");
+const outcomeMore=document.querySelector?.("#view-outcomes .outcomes-more")||null;
 outcomeMore?.addEventListener("click",event=>{
   if(event.target.closest(".outcomes-more-menu button"))outcomeMore.open=false;
 });
-document.addEventListener("pointerdown",event=>{
+document.addEventListener?.("pointerdown",event=>{
   if(outcomeMore?.open&&!outcomeMore.contains(event.target))outcomeMore.open=false;
 });
-document.addEventListener("keydown",event=>{
+document.addEventListener?.("keydown",event=>{
   if(event.key==="Escape"&&outcomeMore?.open){outcomeMore.open=false;outcomeMore.querySelector("summary")?.focus();}
 });
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>navigateTo(b.dataset.view)));

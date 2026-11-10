@@ -62,7 +62,7 @@
     if(row?.status!=="confirmed")return LABELS[row?.status]||"未开始";
     if(e.confirmationMethod==="manual")return "已确认 · 人工判断";
     if(e.artifacts?.some(a=>["browser_file","generated_bytes"].includes(a.observation)&&a.sha256&&a.sizeBytes>0))return "已确认 · 文件已读取";
-    return "已确认 · 人工判断";
+    return "已确认 · 确认方式待核对";
   }
   return {IDS,LABELS,videos,record,summary,nextAction,evidenceLabel,confirmationLabel};
 });

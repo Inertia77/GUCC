@@ -304,6 +304,9 @@ function renderFlow(p){
 /* Portfolio uses formal cloud records; workflow node progress is intentionally excluded. */
 let portfolioFetching=false,portfolioLoaded=false,portfolioError="",portfolioEpoch=0;
 const portfolioVideos=new Map();
+function portfolioTargets(){
+  return store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&(projectLife(p)==="active"||p.projectId===store.selectedProjectId));
+}
 function projectVideos(p){
   const videos=Outcomes.videos(p);
   for(const row of portfolioVideos.get(p?.projectId)||[]){
@@ -325,26 +328,31 @@ async function portfolioRows(request,table,id,order){
 async function loadPortfolioOutcomes(){
   if(portfolioFetching||portfolioLoaded)return;
   const request=window.GuccCreatorWorkspace?.request;
-  if(!request)return; // shared authenticated client initializes asynchronously
+  if(!request)return;
   portfolioFetching=true;portfolioError="";
   const run=portfolioEpoch;
   try{
-    await Promise.all(store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&(!portfolioVideos.has(p.projectId)||!officialProjectRecords.has(p.projectId))).map(async p=>{
-      const [rows,videos]=await Promise.all([
-        portfolioRows(request,"creator_deliverable_records",p.projectId,"video_id.asc,deliverable_key.asc"),
-        portfolioRows(request,"creator_video_workspaces",p.projectId,"video_id.asc")
-      ]);
-      if(run!==portfolioEpoch)return;
-      // A more recent editor read wins over a portfolio request already in flight.
-      const recent=officialProjectRecords.get(p.projectId)||[];
-      officialProjectRecords.set(p.projectId,rows.map(row=>{
-        const newer=recent.find(r=>r.video_id===row.video_id&&r.deliverable_key===row.deliverable_key&&r.revision>row.revision);
-        return newer||row;
+    // Active work and the explicitly selected historical project are loaded first.
+    // Bounded batches avoid firing 2*N database queries at once as the archive grows.
+    const pending=portfolioTargets().filter(p=>!portfolioVideos.has(p.projectId)||!officialProjectRecords.has(p.projectId));
+    for(let i=0;i<pending.length;i+=3){
+      await Promise.all(pending.slice(i,i+3).map(async p=>{
+        const [rows,videos]=await Promise.all([
+          portfolioRows(request,"creator_deliverable_records",p.projectId,"video_id.asc,deliverable_key.asc"),
+          portfolioRows(request,"creator_video_workspaces",p.projectId,"video_id.asc")
+        ]);
+        if(run!==portfolioEpoch)return;
+        const recent=officialProjectRecords.get(p.projectId)||[];
+        officialProjectRecords.set(p.projectId,rows.map(row=>{
+          const newer=recent.find(r=>r.video_id===row.video_id&&r.deliverable_key===row.deliverable_key&&r.revision>row.revision);
+          return newer||row;
+        }));
+        outcomeErrors.delete(p.projectId);
+        portfolioVideos.set(p.projectId,videos);
       }));
-      portfolioVideos.set(p.projectId,videos);
-    }));
-    if(run!==portfolioEpoch)return;
-    portfolioLoaded=store.projects.filter(p=>p.status!=="TEST_FIXTURE").every(p=>portfolioVideos.has(p.projectId));
+      if(run!==portfolioEpoch)return;
+    }
+    portfolioLoaded=portfolioTargets().every(p=>portfolioVideos.has(p.projectId)&&officialProjectRecords.has(p.projectId));
   }catch(error){if(run===portfolioEpoch)portfolioError=String(error?.message||"读取失败");}
   finally{
     portfolioFetching=false;
@@ -353,11 +361,11 @@ async function loadPortfolioOutcomes(){
 }
 function renderProjectPortfolio(){
   const box=$("projectPortfolio");if(!box)return;
-  if(portfolioLoaded&&store.projects.some(p=>p.status!=="TEST_FIXTURE"&&!portfolioVideos.has(p.projectId)))portfolioLoaded=false;
-  const projects=store.projects.filter(p=>p.status!=="TEST_FIXTURE"&&projectLife(p)==="active");
+  if(portfolioLoaded&&portfolioTargets().some(p=>!portfolioVideos.has(p.projectId)||!officialProjectRecords.has(p.projectId)))portfolioLoaded=false;
+  const projects=portfolioTargets().filter(p=>projectLife(p)==="active"&&p.projectId!==store.selectedProjectId);
   $("portfolioStatus").textContent=portfolioError?"云端读取失败 · 请刷新成果":portfolioLoaded?"正式成果已核对":"正式成果读取中";
   if(!projects.length){
-    box.innerHTML='<div class="portfolio-empty">暂无进行中的项目。新建项目后可在这里查看制作进度；已完成和已归档项目可在下方项目档案中查看。</div>';return;
+    box.innerHTML='<div class="portfolio-empty">暂无其他进行中的项目。当前项目的成果显示在上方；已完成与归档项目可在「项目档案」中查看。</div>';if(!portfolioLoaded&&!portfolioFetching&&!portfolioError)void loadPortfolioOutcomes();return;
   }
   box.innerHTML=projects.map(p=>{
     const videos=projectVideos(p),rows=officialProjectRecords.get(p.projectId);
@@ -382,7 +390,7 @@ function renderProjectPortfolio(){
   box.querySelectorAll("[data-portfolio-project]").forEach(b=>b.addEventListener("click",()=>{
     if(store.selectedProjectId===b.dataset.portfolioProject)return;
     store.selectedProjectId=b.dataset.portfolioProject;
-    selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
+    selectedOutcomeVideoKey="";selectedBranch="";
     $("artifactPreview").textContent="";
     save(false);render();
     window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
@@ -391,29 +399,30 @@ function renderProjectPortfolio(){
 }
 
 /* OUTCOME BOARD: view and edit the SAME canonical deliverables used by all GUCC tools. */
-let outcomeFetchingProject="";
-let outcomeLoadError="";
-function outcomeVideo(p){
-  const videos=projectVideos(p);
-  if(!videos.length)return null;
-  const ctx=window.GuccCreatorContext?.read?.();
-  return videos.find(v=>v.key===selectedOutcomeVideoKey)||
-    videos.find(v=>v.key===ctx?.videoId&&p?.projectId===ctx?.projectId)||
-    videos.find(v=>v.branch===selectedBranch||v.key===selectedBranch)||videos[0];
-}
+// Each project owns its own request and error. A late response cannot update a newer context.
+const outcomeRequests=new Map();
+const outcomeErrors=new Map();
 async function loadCanonicalOutcomes(p){
-  if(!p||officialProjectRecords.has(p.projectId)||outcomeFetchingProject===p.projectId)return;
+  if(!p||officialProjectRecords.has(p.projectId))return;
   const request=window.GuccCreatorWorkspace?.request;
-  if(!request)return; // Shared editor module is still loading; its ready event will retry.
+  if(!request)return;
   const id=p.projectId,run=portfolioEpoch;
-  outcomeFetchingProject=id;outcomeLoadError="";
+  if(outcomeRequests.get(id)?.epoch===run)return;
+  const token={epoch:run};
+  outcomeRequests.set(id,token);
+  outcomeErrors.delete(id);
   try{
-    const result=await request("creator_deliverable_records?select=*&project_id=eq."+encodeURIComponent(id));
-    if(!Array.isArray(result))throw Error("云端成果格式异常");
-    if(run===portfolioEpoch&&!officialProjectRecords.has(id))officialProjectRecords.set(id,result);
-  }catch(error){outcomeLoadError=String(error?.message||"云端读取失败");}
-  finally{
-    if(outcomeFetchingProject===id)outcomeFetchingProject="";
+    // Pagination is essential when one project contains several videos and revisions.
+    const result=await portfolioRows(request,"creator_deliverable_records",id,"video_id.asc,deliverable_key.asc");
+    if(run===portfolioEpoch&&outcomeRequests.get(id)===token&&!officialProjectRecords.has(id)){
+      officialProjectRecords.set(id,result);
+      outcomeErrors.delete(id);
+    }
+  }catch(error){
+    if(run===portfolioEpoch&&outcomeRequests.get(id)===token&&!officialProjectRecords.has(id))
+      outcomeErrors.set(id,String(error?.message||"云端读取失败"));
+  }finally{
+    if(outcomeRequests.get(id)===token)outcomeRequests.delete(id);
     if(activeView==="outcomes"&&current()?.projectId===id)renderOutcomeBoard();
   }
 }
@@ -430,6 +439,10 @@ function renderNextOutcome(p,video,summary,error){
     title="先登记这期视频";
     description="项目是内容集合，每期视频分别保存六项成果，避免同一项目的多个视频互相覆盖。";
     kind="start";action='<button type="button" class="button primary" data-next-register>登记视频</button>';
+  }else if(video?.inferred){
+    title="先登记正式视频";
+    description="这是从旧制作分支推导的名称，尚未取得正式视频身份。请先登记视频，再核对六项正式成果。";
+    kind="start";action='<button type="button" class="button primary" data-next-register>登记正式视频</button>';
   }else if(video&&!summary?.loaded){
     title=error?"成果读取未完成":"正在核对正式成果";
     description=error?"云端数据未核实，暂不提供可能误导你的进度建议。":"读取该视频的正式成果记录，完成后才推荐下一步。";
@@ -501,19 +514,31 @@ function renderOutcomeBoard(){
     $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
     return;
   }
-  if(!officialProjectRecords.has(p.projectId)&&outcomeFetchingProject!==p.projectId&&!outcomeLoadError)
+  if(video.inferred){
+    renderNextOutcome(p,video,null,"");
+    $("outcomePendingToggle").disabled=true;
+    $("outcomeProgressText").textContent="待登记视频";
+    $("outcomeProgressHint").textContent="旧制作分支尚无正式视频身份，不能按未开始或已确认的正式成果计算。";
+    $("outcomeStatusBreakdown").textContent="先登记正式视频，再核对成果";
+    $("outcomeProgressFill").style.width="0%";
+    $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
+    $("outcomeCards").innerHTML='<p class="outcomes-empty">当前选择的是旧版视频分支。请先使用「登记正式视频」建立视频身份，避免将旧分支误记为独立正式成果。</p>';
+    return;
+  }
+  const error=outcomeErrors.get(p.projectId)||"";
+  if(!officialProjectRecords.has(p.projectId)&&!outcomeRequests.has(p.projectId)&&!error)
     void loadCanonicalOutcomes(p);
   const remote=officialProjectRecords.get(p.projectId);
   const total=Outcomes.summary(remote,video);
-  renderNextOutcome(p,video,total,outcomeLoadError);
+  renderNextOutcome(p,video,total,error);
   const pendingButton=$("outcomePendingToggle");
   pendingButton.disabled=!total.loaded;
   pendingButton.setAttribute("aria-pressed",String(outcomePendingOnly));
   pendingButton.textContent=outcomePendingOnly?"显示全部成果":"只看未完成";
   $("outcomeProgressText").innerHTML=total.loaded?total.done+' / 6 <small>已确认</small>':
-    (outcomeLoadError?"读取失败":"云端核对中");
-  $("outcomeProgressHint").textContent=outcomeLoadError
-    ?"无法核对正式成果："+outcomeLoadError+"。连接恢复前不显示推测的完成状态。"
+    (error?"读取失败":"云端核对中");
+  $("outcomeProgressHint").textContent=error
+    ?"无法核对正式成果："+error+"。连接恢复前不显示推测的完成状态."
     :"完成数量只取正式成果表的已确认状态；动态 Prompt 执行结果不会直接改变它。";
   const breakdown=$("outcomeStatusBreakdown");
   if(total.loaded){
@@ -532,7 +557,7 @@ function renderOutcomeBoard(){
     filteredItems.map(item=>{
     const rec=Outcomes.record(remote,video,item.id);
     const status=total.loaded?rec?.status||"not_started":"";
-    const label=total.loaded?Outcomes.LABELS[status]||"待核对":outcomeLoadError?"暂不可读":"正在读取";
+    const label=total.loaded?Outcomes.LABELS[status]||"待核对":error?"暂不可读":"正在读取";
     const file=Outcomes.evidenceLabel(rec);
     const note=rec?.review_note||"";
     return '<article class="outcome-card" data-status="'+esc(status||"loading")+'">'+
@@ -598,11 +623,11 @@ function renderProjects(){
     const videos=projectVideos(p), rows=officialProjectRecords.get(p.projectId);
     const progress=Array.isArray(rows)?videos.reduce((n,v)=>n+Outcomes.summary(rows,v).done,0):null;
     const total=videos.length*6;
-    return `<article class="panel project-card ${p.projectId===store.selectedProjectId?"active":""}" data-project="${esc(p.projectId)}">
+    return `<button type="button" class="panel project-card ${p.projectId===store.selectedProjectId?"active":""}" data-project="${esc(p.projectId)}" aria-pressed="${p.projectId===store.selectedProjectId}">
       <span class="micro">${esc(p.projectCode||p.projectId)}</span>
-      <h3>${esc(p.name)}</h3>
-      <p>${esc(p.game||"未设定游戏")} · ${esc(p.version||"未设定版本")} · ${lifeName(p)} · 正式成果 ${progress===null?"待核对":progress+"/"+total}</p>
-    </article>`;
+      <span class="project-card-title">${esc(p.name)}</span>
+      <span class="project-card-meta">${esc(p.game||"未设定游戏")} · ${esc(p.version||"未设定版本")} · ${lifeName(p)} · 正式成果 ${progress===null?"待核对":progress+"/"+total}</span>
+    </button>`;
   }).join("")||'<p class="flow-empty">此筛选下暂无项目。</p>';
   document.querySelectorAll(".project-card").forEach(card=>card.addEventListener("click",()=>{
     store.selectedProjectId=card.dataset.project;selectedOutcomeVideoKey="";selectedBranch="";
@@ -1042,7 +1067,7 @@ document.querySelectorAll("[data-reference]").forEach(b=>b.addEventListener("cli
   render();
 }));
 $("outcomeProjectSelect").addEventListener("change",e=>{
-  store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";outcomeLoadError="";
+  store.selectedProjectId=e.target.value;selectedOutcomeVideoKey="";selectedBranch="";
   save(false);render();window.GuccCreatorContext?.set({projectId:store.selectedProjectId,videoId:projectVideos(current()).find(v=>!v.inferred)?.key||""});
 });
 $("boardFixedPrompt").addEventListener("click",()=>navigateTo("creation","fixed"));
@@ -1053,8 +1078,8 @@ $("boardDynamicPrompt").addEventListener("click",()=>{
 });
 $("outcomeRefresh").addEventListener("click",()=>{
   const p=current();if(!p)return;
-  if(portfolioFetching||outcomeFetchingProject===p.projectId)return notify("成果资料仍在读取");
-  portfolioEpoch++;officialProjectRecords.clear();portfolioVideos.clear();portfolioLoaded=false;portfolioError="";outcomeLoadError="";
+  if(portfolioFetching||outcomeRequests.has(p.projectId))return notify("成果资料仍在读取");
+  portfolioEpoch++;officialProjectRecords.clear();portfolioVideos.clear();outcomeErrors.clear();portfolioLoaded=false;portfolioError="";
   renderProjectPortfolio();renderOutcomeBoard();void loadPortfolioOutcomes();
 });
 window.addEventListener("gucc:workspace-project-created",e=>{portfolioEpoch++;portfolioVideos.delete(e.detail?.projectId);portfolioLoaded=false;portfolioError="";if(activeView==="outcomes")void loadPortfolioOutcomes();});
@@ -1091,10 +1116,10 @@ $("videoStyleForm").addEventListener("submit",event=>{
   save();render();dialog.close();
   notify("已保存本视频风格，后续生成的Prompt将使用新描述");
 });
-window.addEventListener("gucc:workspace-ready",()=>{outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
+window.addEventListener("gucc:workspace-ready",()=>{outcomeErrors.delete(current()?.projectId);if(activeView==="outcomes"){renderProjectPortfolio();renderOutcomeBoard();}});
 window.addEventListener("gucc:creator-outcome-saved",e=>{
   const id=e.detail?.projectId;
-  if(id){portfolioEpoch++;officialProjectRecords.delete(id);portfolioLoaded=false;portfolioError="";outcomeLoadError="";if(activeView==="outcomes"){renderProjectPortfolio();if(current()?.projectId===id)void loadCanonicalOutcomes(current());}}
+  if(id){portfolioEpoch++;officialProjectRecords.delete(id);outcomeErrors.delete(id);portfolioLoaded=false;portfolioError="";if(activeView==="outcomes"){renderProjectPortfolio();if(current()?.projectId===id)void loadCanonicalOutcomes(current());}}
 });
 $("editProjectBtn").addEventListener("click",openProjectEditor);
 $("editProjectTopBtn").addEventListener("click",openProjectEditor);
@@ -1334,6 +1359,6 @@ window.GuccCreatorOS={
   }
 };
 if(new URLSearchParams(window.location.search).get("newProject")==="1")$("createDialog").showModal();
-window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeLoadError="";if(activeView==="outcomes")renderProjectPortfolio();if(current()?.projectId===e.detail.projectId)render();});
+window.addEventListener("gucc:workspace-project-records",e=>{officialProjectRecords.set(e.detail.projectId,e.detail.records);outcomeErrors.delete(e.detail.projectId);if(activeView==="outcomes")renderProjectPortfolio();if(current()?.projectId===e.detail.projectId)render();});
 render();if(storageCorrupt){$("localSaveNotice").hidden=false;$("localSaveNotice").textContent="原有浏览器记录无法解析，已保护原数据并暂停本机写入。请用「备份」导出原始记录用于恢复。";}loadMigration();
 })();

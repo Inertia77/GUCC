@@ -512,3 +512,18 @@ body.creator-os-page .creator-next-panel[data-state="readonly"]{border-color:rgb
 body.creator-os-page .outcome-view-filter:disabled{opacity:.48;cursor:not-allowed}
 body.creator-os-page .outcomes-more>summary:focus-visible{outline:2px solid #cbbfff;outline-offset:3px}
 @media(max-width:700px){body.creator-os-page .outcomes-status-breakdown{gap:5px}body.creator-os-page .outcome-stat{padding:4px 7px;font-size:10px}}
+
+/* Project registry cards are native keyboard-accessible buttons. */
+body.creator-os-page #projectCards button.project-card{
+  display:block;width:100%;text-align:left;font:inherit;color:inherit;
+  border-radius:12px;cursor:pointer;
+}
+body.creator-os-page #projectCards button.project-card .project-card-title{
+  display:block;margin:12px 0;color:#e5eff4;font-size:18px;font-weight:700;
+}
+body.creator-os-page #projectCards button.project-card .project-card-meta{
+  display:block;margin:7px 0;color:#a0b3cc;font-size:12px;line-height:1.6;
+}
+body.creator-os-page #projectCards button.project-card:focus-visible{
+  outline:2px solid #cbbfff;outline-offset:3px;
+}

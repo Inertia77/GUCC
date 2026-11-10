@@ -422,3 +422,32 @@ body.creator-os-page :is(.button,.outcome-view-filter,.outcomes-more>summary,.os
  body.creator-os-page .creator-next-copy h3{font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){body.creator-os-page *,body.creator-os-page *::before,body.creator-os-page *::after{transition:none!important;animation:none!important}}
+
+
+/* v2.1 — accessible touch targets, quiet progress gradient and smaller global rail */
+body.creator-os-page #view-outcomes .outcomes-progress,
+body.creator-os-page.gucc-enhanced #view-outcomes .outcomes-progress{
+ background:linear-gradient(110deg,#151f33 0%,#131c2e 72%,#17223b 100%)!important;
+}
+body.creator-os-page .outcomes-video-line>.micro{
+ font-family:"Segoe UI Variable","Noto Sans SC",system-ui,sans-serif;
+ font-size:12px;font-weight:650;
+}
+@media(min-width:1101px){
+ body.creator-os-page.gucc-enhanced{padding-right:65px!important}
+ body.creator-os-page.gucc-enhanced .gucc-shell-dock{
+  right:9px!important;width:52px!important;max-width:52px!important;
+  padding:4px!important;border-radius:12px!important;gap:2px!important;
+ }
+ body.creator-os-page.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger){
+  min-height:48px!important;padding:6px 2px!important;font-size:10px!important;
+ }
+ body.creator-os-page.gucc-enhanced .gucc-shell-dock > :is(.gucc-shell-link,.gucc-shell-trigger) span{font-size:10px!important}
+ body.creator-os-page.gucc-enhanced .gucc-shell-dock .gucc-shell-menu{
+  width:min(360px,calc(100vw - 88px))!important;
+ }
+}
+@media(max-width:700px){
+ body.creator-os-page #outcomeNewProject,
+ body.creator-os-page #view-outcomes .outcomes-more>summary{min-height:44px!important}
+}

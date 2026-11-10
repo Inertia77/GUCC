@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v72";
-const RUNTIME_CACHE = "gucc-runtime-v63";
+const STATIC_CACHE = "gucc-static-v73";
+const RUNTIME_CACHE = "gucc-runtime-v64";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -22,13 +22,13 @@ const APP_SHELL = [
   "./apps/video-workspace/production-system/creator-os-validation.js?v=1",
   "./apps/video-workspace/production-system/creator-os-handoff.js?v=1",
   "./apps/video-workspace/production-system/creator-os-step-history.js?v=2",
-  "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.2",
+  "./apps/video-workspace/production-system/creator-os-app.js?v=4.0.4",
   "./apps/video-workspace/production-system/creator-four-workspaces.css?v=4",
   "./apps/video-workspace/production-system/creator-game-hud-v1.css?v=1",
   "./assets/creator-embed-shell.css?v=3",
   "./assets/creator-embed-shell.js?v=2",
   "./assets/creator-project-folders.js?v=1",
-  "./apps/video-workspace/production-system/creator-os-outcomes.js?v=1",
+  "./apps/video-workspace/production-system/creator-os-outcomes.js?v=2",
   "./apps/video-workspace/production-system/creator-os-outcomes.css?v=1",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.1",
   "./apps/video-workspace/production-system/orchestrator.js?v=2.3.0",
@@ -145,7 +145,7 @@ const APP_SHELL = [
   "./apps/video-workspace/creator-governance/creator-governance-runtime.js?v=20261110",
   "./apps/video-workspace/production-system/index.html",
   "./apps/video-workspace/production-system/creator-os.css?v=2.1.0",
-  "./apps/video-workspace/production-system/creator-product-surface-v2.css?v=1",
+  "./apps/video-workspace/production-system/creator-product-surface-v2.css?v=2",
   "./apps/video-workspace/production-system/core-rules.js?v=2.2.1",
   "./apps/video-workspace/production-system/failure-prevention.js?v=2.0.1",
   "./apps/video-workspace/production-system/capability-library.js?v=2.2.1",

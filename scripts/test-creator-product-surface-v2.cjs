@@ -13,7 +13,7 @@ assert.equal(Outcomes.nextAction({loaded:true,items:states}).id,"sound","A pendi
 assert.equal(Outcomes.nextAction({loaded:false,items:states}),null,"Never recommend from unverified records");
 assert.equal(Outcomes.nextAction({loaded:true,items:states.map(x=>({...x,status:"confirmed"}))}),null,"Nothing to recommend after all six confirmed");
 for(const key of ["outcomeProjectSelect","outcomeVideoTabs","outcomeNextAction","outcomePendingToggle","outcomeCards","outcomeStatusBreakdown","outcomeProgressMeter","outcomeFoldersBtn","outcomeRefresh","outcomeNewProject"])assert(html.includes('id="'+key+'"'),"Missing existing or new UI hook "+key);
-assert(html.includes('data-creator-product-ui')&&html.includes("creator-product-surface-v2.css?v=1"));
+assert(html.includes('data-creator-product-ui')&&html.includes("creator-product-surface-v2.css?v=2"));
 assert(js.includes("renderNextOutcome(p,video,total,error)"),"Next-step uses project-scoped read error");
 assert.equal((js.match(/outcomePendingToggle[^;]*addEventListener\("click"/g)||[]).length,1,"Only one filter listener registration");
 const navBody=js.slice(js.indexOf("function renderNav(){"),js.indexOf("function navigateTo("));
@@ -35,5 +35,5 @@ assert(!js.includes("officialProjectRecords.set(id,[]);"));
 assert(css.includes("@media(max-width:700px)"));
 assert(css.includes("@media(max-width:1100px)"));
 assert(css.includes("prefers-reduced-motion:reduce"));
-assert(read("sw.js").includes("creator-product-surface-v2.css?v=1"));
+assert(read("sw.js").includes("creator-product-surface-v2.css?v=2"));
 console.log("Creator Product Surface v2 contract: UI hooks, verified next action, view-only filter, responsive treatment, offline shell PASS.");

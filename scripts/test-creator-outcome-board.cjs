@@ -36,7 +36,7 @@ const v=Outcomes.videos(old);
 assert.deepEqual(v.map(x=>x.key),[],"Shared pseudo-video is not an official deliverable identity");
 assert.equal(Outcomes.summary([],null).loaded,false,"A Prompt DONE is never formal completion");
 assert(html.includes('id="view-outcomes"')&&html.includes('id="outcomeRefresh"'));
-assert(html.includes('creator-os-outcomes.js?v=1')&&html.includes('creator-os-outcomes.css?v=1'));
+assert(html.includes('creator-os-outcomes.js?v=2')&&html.includes('creator-os-outcomes.css?v=1'));
 assert(app.includes("GuccCreatorContextUI")&&app.includes("loadCanonicalOutcomes"));
 assert(!app.includes("outcomeProgress[video.key]"),"No second source of deliverable truth");
 console.log("Standalone Creator outcomes contract passed: canonical records, loading integrity, six statuses, per-video identity, verified artifact labels.");

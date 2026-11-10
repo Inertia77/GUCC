@@ -96,7 +96,7 @@ assert.match(serviceWorker, /creator-ux-simplification-v1\.mjs\?v=1/, 'Creator U
 assert.match(serviceWorker, /creator-os-app\.js\?v=/, 'Creator OS v2 app must be available in the offline shell.');
 assert.match(serviceWorker, /creator-ai-task-core\.js\?v=1/, 'Creator AI Task core must remain available in the offline app shell.');
 assert.match(serviceWorker, /creator-ai-task-ui\.mjs\?v=1/, 'Creator AI Task UI must remain available in the offline app shell.');
-assert.match(serviceWorker, /CREATOR_CONSTITUTION\.md/, 'Canonical Creator Constitution must be available to the AI Task prompt builder offline.');
+assert.match(serviceWorker, /creator-governance\/CREATOR_RULEBOOK\.md/, 'Canonical Creator Rulebook must be available to the AI Task prompt builder offline.');
 assert.match(serviceWorker, /creator-ux-simplification-v1-closeout\.mjs\?v=1/, 'Creator UX closeout refinements must remain available in the offline app shell.');
 console.log('UIUX contract checks passed.');
 // The guard bootstraps the shell before deferred page scripts; its cache key must advance with this release.

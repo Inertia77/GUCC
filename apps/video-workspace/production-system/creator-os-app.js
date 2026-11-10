@@ -24,6 +24,7 @@ let activeView=["outcomes","creation","release","knowledge"].includes(entryParam
 let creationMode=entryParams.get("mode")==="dynamic"?"dynamic":"fixed";
 let referenceTab=["core","capabilities","libraries"].includes(entryParams.get("ref"))?entryParams.get("ref"):"core";
 let selectedOutcomeVideoKey="";
+let outcomePendingOnly=false;
 
 let toastTimer;
 let flowExpanded=false;
@@ -138,6 +139,14 @@ function renderNav(){
 }
 $("copyCreatorRulebook")?.addEventListener("click",()=>void copyCreatorGovernance(false));
 $("copyCreatorFullGovernance")?.addEventListener("click",()=>void copyCreatorGovernance(true));
+$("outcomePendingToggle")?.addEventListener("click",()=>{outcomePendingOnly=!outcomePendingOnly;renderOutcomeBoard();});
+$("outcomeNextAction")?.addEventListener("click",event=>{
+  const button=event.target.closest("button");
+  if(!button)return;
+  if(button.hasAttribute("data-next-outcome")){void openCanonicalOutcomeEditor(button.dataset.nextOutcome);return;}
+  if(button.hasAttribute("data-next-view")){navigateTo(button.dataset.nextView);return;}
+  if(button.hasAttribute("data-next-register"))$("outcomeAddVideo")?.click();
+});
 document.querySelectorAll("[data-reference]").forEach(b=>{
     const active=b.dataset.reference===referenceTab;
     b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
@@ -425,6 +434,36 @@ async function loadCanonicalOutcomes(p){
     if(activeView==="outcomes"&&current()?.projectId===id)renderOutcomeBoard();
   }
 }
+function renderNextOutcome(p,video,summary,error){
+  const host=$("outcomeNextAction");
+  if(!host)return;
+  let title="等待项目",description="选择一个项目与视频，开始跟踪正式成果。",kind="idle",action="";
+  if(p&&!video){
+    title="先登记这期视频";
+    description="项目是内容集合，每期视频分别保存六项成果，避免同一项目的多个视频互相覆盖。";
+    kind="start";action='<button type="button" class="button primary" data-next-register>登记视频</button>';
+  }else if(video&&!summary?.loaded){
+    title=error?"成果读取未完成":"正在核对正式成果";
+    description=error?"云端数据未核实，暂不提供可能误导你的进度建议。":"读取该视频的正式成果记录，完成后才推荐下一步。";
+    kind=error?"warning":"loading";
+  }else if(summary?.done===6){
+    title="六项成果已确认";
+    description="这期视频的六项正式成果均已确认。可以检查六平台发布单和真实发布数据；此处不会自动投稿。";
+    kind="done";action='<button type="button" class="button primary" data-next-view="release">前往发布与复盘 ↗</button>';
+  }else if(summary?.loaded){
+    const next=summary.items.find(item=>item.status!=="confirmed");
+    const item=Six.ITEMS.find(x=>x.id===next?.id);
+    title=item?.name||"继续当前视频";
+    const state=Outcomes.LABELS[next?.status]||"未开始";
+    description="下一项待处理 · "+state+"。按需使用创作工作台，成果最终确认仍须在正式成果记录中完成。";
+    kind=next?.status==="blocked"?"warning":"pending";
+    action='<button type="button" class="button primary" data-next-outcome="'+esc(next.id)+'">查看并管理成果 ↗</button><button type="button" class="button secondary" data-next-view="creation">打开创作工作台</button>';
+  }
+  host.dataset.state=kind;
+  host.innerHTML='<div class="creator-next-icon" aria-hidden="true">'+(kind==="done"?"✓":kind==="warning"?"!":"↗")+'</div>'+
+    '<div class="creator-next-copy"><span class="micro">NEXT / CURRENT VIDEO</span><h3>'+esc(title)+'</h3><p>'+esc(description)+'</p></div>'+
+    (action?'<div class="creator-next-actions">'+action+'</div>':"");
+}
 function renderOutcomeBoard(){
   const selectedProject=current();
   $("outcomeFoldersBtn").disabled=!selectedProject||selectedProject.status==="TEST_FIXTURE"||Boolean(selectedProject.deletedAt);
@@ -436,6 +475,7 @@ function renderOutcomeBoard(){
     $("outcomeProjectMeta").textContent="项目可以在 GUCC 共享项目选择器中建立。";
     $("outcomeVideoTabs").replaceChildren();
     $("outcomeCards").innerHTML='<p class="outcomes-empty">尚无创作项目。可以新建项目并登记视频，再独立管理六项正式成果。</p>';
+    renderNextOutcome(null,null,null,"");
     $("outcomeProgressText").textContent="尚无项目";
     $("outcomeProgressFill").style.width="0%";
     $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
@@ -445,7 +485,7 @@ function renderOutcomeBoard(){
   sel.disabled=false;
   for(const item of list)sel.add(new Option((projectLife(item)==="active"?"":"["+lifeName(item)+"] ")+item.name,item.projectId));
   const p=current();
-  if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';return;}
+  if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';renderNextOutcome(null,null,null,"");return;}
   sel.value=p.projectId;
   $("outcomeProjectMeta").textContent=[p.game||"未设置游戏",p.version||"未设置版本",lifeName(p)].join(" · ");
   const videos=projectVideos(p),video=outcomeVideo(p);
@@ -462,6 +502,7 @@ function renderOutcomeBoard(){
   $("outcomeAddVideo").disabled=Boolean(p.deletedAt||p.archivedAt);
   $("outcomeVideoStyleBtn").disabled=!video||Boolean(p.deletedAt||p.archivedAt);
   if(!video){
+    renderNextOutcome(p,null,null,"");
     $("outcomeProgressText").textContent="待登记视频";
     $("outcomeCards").innerHTML='<p class="outcomes-empty">该项目尚未登记视频。使用「＋ 登记视频」建立正式视频身份，六项成果将分别记录到该视频。</p>';
     $("outcomeProgressFill").style.width="0%";
@@ -472,6 +513,10 @@ function renderOutcomeBoard(){
     void loadCanonicalOutcomes(p);
   const remote=officialProjectRecords.get(p.projectId);
   const total=Outcomes.summary(remote,video);
+  renderNextOutcome(p,video,total,outcomeLoadError);
+  const pendingButton=$("outcomePendingToggle");
+  pendingButton.setAttribute("aria-pressed",String(outcomePendingOnly));
+  pendingButton.textContent=outcomePendingOnly?"显示全部成果":"只看未完成";
   $("outcomeProgressText").innerHTML=total.loaded?total.done+' / 6 <small>已确认</small>':
     (outcomeLoadError?"读取失败":"云端核对中");
   $("outcomeProgressHint").textContent=outcomeLoadError
@@ -480,7 +525,10 @@ function renderOutcomeBoard(){
   $("outcomeProgressFill").style.width=total.percent+"%";
   $("outcomeProgressMeter").setAttribute("aria-valuenow",String(total.percent));
   const writable=!p.deletedAt&&!p.archivedAt&&Boolean(window.GuccCreatorContextUI);
-  $("outcomeCards").innerHTML=Six.ITEMS.map(item=>{
+  const filteredItems=outcomePendingOnly&&total.loaded?Six.ITEMS.filter(item=>Outcomes.record(remote,video,item.id)?.status!=="confirmed"):Six.ITEMS;
+  $("outcomeCards").innerHTML=(!filteredItems.length&&total.loaded?
+    '<div class="outcomes-empty outcome-all-clear"><strong>全部成果已确认</strong><p>当前视频没有待处理项。可以显示全部成果查看资料，或前往发布与复盘。</p><button type="button" class="button secondary" data-show-all-outcomes>显示全部成果</button></div>':
+    filteredItems.map(item=>{
     const rec=Outcomes.record(remote,video,item.id);
     const status=total.loaded?rec?.status||"not_started":"";
     const label=total.loaded?Outcomes.LABELS[status]||"待核对":outcomeLoadError?"暂不可读":"正在读取";
@@ -496,7 +544,8 @@ function renderOutcomeBoard(){
       esc(total.loaded?(rec?(rec.status==="confirmed"?Outcomes.confirmationLabel(rec)+" · ":"")+"正式记录 · R"+rec.revision:"尚未提交正式记录"):"云端资料尚未核验")+
       '</span><button class="button secondary" type="button" data-outcome-edit="'+esc(item.id)+'" '+
       (!writable||!total.loaded?"disabled":"")+'>查看 / 管理 ↗</button></div></article>';
-  }).join("");
+  }).join(""));
+  $("outcomeCards").querySelector("[data-show-all-outcomes]")?.addEventListener("click",()=>{outcomePendingOnly=false;renderOutcomeBoard();});
   $("outcomeCards").querySelectorAll("[data-outcome-edit]").forEach(button=>
     button.addEventListener("click",()=>void openCanonicalOutcomeEditor(button.dataset.outcomeEdit)));
 }

@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="../../../assets/gucc-premium.css?v=4" data-gucc-premium>
 <link rel="stylesheet" href="../../../assets/gucc-chroma-v1.css?v=1" id="gucc-chroma-final" data-gucc-chroma>
 <link rel="stylesheet" href="./creator-game-hud-v1.css?v=1" data-gucc-creator-game-hud>
+<link rel="stylesheet" href="./creator-product-surface-v2.css?v=1" data-creator-product-ui>
 <script src="../../../assets/creator-project-folders.js?v=2" defer></script>
 </head>
 <body class="creator-os-page">
@@ -51,8 +52,8 @@
     <div class="workspace-heading">
       <div>
         <p class="eyebrow"><span class="eyebrow-glyph">◉</span> GAMEUP <span class="slash">/</span> STUDIO</p>
-        <h1>创作<span>中枢</span><span class="heading-period">.</span></h1>
-        <p class="workspace-deck">四个工作区 · 一个项目身份 · 六项成果独立验收</p>
+        <h1>Creator <span>Workspace</span></h1>
+        <p class="workspace-deck">项目、制作与发布 · 在同一工作区推进</p>
       </div>
       <div data-creator-context></div>
       <div class="heading-status">
@@ -67,27 +68,38 @@
     <section id="view-outcomes" class="view active" aria-label="六项成果进度管理">
       <div class="outcomes-intro">
         <div><span class="micro">DELIVERABLE MANAGEMENT / 01—06</span>
-          <h2>项目中枢<span class="outcome-period">.</span></h2>
-          <p>统一查看所有项目、视频与六项成果。制作工具和流程选择不会改写正式验收状态。</p>
+          <h2>项目与交付</h2>
+          <p>先选择项目和视频，再处理当前最重要的一项成果。</p>
         </div>
         <div class="outcomes-methods"><button type="button" class="button secondary" id="boardFixedPrompt">开始制作 · 选择方式 ↗</button><button type="button" class="button ghost" id="boardDynamicPrompt">灵活编排 ↗</button></div>
       </div>
       <div class="outcomes-toolbar">
         <label>当前项目<select id="outcomeProjectSelect" aria-label="选择管理的项目"></select></label>
-        <div class="outcomes-project-meta" id="outcomeProjectMeta"></div>
-        <button class="button secondary" type="button" id="outcomeFoldersBtn" data-open-project-folders disabled>▣ 本地目录</button><button class="button ghost" type="button" id="outcomeRefresh">↻ 刷新成果</button><button class="button ghost" type="button" id="outcomeNewProject">＋ 新建项目</button>
+        <div class="outcomes-project-meta" id="outcomeProjectMeta" aria-live="polite"></div>
+        <button class="button primary" type="button" id="outcomeNewProject">＋ 新建项目</button>
+        <details class="outcomes-more">
+          <summary aria-label="更多项目操作">更多操作 <span aria-hidden="true">⌄</span></summary>
+          <div class="outcomes-more-menu">
+            <button class="button secondary" type="button" id="outcomeFoldersBtn" data-open-project-folders disabled>本地项目目录</button>
+            <button class="button ghost" type="button" id="outcomeRefresh">刷新正式成果</button>
+          </div>
+        </details>
       </div>
-      <div class="outcomes-video-line"><span class="micro">VIDEO / WORK ITEMS</span><div class="outcomes-video-tabs" id="outcomeVideoTabs" role="group" aria-label="选择视频"></div>
+      <div class="outcomes-video-line"><span class="micro">当前视频</span><div class="outcomes-video-tabs" id="outcomeVideoTabs" role="group" aria-label="选择视频"></div>
         <button class="text-action" type="button" id="outcomeVideoStyleBtn" disabled>✦ 剪辑风格</button><button class="text-action" type="button" id="outcomeAddVideo">＋ 登记视频 ↗</button>
       </div>
+      <section class="creator-next-panel" id="outcomeNextAction" aria-label="下一步建议" aria-live="polite">
+        <div class="creator-next-copy"><span class="micro">NEXT / CURRENT VIDEO</span><h3>正在读取项目状态</h3><p>仅以已经核验的正式成果状态提供下一步操作。</p></div>
+      </section>
       <section class="outcomes-progress" aria-label="成果完成情况">
         <div class="outcomes-progress-head"><div><span class="micro">DELIVERY HEALTH</span><strong id="outcomeProgressText">0 / 6 <small>已完成</small></strong></div>
           <p id="outcomeProgressHint">只有经过真实文件核验并人工确认的正式成果才计为完成。</p></div>
         <div class="outcomes-meter" role="progressbar" aria-label="当前视频成果完成率" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="outcomeProgressMeter"><span id="outcomeProgressFill"></span></div>
       </section>
+      <div class="outcome-catalog-heading"><div><span class="micro">DELIVERABLES / 01—06</span><h3>六项成果</h3></div><button type="button" class="outcome-view-filter" id="outcomePendingToggle" aria-pressed="false">只看未完成</button></div>
       <div class="outcomes-cards" id="outcomeCards"></div>
-      <section class="portfolio-section" aria-label="所有创作项目"><div class="portfolio-heading"><span class="micro">PROJECT PORTFOLIO</span><strong>项目总览</strong><span id="portfolioStatus" class="portfolio-status"></span></div><div id="projectPortfolio" class="portfolio-grid"></div></section>
-      <p class="outcomes-footnote">正式完成率来自正式成果记录。文件核验、录音校验和人工确认均沿用已有规则；只做了 Prompt 不会自动算完成。</p>
+      <section class="portfolio-section" aria-label="所有创作项目"><div class="portfolio-heading"><span class="micro">PROJECT PORTFOLIO</span><strong>其他项目</strong><span id="portfolioStatus" class="portfolio-status"></span></div><div id="projectPortfolio" class="portfolio-grid"></div></section>
+      <p class="outcomes-footnote">此处只展示正式成果记录，不把 Prompt 完成当作成果验收；人工确认及文件验证仍采用原有流程。</p>
       <details id="projectRegistryDetails" class="portfolio-registry">
         <summary><span>项目档案与高级管理</span><small>搜索、编辑、完成、归档、恢复及历史资料</small></summary>
     <div id="view-projects" class="project-registry-inner">

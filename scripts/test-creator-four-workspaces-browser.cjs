@@ -48,16 +48,22 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
      assert(priority.videos<780,
        "Phone Creator: video selector starts below fixed navigation, not first fold");
      const toolbar=await page.locator('#view-outcomes .outcomes-toolbar').evaluate(el=>{
-       const b=[...el.querySelectorAll(':scope > button')].map(x=>x.getBoundingClientRect());
-       return {count:b.length,rows:b.map(x=>x.top),usable:b.every(x=>x.height>=44)};
+       const create=el.querySelector('#outcomeNewProject')?.getBoundingClientRect();
+       const more=el.querySelector('.outcomes-more > summary')?.getBoundingClientRect();
+       const selector=el.querySelector('#outcomeProjectSelect')?.getBoundingClientRect();
+       return {create:create?.height,more:more?.height,selector:selector?.height,parallel:Math.abs((create?.top??0)-(more?.top??0))<=2};
      });
-     assert.equal(toolbar.count,3,"Creator project actions should remain present");
-     assert(toolbar.usable,"Creator project actions need ≥44px touch height");
-     assert(toolbar.rows.every(y=>Math.abs(y-toolbar.rows[0])<=2),
-       "Creator project actions should fit a single row on phone");
+     assert(toolbar.create>=44&&toolbar.more>=44,"Creator actions need >=44px touch targets");
+     assert(toolbar.selector>=43,"Creator project selector remains usable");
+     assert(toolbar.parallel,"Primary and secondary actions align on mobile");
    }
 
 
+   assert(await page.locator("#outcomeNextAction").isVisible(),"Verified next action remains visible");
+   await page.locator("#outcomePendingToggle").click();
+   assert.equal(await page.locator("#outcomeCards .outcome-card").count(),5,"Only five pending outcomes when one confirmed");
+   await page.locator("#outcomePendingToggle").click();
+   assert.equal(await page.locator("#outcomeCards .outcome-card").count(),6,"All six restored without editing state");
    await page.screenshot({path:path.join(out,"dashboard-"+width+".png"),fullPage:true,animations:"disabled"});
    await navigate("creation",1);
    assert(await page.locator('#view-creation').isVisible());
@@ -145,6 +151,7 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
   assert.equal(await publish.locator("#snapshotCount").innerText(),"1 条快照");
   await navigate("outcomes",0);
   assert(await page.locator("#outcomeFoldersBtn").isEnabled(),"Existing project folder action is enabled");
+  await page.locator("#view-outcomes .outcomes-more > summary").click();
   await page.locator("#outcomeFoldersBtn").click();
   const foldersDialog=page.getByRole("dialog",{name:"本地项目目录"});
   assert(await foldersDialog.isVisible(),"Existing project folder dialog opens");

@@ -482,3 +482,13 @@ body.creator-os-page .governance-detail-body .rule-grid{gap:12px}
  body.creator-os-page .governance-detail-drawer>summary strong{font-size:13px}
  body.creator-os-page .governance-drawer-icon{flex-basis:34px;width:34px;height:34px}
 }
+
+
+/* Brand color contract: one GUCC primary across every workspace.
+   The shared Chromatic palette remains the authority for primary CTA contrast. */
+body.creator-os-page.gucc-enhanced :is(.button.primary,.mission-cta,.dock-button.primary){
+ color:var(--ch-on-bright,#101523)!important;
+ background:var(--ch-iris,#a6a3ff)!important;
+ border-color:var(--ch-iris,#a6a3ff)!important;
+ box-shadow:0 3px 15px rgba(115,100,207,.10)!important;
+}

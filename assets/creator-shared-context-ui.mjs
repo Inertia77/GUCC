@@ -670,7 +670,18 @@ function render() {
     : row
       ? `版本 ${row.revision} · ${row.updated_at ? new Date(row.updated_at).toLocaleDateString("zh-CN") : "已同步"}`
       : "尚无正式记录 · 草稿仅保留在本浏览器";
-  lockBadge.textContent = row?.evidence?.locked ? "已确认 · 人工判断 · 已锁定" : "";
+  const confirmationEvidence = row?.evidence || {};
+  const hasObservedBytes = Array.isArray(confirmationEvidence.artifacts) && confirmationEvidence.artifacts.some(
+    (a) => ["browser_file", "generated_bytes"].includes(a?.observation) && typeof a?.sha256 === "string" &&
+      /^[a-f0-9]{64}$/.test(a.sha256) && Number(a.sizeBytes) > 0
+  );
+  const confirmedByOwner = confirmationEvidence.confirmationMethod === "manual" &&
+    confirmationEvidence.confirmationSource === "human_ui";
+  const legacyFileRecord = Boolean(confirmationEvidence.fileName && Number(confirmationEvidence.sizeBytes) > 0);
+  const confirmationKind = confirmedByOwner ? "人工判断" : hasObservedBytes ? "文件已读取" :
+    legacyFileRecord ? "旧版文件记录" : "确认方式待核对";
+  lockBadge.textContent = !confirmationEvidence.locked ? "" : row?.status === "confirmed"
+    ? "已确认 · " + confirmationKind + " · 已锁定" : "已锁定 · 状态待核对";
   lockBadge.hidden = !row?.evidence?.locked;
   const tool = {
     script: "studio",

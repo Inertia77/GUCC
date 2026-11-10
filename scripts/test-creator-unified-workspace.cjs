@@ -39,14 +39,14 @@ assert.match(migration,/enable row level security/gi);
 assert.match(migration,/Confirmed requires an observed file and human QC/);
 assert.doesNotMatch(migration,/grant delete/i);
 assert(!fs.existsSync(path.join(root,"supabase/migrations/20261015100000_creator_video_six_deliverables.sql")),"Do not introduce a duplicate production schema");
-assert.match(source("index.html"),/creator-shared-context-ui\.mjs\?v=5/);
+assert.match(source("index.html"),/creator-shared-context-ui\.mjs\?v=6/);
 for(const [url,adapter] of [
  ["apps/video-workspace/legacy-prompt-studio-v6.html","studio.js"],
  ["apps/video-workspace/production-system/index.html","production-system/creator-os-app.js"],
  ["apps/cover-generator/index.html",null],
  ["apps/publishing-console/index.html","app.js"]]){
  assert.match(source(url),/creator-shared-context\.js\?v=2/);
- assert.match(source(url),/creator-shared-context-ui\.mjs\?v=5/);
+ assert.match(source(url),/creator-shared-context-ui\.mjs\?v=6/);
  if(adapter)assert.match(source("apps/"+(url.includes("video-workspace")?"video-workspace/":"publishing-console/")+adapter),/GuccCreatorWorkspaceAdapter/);
 }
 const studio=source("apps/video-workspace/studio.js");

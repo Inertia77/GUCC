@@ -17,6 +17,10 @@ assert.equal(Outcomes.nextAction({loaded:true,items:states.map(x=>({...x,status:
 for(const key of ["outcomeProjectSelect","outcomeVideoTabs","outcomeNextAction","outcomePendingToggle","outcomeCards","outcomeStatusBreakdown","outcomeProgressMeter","outcomeFoldersBtn","outcomeRefresh","outcomeNewProject"])assert(html.includes('id="'+key+'"'),"Missing existing or new UI hook "+key);
 assert(html.includes('data-creator-product-ui')&&html.includes("creator-product-surface-v2.css?v=2"));
 assert(js.includes("renderNextOutcome(p,video,total,error)"),"Next-step uses project-scoped read error");
+const sharedUi=read("assets/creator-shared-context-ui.mjs");
+assert(sharedUi.includes('confirmedByOwner ? "人工判断"'),"Manual judgment requires explicit confirmation source");
+assert(sharedUi.includes('"确认方式待核对"'),"Unknown confirmation remains unknown");
+assert(sharedUi.includes('"旧版文件记录"'),"Legacy file claims never imply read bytes");
 assert.equal((js.match(/outcomePendingToggle[^;]*addEventListener\("click"/g)||[]).length,1,"Only one filter listener registration");
 const navBody=js.slice(js.indexOf("function renderNav(){"),js.indexOf("function navigateTo("));
 assert(!navBody.includes('addEventListener("click"'),"Rendering must not register click events");

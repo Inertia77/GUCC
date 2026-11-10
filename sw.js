@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v74";
-const RUNTIME_CACHE = "gucc-runtime-v65";
+const STATIC_CACHE = "gucc-static-v75";
+const RUNTIME_CACHE = "gucc-runtime-v66";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -133,7 +133,7 @@ const APP_SHELL = [
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/studio.js?v=6.4.0",
   "./assets/creator-shared-context.js?v=2",
-  "./assets/creator-shared-context-ui.mjs?v=5",
+  "./assets/creator-shared-context-ui.mjs?v=6",
   "./assets/creator-shared-context.css?v=4",
   "./apps/cover-generator/cover-studio.css?v=2",
   "./assets/creator-artifact-observation.mjs",

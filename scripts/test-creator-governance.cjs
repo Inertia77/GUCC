@@ -8,7 +8,8 @@ const A=require("../apps/video-workspace/production-system/capability-library.js
 const S=require("../apps/video-workspace/creator-six-deliverables.js");
 const P=require("../apps/video-workspace/ai-prompts.js");
 const G=require("../apps/video-workspace/creator-governance/creator-governance-runtime.js");
-assert.equal(C,G.core);assert.equal(F,G.fail);assert.equal(A,G.caps);assert.equal(S,G.six);assert.equal(P,G.prompts);
+const AI=require("../assets/creator-ai-task-core.js");
+assert.equal(C,G.core);assert.equal(F,G.fail);assert.equal(A,G.caps);assert.equal(S,G.six);assert.equal(P,G.prompts);assert.equal(AI,G.aiTask);
 const core=read(home+"CREATOR_RULEBOOK.md"),cap=read(home+"CAPABILITY_RULES.md"),task=read(home+"TASK_RULES.md");
 const notion=JSON.parse(read(home+"notion-prompts.json"));
 for(const section of Object.values(C.CORE_RULES))for(const rule of [...section.hard,...section.best])assert(core.includes(rule),"Missing core rule: "+rule);
@@ -19,6 +20,7 @@ for(const x of S.ITEMS)assert(task.includes(x.goal),"Missing deliverable: "+x.id
 for(const x of P.ROUTES)assert(task.includes(x.name));
 for(const x of P.tasks)assert(task.includes(x.name));
 assert.equal(Object.keys(notion).length,31);
+for(const [key,values] of Object.entries(AI.TASK_RULES))for(const rule of [...values,...AI.TASK_OUTPUTS[key],...AI.TASK_ACCEPTANCE[key]])assert(task.includes(rule),"Missing AI Task rule "+key);
 for(const basename of ["core-rules.js","failure-prevention.js","capability-library.js","creator-six-deliverables.js","ai-prompts.js","notion-prompts.json","CREATOR_CONSTITUTION.md","UNIFIED_PIPELINE.md"]){
  assert(fs.readdirSync(path.join(root,archive)).some(x=>x.endsWith(basename)),"Missing immutable archive: "+basename);
 }

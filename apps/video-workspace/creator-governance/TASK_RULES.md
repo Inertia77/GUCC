@@ -517,3 +517,138 @@ B站/YouTube据真实SRT/Timeline给3–9章节首章00:00，不均分，核YouT
 - `18A`：18A｜本地剪辑素材目录整理
 - `18B`：18B｜精细剪辑 + 声音蓝图 / Codex Blueprint
 - `19A`：19A｜剪映最终手工组装｜固定四件套
+
+
+---
+
+## Legacy AI Task 执行器专项规则与验收（7 类；完整迁入）
+> 原 `assets/creator-ai-task-core.js` 的 `TASK_RULES`、`TASK_OUTPUTS`、`TASK_ACCEPTANCE` 完整保存；旧文件仍通过 facade 保持 API。
+
+### PIXEL_PACKAGE｜像素机制动画包
+**Aliases**：制作像素包 / 像素包 / 制作像素动画 / 像素机制动画
+
+**TASK_RULES**
+- 像素动画首先解释机制，不是装饰、转场或填空镜头。
+- 关闭声音时，观众仍应大致看懂：谁做了什么 → 资源 / 状态如何变化 → 触发什么结果。
+- 优先用角色、动作、资源条、状态、Buff / Debuff、敌人标记、技能触发、因果箭头和时间顺序表达机制变化。
+- 必须有时间上的动作、触发、变化和反馈；不得做成静态 PPT。
+- 像素解释画面与真实游戏证据分工明确；需要真实游戏证据的结论不得用 AI 假画面替代。
+- 如果使用角色形象，官方角色参考图用于锁定角色身份和关键识别特征，不只是风格参考。
+
+**TASK_OUTPUTS**
+- 一份可直接制作的像素机制动画包：镜头 / 场景序列、角色与对象、资源 / 状态变化、动作触发、屏幕文字、时长与 Timeline Anchor。
+- 逐段标记：抽象解释画面 / 真实证据画面需求；不能用像素动画替代证据的地方列为素材缺口。
+- 给出静音可读性检查，以及 Audience-facing 清洁检查。
+
+**TASK_ACCEPTANCE**
+- 静音查看仍能大致理解机制因果。
+- 不是静态 PPT；关键机制变化都有动作 / 状态反馈。
+- 没有用 AI 假游戏画面冒充真实证据。
+- 最终观众可见内容不含 LOCK、TODO、AI、Codex、内部审核、修改记录或文件路径。
+
+### SRT_ALIGNMENT｜真实音频字幕对齐
+**Aliases**：生成srt / srt / 生成字幕 / 字幕对齐 / 生成srt字幕
+
+**TASK_RULES**
+- WHEN = 最终真实 AUDIO_MASTER。所有字幕开始 / 结束时间只从真实音频、真实 ASR 或人工校准时间码获得。
+- WHAT = 已锁定 Script / Master Script / VOICE_MASTER。正式角色名、术语、标点优先使用锁定文本校正。
+- 绝对禁止按文字长度、字数、平均语速或句长平均分配 / 猜测时间。
+- 真实朗读与锁定文本不一致时，时间服从真实音频；差异必须写入 ALIGNMENT_REPORT，不得伪造朗读内容。
+
+**TASK_OUTPUTS**
+- SUBTITLE_MASTER.srt：使用锁定文本校正术语，但时间码来自最终真实音频。
+- TIMELINE_SENTENCE.csv、TRANSCRIPT_ALIGNED.json、ALIGNMENT_REPORT.md（或与 GUCC 当前 Timeline contract 等价的四件套）。
+- 列出实际朗读与锁定文本的差异；无法可靠对齐的区段标 REVIEW_REQUIRED。
+
+**TASK_ACCEPTANCE**
+- 每个 cue 的时间来自最终真实 AUDIO_MASTER，而非文字长度估算。
+- 显示文本遵循锁定 Script / Master Script 的正式术语。
+- 音频与锁定文本差异被显式记录；不确定区段未被强行通过。
+
+### EDIT_BLUEPRINT｜剪辑蓝图
+**Aliases**：做剪辑蓝图 / 剪辑蓝图 / editingblueprint / 做editingblueprint
+
+**TASK_RULES**
+- 只使用已经锁定的真实 Timeline；不得从脚本文字重新估时。
+- 每个镜头段必须说明画面目的：证明 / 展示 / 对比 / 因果 / 补充氛围。
+- 画面优先级：A AV Anchor > B Evidence Visual > C Ambient Gameplay。
+- 缺失 Must 素材必须明确标 Missing / Additional Recording / Pixel Animation / Diagram，不得拿假 UI 顶替。
+
+**TASK_OUTPUTS**
+- EDIT_BLUEPRINT / Timed Storyboard：每段包含真实 start/end、实际旁白、画面目的、Visual Level、素材 / 缺口、字幕与动画说明。
+- 所有时间码可追溯到当前锁定 Timeline。
+
+**TASK_ACCEPTANCE**
+- 时间轴与当前锁定字幕 / Timeline 一致。
+- 每段都有明确画面目的，Must 缺口可见。
+
+### SCRIPT_REVIEW｜稿件审核
+**Aliases**：审核稿件 / 审稿 / 稿件审核 / 审核文案
+
+**TASK_RULES**
+- 核对事实、机制、逻辑、重复、结构、术语和口播可读性。
+- 最新正式输入优先于旧稿和聊天历史。
+- 已锁定脚本默认只输出问题清单 / 局部 Patch；未人工 Reopen 前不得整篇重写。
+- 修改已完成稿件默认局部修改，不自动全文重写。
+
+**TASK_OUTPUTS**
+- 按严重程度给出问题清单，并标明原句 / 问题 / 建议修改。
+- 默认给局部 Patch；如果脚本已锁定，只做 Review，不直接替换正式稿。
+
+**TASK_ACCEPTANCE**
+- 不改写锁定事实；建议可定位到具体句子。
+- 没有无授权全文重写。
+
+### NATURALNESS_REVIEW｜口播自然度 / 去 AI 味审核
+**Aliases**：去ai味 / 去ai感 / 口播自然度 / 自然度审核 / 去ai味审核
+
+**TASK_RULES**
+- 重点检查过度工整、模板句、同构排比、重复转折、机械总结、无必要的术语堆叠和不自然书面语。
+- 保留事实、数值、角色名、机制名和锁定结论；去 AI 味不是改事实。
+- 默认输出局部替换建议，并尽量保持原句节奏；除非明确要求，不全文重写。
+
+**TASK_OUTPUTS**
+- AI 味风险点清单 + 局部自然化替换建议。
+- 说明哪些句子无需修改，避免为了改而改。
+
+**TASK_ACCEPTANCE**
+- 保持原事实和术语；只针对自然度。
+- 以局部修改为默认。
+
+### PUBLISH_PACKAGE｜发布包
+**Aliases**：做发布包 / 发布包 / 生成发布包 / 制作发布包
+
+**TASK_RULES**
+- 只根据锁定成片 / 当前 Release-ready 内容生成标题、简介、章节、标签、封面文案、平台字段和发布检查项。
+- 不得夸大成片没有兑现的结论，不得伪造福利、活动、Post ID、URL 或发布结果。
+- Publish Package / QA 可以由 AI 准备，但 Final Publish Confirmation 和真实平台发布必须由人完成。
+
+**TASK_OUTPUTS**
+- 按当前目标平台 / Variant 输出可执行发布包与 QA checklist。
+- 明确哪些字段仍需人工最终确认；不得声称已真实发布。
+
+**TASK_ACCEPTANCE**
+- 平台字段与锁定成片一致，QA 项清楚。
+- Final Publish 仍保留人工确认。
+
+### OFFICIAL_VIDEO_EVIDENCE｜官方视频证据解析
+**Aliases**：解析官方视频 / 解析直播 / 解析pv / 解析角色展示 / 解析实机演示 / 视频证据解析
+
+**TASK_RULES**
+- 必须解析视频本身，不允许只读字幕或只总结文案。
+- 逐段结合声音 + 画面 + UI / 状态变化 + 时间戳。
+- 把“官方说了什么”和“画面实际证明什么”分开记录，再给出可确认结论与证据等级。
+- 若音画存在冲突或画面不足以证明口播结论，必须标记不确定，不得脑补。
+
+**TASK_OUTPUTS**
+- 人类可读的视频证据表。
+- 可写入现有 creator_research_sources.fact_snapshot.video_analysis 的 JSON；不要新造数据库模型。
+
+**TASK_ACCEPTANCE**
+- 每条核心观察包含时间戳、spoken、visual、ui_state_change、confirmed_claim、evidence_grade。
+- 不能仅靠字幕得出画面机制结论。
+
+### AI Task 结构约束
+- PROJECT_FLOW（兼容层）：IDEA → PLANNING → RESEARCHING → RESEARCH_LOCKED → CONTENT_LOCKED → SCRIPTING → SCRIPT_LOCKED → PRE_ASSET_PREPARATION → AUDIO_PRODUCTION → AUDIO_LOCKED → TIMELINE_GENERATION → TIMELINE_LOCKED → STORYBOARDING → ASSET_COMPLETION → PRODUCTION_READY → CODEX_BUILD → REVIEW → REVISION → FINE_EDIT → PICTURE_LOCKED → RELEASE_READY → PUBLISHED → ARCHIVED
+- TIMELINE_KEYS：SUBTITLE_MASTER / TIMELINE_SENTENCE / TRANSCRIPT_ALIGNED / ALIGNMENT_REPORT
+- `VIDEO_EVIDENCE_TEMPLATE` 与完整语义校验、硬阻断判断函数保留在集中运行版 JS 中；真实构建必须使用原有 `buildVideoContract`、`taskBlockers`、`buildAiTaskPrompt` 与 `buildStagePrompt`，不能靠摘要替代。

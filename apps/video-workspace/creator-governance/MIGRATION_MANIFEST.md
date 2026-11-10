@@ -22,3 +22,5 @@ Core 类别 9；Failure 条目 53；Hard Stop 5；Capability 44；六成果 6；
 
 ## 不改变业务数据
 本次不重置项目 ID、成果、LOCK、已有视频、云端状态或投稿记录；只改变仓库规则存放与消费位置。历史差异保留供用户后续裁决。Notion 在线页不在本次读取、写入或删除范围。
+
+- `assets/creator-ai-task-core.js` → `archive/creator-governance/2026-11-10/assets__creator-ai-task-core.js`；原路径改为只提供兼容接口，7 类专项规则和模板完整迁入规范中心。

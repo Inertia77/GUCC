@@ -366,3 +366,7 @@
 4. 旧原文、旧流程差异、精确迁移路径 → [MIGRATION_MANIFEST.md](./MIGRATION_MANIFEST.md) 及 Archive。
 
 **禁止把本文件的简短概述替代完整当前任务方法。** 每个执行器接到任务必须应用对应细则，不能因为整合而遗漏独有验收条件。
+
+
+## 五、旧版 AI Task 的专项防错和验收要求
+原 `assets/creator-ai-task-core.js` 含 7 类任务的额外 TASK_RULES、TASK_OUTPUTS、TASK_ACCEPTANCE，以及视频证据数据模型、真实资料阻断门槛。**已全部迁入 [TASK_RULES.md](./TASK_RULES.md) 和集中 Runtime**；使用旧版 AI Task 入口时仍应保留这些具体能力检查，不能只应用总纲。

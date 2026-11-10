@@ -614,8 +614,35 @@ function renderCapabilities(){
   if(!domain.options.length){domain.add(new Option("全部 Domain",""));for(const d of Caps.DOMAINS)domain.add(new Option(d,d));}
   if(currentValue)domain.value=currentValue;
   const q=$("capSearch").value.trim().toLowerCase(),d=domain.value;
-  const list=Caps.list(d).filter(c=>!q||[c.id,c.name,c.domain,...c.legacyPromptIds].join(" ").toLowerCase().includes(q));
-  $("capabilityGrid").innerHTML=list.map(c=>`<details class="cap-card"><summary><span class="cap-id">${esc(c.id)}</span><strong>${esc(c.name)}</strong><span>${esc(c.defaultExecutor)}</span><span class="qc">${esc(c.qcLevel)}</span></summary><div class="cap-body"><section><h4>PURPOSE</h4><p>${esc(c.purpose)}</p><h4>WHEN TO USE</h4><ul>${c.whenToUse.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>按项目判断</li>"}</ul><h4>WHEN NOT TO USE</h4><ul>${c.whenNotToUse.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>无固定禁止</li>"}</ul></section><section><h4>CORE METHOD</h4><ul>${c.coreMethod.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4>QUALITY GATE</h4><ul>${c.qualityGate.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section><section><h4>REQUIRED INPUT</h4><ul>${c.requiredInput.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>按上下文</li>"}</ul><h4>OUTPUT</h4><ul>${c.outputSchema.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section><section><h4>EXECUTION</h4><p>Default: <strong>${esc(c.defaultExecutor)}</strong><br>Alternative: ${esc(c.alternativeExecutor.join(" / ")||"—")}<br>Review: ${esc(c.reviewMode)}</p><h4>CHAT FALLBACK</h4><p>${esc(c.chatFallback||"同一 Chat 按成熟方法执行；无法访问真实输入时不冒充完成。")}</p><h4>LEGACY</h4><p>${esc(c.legacyPromptIds.join(", ")||"—")}</p></section></div></details>`).join("");
+  const list=Caps.list(d).filter(c=>!q||[c.id,c.name,c.domain,c.purpose,...c.legacyPromptIds].join(" ").toLowerCase().includes(q));
+  const bullets=(items,fallback="无额外要求")=>{
+    const rows=Array.isArray(items)?items:items?[items]:[];
+    return rows.length?rows.map(x=>'<li>'+esc(x)+'</li>').join(""):'<li>'+esc(fallback)+'</li>';
+  };
+  const group=(label,values,none)=>'<h4>'+label+'</h4><ul>'+bullets(values,none)+'</ul>';
+  $("capabilityGrid").innerHTML=list.map(c=>'<details class="cap-card"><summary>'+
+    '<span class="cap-id">'+esc(c.id)+'</span><strong>'+esc(c.name)+'</strong>'+
+    '<span>'+esc(c.defaultExecutor)+'</span><span class="qc">'+esc(c.qcLevel)+'</span></summary>'+
+    '<div class="cap-body">'+
+      '<section><h4>PURPOSE</h4><p>'+esc(c.purpose)+'</p>'+
+        group("WHEN TO USE",c.whenToUse,"按项目判断")+
+        group("WHEN NOT TO USE",c.whenNotToUse,"无固定禁止")+
+        group("PROJECT INJECTION",c.projectInjection,"无额外项目参数")+'</section>'+
+      '<section>'+group("CORE METHOD",c.coreMethod)+
+        group("MANDATORY GUARDRAILS",c.mandatoryGuardrails,"以统一总规范的硬规则为准")+
+        group("QUALITY GATE",c.qualityGate)+'</section>'+
+      '<section>'+group("REQUIRED INPUT",c.requiredInput,"按任务确定")+
+        group("OPTIONAL INPUT",c.optionalInput,"无")+
+        group("OUTPUT",c.outputSchema)+'</section>'+
+      '<section>'+group("HARD STOP",c.hardStopCondition,"无该能力专属阻断条件")+
+        group("SKIP CONDITION",c.skipCondition,"按当前任务判断")+
+        group("FAILURE PREVENTION IDS",c.failureRefs,"无额外引用")+'</section>'+
+      '<section>'+group("BEST PRACTICES",c.bestPractices,"按当前任务判断")+
+        group("KNOWN FAILURE MODES",c.knownFailureModes,"无额外已知失败模式")+'</section>'+
+      '<section><h4>EXECUTION</h4><p>Default: <strong>'+esc(c.defaultExecutor)+'</strong><br>Alternative: '+esc(c.alternativeExecutor.join(" / ")||"—")+
+        '<br>Review: '+esc(c.reviewMode)+'</p><h4>CHAT FALLBACK</h4><p>'+esc(c.chatFallback||"同一 Chat 按成熟方法执行；无法访问真实输入时不冒充完成。")+
+        '</p><h4>LEGACY</h4><p>'+esc(c.legacyPromptIds.join(", ")||"—")+'</p></section>'+
+    '</div></details>').join("");
 }
 function renderProjects(){
   const selected=current();

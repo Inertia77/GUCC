@@ -20,6 +20,8 @@ const navBody=js.slice(js.indexOf("function renderNav(){"),js.indexOf("function 
 assert(!navBody.includes('addEventListener("click"'),"Rendering must not register click events");
 assert(js.includes('window.addEventListener("popstate"'),"Back and forward restore view");
 assert(js.includes("total.loaded")&&js.includes("outcomePendingOnly&&total.loaded"));
+for(const key of ["MANDATORY GUARDRAILS","HARD STOP","SKIP CONDITION","KNOWN FAILURE MODES","PROJECT INJECTION","OPTIONAL INPUT","FAILURE PREVENTION IDS"])
+  assert(js.includes(key),"Capability detail hides required rule: "+key);
 assert(js.includes('if(video.inferred){'),"Old branch cannot be mistaken for a confirmed video");
 assert(js.includes('const outcomeErrors=new Map()'),"Cloud errors must be project-scoped");
 assert(js.includes('const outcomeRequests=new Map()'),"Independent project reads must be tokenized");

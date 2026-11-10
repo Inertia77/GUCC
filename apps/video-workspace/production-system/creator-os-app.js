@@ -400,6 +400,14 @@ function renderProjectPortfolio(){
 
 /* OUTCOME BOARD: view and edit the SAME canonical deliverables used by all GUCC tools. */
 // Each project owns its own request and error. A late response cannot update a newer context.
+function outcomeVideo(p){
+  const videos=projectVideos(p);
+  if(!videos.length)return null;
+  const ctx=window.GuccCreatorContext?.read?.();
+  return videos.find(v=>v.key===selectedOutcomeVideoKey)||
+    videos.find(v=>v.key===ctx?.videoId&&p?.projectId===ctx?.projectId)||
+    videos.find(v=>v.branch===selectedBranch||v.key===selectedBranch)||videos[0];
+}
 const outcomeRequests=new Map();
 const outcomeErrors=new Map();
 async function loadCanonicalOutcomes(p){

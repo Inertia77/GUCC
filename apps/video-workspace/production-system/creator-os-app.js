@@ -117,36 +117,17 @@ function render(){
   window.dispatchEvent(new CustomEvent("gucc:creator-os:rendered"));
 }
 function renderNav(){
-  document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===activeView));
+  document.querySelectorAll(".os-nav button[data-view]").forEach(b=>{
+    const active=b.dataset.view===activeView;
+    b.classList.toggle("active",active);
+    if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");
+  });
   document.querySelectorAll("main.os-main > section.view").forEach(v=>v.classList.toggle("active",v.id==="view-"+activeView));
   document.querySelectorAll("[data-creation-mode]").forEach(b=>{
     const active=b.dataset.creationMode===creationMode;
     b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
   });
   document.querySelectorAll("[data-creation-pane]").forEach(p=>p.classList.toggle("active",p.dataset.creationPane===creationMode));
-  async function copyCreatorGovernance(full){
-  const names=full?["CREATOR_RULEBOOK.md","CAPABILITY_RULES.md","TASK_RULES.md"]:["CREATOR_RULEBOOK.md"];
-  try{
-    const texts=await Promise.all(names.map(async name=>{
-      const response=await fetch("../creator-governance/"+name+"?v=20261110",{cache:"no-cache"});
-      if(!response.ok)throw Error(name+" HTTP "+response.status);
-      const body=await response.text();
-      if(body.length<1500)throw Error(name+" 内容异常");
-      return body;
-    }));
-    await copy(texts.join("\n\n---\n\n"));
-  }catch(error){notify("读取规范失败，未使用不完整版本："+error.message);}
-}
-$("copyCreatorRulebook")?.addEventListener("click",()=>void copyCreatorGovernance(false));
-$("copyCreatorFullGovernance")?.addEventListener("click",()=>void copyCreatorGovernance(true));
-$("outcomePendingToggle")?.addEventListener("click",()=>{outcomePendingOnly=!outcomePendingOnly;renderOutcomeBoard();});
-$("outcomeNextAction")?.addEventListener("click",event=>{
-  const button=event.target.closest("button");
-  if(!button)return;
-  if(button.hasAttribute("data-next-outcome")){void openCanonicalOutcomeEditor(button.dataset.nextOutcome);return;}
-  if(button.hasAttribute("data-next-view")){navigateTo(button.dataset.nextView);return;}
-  if(button.hasAttribute("data-next-register"))$("outcomeAddVideo")?.click();
-});
 document.querySelectorAll("[data-reference]").forEach(b=>{
     const active=b.dataset.reference===referenceTab;
     b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));
@@ -160,7 +141,9 @@ function navigateTo(view,mode){
   const url=new URL(window.location.href);
   url.searchParams.set("view",view);
   if(view==="creation")url.searchParams.set("mode",creationMode);else url.searchParams.delete("mode");
-  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  const destination=url.pathname+url.search+url.hash;
+  if(destination!==window.location.pathname+window.location.search+window.location.hash)
+    window.history.pushState(window.history.state,"",destination);
   render();
   window.scrollTo({top:0,behavior:"instant"});
 }
@@ -390,7 +373,7 @@ function renderProjectPortfolio(){
        '<span class="portfolio-meter" aria-hidden="true"><span style="width:'+percent+'%"></span></span>'+
       '<span class="portfolio-videos">'+videos.map(v=>{
         const summary=Outcomes.summary(rows,v);
-        const next=summary.items.find(item=>item.status!=="confirmed");
+        const next=Outcomes.nextAction(summary);
         const label=next?Six.ITEMS.find(item=>item.id===next.id)?.name:"六项已确认";
         return '<span class="portfolio-video"><span>'+esc(v.name)+'</span><span>'+esc(verified?summary.done+" / 6":"待核对")+'</span></span>'+
           '<span class="portfolio-next">'+esc(verified?(next?"下一项 · ":"")+label:"等待正式成果核对")+'</span>';
@@ -438,7 +421,12 @@ function renderNextOutcome(p,video,summary,error){
   const host=$("outcomeNextAction");
   if(!host)return;
   let title="等待项目",description="选择一个项目与视频，开始跟踪正式成果。",kind="idle",action="";
-  if(p&&!video){
+  if(p&&(p.archivedAt||p.deletedAt)){
+    title=p.deletedAt?"项目已移入回收站":"项目已归档";
+    description="目前只展示历史成果，不在归档项目上直接启动新的制作操作。如需继续制作，可在项目档案中恢复项目。";
+    kind="readonly";
+    action='<button type="button" class="button secondary" data-next-project-registry>打开项目档案</button>';
+  }else if(p&&!video){
     title="先登记这期视频";
     description="项目是内容集合，每期视频分别保存六项成果，避免同一项目的多个视频互相覆盖。";
     kind="start";action='<button type="button" class="button primary" data-next-register>登记视频</button>';
@@ -451,12 +439,13 @@ function renderNextOutcome(p,video,summary,error){
     description="这期视频的六项正式成果均已确认。可以检查六平台发布单和真实发布数据；此处不会自动投稿。";
     kind="done";action='<button type="button" class="button primary" data-next-view="release">前往发布与复盘 ↗</button>';
   }else if(summary?.loaded){
-    const next=summary.items.find(item=>item.status!=="confirmed");
+    const next=Outcomes.nextAction(summary);
     const item=Six.ITEMS.find(x=>x.id===next?.id);
     title=item?.name||"继续当前视频";
     const state=Outcomes.LABELS[next?.status]||"未开始";
-    description="下一项待处理 · "+state+"。按需使用创作工作台，成果最终确认仍须在正式成果记录中完成。";
-    kind=next?.status==="blocked"?"warning":"pending";
+    const instructions={review:"正式成果已提交，优先检查证据并完成必要的人工审核。",blocked:"该成果存在待处理问题，先核对阻断原因与所需资料。",in_progress:"该成果正在制作，先核对当前记录与剩余工作。",not_started:"该成果尚未开始，可打开创作工作台制作对应内容。"};
+    description=state+" · "+(instructions[next?.status]||"请查看正式成果记录中的具体情况。")+" 状态不会因打开页面或执行 Prompt 而自动变更。";
+    kind=["blocked","review"].includes(next?.status)?"warning":"pending";
     action='<button type="button" class="button primary" data-next-outcome="'+esc(next.id)+'">查看并管理成果 ↗</button><button type="button" class="button secondary" data-next-view="creation">打开创作工作台</button>';
   }
   host.dataset.state=kind;
@@ -466,6 +455,7 @@ function renderNextOutcome(p,video,summary,error){
 }
 function renderOutcomeBoard(){
   const selectedProject=current();
+  $("outcomePendingToggle").disabled=true;
   $("outcomeFoldersBtn").disabled=!selectedProject||selectedProject.status==="TEST_FIXTURE"||Boolean(selectedProject.deletedAt);
   const sel=$("outcomeProjectSelect");
   sel.replaceChildren();
@@ -476,6 +466,7 @@ function renderOutcomeBoard(){
     $("outcomeVideoTabs").replaceChildren();
     $("outcomeCards").innerHTML='<p class="outcomes-empty">尚无创作项目。可以新建项目并登记视频，再独立管理六项正式成果。</p>';
     renderNextOutcome(null,null,null,"");
+    $("outcomeStatusBreakdown").textContent="尚无项目记录";
     $("outcomeProgressText").textContent="尚无项目";
     $("outcomeProgressFill").style.width="0%";
     $("outcomeProgressMeter").setAttribute("aria-valuenow","0");
@@ -485,7 +476,7 @@ function renderOutcomeBoard(){
   sel.disabled=false;
   for(const item of list)sel.add(new Option((projectLife(item)==="active"?"":"["+lifeName(item)+"] ")+item.name,item.projectId));
   const p=current();
-  if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';renderNextOutcome(null,null,null,"");return;}
+  if(!p){sel.add(new Option("请先选择项目",""));sel.value="";$("outcomeProjectMeta").textContent="请选择正式项目";$("outcomeCards").innerHTML='<p class="outcomes-empty">请先选择项目。</p>';$("outcomeStatusBreakdown").textContent="尚未选择项目";renderNextOutcome(null,null,null,"");return;}
   sel.value=p.projectId;
   $("outcomeProjectMeta").textContent=[p.game||"未设置游戏",p.version||"未设置版本",lifeName(p)].join(" · ");
   const videos=projectVideos(p),video=outcomeVideo(p);
@@ -503,6 +494,7 @@ function renderOutcomeBoard(){
   $("outcomeVideoStyleBtn").disabled=!video||Boolean(p.deletedAt||p.archivedAt);
   if(!video){
     renderNextOutcome(p,null,null,"");
+    $("outcomeStatusBreakdown").textContent="尚无视频成果记录";
     $("outcomeProgressText").textContent="待登记视频";
     $("outcomeCards").innerHTML='<p class="outcomes-empty">该项目尚未登记视频。使用「＋ 登记视频」建立正式视频身份，六项成果将分别记录到该视频。</p>';
     $("outcomeProgressFill").style.width="0%";
@@ -515,6 +507,7 @@ function renderOutcomeBoard(){
   const total=Outcomes.summary(remote,video);
   renderNextOutcome(p,video,total,outcomeLoadError);
   const pendingButton=$("outcomePendingToggle");
+  pendingButton.disabled=!total.loaded;
   pendingButton.setAttribute("aria-pressed",String(outcomePendingOnly));
   pendingButton.textContent=outcomePendingOnly?"显示全部成果":"只看未完成";
   $("outcomeProgressText").innerHTML=total.loaded?total.done+' / 6 <small>已确认</small>':
@@ -522,6 +515,14 @@ function renderOutcomeBoard(){
   $("outcomeProgressHint").textContent=outcomeLoadError
     ?"无法核对正式成果："+outcomeLoadError+"。连接恢复前不显示推测的完成状态。"
     :"完成数量只取正式成果表的已确认状态；动态 Prompt 执行结果不会直接改变它。";
+  const breakdown=$("outcomeStatusBreakdown");
+  if(total.loaded){
+    const order=["confirmed","review","blocked","in_progress","not_started"];
+    breakdown.innerHTML=order.map(status=>{
+      const n=total.items.filter(item=>item.status===status).length;
+      return n?'<span class="outcome-stat" data-state="'+status+'"><b>'+n+'</b>'+esc(Outcomes.LABELS[status])+'</span>':"";
+    }).join("");
+  }else breakdown.textContent="正式状态核对中";
   $("outcomeProgressFill").style.width=total.percent+"%";
   $("outcomeProgressMeter").setAttribute("aria-valuenow",String(total.percent));
   const writable=!p.deletedAt&&!p.archivedAt&&Boolean(window.GuccCreatorContextUI);
@@ -928,6 +929,52 @@ function applyNodeResult(result){
 }
 async function loadMigration(){try{const r=await fetch("./legacy-prompt-migration.json?v=2.0.0");const j=await r.json();migration=j.mappings||[];renderProjects();}catch(e){console.warn(e);}}
 
+/* One-time event wiring: never attach listeners from renderNav / render(). */
+  async function copyCreatorGovernance(full){
+  const names=full?["CREATOR_RULEBOOK.md","CAPABILITY_RULES.md","TASK_RULES.md"]:["CREATOR_RULEBOOK.md"];
+  try{
+    const texts=await Promise.all(names.map(async name=>{
+      const response=await fetch("../creator-governance/"+name+"?v=20261110",{cache:"no-cache"});
+      if(!response.ok)throw Error(name+" HTTP "+response.status);
+      const body=await response.text();
+      if(body.length<1500)throw Error(name+" 内容异常");
+      return body;
+    }));
+    await copy(texts.join("\n\n---\n\n"));
+  }catch(error){notify("读取规范失败，未使用不完整版本："+error.message);}
+}
+$("copyCreatorRulebook")?.addEventListener("click",()=>void copyCreatorGovernance(false));
+$("copyCreatorFullGovernance")?.addEventListener("click",()=>void copyCreatorGovernance(true));
+$("outcomePendingToggle")?.addEventListener("click",()=>{outcomePendingOnly=!outcomePendingOnly;renderOutcomeBoard();});
+$("outcomeNextAction")?.addEventListener("click",event=>{
+  const button=event.target.closest("button");
+  if(!button)return;
+  if(button.hasAttribute("data-next-outcome")){void openCanonicalOutcomeEditor(button.dataset.nextOutcome);return;}
+  if(button.hasAttribute("data-next-view")){navigateTo(button.dataset.nextView);return;}
+  if(button.hasAttribute("data-next-register"))$("outcomeAddVideo")?.click();
+  if(button.hasAttribute("data-next-project-registry")){
+    const details=$("projectRegistryDetails");if(details){details.open=true;details.scrollIntoView({behavior:"smooth",block:"start"});}
+  }
+});
+
+window.addEventListener("popstate",()=>{
+  const query=new URLSearchParams(window.location.search);
+  activeView=["outcomes","creation","release","knowledge"].includes(query.get("view"))?query.get("view"):"outcomes";
+  creationMode=query.get("mode")==="dynamic"?"dynamic":"fixed";
+  referenceTab=["core","capabilities","libraries"].includes(query.get("ref"))?query.get("ref"):"core";
+  render();
+  window.scrollTo({top:0,behavior:"instant"});
+});
+const outcomeMore=document.querySelector("#view-outcomes .outcomes-more");
+outcomeMore?.addEventListener("click",event=>{
+  if(event.target.closest(".outcomes-more-menu button"))outcomeMore.open=false;
+});
+document.addEventListener("pointerdown",event=>{
+  if(outcomeMore?.open&&!outcomeMore.contains(event.target))outcomeMore.open=false;
+});
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"&&outcomeMore?.open){outcomeMore.open=false;outcomeMore.querySelector("summary")?.focus();}
+});
 document.querySelectorAll(".os-nav button[data-view]").forEach(b=>b.addEventListener("click",()=>navigateTo(b.dataset.view)));
 document.querySelectorAll("[data-creation-mode]").forEach(b=>b.addEventListener("click",()=>{
   navigateTo("creation",b.dataset.creationMode);
@@ -989,7 +1036,9 @@ $("releaseChooseVideo").addEventListener("click",()=>window.GuccCreatorContextUI
 document.querySelectorAll("[data-reference]").forEach(b=>b.addEventListener("click",()=>{
   referenceTab=b.dataset.reference;
   const url=new URL(window.location.href);url.searchParams.set("ref",referenceTab);
-  window.history.replaceState(window.history.state,"",url.pathname+url.search+url.hash);
+  const destination=url.pathname+url.search+url.hash;
+  if(destination!==window.location.pathname+window.location.search+window.location.hash)
+    window.history.pushState(window.history.state,"",destination);
   render();
 }));
 $("outcomeProjectSelect").addEventListener("change",e=>{

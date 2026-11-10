@@ -499,3 +499,16 @@ body.creator-os-page.gucc-enhanced :is(.button.primary,.mission-cta,.dock-button
 body.creator-os-page.gucc-enhanced :is(.button.primary,.mission-cta,.dock-button.primary) {
   transition:none!important;
 }
+
+/* Context-aware summary of the six formal outcomes: independent from approval */
+body.creator-os-page .outcomes-status-breakdown{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;min-height:22px;color:#98a9c4;font-size:11px}
+body.creator-os-page .outcome-stat{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;background:#ffffff08;border:1px solid #ffffff14;border-radius:7px;color:#aebdd5;white-space:nowrap}
+body.creator-os-page .outcome-stat b{font-variant-numeric:tabular-nums;font-size:12px;color:#e9eeff}
+body.creator-os-page .outcome-stat[data-state="confirmed"]{border-color:#64bc9c44;color:#a9e6d0}
+body.creator-os-page .outcome-stat[data-state="review"]{border-color:#e6c48766;color:#f2d8a0}
+body.creator-os-page .outcome-stat[data-state="blocked"]{border-color:#e99f9166;color:#f0b4ae}
+body.creator-os-page .outcome-stat[data-state="in_progress"]{border-color:#9eaeed55;color:#bfc9ff}
+body.creator-os-page .creator-next-panel[data-state="readonly"]{border-color:rgba(166,174,194,.22);background:#172032}
+body.creator-os-page .outcome-view-filter:disabled{opacity:.48;cursor:not-allowed}
+body.creator-os-page .outcomes-more>summary:focus-visible{outline:2px solid #cbbfff;outline-offset:3px}
+@media(max-width:700px){body.creator-os-page .outcomes-status-breakdown{gap:5px}body.creator-os-page .outcome-stat{padding:4px 7px;font-size:10px}}

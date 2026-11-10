@@ -39,6 +39,19 @@
     const done=items.filter(x=>x.status==="confirmed").length;
     return {loaded,items,done,total:6,percent:loaded?Math.round(done/6*100):0};
   }
+  // Workflow-facing recommendation, not an approval or an automated status change.
+  // Human reviews and blockers deserve attention before untouched future deliverables.
+  function nextAction(summary){
+    if(!summary?.loaded||!Array.isArray(summary.items))return null;
+    const weights={review:0,blocked:1,in_progress:2,not_started:3};
+    let chosen=null,score=Infinity;
+    for(const entry of summary.items){
+      if(entry.status==="confirmed")continue;
+      const value=weights[entry.status]??4;
+      if(value<score){chosen=entry;score=value;}
+    }
+    return chosen;
+  }
   function evidenceLabel(row){
     const e=row?.evidence||{},files=Array.isArray(e.artifacts)?e.artifacts:[];
     const file=files.find(f=>f?.fileName)?.fileName;
@@ -51,5 +64,5 @@
     if(e.artifacts?.some(a=>["browser_file","generated_bytes"].includes(a.observation)&&a.sha256&&a.sizeBytes>0))return "已确认 · 文件已读取";
     return "已确认 · 人工判断";
   }
-  return {IDS,LABELS,videos,record,summary,evidenceLabel,confirmationLabel};
+  return {IDS,LABELS,videos,record,summary,nextAction,evidenceLabel,confirmationLabel};
 });

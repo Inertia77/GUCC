@@ -60,9 +60,12 @@ const {fixture}=require("./gucc-unified-fixture.cjs");
 
 
    assert(await page.locator("#outcomeNextAction").isVisible(),"Verified next action remains visible");
+   if(width===1440)await page.evaluate(()=>{for(let i=0;i<7;i++)window.GuccCreatorOS.navigate("outcomes");});
    await page.locator("#outcomePendingToggle").click();
+   assert.equal(await page.locator("#outcomePendingToggle").getAttribute("aria-pressed"),"true","One click toggles ON after repeated renders");
    assert.equal(await page.locator("#outcomeCards .outcome-card").count(),5,"Only five pending outcomes when one confirmed");
    await page.locator("#outcomePendingToggle").click();
+   assert.equal(await page.locator("#outcomePendingToggle").getAttribute("aria-pressed"),"false","Second click toggles OFF");
    assert.equal(await page.locator("#outcomeCards .outcome-card").count(),6,"All six restored without editing state");
    await page.screenshot({path:path.join(out,"dashboard-"+width+".png"),fullPage:true,animations:"disabled"});
    await navigate("creation",1);

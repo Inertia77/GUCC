@@ -50,7 +50,7 @@ assert(O.buildFlowCompilerPrompt(original).includes("获客快线"));
 
 // Auxiliary prompt surfaces must share the same content strategy and current
 // GAME OPS responsibilities instead of silently reviving Sheets or Notion.
-assert(read("assets/creator-ai-task-core.js").includes("Content Quality and Author Value"));
+assert(read("apps/video-workspace/creator-governance/creator-governance-runtime.js").includes("Content Quality and Author Value"));
 assert(read("reference/ai-prompts.md").includes("Supabase / TaskRing 限时任务"));
 assert(read("reference/ai-prompts.md").includes("活动限时玩法、周期挑战"));
 assert(!read("reference/party-analysis-project-prompt.md").includes("Notion 长期主页面创建/更新"));

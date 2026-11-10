@@ -302,11 +302,16 @@
         <div class="panel-actions"><button id="copyCreatorRulebook" type="button" class="button secondary">复制 AI 核心规范</button><button id="copyCreatorFullGovernance" type="button" class="button primary">复制 AI 全部规范（含任务细则）</button></div>
         <p class="subtitle">复制后可给 ChatGPT、Work 或 Codex 当前任务使用。历史规则冲突已保留，尚未代替你裁决。</p>
       </article>
+      <details class="governance-detail-drawer">
+        <summary><span class="governance-drawer-icon" aria-hidden="true">▤</span><span><strong>详细准则与防错手册</strong><small>9 组核心规则 · 53 条防错准则 · 自主等级与关键阻断</small></span><span class="governance-drawer-arrow" aria-hidden="true">⌄</span></summary>
+        <div class="governance-detail-body">
       <div class="section-head"><span class="micro">00</span><h2>Core Rules & Failure Prevention</h2><p>长期规则稳定，Workflow 动态。只有真正会制造虚假产物的缺失才 HARD STOP。</p></div>
       <div id="autonomyGrid" class="card-grid"></div>
       <div id="coreRuleGrid" class="rule-grid"></div>
       <section class="panel"><div class="panel-head"><h3>Hard Stop</h3><span class="danger-pill">ONLY WHEN TRUTH BREAKS</span></div><div id="hardStopList"></div></section>
       <section class="panel"><div class="panel-head"><h3>Failure Prevention Library</h3><span class="pill">从旧 Prompt 踩坑迁移</span></div><div id="failureList" class="failure-list"></div></section>
+        </div>
+      </details>
     </section>
 
     <section id="view-capabilities" class="reference-pane">

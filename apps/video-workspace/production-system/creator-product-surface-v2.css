@@ -451,3 +451,34 @@ body.creator-os-page .outcomes-video-line>.micro{
  body.creator-os-page #outcomeNewProject,
  body.creator-os-page #view-outcomes .outcomes-more>summary{min-height:44px!important}
 }
+
+/* Knowledge library: progressive disclosure, no hidden loss of source rules. */
+body.creator-os-page .governance-detail-drawer{
+ margin-top:16px;border:1px solid var(--product-border);border-radius:13px;
+ background:#131d30;overflow:hidden;
+}
+body.creator-os-page .governance-detail-drawer>summary{
+ list-style:none;display:flex;align-items:center;gap:14px;min-height:80px;
+ cursor:pointer;padding:17px 20px;transition:background .16s;
+}
+body.creator-os-page .governance-detail-drawer>summary::-webkit-details-marker{display:none}
+body.creator-os-page .governance-detail-drawer>summary:hover{background:#ffffff08}
+body.creator-os-page .governance-drawer-icon{
+ display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;
+ border-radius:11px;background:#b0a5f31b;color:#c2b7ff;border:1px solid #a79be751;
+ font-size:18px;
+}
+body.creator-os-page .governance-detail-drawer>summary>span:nth-child(2){display:grid;gap:4px;min-width:0}
+body.creator-os-page .governance-detail-drawer>summary strong{font-size:15px;font-weight:700;color:#e9edfd}
+body.creator-os-page .governance-detail-drawer>summary small{font-size:11px;color:#9eacc5;line-height:1.6}
+body.creator-os-page .governance-drawer-arrow{margin-left:auto;color:#bbb1fb;font-size:20px;transition:transform .15s}
+body.creator-os-page .governance-detail-drawer[open] .governance-drawer-arrow{transform:rotate(180deg)}
+body.creator-os-page .governance-detail-body{padding:20px;border-top:1px solid var(--product-border)}
+body.creator-os-page .governance-detail-body>.section-head{margin:0 0 17px}
+body.creator-os-page .governance-detail-body .rule-grid{gap:12px}
+@media(max-width:700px){
+ body.creator-os-page .governance-detail-drawer>summary{padding:14px;gap:11px}
+ body.creator-os-page .governance-detail-body{padding:12px}
+ body.creator-os-page .governance-detail-drawer>summary strong{font-size:13px}
+ body.creator-os-page .governance-drawer-icon{flex-basis:34px;width:34px;height:34px}
+}

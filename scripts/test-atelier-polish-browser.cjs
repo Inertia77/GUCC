@@ -104,7 +104,7 @@ let browser;
  await p.setViewportSize({width:1440,height:900});await go('creator');
  const desktopDock=p.locator('.gucc-shell-dock');
  const desktopBounds=await desktopDock.boundingBox();
- assert(desktopBounds.width>=90&&desktopBounds.width<=110,'Desktop Dock has a legible dedicated rail');
+ assert(desktopBounds.width>=48&&desktopBounds.width<=72,'Desktop Dock stays compact while labels remain legible');
  for(const entry of await desktopDock.locator(':scope > :is(a,button)').all()){
   const label=entry.locator(':scope > span');
   if(await label.count()){

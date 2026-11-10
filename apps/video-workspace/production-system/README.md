@@ -6,7 +6,7 @@
 
 本轮恢复原固定制作 Prompt Studio v6.1.4 为正式并列入口：
 
-- **固定版**：`/apps/video-workspace/legacy-prompt-studio-v6.html`。读取仓库原有 `studio.js`、`studio.css`、`ai-prompts.js`（原 Prompt、Chat 备用拆分与游戏类型分支均不重写）。本浏览器草稿 key 为 `gucc_creator_prompt_v6`，支持导入/导出，但不自动写入本动态制作中枢的 Supabase 项目。
+- **固定版**：`/apps/video-workspace/legacy-prompt-studio-v6.html`。读取仓库的 `studio.js`、`studio.css`，并从 `creator-governance/creator-governance-runtime.js` 获得完整旧版 Prompt、Chat 备用拆分与游戏类型分支（不删除执行内容）。本浏览器草稿 key 为 `gucc_creator_prompt_v6`，支持导入/导出，但不自动写入本动态制作中枢的 Supabase 项目。
 - **动态版**：`/apps/video-workspace/production-system/`。现有 Project Builder / VIDEO_CONTRACT / AI 编排 Prompt Flow、节点回执、Supabase 云同步和项目生命周期保持不变。
 - **统一选择页**：`/apps/video-workspace/`。两张平级卡片，GUCC 首页与全局导航也都有独立入口。
 - 两种路线是不同的工作方式。固定模板不会自动保证更高质量；每轮仍需验证来源、机制、去 AI 味与 Lock。暂时禁止自动互相同步状态，也不进行破坏性迁移。
@@ -74,3 +74,7 @@
 - 2026-10：数据库事务测试在回滚环境通过，3 个正式 Root 与 3 个快照全部关联，0 个孤儿，无测试残留。
 - 修改后代码检查：脚本语法、导航入口、浏览器 ID、状态按钮、云端 RPC、缓存与关键连接点通过。
 - **尚待用户实际浏览器端验收**：Supabase 登录会话、跨设备冲突交互、本地目录权限、封面/投稿工作流跳转及响应式截图。静态测试不等于线上端到端验证。
+
+## 唯一 AI 规范入口
+
+正式规范位于 [`../creator-governance/CREATOR_RULEBOOK.md`](../creator-governance/CREATOR_RULEBOOK.md)，逐项能力规范和完整任务文本同目录。原位 core/failure/capability/six/ai-prompts JS 仅是兼容 facade，禁止独立在旧位置维护规范。UI「规则与资料」已提供在线阅读及复制全规范入口。

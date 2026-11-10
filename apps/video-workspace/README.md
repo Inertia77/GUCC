@@ -19,7 +19,7 @@
 
 `apps/video-workspace/legacy-prompt-studio-v6.html`
 
-旧 `notion-prompts.json` 与 `ai-prompts.js` 不删除，作为成熟 Prompt DNA 与历史兼容来源；新版迁移映射位于 `production-system/legacy-prompt-migration.json`。
+旧版 `notion-prompts.json`、`ai-prompts.js` 和全部创作规则已无损迁移到 `creator-governance/`；原 Prompt 数据逐字保留，旧 JS 路径仅作兼容调用。历史原始文件归档到 `archive/creator-governance/2026-11-10/`。迁移映射仍在 `production-system/legacy-prompt-migration.json`。
 
 ## 新版文件
 

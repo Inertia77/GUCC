@@ -15,7 +15,7 @@ These rules apply to work inside an AI Video Production System project directory
 9. When an asset is missing, stop that shot safely, keep the timeline valid, and report the exact required replacement.
 10. Update `BUILD_REPORT.md`, `QC_REPORT.md`, `MISSING_ASSET_REPORT.md`, and `STATUS.md` with actual outputs. A chat response alone is not a production handoff.
 
-The full creative constraints live in `docs/ai-video-production/CREATOR_CONSTITUTION.md`.
+The full creative constraints live in `apps/video-workspace/creator-governance/CREATOR_RULEBOOK.md`.
 
 ## Production Auth and Database Safety
 
@@ -28,3 +28,6 @@ GUCC is a long-term single-user personal system. The production Supabase project
 5. Keep public signup UI and client signup helpers absent or blocked. Existing owner sign-in, sign-out, session refresh, and deliberate account recovery remain allowed.
 6. Temporary production data tests must be clearly marked, reversible, owner-scoped, and cleaned up immediately. Prefer local fixtures whenever possible.
 7. Do not change this project from single-user to multi-user behavior unless the user explicitly requests that product change.
+
+
+Creator Governance detailed execution rules: `apps/video-workspace/creator-governance/CAPABILITY_RULES.md` and `TASK_RULES.md`. The legacy constitutions, prompt catalogs and pipeline documents have byte-preserving archives under `archive/creator-governance/2026-11-10/`; do not treat archives as active instructions.

@@ -96,7 +96,7 @@ for(const n of p.promptFlow){
   assert(typeof n.prompt==="string"&&n.prompt.length>200);
 }
 assert.equal(O.currentTask(p).promptId,"PF-001");
-const legacy=JSON.parse(fs.readFileSync(path.join(root,"apps/video-workspace/notion-prompts.json"),"utf8"));
+const legacy=JSON.parse(fs.readFileSync(path.join(root,"apps/video-workspace/creator-governance/notion-prompts.json"),"utf8"));
 assert.deepEqual(new Set(migration.mappings.map(x=>x.legacyPromptId)),new Set(Object.keys(legacy)));
 assert(migration.mappings.some(x=>x.legacyPromptId==="03C"&&x.disposition==="CONDITIONAL"));
 assert(migration.mappings.some(x=>x.legacyPromptId==="20"&&x.disposition==="CONDITIONAL"));

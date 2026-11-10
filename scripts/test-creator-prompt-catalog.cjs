@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const P=require('../apps/video-workspace/ai-prompts.js');
-const original=require('../apps/video-workspace/notion-prompts.json');
+const original=require('../apps/video-workspace/creator-governance/notion-prompts.json');
 assert.deepEqual([...P.tasks.flatMap(t=>t.old)].sort(),Object.keys(original).sort(),'Every original task must have exactly one destination');
 assert.equal(new Set(P.tasks.map(t=>t.id)).size,P.tasks.length);
 for(const t of P.tasks){

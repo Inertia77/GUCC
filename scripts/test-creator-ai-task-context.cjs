@@ -7,7 +7,7 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const E = require(path.join(root, "apps", "video-workspace", "production-system", "engine.js"));
 const AI = require(path.join(root, "assets", "creator-ai-task-core.js"));
-const constitution = fs.readFileSync(path.join(root, "docs", "ai-video-production", "CREATOR_CONSTITUTION.md"), "utf8");
+const constitution = fs.readFileSync(path.join(root, "apps", "video-workspace", "creator-governance", "CREATOR_RULEBOOK.md"), "utf8");
 
 function readyFile(project, key, { content = "", name = "" } = {}) {
   project.files[key] ||= { key, status: "Missing", relativePath: E.FILE_DEFINITIONS[key]?.path || key, filename: E.FILE_DEFINITIONS[key]?.filename || key };

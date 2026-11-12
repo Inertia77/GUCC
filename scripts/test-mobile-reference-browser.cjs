@@ -79,7 +79,12 @@ let browser;
   await p.locator('#search').fill('时间线');const target=p.locator('.doc-link').filter({hasText:'时间线'}).first();await target.click();await p.waitForFunction(()=>document.querySelector('#readerTitle').textContent.includes('时间线'));assert.equal(await p.locator('#libraryNavToggle').getAttribute('aria-expanded'),'false');await shot('story-reading-390');
   await p.getByRole('button',{name:'资料',exact:true}).click();await shot('reference-menu-390');await p.keyboard.press('Escape');
   await go('resource');for(const name of ['official','intel','projects']){await p.locator(`.view-switch[data-view="${name}"]`).click();assert.equal(await p.locator(`.view-switch[data-view="${name}"]`).getAttribute('aria-pressed'),'true');await shot('resource-'+name+'-390');}
-  await go('db');for(const code of ['崩','绝','鸣','终','异','阴']){await p.locator('.filter-mobile-toggle').first().click();await p.selectOption('#charGame',code);await p.locator('#searchCharBtn').click();await p.waitForFunction(code=>document.querySelector('#characterResults .item')?.dataset.gameCode===code,code);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+  await go('db');
+  await p.locator('.gucc-shell-dock [data-shell-menu="create"]').click();
+  assert.equal(await p.locator('#guccShellMenu[data-group="create"] .gucc-shell-menu-item').count(),4,'DB must keep four Creator shortcuts');
+  await p.keyboard.press('Escape');
+  assert(await p.locator('#guccShellMenu').isHidden());
+  for(const code of ['崩','绝','鸣','终','异','阴']){await p.locator('.filter-mobile-toggle').first().click();await p.selectOption('#charGame',code);await p.locator('#searchCharBtn').click();await p.waitForFunction(code=>document.querySelector('#characterResults .item')?.dataset.gameCode===code,code);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
   for(const tab of ['parties','mechanisms','versions']){await p.locator(`[data-tab="${tab}"]`).click();const panel=p.locator('#'+tab);assert.equal(await panel.locator('.filter-mobile-toggle').count(),1,`${tab}: mobile filter control missing`);assert(!(await panel.locator('[data-game-filter], #mechanismGame').isVisible()),`${tab}: filters must start collapsed`);await panel.locator('.filter-mobile-toggle').click();assert(await panel.locator('[data-game-filter], #mechanismGame').isVisible(),`${tab}: expanded filters remain hidden`);}
   // Real Chromium contract: every non-character card collapses to a single
   // horizontal scan row without exposing destructive actions.

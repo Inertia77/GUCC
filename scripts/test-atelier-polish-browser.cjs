@@ -108,6 +108,13 @@ let browser;
  const empty=fixture();empty.projectRows.splice(0);for(const id of Object.keys(empty.snapshots))delete empty.snapshots[id];empty.videos.clear();
  const ec=await browser.newContext({serviceWorkers:'block',viewport:{width:390,height:844}});await empty.install(ec);const ep=await ec.newPage();
  await ep.goto(empty.origin+'/');await ep.waitForFunction(()=>document.querySelector('.gcc-context-trigger'));
+ const portalCreator=ep.locator('.gucc-shell-dock [data-shell-menu="create"]');
+ await portalCreator.click();
+ assert.equal(await ep.locator('#guccShellMenu[data-group="create"] .gucc-shell-menu-item').count(),4,'Outside Creator all four shortcuts remain available');
+ await ep.locator('#guccShellMenu .gucc-shell-menu-item').filter({hasText:'规则与资料'}).click();
+ await ep.locator('#view-knowledge').waitFor({state:'visible'});
+ assert.equal(await ep.locator('.gucc-shell-dock [data-shell-current="create"]').count(),1,'External shortcut opens Creator without the duplicate menu');
+ await ep.goto(empty.origin+'/');await ep.waitForFunction(()=>document.querySelector('.gcc-context-trigger'));
  await ep.evaluate(()=>document.fonts.ready);await ep.screenshot({path:path.join(out,'portal-empty-390.png'),animations:'disabled'});assert.equal(empty.writes.length,0);await ec.close();
  // Desktop regression: full Chinese labels must never collapse into vertical glyphs.
  await p.setViewportSize({width:1440,height:900});await go('creator');

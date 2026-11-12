@@ -179,7 +179,7 @@
   const navItems = [
     { type: 'link', key: 'home', label: '首页', icon: '⌂', href: normalizedRoot, active: homeActive },
     { type: 'link', key: 'db', label: 'DB', icon: 'DB', href: `${normalizedRoot}apps/command-center/`, active: dbActive },
-    { type: creatorWorkspaceActive ? 'current' : 'group', key: 'create', label: '创作', icon: 'OPS', active: productionActive || fixedActive || workspaceActive },
+    { type: creatorWorkspaceActive ? 'current' : 'group', key: 'create', label: '创作', icon: 'OPS', active: creatorWorkspaceActive || groups.create.items.some((item) => item.active) },
     { type: 'group', key: 'library', label: '资料', icon: 'LIB', active: groups.library.items.some((item) => item.active) },
     { type: 'group', key: 'more', label: '更多', icon: '•••', active: groups.more.items.some((item) => item.active) }
   ];

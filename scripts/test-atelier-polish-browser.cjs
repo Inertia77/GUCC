@@ -33,6 +33,15 @@ let browser;
   await p.setViewportSize({width,height});await go('creator');
   const dock=p.locator('.gucc-shell-dock'),bounds=await dock.boundingBox();
   assert(bounds.height<=58,'Dock should remain quiet and compact');
+  const current=dock.locator('[data-shell-current="create"]');
+  assert.equal(await current.count(),1,'Creator has one current global destination');
+  assert.equal(await current.getAttribute('aria-current'),'page');
+  assert.equal(await dock.locator('[data-shell-menu="create"]').count(),0,'Creator must not duplicate workspace navigation');
+  const before=await p.evaluate(()=>({url:location.href,video:window.GuccCreatorWorkspace?.context().videoId,project:window.GuccCreatorOS?.current()?.projectId,doc:performance.timeOrigin}));
+  await current.click();
+  assert(await dock.locator('#guccShellMenu').isHidden(),'Current Creator slot must not open a duplicate menu');
+  const after=await p.evaluate(()=>({url:location.href,video:window.GuccCreatorWorkspace?.context().videoId,project:window.GuccCreatorOS?.current()?.projectId,doc:performance.timeOrigin}));
+  assert.deepEqual(after,before,'Current Creator slot must not reload or change project/video');
   for(const link of await dock.locator(':scope > a').all()){
    const box=await link.boundingBox();assert(box.width>=44&&box.height>=44,'Dock keeps touch targets');
   }

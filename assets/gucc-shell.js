@@ -14,6 +14,9 @@
   const path = window.location.pathname.replace(/\/index\.html$/, '/');
   const isActive = (needle) => path.includes(needle);
   const productionActive = isActive('/apps/video-workspace/production-system/');
+  // Only the canonical Creator contains the native four-workspace navigation.
+  // Standalone legacy/embedded tools still need the global shortcut menu.
+  const creatorWorkspaceActive = path.endsWith('/apps/video-workspace/production-system/');
   const fixedActive = isActive('/apps/video-workspace/legacy-prompt-studio-v6.html');
   const workspaceActive = isActive('/apps/video-workspace/') && !productionActive && !fixedActive;
 
@@ -176,7 +179,7 @@
   const navItems = [
     { type: 'link', key: 'home', label: '首页', icon: '⌂', href: normalizedRoot, active: homeActive },
     { type: 'link', key: 'db', label: 'DB', icon: 'DB', href: `${normalizedRoot}apps/command-center/`, active: dbActive },
-    { type: 'group', key: 'create', label: '创作', icon: 'OPS', active: groups.create.items.some((item) => item.active) },
+    { type: creatorWorkspaceActive ? 'current' : 'group', key: 'create', label: '创作', icon: 'OPS', active: productionActive || fixedActive || workspaceActive },
     { type: 'group', key: 'library', label: '资料', icon: 'LIB', active: groups.library.items.some((item) => item.active) },
     { type: 'group', key: 'more', label: '更多', icon: '•••', active: groups.more.items.some((item) => item.active) }
   ];
@@ -466,15 +469,21 @@
     enhanceWorkspaceNavigation();
 
     const existingDock = document.querySelector('.gucc-shell-dock');
-    if (existingDock?.dataset.shellVersion === '5') return;
+    if (existingDock?.dataset.shellVersion === '6') return;
     if (existingDock) existingDock.remove();
 
     const dock = document.createElement('nav');
     dock.className = 'gucc-shell-dock';
-    dock.dataset.shellVersion = '5';
+    dock.dataset.shellVersion = '6';
     dock.setAttribute('aria-label', 'GUCC 全局导航');
 
     dock.innerHTML = navItems.map((item) => {
+      if (item.type === 'current') {
+        return `
+          <a class="gucc-shell-link is-active" href="${escapeHtml(location.href)}" data-shell-current="create" aria-current="page" title="当前位于创作工作区">
+            ${navIcon(item.key)}<span>${escapeHtml(item.label)}</span>
+          </a>`;
+      }
       if (item.type === 'link') {
         return `
           <a class="gucc-shell-link${item.active ? ' is-active' : ''}" href="${item.href}" title="${escapeHtml(item.label)}"${item.active ? ' aria-current="page"' : ''}>
@@ -511,10 +520,6 @@
         return;
       }
       openKey = key;
-      if(key==='create'&&productionActive){
-        const view=new URLSearchParams(location.search).get('view')||'outcomes';
-        group.items.forEach((item,index)=>item.active=['outcomes','creation','release','knowledge'][index]===view);
-      }
       menu.dataset.group = key;
       menu.innerHTML = `
         <div class="gucc-shell-menu-head">
@@ -533,6 +538,17 @@
     };
 
     dock.addEventListener('click', (event) => {
+      const current = event.target.closest('[data-shell-current="create"]');
+      if (current) {
+        // Already in Creator: preserve the current project, video, view and draft.
+        // A normal click only dismisses any open global menu; no route reload.
+        current.href = location.href;
+        if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+          event.preventDefault();
+          closeMenu();
+        }
+        return;
+      }
       const trigger = event.target.closest('.gucc-shell-trigger');
       if (!trigger) return;
       event.preventDefault();

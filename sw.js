@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v75";
-const RUNTIME_CACHE = "gucc-runtime-v66";
+const STATIC_CACHE = "gucc-static-v76";
+const RUNTIME_CACHE = "gucc-runtime-v67";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -14,7 +14,7 @@ const APP_SHELL = [
   "./docs/supabase-setup.html",
   "./assets/gucc-game-chrome-v1.css?v=1",
   "./assets/gucc-shell-nav-v2.css?v=6",
-  "./assets/gucc-shell.js?v=17",
+  "./assets/gucc-shell.js?v=18",
   "./assets/fonts/noto-sc/noto-sans-sc-chinese-simplified-400-normal.woff2",
   "./apps/video-workspace/ai-prompts.js?v=6.2.0",
   "./apps/video-workspace/creator-six-deliverables.js?v=1.0.2",

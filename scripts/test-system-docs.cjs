@@ -33,7 +33,7 @@ for (const [name, html] of [["SQL",sqlHtml],["DB",dbHtml],["System",setup]]) {
 assert(css.includes("prefers-reduced-motion"));
 assert(setup.includes("workflow-based Pages"), "Pages guide must reflect workflow deployment");
 assert(setup.includes("creator-project-api") && setup.includes("gameup-api"));
-assert(setup.includes("release.json") && setup.includes("T1/T2/T3"));
+assert(setup.includes("release.json") && setup.includes("S/A/B/D/F"));
 
 assert(sqlDoc.includes("game_play_policies") && sqlDoc.includes("creator_deliverable_records"));
 assert(sqlDoc.includes("character_evaluations.like_level"));

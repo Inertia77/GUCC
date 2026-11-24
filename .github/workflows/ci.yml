@@ -144,8 +144,31 @@ jobs:
             const verified = await github.request('GET /repos/{owner}/{repo}/pages', repo);
             if (verified.data.build_type !== 'workflow') throw new Error('Legacy Pages source is still enabled');
 
-  deploy:
+  pages-build:
     needs: [test, pages-source]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+      actions: read
+    outputs:
+      artifact_name: ${{ steps.identity.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare static site with deployment identity
+        run: node scripts/build-pages.cjs _site
+      - name: Set attempt-specific artifact identity
+        id: identity
+        run: echo "name=github-pages-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+          name: ${{ steps.identity.outputs.name }}
+
+  deploy:
+    needs: [test, pages-source, pages-build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency:
@@ -160,28 +183,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
       - name: Reject obsolete main build
         env:
           GH_TOKEN: ${{ github.token }}
         run: test "$(gh api repos/${{ github.repository }}/git/ref/heads/main --jq .object.sha)" = "$GITHUB_SHA"
-      - uses: actions/configure-pages@v5
-      - name: Prepare static site with deployment identity
-        run: |
-          node scripts/build-pages.cjs _site
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
-          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Verify unique Pages artifact is visible to REST API
+      - name: Verify completed build artifact is uniquely visible
         env:
           GH_TOKEN: ${{ github.token }}
-          ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_NAME: ${{ needs.pages-build.outputs.artifact_name }}
         run: |
+          test -n "$ARTIFACT_NAME"
           for attempt in $(seq 1 18); do
             count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$ARTIFACT_NAME" --jq '[.artifacts[] | select(.expired == false)] | length' || true)"
             if [ "$count" = "1" ]; then
-              echo "Unique deployment artifact is visible: $ARTIFACT_NAME"
+              echo "Unique completed-build artifact is visible: $ARTIFACT_NAME"
               exit 0
             fi
             sleep 5
@@ -191,7 +206,7 @@ jobs:
       - uses: actions/deploy-pages@v4
         id: deployment
         with:
-          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          artifact_name: ${{ needs.pages-build.outputs.artifact_name }}
       - name: Production smoke and exact deployment identity
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -205,7 +220,7 @@ jobs:
               await new Promise(resolve=>setTimeout(resolve,5000));
             }
             if(!verified)throw Error("Pages deployment identity mismatch");
-            for(const path of ["", "apps/video-workspace/production-system/", "apps/publishing-console/", "sw.js"]){
+            for(const path of ["", "apps/video-workspace/production-system/", "apps/publishing-console/", "apps/command-center/", "sw.js"]){
               const r=await fetch(new URL(path,base),{cache:"no-store"});
               if(!r.ok)throw Error("Production smoke failed: "+path+" "+r.status);
             }'

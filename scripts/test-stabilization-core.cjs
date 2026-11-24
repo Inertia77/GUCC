@@ -12,7 +12,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const out=require('../apps/video-workspace/production-system/creator-os-outcomes.js');assert.equal(out.confirmationLabel({status:'confirmed',evidence:{confirmationMethod:'manual'}}),'已确认 · 人工判断');
  const flow=read('.github/workflows/ci.yml');
  const deploy=flow.slice(flow.indexOf('\n  deploy:'));
- assert.match(deploy,/needs: \[test, pages-source\]/);assert.match(deploy,/github.event_name == 'push' && github.ref == 'refs\/heads\/main'/);assert.doesNotMatch(deploy,/always\(\)|continue-on-error/);assert.match(flow,/build_type: 'workflow'/);assert.match(deploy,/Reject obsolete main build/);
+ assert.match(deploy,/needs: \[test, pages-source, pages-build\]/);assert.match(flow,/pages-build:[\s\S]*upload-pages-artifact@v4/);assert.match(deploy,/artifact_name: \$\{\{ needs\.pages-build\.outputs\.artifact_name \}\}/);assert.doesNotMatch(deploy,/upload-pages-artifact/);assert.match(deploy,/github.event_name == 'push' && github.ref == 'refs\/heads\/main'/);assert.doesNotMatch(deploy,/always\(\)|continue-on-error/);assert.match(flow,/build_type: 'workflow'/);assert.match(deploy,/Reject obsolete main build/);
  // Execute dependency truth table, including skipped/cancelled/failed prerequisites.
  const eligible=(event,ref,test,source)=>event==='push'&&ref==='refs/heads/main'&&[test,source].every(x=>x==='success');
  for(const test of ['success','failure','cancelled','skipped'])for(const source of ['success','failure','cancelled','skipped'])assert.equal(eligible('push','refs/heads/main',test,source),test==='success'&&source==='success');

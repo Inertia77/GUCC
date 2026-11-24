@@ -154,6 +154,7 @@ jobs:
     permissions:
       contents: read
       pages: write
+      actions: read
       id-token: write
     environment:
       name: github-pages
@@ -171,8 +172,26 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify unique Pages artifact is visible to REST API
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          for attempt in $(seq 1 18); do
+            count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$ARTIFACT_NAME" --jq '[.artifacts[] | select(.expired == false)] | length' || true)"
+            if [ "$count" = "1" ]; then
+              echo "Unique deployment artifact is visible: $ARTIFACT_NAME"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Deployment artifact not uniquely visible: $ARTIFACT_NAME"
+          exit 1
       - uses: actions/deploy-pages@v4
         id: deployment
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Production smoke and exact deployment identity
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}

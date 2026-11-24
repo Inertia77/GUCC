@@ -128,7 +128,7 @@ async function refreshDbScope(){
   const games=await loadDbGameOptions();
   document.querySelectorAll('[data-game-filter] select').forEach(select=>{
     const old=select.value;
-    select.replaceChildren(new Option('全部 S/A 游戏',''),...games.map(g=>new Option(g.game_title,g.game_code)));
+    select.replaceChildren(new Option('全部 S/A 游戏',''),...games.map(g=>new Option(`${g.game_code} · ${g.game_title}`,g.game_code)));
     select.value=games.some(g=>g.game_code===old)?old:'';
     const custom=select.closest('[data-game-filter]')?.querySelector('input');
     if(custom){custom.value='';custom.hidden=true;custom.disabled=true;}

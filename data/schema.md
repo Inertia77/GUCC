@@ -5,7 +5,7 @@
 ## 结构关系与字段语义
 
 - **游戏与版本：** `games` 是基础字典，`characters` 通过 `game_id` 关联游戏，`character_names` 储存别名；`game_versions`、`version_banners` 和 `version_acquisitions` 分开表达版本、卡池和其他获取方式。
-- **状态的三个维度：** `game_status.content_tier` 是内容创作等级；`game_play_policies.play_tier` 是 T1/T2/T3 游玩分级，`story_focus` 独立表示剧情关注；`character_progress` 则只保存角色研究、养成和备注。喜好度 `like_level` 在 `character_evaluations`。
+- **状态的三个维度：** `game_status.content_tier` 是内容创作等级；`game_play_policies.play_tier` 是 S/A/B/D/F 游玩分级，`story_focus` 独立表示剧情关注；`character_progress` 则只保存角色研究、养成和备注。喜好度 `like_level` 在 `character_evaluations`。
 - **角色四档：** 推荐使用 `◯ / △ / ✕ / 対象外`；旧数据库约束即使允许历史值，也不代表新记录应继续使用。
 - **创作链：** `creator_projects` → `creator_video_workspaces` → `creator_deliverable_records`。视频成果人工确认；云端 `creator_os_workspace_snapshots` 与 `creator_os_publish_drafts` 分别是工作区快照与发布草稿。
 - **全球化与发布：** `creator_language_tracks` + `creator_visual_masters` → `creator_variants` → `creator_channels`、`creator_platform_presentations` → `creator_publish_packages`、`creator_publications` → `creator_publication_metric_snapshots`、`creator_performance_reports`、`creator_learnings`。
@@ -45,7 +45,7 @@
 - `game_key:text`
 - `game_id:uuid`
 - `game_name:text`
-- `play_tier:smallint`
+- `play_tier:smallint`：1=S，2=A，3=B，4=D，5=F。S/A 保留日常周常；B 只维护情报和限时；D 追踪测试、公测与预约活动；F 仅保留档案，不主动新增运营任务。
 - `story_focus:boolean`
 - `game_kind:text`
 - `routine_policy:text`

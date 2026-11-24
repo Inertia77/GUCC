@@ -1,9 +1,9 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#090e1b"><title>查询与 SQL 维护手册 · GUCC</title><link rel="icon" href="../../assets/icons/gucc-icon.svg?v=5"><script src="../../assets/access-guard.js?v=15" data-root="../../" data-guard="true"></script><link rel="stylesheet" href="../../assets/gucc-system-docs-v1.css?v=1"></head><body><header class="doc-header"><a class="brand" href="../../">GUCC / SYSTEM</a><nav><a aria-current="page" href="./query-manual.html">SQL 手册</a><a href="./db-structure.html">数据结构</a><a href="../supabase-setup.html">系统指南</a></nav></header><main class="doc-wrap"><section class="doc-hero"><div class="doc-eyebrow">MAINTENANCE / SQL</div><h1>查询与 SQL 维护手册</h1><p>生产只读核验 · 安全巡检 · 定点维护 · 2026-11-05 JST</p></section><article class="doc-content"><blockquote><p><strong>生产核验：2026-11-05（JST）</strong>。依据生产 Supabase <code>rubjeqnuxuvupjwyksmo</code> 的只读结构核验，并对照 <code>gameup-api</code> 与 Creator OS v4。本文适合排查与定点维护，不是首次部署脚本。</p><p><strong>日常操作优先使用 GUCC 数据库及 Creator OS 的页面。</strong> Supabase SQL Editor 权限较高，写入前必须确认目标行和约束；不得把本手册当作自动批量执行脚本。</p></blockquote>
 <h2 id="section-1">1. 先认清三套不同状态</h2>
-<table><thead><tr><th>领域</th><th>字段 / 表</th><th>当前合法语义</th></tr></thead><tbody><tr><td>游戏创作关注度</td><td><code>game_status.content_tier</code></td><td>创作级 / 兴趣级 / 观察级 / 浅尝级 / 抛弃级</td></tr><tr><td>游戏游玩优先级</td><td><code>game_play_policies.play_tier</code></td><td>1 = T1 核心玩；2 = T2 次要玩；3 = T3 有余力再玩</td></tr><tr><td>游戏剧情关注</td><td><code>game_play_policies.story_focus</code></td><td>独立布尔标记，<strong>与游玩优先级交叉</strong></td></tr><tr><td>角色研究</td><td><code>character_progress.research_status</code></td><td>◯ / △ / ✕ / 対象外</td></tr><tr><td>角色养成</td><td><code>character_progress.build_status</code></td><td>◯ / △ / ✕ / 対象外</td></tr><tr><td>角色喜好度 / 强度评价</td><td><code>character_evaluations.like_level</code> / <code>power_rank</code></td><td>喜好度与角色进度分表存储</td></tr><tr><td>视频成果</td><td><code>creator_deliverable_records</code></td><td>按 <code>project_id + video_id + deliverable_key</code> 独立存储，需人工确认</td></tr><tr><td>发布草稿与实绩</td><td><code>creator_os_publish_drafts</code> / <code>creator_publications</code></td><td>草稿不等于已发布；真实发布需人工确认</td></tr></tbody></table>
+<table><thead><tr><th>领域</th><th>字段 / 表</th><th>当前合法语义</th></tr></thead><tbody><tr><td>游戏创作关注度</td><td><code>game_status.content_tier</code></td><td>创作级 / 兴趣级 / 观察级 / 浅尝级 / 抛弃级</td></tr><tr><td>游戏游玩优先级</td><td><code>game_play_policies.play_tier</code></td><td>1 = S 核心；2 = A 余力；3 = B 自由；4 = D 待公测；5 = F 封存</td></tr><tr><td>游戏剧情关注</td><td><code>game_play_policies.story_focus</code></td><td>独立布尔标记，<strong>与游玩优先级交叉</strong></td></tr><tr><td>角色研究</td><td><code>character_progress.research_status</code></td><td>◯ / △ / ✕ / 対象外</td></tr><tr><td>角色养成</td><td><code>character_progress.build_status</code></td><td>◯ / △ / ✕ / 対象外</td></tr><tr><td>角色喜好度 / 强度评价</td><td><code>character_evaluations.like_level</code> / <code>power_rank</code></td><td>喜好度与角色进度分表存储</td></tr><tr><td>视频成果</td><td><code>creator_deliverable_records</code></td><td>按 <code>project_id + video_id + deliverable_key</code> 独立存储，需人工确认</td></tr><tr><td>发布草稿与实绩</td><td><code>creator_os_publish_drafts</code> / <code>creator_publications</code></td><td>草稿不等于已发布；真实发布需人工确认</td></tr></tbody></table>
 <p>旧说明中的 <code>character_progress.like_level</code>、<code>research_note</code>、<code>已完成</code>、<code>未养成</code> 与卡池 <code>上半</code>、<code>限定角色</code> 等示例不适配现有字段或枚举，请勿沿用。</p>
 <h2 id="section-2">2. 只读巡检：可以直接在 SQL Editor 执行</h2>
-<h3 id="section-3">2.1 列出当前六游与创作关注状态</h3>
+<h3 id="section-3">2.1 列出当前游戏与创作关注状态</h3>
 <pre><code class="language-sql">select g.id, g.short_code, g.title,
        gs.content_tier, gs.output_enabled, gs.research_depth,
        gs.login_frequency, gs.info_attention
@@ -11,13 +11,13 @@ from public.games g
 left join public.game_status gs on gs.game_id = g.id
 order by g.short_code;</code></pre>
 <p><strong>注意</strong>：<code>games.short_code</code> 为数据库内的短代码，现行数据主要使用 <code>崩 / 绝 / 鸣 / 终 / 异 / 阴</code>，不能假设等于 <code>ZZZ</code> 或 <code>HSR</code>。筛选时可使用准确的 <code>games.title</code> 或主键 <code>id</code>。</p>
-<h3 id="section-4">2.2 游玩 T1/T2/T3 + 剧情重点</h3>
+<h3 id="section-4">2.2 游玩 S/A/B/D/F + 剧情重点</h3>
 <pre><code class="language-sql">select game_key, game_name, game_id, play_tier,
        story_focus, game_kind, routine_policy,
        limited_event_policy, sort_order, effective_on
 from public.game_play_policies
 order by play_tier, sort_order, game_name;</code></pre>
-<p><code>game_play_policies</code> 和 <code>game_status</code> 是两条独立维度，不要在 SQL 中把 T1/T2/T3 写回 <code>content_tier</code>。</p>
+<p><code>game_play_policies</code> 和 <code>game_status</code> 是两条独立维度，不要在 SQL 中把 S/A/B/D/F 写回 <code>content_tier</code>。</p>
 <h3 id="section-5">2.3 按游戏查角色（按上线日期倒序）</h3>
 <pre><code class="language-sql">select g.title as game, c.id as character_id,
        c.name, c.full_name, c.release_date,

@@ -67,7 +67,7 @@ python -m http.server 8000</code></pre>
 <tr><td>本地出现 CORS 错误</td><td>浏览器 Origin 与 Edge Function 的 allowlist</td><td>只补充确需的可信来源，再按正式流程部署后端</td></tr>
 <tr><td>项目数据不同步 / 冲突</td><td>project/video 身份、revision、云端快照和本地草稿</td><td>先保留两侧数据，按 UI 的冲突解决流程恢复，不强制覆盖</td></tr>
 <tr><td>成果看起来已做完但状态未完成</td><td><code>creator_deliverable_records</code> 的人工确认及视频 ID</td><td>核对当前视频，按正式成果状态操作，不绕过门禁</td></tr>
-<tr><td>任务或游戏优先级不一致</td><td>GUCC <code>game_play_policies</code> 与 TaskRing 数据所属项目</td><td>分别核验，勿把 T1/T2/T3 写到 <code>game_status</code></td></tr>
+<tr><td>任务或游戏优先级不一致</td><td>GUCC <code>game_play_policies</code> 与 TaskRing 数据所属项目</td><td>分别核验，勿把 S/A/B/D/F 写到 <code>game_status</code></td></tr>
 <tr><td>PR 测试通过但正式站不一致</td><td>main HEAD、Pages deploy job、部署 SHA</td><td>等待部署流程完成后核对线上 SHA；不以 PR 状态替代部署验证</td></tr>
 </tbody></table>
 <h2 id="refs">08 / 维护资料索引</h2>

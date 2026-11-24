@@ -8,7 +8,7 @@
 | 领域 | 字段 / 表 | 当前合法语义 |
 | --- | --- | --- |
 | 游戏创作关注度 | `game_status.content_tier` | 创作级 / 兴趣级 / 观察级 / 浅尝级 / 抛弃级 |
-| 游戏游玩优先级 | `game_play_policies.play_tier` | 1 = T1 核心玩；2 = T2 次要玩；3 = T3 有余力再玩 |
+| 游戏游玩优先级 | `game_play_policies.play_tier` | 1 = S 核心；2 = A 余力；3 = B 自由；4 = D 待公测；5 = F 封存 |
 | 游戏剧情关注 | `game_play_policies.story_focus` | 独立布尔标记，**与游玩优先级交叉** |
 | 角色研究 | `character_progress.research_status` | ◯ / △ / ✕ / 対象外 |
 | 角色养成 | `character_progress.build_status` | ◯ / △ / ✕ / 対象外 |
@@ -20,7 +20,7 @@
 
 ## 2. 只读巡检：可以直接在 SQL Editor 执行
 
-### 2.1 列出当前六游与创作关注状态
+### 2.1 列出当前游戏与创作关注状态
 
 ~~~sql
 select g.id, g.short_code, g.title,
@@ -33,7 +33,7 @@ order by g.short_code;
 
 **注意**：`games.short_code` 为数据库内的短代码，现行数据主要使用 `崩 / 绝 / 鸣 / 终 / 异 / 阴`，不能假设等于 `ZZZ` 或 `HSR`。筛选时可使用准确的 `games.title` 或主键 `id`。
 
-### 2.2 游玩 T1/T2/T3 + 剧情重点
+### 2.2 游玩 S/A/B/D/F + 剧情重点
 
 ~~~sql
 select game_key, game_name, game_id, play_tier,
@@ -43,7 +43,9 @@ from public.game_play_policies
 order by play_tier, sort_order, game_name;
 ~~~
 
-`game_play_policies` 和 `game_status` 是两条独立维度，不要在 SQL 中把 T1/T2/T3 写回 `content_tier`。
+`game_play_policies` 和 `game_status` 是两条独立维度，不要在 SQL 中把 S/A/B/D/F 写回 `content_tier`。
+
+维护范围按游玩策略动态确定：S/A/B 持续维护客观游戏数据与限时活动；D 追踪官方测试、公测与预约等重要节点，公测后由用户重新确定等级；F 仅保存既有档案，不继续主动维护限时、版本和角色数据。不得把 F 级理解为删除记录。
 
 ### 2.3 按游戏查角色（按上线日期倒序）
 

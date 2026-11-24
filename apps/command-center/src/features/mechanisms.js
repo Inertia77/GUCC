@@ -1,5 +1,5 @@
 import { renderGameCardPlate } from '../game-card-plate.js';
-import { API } from '../api.js';
+import { API, dbGameOptions, loadDbGameOptions } from '../api.js?v=sa1';
 import {
   $,
   applySavedCardState,
@@ -85,7 +85,7 @@ function ensureMechanismShell() {
         <div class="filter-grid" aria-label="机制搜索条件">
           <input id="mechanismKeyword" class="filter-keyword" aria-label="机制关键字" placeholder="关键字：机制名 / 说明 / 注意事项 / 资源标题" />
           <select id="mechanismGame" class="filter-select mechanism-game-filter" aria-label="机制游戏">
-            <option value="">全部游戏</option>
+            <option value="">全部 S/A 游戏</option>
           </select>
           <select id="mechanismType" class="filter-select" aria-label="机制类型">
             <option value="">全部机制类型</option>
@@ -132,11 +132,11 @@ function replaceSelectOptions(select, options, emptyLabel, formatter = (_value, 
 }
 
 function hydrateCatalogControls() {
-  const gameOptions = uniqueOptions(catalogRows, 'game_code', 'game_title');
+  const gameOptions = dbGameOptions().map(g=>[g.game_code,g.game_title]);
   replaceSelectOptions(
     $('#mechanismGame'),
     gameOptions,
-    '全部游戏',
+    '全部 S/A 游戏',
     (value, label) => `${value} · ${label}`
   );
   replaceSelectOptions(
@@ -149,6 +149,7 @@ function hydrateCatalogControls() {
 
 async function ensureCatalog({ force = false } = {}) {
   if (catalogLoaded && !force) return catalogRows;
+  await loadDbGameOptions();
   catalogRows = normalizeRows(await API.searchMechanisms({ limit: MECHANISM_SEARCH_LIMIT }));
   catalogLoaded = true;
   hydrateCatalogControls();
@@ -156,7 +157,7 @@ async function ensureCatalog({ force = false } = {}) {
 }
 
 function renderGameEditorOptions(selected) {
-  const options = uniqueOptions(catalogRows, 'game_code', 'game_title');
+  const options = dbGameOptions().map(g=>[g.game_code,g.game_title]);
   if (selected && !options.some(([value]) => value === selected)) {
     options.unshift([selected, selected]);
   }

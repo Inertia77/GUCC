@@ -1,5 +1,5 @@
 import { renderGameCardPlate } from '../game-card-plate.js';
-import { API } from '../api.js';
+import { API } from '../api.js?v=sa1';
 import {
   $,
   applySavedCardState,

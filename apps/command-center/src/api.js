@@ -43,23 +43,43 @@ export async function callApi(action, payload = {}) {
   return json.data ?? json;
 }
 
+let activeGames = null;
+let activeGamesPending = null;
+export function dbGameOptions(){return activeGames || [];}
+export function resetDbGameOptions(){activeGames=null;activeGamesPending=null;}
+export async function loadDbGameOptions(){
+  if(activeGames) return activeGames;
+  if(!activeGamesPending) activeGamesPending=callApi('searchVersions',{db_scope:'SA',db_catalog:true}).then(rows=>{
+    if(!Array.isArray(rows)||rows.some(r=>![1,2].includes(Number(r.play_tier))||!r.game_code)) throw new Error('无法读取 S/A 游戏分级');
+    activeGames=rows;return rows;
+  }).finally(()=>{activeGamesPending=null;});
+  return activeGamesPending;
+}
+function scopedSearch(action,payload){return callApi(action,{...payload,db_scope:'SA'});}
+async function scopedSave(action,payload){
+  const games=await loadDbGameOptions();
+  const code=String(payload.game_code||'').trim().toLowerCase();
+  if(!games.some(g=>[g.game_code,g.game_code_full,g.game_title].some(v=>String(v||'').toLowerCase()===code)))throw new Error('GUCC DB 仅管理 S/A 级游戏，请选择当前管理范围内的游戏');
+  return callApi(action,payload);
+}
+
 export const API = {
   ping: () => callApi('ping'),
-  searchCharacters: (payload) => callApi('searchCharacters', payload),
+  searchCharacters: (payload) => scopedSearch('searchCharacters', payload),
   getCharacterDetail: (payload) => callApi('getCharacterDetail', payload),
-  saveCharacter: (payload) => callApi('saveCharacter', payload),
+  saveCharacter: (payload) => scopedSave('saveCharacter', payload),
   deleteCharacter: (payload) => callApi('deleteCharacter', payload),
-  searchParties: (payload) => callApi('searchParties', payload),
-  saveParty: (payload) => callApi('saveParty', payload),
+  searchParties: (payload) => scopedSearch('searchParties', payload),
+  saveParty: (payload) => scopedSave('saveParty', payload),
   deleteParty: (payload) => callApi('deleteParty', payload),
   resolvePartyAnalysis: (payload) => callApi('resolvePartyAnalysis', payload),
   attachPartyNotion: (payload) => callApi('attachPartyNotion', payload),
-  searchMechanisms: (payload) => callApi('searchMechanisms', payload),
+  searchMechanisms: (payload) => scopedSearch('searchMechanisms', payload),
   getMechanismDetail: (payload) => callApi('getMechanismDetail', payload),
-  saveMechanism: (payload) => callApi('saveMechanism', payload),
+  saveMechanism: (payload) => scopedSave('saveMechanism', payload),
   deleteMechanism: (payload) => callApi('deleteMechanism', payload),
-  searchVersions: (payload) => callApi('searchVersions', payload),
-  saveVersion: (payload) => callApi('saveVersion', payload),
+  searchVersions: (payload) => scopedSearch('searchVersions', payload),
+  saveVersion: (payload) => scopedSave('saveVersion', payload),
   deleteVersion: (payload) => callApi('deleteVersion', payload),
   searchResources: (payload) => callApi('searchResources', payload)
 };

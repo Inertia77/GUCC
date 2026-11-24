@@ -1,4 +1,4 @@
-import { API } from './api.js';
+import { API, loadDbGameOptions, resetDbGameOptions } from './api.js?v=sa1';
 import { isLoggedIn, signIn, signOut } from './auth.js';
 import { getConfigState } from './config-state.js';
 import { initCharacters, searchCharacters } from './features/characters.js?v=2';
@@ -124,6 +124,17 @@ function initInterfaceThemeSync() {
 ensureFinalStyleSheets();
 
 const loadedTabs = new Set();
+async function refreshDbScope(){
+  const games=await loadDbGameOptions();
+  document.querySelectorAll('[data-game-filter] select').forEach(select=>{
+    const old=select.value;
+    select.replaceChildren(new Option('全部 S/A 游戏',''),...games.map(g=>new Option(g.game_title,g.game_code)));
+    select.value=games.some(g=>g.game_code===old)?old:'';
+    const custom=select.closest('[data-game-filter]')?.querySelector('input');
+    if(custom){custom.value='';custom.hidden=true;custom.disabled=true;}
+    syncFilterToolbarTheme(select);
+  });
+}
 let featuresReady = false;
 
 async function ensureTabLoaded(tab) {
@@ -131,7 +142,7 @@ async function ensureTabLoaded(tab) {
   const load = TAB_LOADERS[tab];
   if (!load) return;
   loadedTabs.add(tab);
-  await load();
+  try { await refreshDbScope(); await load(); } catch(error) { loadedTabs.delete(tab); console.error('GUCC DB scope:', error); }
 }
 
 function syncView() {
@@ -214,6 +225,7 @@ function initAuth() {
     await withBusy($('#logoutBtn'), '退出中...', async () => {
       await signOut();
       loadedTabs.clear();
+      resetDbGameOptions();
       syncView();
     });
   });

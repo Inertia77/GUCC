@@ -1,6 +1,6 @@
 // All character-status answers stay in this browser until the owner exports the
 // completed review and explicitly asks for a database update. No mutation RPC is called.
-import { API } from '../api.js';
+import { API } from '../api.js?v=sa1';
 import { $, escapeHtml, closeDrawer, openDrawer, normalizeRows, showToast } from '../ui.js';
 import { isCanonicalCharacterStatus, displayCharacterStatus } from '../fixed-field-options.js?v=2';
 

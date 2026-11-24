@@ -1,6 +1,6 @@
 import { renderGameCardPlate } from '../game-card-plate.js';
 import {classifyWindow,formatWindow} from '../date-window.mjs';
-import { API } from '../api.js?v=sa1';
+import { API, dbGameOptions } from '../api.js?v=sa1';
 import {
   $,
   applySavedCardState,
@@ -432,7 +432,7 @@ function openEditor(data = {}) {
     <form id="versionForm" class="editor-form">
       <div class="editor-body form-grid">
         <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-        <label>游戏 code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" /></label>
+        <label>游戏 code <select name="game_code" data-autofocus required><option value="">请选择 S/A 游戏</option>${dbGameOptions().map(g=>'<option value="'+escapeHtml(g.game_code)+'"'+([g.game_code,g.game_code_full,g.game_title].includes(data.game_code)?' selected':'')+'>'+escapeHtml(g.game_title)+'</option>').join('')}</select></label>
         <label>版本号 <input name="version_no" required value="${escapeHtml(data.version_no || '')}" /></label>
         <label>版本名 <input name="version_name" value="${escapeHtml(data.version_name || '')}" /></label>
         <label>开始日期 <input name="start_date" type="date" value="${escapeHtml(data.start_date || '')}" /></label>

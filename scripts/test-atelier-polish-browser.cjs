@@ -113,6 +113,7 @@ let browser;
  assert.equal(await ep.locator('#guccShellMenu[data-group="create"] .gucc-shell-menu-item').count(),4,'Outside Creator all four shortcuts remain available');
  await ep.locator('#guccShellMenu .gucc-shell-menu-item').filter({hasText:'规则与资料'}).click();
  await ep.locator('#view-knowledge').waitFor({state:'visible'});
+  await ep.locator('.gucc-shell-dock [data-shell-current="create"]').waitFor({state:'visible'});
  assert.equal(await ep.locator('.gucc-shell-dock [data-shell-current="create"]').count(),1,'External shortcut opens Creator without the duplicate menu');
  await ep.goto(empty.origin+'/');await ep.waitForFunction(()=>document.querySelector('.gcc-context-trigger'));
  await ep.evaluate(()=>document.fonts.ready);await ep.screenshot({path:path.join(out,'portal-empty-390.png'),animations:'disabled'});assert.equal(empty.writes.length,0);await ec.close();

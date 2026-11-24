@@ -158,9 +158,6 @@ async function ensureCatalog({ force = false } = {}) {
 
 function renderGameEditorOptions(selected) {
   const options = dbGameOptions().map(g=>[g.game_code,g.game_title]);
-  if (selected && !options.some(([value]) => value === selected)) {
-    options.unshift([selected, selected]);
-  }
   return options.map(([value, label]) => (
     `<option value="${escapeHtml(value)}"${value === selected ? ' selected' : ''}>${escapeHtml(`${value} · ${label}`)}</option>`
   )).join('');

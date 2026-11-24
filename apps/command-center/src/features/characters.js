@@ -1,5 +1,5 @@
 import { renderGameCardPlate } from '../game-card-plate.js';
-import { API } from '../api.js?v=sa1';
+import { API, dbGameOptions } from '../api.js?v=sa1';
 import {
   $,
   applySavedCardState,
@@ -195,7 +195,7 @@ function openEditor(data = {}) {
     <form id="charForm" class="editor-form">
       <div class="editor-body form-grid">
         <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-        <label>游戏 code / short_code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" placeholder="绝 / 鸣 / 崩 / 阴" /></label>
+        <label>游戏 code / short_code <select name="game_code" data-autofocus required><option value="">请选择 S/A 游戏</option>${dbGameOptions().map(g=>'<option value="'+escapeHtml(g.game_code)+'"'+([g.game_code,g.game_code_full,g.game_title].includes(data.game_code)?' selected':'')+'>'+escapeHtml(g.game_title)+'</option>').join('')}</select></label>
         <label>中文主名 / 游戏常用名 <input name="name" required value="${escapeHtml(data.name || data.character_name || '')}" placeholder="例：庄方宜 / 洛克茜 / 雪御前" /></label>
         <label>中文全名 <input name="full_name" value="${escapeHtml(data.full_name || data.character_full_name || data.name || data.character_name || '')}" placeholder="可与主名一致；例：庄方宜 / 源雪姬" /></label>
         <label>上线时间 <input type="date" name="release_date" value="${escapeHtml(data.release_date || '')}" /></label>

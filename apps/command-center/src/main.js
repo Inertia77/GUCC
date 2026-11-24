@@ -142,7 +142,7 @@ async function ensureTabLoaded(tab) {
   const load = TAB_LOADERS[tab];
   if (!load) return;
   loadedTabs.add(tab);
-  try { await refreshDbScope(); await load(); } catch(error) { loadedTabs.delete(tab); console.error('GUCC DB scope:', error); }
+  try { await refreshDbScope(); await load(); } catch(error) { loadedTabs.delete(tab); console.error('GUCC DB scope:', error); const panel=document.getElementById(tab); const results=panel?.querySelector('[id$="Results"]'); if(results)results.textContent='无法读取 S/A 游戏范围：'+error.message+'，请重试搜索或刷新页面。'; }
 }
 
 function syncView() {

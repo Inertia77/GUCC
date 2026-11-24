@@ -1,6 +1,6 @@
 // All character-status answers stay in this browser until the owner exports the
 // completed review and explicitly asks for a database update. No mutation RPC is called.
-import { API } from '../api.js?v=sa1';
+import { API, loadDbGameOptions } from '../api.js?v=sa1';
 import { $, escapeHtml, closeDrawer, openDrawer, normalizeRows, showToast } from '../ui.js';
 import { isCanonicalCharacterStatus, displayCharacterStatus } from '../fixed-field-options.js?v=2';
 
@@ -11,7 +11,7 @@ const OPTIONS = [
   { value: '✕', label: '未开始', detail: '目前还没有进行' },
   { value: '対象外', label: '对象外', detail: '无需进行这项工作' }
 ];
-const GAMES = [
+let GAMES = [
   ['绝', '绝区零'], ['异', '异环'], ['鸣', '鸣潮'],
   ['崩', '崩坏：星穹铁道'], ['阴', '阴阳师'], ['终', '明日方舟：终末地']
 ];
@@ -361,6 +361,8 @@ async function load() {
   state.error = '';
   render();
   try {
+    GAMES = (await loadDbGameOptions()).map(g=>[g.game_code,g.game_title]);
+    if(!GAMES.some(([code])=>code===state.game))state.game=GAMES[0]?.[0]||'';
     const batches = await Promise.all(GAMES.map(async ([code]) => {
       const result = await API.searchCharacters({ keyword: '', game_code: code, limit: 1000 });
       return [code, normalizeRows(result)];

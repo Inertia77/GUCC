@@ -11,6 +11,10 @@ async function routes(context,{repo=root,project:p=project(),auth=false,cloud={}
  await context.route('**/*',async route=>{
   const u=new URL(route.request().url()),js=body=>route.fulfill({contentType:'text/javascript',body});
   if(u.origin==='https://fixture.test'){
+   if(u.pathname.endsWith('/functions/v1/gameup-api')&&route.request().method()==='POST'){
+     const body=route.request().postDataJSON();
+     if(body?.action==='searchVersions'&&body.payload?.db_scope==='SA'&&body.payload?.db_catalog===true)return route.fulfill({json:{ok:true,data:[['绝','ZZZ','绝区零',1],['异','NTE','异环',1],['鸣','WW','鸣潮',1],['崩','HSR','崩坏：星穹铁道',1],['阴','YYS','阴阳师',2],['终','ENF','明日方舟：终末地',2]].map(([game_code,game_code_full,game_title,play_tier])=>({game_code,game_code_full,game_title,play_tier}))}});
+   }
    if(cloud.route)return cloud.route(route,u);
    if(u.pathname.endsWith('creator_os_portal_dashboard'))return route.fulfill({json:[{projectId:p.projectId,name:p.name,game:p.game,status:p.status,lifecycle:'active',totalNodes:p.promptFlow.length,doneNodes:p.promptFlow.filter(n=>n.status==='DONE').length,nextNode:p.promptFlow.find(n=>n.status==='PENDING')}]});
    return route.fulfill({json:[]});

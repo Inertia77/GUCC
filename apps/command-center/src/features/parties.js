@@ -1,5 +1,5 @@
 import { renderGameCardPlate } from '../game-card-plate.js';
-import { API } from '../api.js?v=sa1';
+import { API, dbGameOptions } from '../api.js?v=sa1';
 import {
   $,
   applySavedCardState,
@@ -173,7 +173,7 @@ function openEditor(data = {}) {
     <form id="partyForm" class="editor-form">
       <div class="editor-body form-grid">
         <input type="hidden" name="id" value="${escapeHtml(data.id || '')}" />
-        <label>游戏 code <input name="game_code" data-autofocus required value="${escapeHtml(data.game_code || '')}" /></label>
+        <label>游戏 code <select name="game_code" data-autofocus required><option value="">请选择 S/A 游戏</option>${dbGameOptions().map(g=>'<option value="'+escapeHtml(g.game_code)+'"'+([g.game_code,g.game_code_full,g.game_title].includes(data.game_code)?' selected':'')+'>'+escapeHtml(g.game_title)+'</option>').join('')}</select></label>
         <label class="wide">简要描述 <input name="summary" required value="${escapeHtml(data.summary || '')}" /></label>
         <label>类型 <input name="party_type" value="${escapeHtml(data.party_type || '')}" /></label>
         <label>研究状态

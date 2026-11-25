@@ -15,7 +15,7 @@ const names = [
   ["终","工程档案","塔卫工程日志"],
   ["异","异象档案","海特洛都市调查"],
   ["阴","平安卷宗","平安京式神卷宗"],
-  ["AZUR_PROMILIA","星原旅记","蓝色星原旅谣"]
+  [null,"星原旅记","蓝色星原：旅谣"] // Actual production game short_code is NULL.
 ];
 const uuid = n => "00000000-0000-4000-8000-" + String(n).padStart(12,"0");
 const rows = Object.fromEntries(["searchCharacters","searchParties","searchMechanisms","searchVersions"].map(
@@ -72,6 +72,11 @@ const modes=[
         const cards=page.locator(result+" > .item");
         const found=await cards.evaluateAll(nodes=>nodes.map(n=>({
           code:n.dataset.gameCode,
+          skin:n.querySelector(".game-card-plate")?.dataset.gameSkin,
+          motif:getComputedStyle(n,"::before").backgroundImage,
+          motifOpacity:Number(getComputedStyle(n,"::before").opacity),
+          folioArt:getComputedStyle(n).getPropertyValue("--folio-art").trim(),
+          glyph:getComputedStyle(n.querySelector(".game-card-plate__glyph")).clipPath,
           type:n.dataset.cardKind,
           plateName:n.querySelector(".game-card-plate__name")?.textContent,
           kind:n.querySelector(".game-card-plate__kind")?.textContent,
@@ -83,9 +88,11 @@ const modes=[
         })));
         assert.equal(found.length,names.length,mode+"/"+width+": missing game cards");
         for(let i=0;i<names.length;i++){
-          assert.equal(found[i].code,names[i][0],mode+"/"+width+": game code drift");
+          assert.equal(found[i].code,names[i][0]||"",mode+"/"+width+": game code drift");
           assert.equal(found[i].plateName,names[i][1],mode+"/"+width+": missing title");
           assert.equal(found[i].kind,kind,mode+"/"+width+": incorrect kind");
+          assert(found[i].motif.includes("data:image/svg+xml") && found[i].folioArt.includes("data:image/svg+xml") && found[i].motifOpacity>0,mode+"/"+width+": missing visible motif "+names[i][1]);
+          if(names[i][0]===null){assert.equal(found[i].skin,"AZUR_PROMILIA","null-code skin identity missing");assert(found[i].glyph.startsWith("polygon("),"Azur compass crest missing");assert(found[i].folioArt.includes("70b9b3"),"Azur meadow motif missing");}
           assert.equal(found[i].plateCount,1,mode+"/"+width+": duplicated visual band");
           assert.equal(found[i].platePosition,"absolute",mode+"/"+width+": band must not break card flow");
         }
@@ -168,7 +175,7 @@ const modes=[
         }
         if(mode==="characters"&&(width===390||width===1440)){
           for(let i=0;i<names.length;i++) {
-            await cards.nth(i).screenshot({path:path.join(out,"skin-"+names[i][0]+"-"+width+".png"),animations:"disabled"});
+            await cards.nth(i).screenshot({path:path.join(out,"skin-"+(names[i][0]||"AZUR_PROMILIA")+"-"+width+".png"),animations:"disabled"});
           }
         }
       }
@@ -176,6 +183,6 @@ const modes=[
     }
     assert.deepEqual(errors,[],"Browser runtime errors: "+errors.join("; "));
     assert.deepEqual(writes,[],"Visual acceptance must never modify data");
-    console.log("GUCC Atelier v3: 7 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
+    console.log("GUCC Atelier v3.1: 7 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

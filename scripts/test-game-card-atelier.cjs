@@ -38,11 +38,13 @@ assert(css.includes(".is-recently-updated"),"Save feedback must be represented")
 assert(css.includes(".actions .danger"),"Danger action must retain semantic warning");
 assert(!css.includes("position:fixed"),"No overlays/viewport decorations on result cards");
 assert(html.includes('id="gucc-game-card-atelier-final"'));
-assert(main.includes("['gucc-game-card-atelier-final', '../styles/game-card-atelier.css?v=3']"));
+assert(main.includes("['gucc-game-card-atelier-final', '../styles/game-card-atelier.css?v=4']"));
 assert(main.indexOf("gucc-game-chrome-final")<main.indexOf("gucc-game-card-atelier-final"),
   "Atelier layer must follow the shared chrome");
-assert(worker.includes("game-card-atelier.css?v=3")&&worker.includes("src/game-card-plate.js"));
+assert(worker.includes("game-card-atelier.css?v=4")&&worker.includes("src/game-card-plate.js"));
 assert(css.includes("Atelier Cards v3") && css.includes("--folio-art"), "V3 art direction required");
 assert(css.includes(".meta .badge.status-highlight::before{display:none"),"Duplicate status glyphs must not render");
 assert(css.includes("flex-direction:column!important"),"Mobile title and statuses need separate rows");
-console.log("GUCC DB Atelier v3 source contract: 7 themes × 4 record types, CSS precedence, semantic controls PASS.");
+assert(helper.includes('data-game-skin="${skin[0]}"'),"Plate must expose resolved skin identity");
+assert(css.includes(':has(> [data-game-skin="AZUR_PROMILIA"])'),"Null game code must resolve to the same Azur visual skin");
+console.log("GUCC DB Atelier v3.1 source contract: 7 themes × 4 record types, CSS precedence, semantic controls PASS.");

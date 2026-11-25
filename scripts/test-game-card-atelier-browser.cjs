@@ -1,5 +1,5 @@
 "use strict";
-/* Six games × four real DB search modes, using isolated API fixtures.
+/* Seven games × four real DB search modes, using isolated API fixtures.
  * Uses actual app DOM, styles, collapsible state and touch viewport geometry.
  * Never contacts production, never writes to Supabase.
  */
@@ -14,7 +14,8 @@ const names = [
   ["鸣","共鸣档案","共鸣频谱档案"],
   ["终","工程档案","塔卫工程日志"],
   ["异","异象档案","海特洛都市调查"],
-  ["阴","平安卷宗","平安京式神卷宗"]
+  ["阴","平安卷宗","平安京式神卷宗"],
+  ["AZUR_PROMILIA","星原旅记","蓝色星原旅谣"]
 ];
 const uuid = n => "00000000-0000-4000-8000-" + String(n).padStart(12,"0");
 const rows = Object.fromEntries(["searchCharacters","searchParties","searchMechanisms","searchVersions"].map(
@@ -67,7 +68,7 @@ const modes=[
       await page.waitForFunction(()=>!!document.getElementById("gucc-game-card-atelier-final")?.sheet);
       for(const [mode,tab,result,kind]of modes){
         await page.locator(tab).click();
-        await page.waitForFunction(selector=>document.querySelectorAll(selector+" > .item").length===6,result);
+        await page.waitForFunction(({selector,count})=>document.querySelectorAll(selector+" > .item").length===count,{selector:result,count:names.length});
         const cards=page.locator(result+" > .item");
         const found=await cards.evaluateAll(nodes=>nodes.map(n=>({
           code:n.dataset.gameCode,
@@ -80,15 +81,15 @@ const modes=[
           border:getComputedStyle(n).borderTopColor,
           platePosition:getComputedStyle(n.querySelector(".game-card-plate")).position
         })));
-        assert.equal(found.length,6,mode+"/"+width+": missing game cards");
-        for(let i=0;i<6;i++){
+        assert.equal(found.length,names.length,mode+"/"+width+": missing game cards");
+        for(let i=0;i<names.length;i++){
           assert.equal(found[i].code,names[i][0],mode+"/"+width+": game code drift");
           assert.equal(found[i].plateName,names[i][1],mode+"/"+width+": missing title");
           assert.equal(found[i].kind,kind,mode+"/"+width+": incorrect kind");
           assert.equal(found[i].plateCount,1,mode+"/"+width+": duplicated visual band");
           assert.equal(found[i].platePosition,"absolute",mode+"/"+width+": band must not break card flow");
         }
-        assert.equal(new Set(found.map(x=>x.rendered)).size,6,mode+"/"+width+": skins must not be recolors of one background");
+        assert.equal(new Set(found.map(x=>x.rendered)).size,names.length,mode+"/"+width+": skins must not be recolors of one background");
         if(mode==="versions"){
           const details=await cards.evaluateAll(nodes=>nodes.map(card=>{
             const chip=card.querySelector(".banner-chip");
@@ -147,7 +148,7 @@ const modes=[
           await page.screenshot({path:path.join(out,mode+"-"+width+".png"),fullPage:true,animations:"disabled"});
         }
         if(mode==="characters"&&(width===390||width===1440)){
-          for(let i=0;i<6;i++) {
+          for(let i=0;i<names.length;i++) {
             await cards.nth(i).screenshot({path:path.join(out,"skin-"+names[i][0]+"-"+width+".png"),animations:"disabled"});
           }
         }
@@ -156,6 +157,6 @@ const modes=[
     }
     assert.deepEqual(errors,[],"Browser runtime errors: "+errors.join("; "));
     assert.deepEqual(writes,[],"Visual acceptance must never modify data");
-    console.log("GUCC Atelier v2: 6 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
+    console.log("GUCC Atelier v2: 7 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

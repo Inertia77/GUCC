@@ -350,3 +350,68 @@ body.command-center-page.gucc-enhanced .item[data-card-kind]:not(.is-collapsed) 
 body.command-center-page.gucc-enhanced .item[data-card-kind] :is(.meta .badge,.actions button,.banner-chip,.game-card-plate__kind){
   -webkit-font-smoothing:antialiased;
 }
+
+/* AZUR PROMILIA — Starfield Journal: a sky-blue travel folio with warm brass
+   edges and quiet rolling meadows. Independent from the urban neon and
+   resonance skins; decorative landscape stays behind all live controls. */
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]){
+  --game-surface:#192a42;--game-surface-2:#111d30;--game-inset:#101c2d;
+  --game-border:#6986a4;--game-border-soft:#384e69;
+  --game-accent:#a9dcff;--game-accent-2:#f2d49a;
+  --game-title:#f5faff;--game-text:#e8f2ff;--game-secondary:#c9ddf2;--game-muted:#b5cbe1;
+  --atelier-line:rgba(162,211,245,.62);
+  --atelier-line-soft:rgba(166,207,239,.23);
+  --atelier-glow:rgba(144,204,255,.18);
+  --atelier-label:#d2e7f9;--atelier-crest-base:#152b43;
+  --atelier-plate-bg:linear-gradient(90deg,rgba(148,206,252,.12),rgba(242,212,154,.035),transparent 78%);
+  border-radius:10px 24px 10px 24px!important;
+  border-color:#6487a8!important;
+  border-top-color:#a6cee9!important;
+  border-left:3px solid #d7bc87!important;
+  background:
+    radial-gradient(ellipse at 91% 0%,rgba(114,178,240,.27),transparent 48%),
+    linear-gradient(123deg,rgba(232,207,150,.085),transparent 23%),
+    linear-gradient(155deg,#20334c 0%,#17263b 49%,#101d30 100%)!important;
+  box-shadow:inset 0 1px rgba(214,237,255,.13),inset 0 0 0 1px rgba(207,225,248,.04),0 10px 26px #0005!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"])::before{
+  inset:0 0 auto auto;
+  width:min(44%,190px);height:100px;z-index:0;
+  opacity:.62;
+  background:
+    radial-gradient(circle at 15% 29%,#e1f3ff 0 1px,transparent 1.7px),
+    radial-gradient(circle at 48% 12%,#f5dda7 0 1.4px,transparent 2px),
+    radial-gradient(circle at 75% 25%,#c3e9ff 0 1px,transparent 1.8px),
+    radial-gradient(circle at 87% 8%,#ecf8ff 0 1px,transparent 1.5px),
+    radial-gradient(circle at 63% 44%,#d7efff 0 1px,transparent 1.7px);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"])::after{
+  inset:auto 0 0 auto;width:min(48%,210px);height:69px;z-index:0;
+  opacity:.65;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 210 69'%3E%3Cpath d='M0 69 Q55 52 95 42 Q145 30 210 45 V69Z' fill='%23517f9c' fill-opacity='.30'/%3E%3Cpath d='M0 69 Q68 46 115 52 Q155 56 210 29 V69Z' fill='%2375a69e' fill-opacity='.24'/%3E%3Cpath d='M0 68 Q68 46 115 52 Q155 56 210 29' fill='none' stroke='%23a8d6ca' stroke-opacity='.4' stroke-width='.8'/%3E%3Cpath d='M170 2 L173 10 L181 13 L173 16 L170 24 L167 16 L159 13 L167 10Z' fill='%23f2d49a' fill-opacity='.65'/%3E%3C/svg%3E");
+  background-size:100% 100%;background-repeat:no-repeat;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .game-card-plate__crest{
+  border-radius:50%;border-color:#c9b27c;
+  box-shadow:inset 0 0 0 2px #15273d,0 0 9px rgba(177,213,242,.2);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .game-card-plate__glyph{
+  width:13px;height:13px;border:0;transform:rotate(-12deg);
+  background:#f2d49a;
+  clip-path:polygon(50% 0%,59% 34%,85% 15%,66% 41%,100% 50%,66% 59%,85% 85%,59% 66%,50% 100%,41% 66%,15% 85%,34% 59%,0% 50%,34% 41%,15% 15%,41% 34%);
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]).is-collapsed .game-card-plate__name{border-left-color:#f2d49a;color:#d6e8f9;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .game-card-plate__kind{border-radius:3px 9px 3px 9px;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .meta .badge{border-radius:6px 12px 6px 12px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .meta .badge.status-highlight::before{transform:translateY(-50%) rotate(45deg);border-radius:1px;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .actions .collapse-toggle{
+  border-radius:8px 17px 8px 17px!important;
+  background:linear-gradient(145deg,rgba(157,208,250,.12),transparent 80%),var(--game-inset)!important;
+  color:var(--game-accent)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .actions .collapse-toggle[aria-expanded="true"]{
+  border-color:var(--game-accent-2)!important;
+  background:linear-gradient(145deg,rgba(242,212,154,.12),transparent 80%),var(--game-inset)!important;
+}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .item-content{border-radius:8px 16px 8px 16px!important;}
+body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .item-content-title::before{background:var(--game-accent-2);}

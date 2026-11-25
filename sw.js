@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v77";
-const RUNTIME_CACHE = "gucc-runtime-v68";
+const STATIC_CACHE = "gucc-static-v78";
+const RUNTIME_CACHE = "gucc-runtime-v69";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 

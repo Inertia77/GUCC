@@ -9,11 +9,13 @@ const GAME_SKINS = Object.freeze({
   '鸣': ['WW', '共鸣档案', 'RESONANCE · FREQUENCY'],
   '终': ['ENF', '工程档案', 'FIELD OPS · TERMINAL'],
   '异': ['NTE', '异象档案', 'CITY · ANOMALY'],
-  '阴': ['YYS', '平安卷宗', 'HEIAN · ARCHIVE']
+  '阴': ['YYS', '平安卷宗', 'HEIAN · ARCHIVE'],
+  AZUR_PROMILIA: ['AZUR_PROMILIA', '星原旅记', 'AZUR PROMILIA · JOURNAL']
 });
 const ALIAS = Object.freeze({
   HSR: '崩', ZZZ: '绝', WW: '鸣', ENF: '终', '末': '终',
-  NTE: '异', YYS: '阴'
+  NTE: '异', YYS: '阴',
+  '蓝色星原': 'AZUR_PROMILIA', '蓝色星原：旅谣': 'AZUR_PROMILIA', '蓝色星原:旅谣': 'AZUR_PROMILIA'
 });
 const RECORD_KINDS = Object.freeze({
   character: '角色', party: '阵容', mechanism: '机制', version: '版本'

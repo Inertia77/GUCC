@@ -1,5 +1,5 @@
 "use strict";
-/* Source contract: six physical skins × four real result templates.
+/* Source contract: seven physical skins × four real result templates.
    No fictitious status data or DB/API mutations are added. */
 const fs=require("node:fs");
 const path=require("node:path");
@@ -26,7 +26,7 @@ for(const [plural,kind]of Object.entries(types)){
 }
 for(const [name,codes]of Object.entries({
   HSR:["崩","HSR"],ZZZ:["绝","ZZZ"],WW:["鸣","WW"],
-  ENF:["终","末","ENF"],NTE:["异","NTE"],YYS:["阴","YYS"]
+  ENF:["终","末","ENF"],NTE:["异","NTE"],YYS:["阴","YYS"],AZUR_PROMILIA:["AZUR_PROMILIA","蓝色星原","蓝色星原：旅谣","蓝色星原:旅谣"]
 })){
   for(const code of codes)assert(css.includes('data-game-code="'+code+'"'),name+" missing "+code);
   assert(helper.includes(name),name+" missing from identity plate mapping");
@@ -42,4 +42,4 @@ assert(main.includes("['gucc-game-card-atelier-final', '../styles/game-card-atel
 assert(main.indexOf("gucc-game-chrome-final")<main.indexOf("gucc-game-card-atelier-final"),
   "Atelier layer must follow the shared chrome");
 assert(worker.includes("game-card-atelier.css?v=2")&&worker.includes("src/game-card-plate.js"));
-console.log("GUCC DB Atelier v2 source contract: 6 themes × 4 record types, CSS precedence, semantic controls PASS.");
+console.log("GUCC DB Atelier v2 source contract: 7 themes × 4 record types, CSS precedence, semantic controls PASS.");

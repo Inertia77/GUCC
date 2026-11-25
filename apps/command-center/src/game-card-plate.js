@@ -31,7 +31,7 @@ export function renderGameCardPlate(gameCode, recordKind) {
   const skin = GAME_SKINS[code];
   const kind = RECORD_KINDS[recordKind];
   if (!skin || !kind) return '';
-  return `<div class="game-card-plate" aria-hidden="true">
+  return `<div class="game-card-plate" data-game-skin="${skin[0]}" aria-hidden="true">
     <span class="game-card-plate__crest"><span class="game-card-plate__glyph"></span></span>
     <span class="game-card-plate__name">${skin[1]}</span>
     <span class="game-card-plate__serial">${skin[2]}</span>

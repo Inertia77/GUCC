@@ -44,7 +44,7 @@ const modes=[
   ["versions","#tab-versions","#versionResults","版本记录"]
 ];
 (async()=>{
-  const out=path.resolve("tmp/db-atelier-v2");
+  const out=path.resolve("tmp/db-atelier-v3");
   await fs.mkdir(out,{recursive:true});
   const browser=await chromium.launch({
     headless:true,
@@ -140,6 +140,22 @@ const modes=[
         assert(overflow<=2,mode+"/"+width+": horizontal overflow "+overflow);
         await cards.first().locator("[data-card-toggle]").click();
         assert(await cards.first().locator("[data-card-content]").evaluate(el=>el.hidden),mode+"/"+width+": collapse failed");
+        const compact=await cards.first().evaluate(card=>{
+          const plate=card.querySelector(".game-card-plate");
+          const title=card.querySelector(".item-title");
+          const badge=card.querySelector(".meta .status-highlight");
+          const button=card.querySelector("[data-card-toggle]");
+          return { crest:getComputedStyle(plate.querySelector(".game-card-plate__crest")).display,
+            plateBottom:plate.getBoundingClientRect().bottom,titleTop:title.getBoundingClientRect().top,
+            badgeTop:badge?.getBoundingClientRect().top,titleBottom:title.getBoundingClientRect().bottom,
+            glyph:badge?getComputedStyle(badge,"::before").display:null, buttonHeight:button.getBoundingClientRect().height };
+        });
+        assert.equal(compact.crest,"grid",mode+"/"+width+": compact emblem missing");
+        assert(compact.plateBottom<=compact.titleTop+1,mode+"/"+width+": plate overlaps title");
+        if(width<=900){
+          assert(compact.buttonHeight>=44,mode+"/"+width+": touch target too small");
+          if(mode==="characters"){assert(compact.badgeTop>=compact.titleBottom-1,"mobile statuses must sit below title");assert.equal(compact.glyph,"none","duplicated status glyph");}
+        }
         await cards.first().locator("[data-card-toggle]").click();
         assert(!(await cards.first().locator("[data-card-content]").evaluate(el=>el.hidden)),mode+"/"+width+": expand failed");
         assert.equal(await cards.first().locator(".actions .danger").count(),1,mode+": missing delete action");
@@ -157,6 +173,6 @@ const modes=[
     }
     assert.deepEqual(errors,[],"Browser runtime errors: "+errors.join("; "));
     assert.deepEqual(writes,[],"Visual acceptance must never modify data");
-    console.log("GUCC Atelier v2: 7 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
+    console.log("GUCC Atelier v3: 7 skins × 4 modes × 3 viewports, state toggles, real CSS differentiation, no data writes PASS.");
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

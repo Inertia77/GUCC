@@ -21,7 +21,7 @@ const expected = [
   ['gucc-premium-final', '/assets/gucc-premium.css', '4'],
   ['gucc-chroma-final', '/assets/gucc-chroma-v1.css', '1'],
   ['gucc-game-chrome-final', '/assets/gucc-game-chrome-v1.css', '1'],
-  ['gucc-game-card-atelier-final', '/apps/command-center/styles/game-card-atelier.css', '2']
+  ['gucc-game-card-atelier-final', '/apps/command-center/styles/game-card-atelier.css', '3']
 ];
 
 const rgb = s => String(s).match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);
@@ -124,7 +124,7 @@ const contrast = (a,b) => {
       const html=await fs.readFile(path.join(root,'apps/command-center/index.html'),'utf8');
       assert(html.includes('styles/mobile-layout.css?v=4'));
       await route.fulfill({contentType:'text/html',
-        body:html.replace('styles/mobile-layout.css?v=4','styles/mobile-layout.css?v=2')});
+        body:html.replace('styles/mobile-layout.css?v=4','styles/mobile-layout.css?v=2').replace('styles/game-card-atelier.css?v=3','styles/game-card-atelier.css?v=2')});
     });
     await inspect('db-stale-html-recovered',390,844);
     assert.deepEqual(errors,[],'Chromium console/page errors');

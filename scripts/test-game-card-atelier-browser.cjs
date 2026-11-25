@@ -138,9 +138,11 @@ const modes=[
 
         const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
         assert(overflow<=2,mode+"/"+width+": horizontal overflow "+overflow);
-        await cards.first().locator("[data-card-toggle]").click();
-        assert(await cards.first().locator("[data-card-content]").evaluate(el=>el.hidden),mode+"/"+width+": collapse failed");
-        const compact=await cards.first().evaluate(card=>{
+        for (let index=0;index<names.length;index++) {
+        const current=cards.nth(index);
+        await current.locator("[data-card-toggle]").click();
+        assert(await current.locator("[data-card-content]").evaluate(el=>el.hidden),mode+"/"+width+": collapse failed");
+        const compact=await current.evaluate(card=>{
           const plate=card.querySelector(".game-card-plate");
           const title=card.querySelector(".item-title");
           const badge=card.querySelector(".meta .status-highlight");
@@ -156,8 +158,9 @@ const modes=[
           assert(compact.buttonHeight>=44,mode+"/"+width+": touch target too small");
           if(mode==="characters"){assert(compact.badgeTop>=compact.titleBottom-1,"mobile statuses must sit below title");assert.equal(compact.glyph,"none","duplicated status glyph");}
         }
-        await cards.first().locator("[data-card-toggle]").click();
-        assert(!(await cards.first().locator("[data-card-content]").evaluate(el=>el.hidden)),mode+"/"+width+": expand failed");
+        await current.locator("[data-card-toggle]").click();
+        assert(!(await current.locator("[data-card-content]").evaluate(el=>el.hidden)),mode+"/"+width+": expand failed");
+        }
         assert.equal(await cards.first().locator(".actions .danger").count(),1,mode+": missing delete action");
         if(width===390||width===1440) {
           await page.evaluate(()=>document.fonts.ready);

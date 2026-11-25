@@ -112,6 +112,7 @@ const APP_SHELL = [
   "./apps/command-center/styles/responsive-layout.css?v=5",
   "./apps/command-center/src/main.js",
   "./apps/command-center/src/main.js?v=6",
+  "./apps/command-center/src/main.js?v=8",
   "./apps/command-center/src/api.js?v=sa1",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",

@@ -415,3 +415,180 @@ body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code=
 }
 body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .item-content{border-radius:8px 16px 8px 16px!important;}
 body.command-center-page.gucc-enhanced .item[data-card-kind]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]) .item-content-title::before{background:var(--game-accent-2);}
+
+
+/* GUCC DB / Atelier Cards v3 — editorial identity, functional hierarchy.
+   One visual owner for all four record types. No invented game/status data.
+   The motif is a quiet illustration, never a control or a text background. */
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]{
+  --folio-accent:#bac7e3;--folio-secondary:#d5deef;--folio-mid:#26344a;--folio-deep:#141d2d;
+  --folio-edge:#566580;--folio-radius:12px;--folio-seal:7px;--folio-art:none;
+  position:relative;isolation:isolate;min-width:0;
+  border:1px solid var(--folio-edge)!important;
+  border-radius:var(--folio-radius)!important;
+  clip-path:none!important;
+  background:linear-gradient(105deg,var(--folio-mid),var(--folio-deep) 80%)!important;
+  box-shadow:inset 0 1px 0 #ffffff14,0 3px 9px #0004!important;
+  color:#edf3fb!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]::before{
+  content:"";display:block!important;pointer-events:none;position:absolute;z-index:0!important;
+  inset:0 0 auto auto!important;width:min(46%,200px)!important;height:100px!important;
+  opacity:.34!important;transform:none!important;clip-path:none!important;
+  background:var(--folio-art) right top/contain no-repeat!important;
+  mask-image:linear-gradient(90deg,transparent,#000 30%);
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]::after{
+  content:"";display:block!important;pointer-events:none;position:absolute;z-index:0!important;
+  inset:0 0 auto 0!important;width:auto!important;height:2px!important;
+  opacity:1!important;transform:none!important;
+  background:linear-gradient(90deg,var(--folio-accent) 0 42px,var(--folio-edge) 42px 50px,transparent 80%)!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] > .game-card-plate,
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed > .game-card-plate{
+  top:8px!important;left:12px!important;right:12px!important;height:21px!important;
+  gap:7px!important;padding:0!important;border:0!important;background:none!important;
+  align-items:center;pointer-events:none;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .game-card-plate__crest,
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .game-card-plate__crest{
+  display:grid!important;width:18px!important;height:18px!important;flex:0 0 18px!important;
+  transform:none!important;border-radius:var(--folio-seal)!important;
+  background:var(--folio-deep)!important;border:1px solid var(--folio-accent)!important;
+  box-shadow:none!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .game-card-plate__name,
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .game-card-plate__name{
+  padding:0!important;border:0!important;letter-spacing:.09em!important;
+  font-weight:800!important;font-size:11px!important;line-height:1.2!important;color:var(--folio-accent)!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .game-card-plate__serial{color:var(--folio-secondary)!important;opacity:.85;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .game-card-plate__kind{border-radius:5px!important;color:var(--folio-secondary)!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:has(> .game-card-plate):not(.is-collapsed){padding-top:39px!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .item-summary::before,body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .item-summary::after{display:none!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] :is(.item-title,.character-title-primary,.version-title > span:last-child){
+  color:#f7f8fc!important;letter-spacing:.012em!important;text-shadow:none!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .meta .badge.status-highlight{
+  border:1px solid color-mix(in srgb,var(--folio-accent) 32%,var(--folio-deep))!important;
+  background:color-mix(in srgb,var(--folio-deep) 86%,var(--folio-accent))!important;
+  color:#f1f4fa!important;border-radius:6px!important;clip-path:none!important;
+  box-shadow:none!important;padding:4px 8px!important;line-height:1.25!important;
+  letter-spacing:0!important;font-weight:650!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .meta .badge.status-highlight::before{display:none!important;content:none!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .actions .collapse-toggle{
+  clip-path:none!important;border-radius:8px!important;box-shadow:none!important;
+  border:1px solid color-mix(in srgb,var(--folio-accent) 42%,var(--folio-deep))!important;
+  background:color-mix(in srgb,var(--folio-deep) 85%,var(--folio-accent))!important;
+  color:var(--folio-accent)!important;font-weight:700!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .actions .collapse-toggle[aria-expanded="true"]{border-color:var(--folio-accent)!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .actions .collapse-toggle::after{
+  content:"";display:inline-block;width:6px;height:6px;border:solid currentColor;
+  border-width:0 1.5px 1.5px 0;transform:rotate(45deg);margin-left:7px;vertical-align:3px;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .actions .collapse-toggle[aria-expanded="true"]::after{transform:rotate(225deg);vertical-align:0;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .actions button:focus-visible{outline:2px solid var(--folio-accent)!important;outline-offset:2px;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:focus-within{outline:none!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:focus-visible{outline:2px solid var(--folio-accent)!important;outline-offset:2px;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-recently-updated{border-color:var(--folio-accent)!important;box-shadow:0 0 0 1px var(--folio-accent)!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .item-content{
+  background:color-mix(in srgb,var(--folio-deep) 94%,black)!important;
+  border:1px solid color-mix(in srgb,var(--folio-edge) 65%,transparent)!important;
+  color:#edf3fb!important;
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .item-content-title::before{background:var(--folio-accent)!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] .item-content-title{color:#f7f8fc!important;}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="崩"],[data-game-code="HSR"]){
+  --folio-accent:#e7c587;--folio-secondary:#aacdf7;--folio-mid:#1c3048;--folio-deep:#101b2d;
+  --folio-edge:#806c4c;--folio-radius:18px 5px 18px 5px;--folio-seal:50%;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23a8cdf4%22%3E%3Cellipse%20cx%3D%22126%22%20cy%3D%2247%22%20rx%3D%2253%22%20ry%3D%2223%22%20transform%3D%22rotate(-24%20126%2047)%22%2F%3E%3Cellipse%20cx%3D%22126%22%20cy%3D%2247%22%20rx%3D%2253%22%20ry%3D%2223%22%20transform%3D%22rotate(32%20126%2047)%22%2F%3E%3Ccircle%20cx%3D%22126%22%20cy%3D%2247%22%20r%3D%2217%22%2F%3E%3Cpath%20d%3D%22M28%2076h31l18-18h20m41-25h23l16-16h23%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%23e7c587%22%3E%3Cpath%20d%3D%22M126%2032l4%2011%2011%204-11%204-4%2011-4-11-11-4%2011-4Z%22%2F%3E%3Ccircle%20cx%3D%2259%22%20cy%3D%2276%22%20r%3D%223%22%2F%3E%3Ccircle%20cx%3D%22177%22%20cy%3D%2217%22%20r%3D%223%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="绝"],[data-game-code="ZZZ"]){
+  --folio-accent:#f0ec64;--folio-secondary:#e2e5d9;--folio-mid:#303430;--folio-deep:#171a1d;
+  --folio-edge:#777a40;--folio-radius:4px 16px 4px 16px;--folio-seal:3px;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20stroke%3D%22%23f0ec64%22%20fill%3D%22none%22%20stroke-width%3D%222%22%3E%3Crect%20x%3D%2270%22%20y%3D%2221%22%20width%3D%22112%22%20height%3D%2259%22%20rx%3D%225%22%2F%3E%3Crect%20x%3D%2280%22%20y%3D%2230%22%20width%3D%2292%22%20height%3D%2226%22%20rx%3D%224%22%2F%3E%3Ccircle%20cx%3D%2298%22%20cy%3D%2243%22%20r%3D%229%22%2F%3E%3Ccircle%20cx%3D%22154%22%20cy%3D%2243%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M107%2043h38M93%2079l9-15h48l9%2015%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23f0ec64%22%20stroke-width%3D%224%22%3E%3Cpath%20d%3D%22M22%2080l12-16m0%2016%2012-16m0%2016%2012-16%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="鸣"],[data-game-code="WW"]){
+  --folio-accent:#a2e8d6;--folio-secondary:#e0d6a5;--folio-mid:#183c40;--folio-deep:#102327;
+  --folio-edge:#467a73;--folio-radius:24px 8px 24px 8px;--folio-seal:50%;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23a2e8d6%22%3E%3Ccircle%20cx%3D%22143%22%20cy%3D%2249%22%20r%3D%2240%22%2F%3E%3Ccircle%20cx%3D%22143%22%20cy%3D%2249%22%20r%3D%2231%22%20stroke-dasharray%3D%222%205%22%2F%3E%3Ccircle%20cx%3D%22143%22%20cy%3D%2249%22%20r%3D%2221%22%2F%3E%3Cpath%20stroke-width%3D%222%22%20d%3D%22M14%2049h24l8-8%208%2018%209-31%2010%2039%2011-25%2010%207h104%22%2F%3E%3C%2Fg%3E%3Cpath%20fill%3D%22%23e0d6a5%22%20d%3D%22M143%2043l6%206-6%206-6-6Z%22%2F%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="终"],[data-game-code="末"],[data-game-code="ENF"]){
+  --folio-accent:#f1bd62;--folio-secondary:#c3d1c9;--folio-mid:#323934;--folio-deep:#1b2223;
+  --folio-edge:#82704e;--folio-radius:3px;--folio-seal:2px;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23f1bd62%22%3E%3Cpath%20d%3D%22M75%2018h100v63H75zM88%2030h74v39H88zM75%2049H53m122%200h24m-74-31V8m0%2073v13M88%2040h74M88%2059h74M104%2030v39m21-39v39m21-39v39%22%2F%3E%3Cpath%20stroke-width%3D%222%22%20d%3D%22M75%2027v-9h9m82%200h9v9m0%2045v9h-9m-82%200h-9v-9%22%2F%3E%3C%2Fg%3E%3Cpath%20fill%3D%22%23f1bd62%22%20d%3D%22M16%2070h15l-9%2012H7Zm20%200h15l-9%2012H27Zm20%200h15l-9%2012H47Z%22%2F%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="异"],[data-game-code="NTE"]){
+  --folio-accent:#91dfff;--folio-secondary:#e3a7f5;--folio-mid:#303151;--folio-deep:#161c33;
+  --folio-edge:#716ca5;--folio-radius:8px 26px 8px 26px;--folio-seal:9px 2px 9px 2px;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20stroke%3D%22%2391dfff%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M20%2085V57h16v-9h16v37M57%2085V35h23V15h22v70M110%2085V53h17V38h13v47M148%2085V24h28v61M183%2085V63h15%22%2F%3E%3Cpath%20d%3D%22M20%2085h178%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23e3a7f5%22%3E%3Cpath%20d%3D%22M98%2050l28-27%2027%2027-27%2027Z%22%2F%3E%3Ccircle%20cx%3D%22126%22%20cy%3D%2250%22%20r%3D%2213%22%2F%3E%3Cpath%20d%3D%22M112%2050h28m-14-14v28%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="阴"],[data-game-code="YYS"]){
+  --folio-accent:#efb296;--folio-secondary:#e4c88e;--folio-mid:#3c292d;--folio-deep:#21191f;
+  --folio-edge:#8d6055;--folio-radius:4px 14px 4px 14px;--folio-seal:3px;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23e4c88e%22%3E%3Ccircle%20cx%3D%22146%22%20cy%3D%2243%22%20r%3D%2231%22%2F%3E%3Ccircle%20cx%3D%22146%22%20cy%3D%2243%22%20r%3D%2226%22%20stroke-dasharray%3D%222%204%22%2F%3E%3Cpath%20d%3D%22M146%2020c10%2012%2020%2015%2014%2026s-20%208-14-26Zm-22%2032c15-5%2024%200%2025%2011s-16%2011-25-11Zm45%200c-15-5-24%200-25%2011s16%2011%2025-11Z%22%2F%3E%3Cpath%20d%3D%22M27%2075q10-20%2020%200%2010-20%2020%200%2010-20%2020%200m-50%209q10-20%2020%200%2010-20%2020%200%2010-20%2020%200%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%22178%22%20y%3D%2262%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%222%22%20stroke%3D%22%23efb296%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E");
+}
+body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]:is([data-game-code="AZUR_PROMILIA"],[data-game-code="蓝色星原"],[data-game-code="蓝色星原：旅谣"],[data-game-code="蓝色星原:旅谣"]){
+  --folio-accent:#b5e5ff;--folio-secondary:#f3d49b;--folio-mid:#294c69;--folio-deep:#162b43;
+  --folio-edge:#729db3;--folio-radius:15px 26px 15px 26px;--folio-seal:50%;
+  --folio-art:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%20viewBox%3D%220%200%20200%20100%22%3E%3Cpath%20d%3D%22M0%2088Q31%2059%2063%2075T123%2063Q162%2043%20200%2062V100H0Z%22%20fill%3D%22%2370b9b3%22%20opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22M0%2098Q37%2077%2075%2086T147%2076Q181%2067%20200%2077V100H0Z%22%20fill%3D%22%23a4d7b1%22%20opacity%3D%22.23%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b5e5ff%22%3E%3Ccircle%20cx%3D%22151%22%20cy%3D%2233%22%20r%3D%2226%22%20stroke-dasharray%3D%222%204%22%2F%3E%3Cpath%20d%3D%22M13%2049q18-15%2036-2%2012-15%2027-4M70%2023q13-12%2026%200m18%2032%2037-22%2033%2018%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%23f3d49b%22%3E%3Cpath%20d%3D%22M151%2012l4%2016%2016%205-16%204-4%2016-4-16-16-4%2016-5Z%22%2F%3E%3Ccircle%20cx%3D%22114%22%20cy%3D%2255%22%20r%3D%222%22%2F%3E%3Ccircle%20cx%3D%22184%22%20cy%3D%2251%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+@media(min-width:901px){
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed:has(> .game-card-plate){
+    height:auto!important;min-height:86px!important;max-height:none!important;
+    padding:32px 14px 10px!important;align-content:center!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-summary{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-summary > .meta{flex-wrap:wrap!important;overflow:visible!important;}
+}
+@media(max-width:900px){
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed:has(> .game-card-plate){
+    padding:33px 12px 10px!important;min-height:93px!important;
+    height:auto!important;max-height:none!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-head{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;gap:9px!important;min-width:0!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-summary{
+    display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+    flex-wrap:nowrap!important;gap:6px!important;padding:0!important;min-width:0!important;
+    max-width:100%!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed :is(.item-title,.character-title,.character-title-primary,.character-title-mainline){
+    display:block!important;white-space:normal!important;overflow-wrap:anywhere!important;
+    overflow:visible!important;max-width:100%!important;
+    font-size:17px!important;line-height:1.25!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .version-title{display:flex!important;flex-wrap:wrap!important;gap:5px!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .version-title .version-no{font-size:14px!important;padding:3px 6px!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-summary > .meta{
+    display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px!important;
+    margin:0!important;min-width:0!important;max-width:100%!important;overflow:visible!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .meta:not(:has(.status-highlight)){display:none!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .meta .badge:not(.status-highlight){display:none!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .meta .badge.status-highlight{
+    display:inline-flex!important;flex:0 0 auto!important;min-height:24px!important;
+    font-size:11px!important;padding:4px 7px!important;white-space:nowrap!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .actions.collapsible-actions{width:auto!important;min-width:0!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .actions .collapse-toggle{
+    min-width:58px!important;min-height:44px!important;padding:7px 9px!important;
+    font-size:12px!important;white-space:nowrap!important;
+  }
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code]::before{opacity:.27!important;}
+}
+@media(max-width:360px){
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed:has(> .game-card-plate){padding-inline:9px!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .item-head{gap:6px!important;}
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code].is-collapsed .meta .badge.status-highlight{padding-inline:5px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code],body.command-center-page.gucc-enhanced :is(#characterResults,#partyResults,#mechanismResults,#versionResults) > .item[data-card-kind][data-game-code] *{transition:none!important;animation:none!important;}
+}

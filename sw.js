@@ -1,5 +1,5 @@
-const STATIC_CACHE = "gucc-static-v78";
-const RUNTIME_CACHE = "gucc-runtime-v69";
+const STATIC_CACHE = "gucc-static-v79";
+const RUNTIME_CACHE = "gucc-runtime-v70";
 const RUNTIME_LIMIT = 180;
 let runtimeWrite = Promise.resolve();
 
@@ -105,13 +105,14 @@ const APP_SHELL = [
   "./apps/command-center/styles/game-premium.css",
   "./apps/command-center/styles/game-themes.css?v=10",
   "./apps/command-center/styles/game-premium.css?v=2",
-  "./apps/command-center/styles/game-card-atelier.css?v=2",
+  "./apps/command-center/styles/game-card-atelier.css?v=3",
   "./apps/command-center/src/game-card-plate.js",
   "./apps/command-center/styles/interface-chrome.css",
   "./apps/command-center/styles/responsive-layout.css",
   "./apps/command-center/styles/responsive-layout.css?v=5",
   "./apps/command-center/src/main.js",
   "./apps/command-center/src/main.js?v=6",
+  "./apps/command-center/src/main.js?v=8",
   "./apps/command-center/src/api.js?v=sa1",
   "./apps/command-center/src/api.js",
   "./apps/command-center/src/auth.js",

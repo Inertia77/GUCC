@@ -26,7 +26,6 @@ call :open "https://space.bilibili.com/3494379073309365/upload/video" "无限大
 call :open "https://space.bilibili.com/320070259/upload/video" "虚环"
 call :open "https://space.bilibili.com/3546757206116480/upload/video" "归环"
 call :open "https://space.bilibili.com/3546886017387331/upload/video" "崩坏：因缘精灵"
-call :open "https://space.bilibili.com/3546569016085336/upload/video" "蓝色星原：旅谣"
 call :open "https://space.bilibili.com/3546879304403742/upload/video" "白银之城"
 call :open "https://space.bilibili.com/3546390615559007/upload/video" "望月"
 call :open "https://space.bilibili.com/3546622923377024/upload/video" "星布谷地"
